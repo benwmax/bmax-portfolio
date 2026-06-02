@@ -105,6 +105,7 @@ without password gates, anonymization, or confidentiality notes.
 │       ├── key-insights.md          ← curated moments from AI analysis
 │       ├── decisions.md             ← significant choices + reasoning
 │       ├── process-journal.md       ← running dated build log
+│       ├── build-plan.md            ← phased build plan with live checkbox tracking
 │       ├── ai-prompts.md            ← prompts that produced useful output
 │       └── screenshots/             ← key conversation and process screenshots
 ├── src/
@@ -139,6 +140,23 @@ One entry per decision. Format:
 - A component architecture decision is made
 - A NDA/confidentiality call is made
 - Any time Ben says "I've decided to..." or "let's go with..."
+
+### `build-plan.md`
+The phased build plan with checkbox tracking. This is a live document —
+checkboxes are checked off as work is completed.
+
+**When to update build-plan.md:**
+- A phase step or sub-step is completed — check the box immediately
+- A phase is fully completed — update the Phase Status table at the top
+- A step is added, removed, or significantly changed mid-project
+- A phase is blocked or unblocked — update the Blocked By column
+
+**How to update:**
+- Change `- [ ]` to `- [x]` for completed items
+- Update the Phase Status table when a full phase changes status
+- Add a completion date in parentheses next to checked items where useful:
+  `- [x] Connect bmax-portfolio to Vercel (2026-06-01)`
+- Never delete steps — check them off so the history is preserved
 
 ### `process-journal.md`
 Running log of build activity. Dated entries, written in the moment, not
@@ -189,6 +207,11 @@ was redirected. Format:
 - **Propose documentation updates explicitly.** When a conversation produces
   a decision, a key insight, or a significant build moment, say so. Example:
   *"This feels like a decisions.md entry — want me to write it up?"*
+
+- **Update build-plan.md when work is completed.** When a step or sub-step
+  is finished, check it off in build-plan.md immediately. When a full phase
+  completes, update the Phase Status table. Do not wait to be asked — checking
+  off completed work is part of completing the work.
 
 - **Flag when recommendations conflict with prior decisions.** If a suggestion
   in the current conversation contradicts something established earlier (in
@@ -243,6 +266,9 @@ was redirected. Format:
 - **Never let a significant decision pass undocumented.** If a conversation
   ends with a clear direction chosen, prompt Ben to log it before closing.
 
+- **Never delete steps from build-plan.md.** Check them off — the history
+  of what was done matters for the case study.
+
 ---
 
 ## Visual Identity Principles
@@ -281,17 +307,20 @@ Claude should:
 2. Note any decisions from this file that are directly relevant
 3. Ask if anything in this file needs to be updated before proceeding
 4. Check if the current task should produce a documentation update
+5. Check if any build-plan.md steps were completed since the last session
+   and offer to check them off
 
 If a conversation has been running long and scope has expanded, pause and ask:
 *"Should any of what we've decided today be logged in decisions.md or
-process-journal.md before we continue?"*
+process-journal.md before we continue? And are there build-plan.md steps
+to check off?"*
 
 ---
 
 ## Current Project Status
 
 **Phase:** 0 — Setup and documentation
-**Last updated:** 2026-06-01
+**Last updated:** 2026-06-02
 
 **Completed:**
 - Domain confirmed: viewbens.work (existing site stays live until launch)
@@ -303,6 +332,9 @@ process-journal.md before we continue?"*
 - Market Rebellion dropped as standalone case study
 - CLAUDE.md, key-insights.md, decisions.md, build-plan.md created
 - Claude Project files updated with CLAUDE.md and key-insights.md
+- GitHub repo created (bmax-portfolio, public)
+- Vite + React + TypeScript scaffolded and confirmed building locally
+- Vercel connected to repo and deploying successfully
 
 **Immediate next steps:**
 - Screenshot key moments from initial analysis conversation

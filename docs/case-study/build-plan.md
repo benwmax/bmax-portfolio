@@ -33,7 +33,7 @@ lead case study — documenting it as it happens is as important as building it.
 
 | Phase | Name | Status | Blocked By |
 |-------|------|--------|------------|
-| 0 | Setup | In progress | — |
+| 0 | Setup | Complete | — |
 | 1 | Strategy and Content | Not started | — |
 | 2 | Visual Identity | Not started | Style references |
 | 3 | Storybook Foundation | Not started | Phase 2 |
@@ -45,25 +45,25 @@ lead case study — documenting it as it happens is as important as building it.
 ---
 
 ## Phase 0 — Setup
-*Complete before anything else*
+*Complete*
 
-- [ ] Add CLAUDE.md to Claude Project files
-- [ ] Add key-insights.md to Claude Project files
-- [ ] Screenshot key moments from initial analysis conversation
-- [ ] Create GitHub repo: bmax-portfolio (public)
-- [ ] Add CLAUDE.md to repo root
-- [ ] Create /docs/case-study/ directory with:
-  - [ ] key-insights.md
-  - [ ] decisions.md
-  - [ ] process-journal.md (write first entry)
-  - [ ] ai-prompts.md
-- [ ] Connect bmax-portfolio to Vercel (use vercel.app subdomain — do NOT
+- [x] Add CLAUDE.md to Claude Project files
+- [x] Add key-insights.md to Claude Project files
+- [x] Screenshot key moments from initial analysis conversation
+- [x] Create GitHub repo: bmax-portfolio (public)
+- [x] Add CLAUDE.md to repo root
+- [x] Create /docs/case-study/ directory with:
+  - [x] key-insights.md
+  - [x] decisions.md
+  - [x] process-journal.md (write first entry)
+  - [x] ai-prompts.md
+- [x] Connect bmax-portfolio to Vercel (use vercel.app subdomain — do NOT
       re-point viewbens.work yet)
-- [ ] Fix Upfluent 401 on existing site
-- [ ] Fix resume date conflicts on existing site
-- [ ] Make Market Rebellion final disposition decision
-- [ ] Provide visual style references (unblocks Phase 2)
-- [ ] Finalize positioning statement wording
+- [x] Fix Upfluent 401 on existing site
+- [x] Fix resume date conflicts on existing site
+- [x] Make Market Rebellion final disposition decision
+- [x] Provide visual style references (unblocks Phase 2)
+- [x] Finalize positioning statement wording
 
 ---
 
@@ -302,7 +302,7 @@ last thing written and the first thing that gets rushed.
 
 ---
 
-*Last updated: Project start*
+*Last updated: 2026-06-02 — Phase 0 complete*
 *See also: decisions.md — significant choices and reasoning*
 *See also: key-insights.md — strategic insights from initial analysis*
 *See also: process-journal.md — running build log*
