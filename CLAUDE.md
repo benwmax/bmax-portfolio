@@ -31,13 +31,15 @@ confidentiality.
 
 ## Positioning and Audience
 
-**Positioning statement (working):**
+**Positioning statement (finalized 2026-06-02):**
 > I make expert-level tools learnable — for agents, adjusters, attorneys, and
 > traders who can't afford to get it wrong.
 
-**Expanded thesis:**
-Ben makes expert-user tools learnable without making them less powerful, across
-regulated, high-stakes industries — travel, insurance, fintech, mortgage.
+**Expanded thesis (finalized 2026-06-02):**
+> I've worked across travel, insurance, fintech, and mortgage — building tools
+> that experts actually adopt. The work is in the details: the decision that
+> made onboarding 6 months faster, the user research that redesigned how an
+> industry works, the chatbot that let retail traders think like professionals.
 
 **Target roles:** UX Principal, Design Director
 **Target companies:** Fintech, regulated industries, companies building or
@@ -347,7 +349,6 @@ to check off?"*
 
 **Decisions still open:**
 - Visual identity direction (pending style references)
-- Final positioning statement wording
 - Market Rebellion disposition (drop entirely or reference somewhere)
 - Sagent case study content (to be built from scratch in Phase 1)
 

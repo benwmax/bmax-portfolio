@@ -71,9 +71,9 @@ lead case study — documenting it as it happens is as important as building it.
 *Sagent runs as a parallel workstream — do not wait until others are done*
 
 ### 1A. Positioning
-- [ ] Write final positioning statement
-- [ ] Write expanded thesis (2-3 sentences for homepage)
-- [ ] Log in decisions.md when finalized
+- [x] Write final positioning statement
+- [x] Write expanded thesis (2-3 sentences for homepage)
+- [x] Log in decisions.md when finalized
 
 ### 1B. Rewrite existing case studies
 *Long form first. No layout decisions until content is written.*
@@ -302,7 +302,7 @@ last thing written and the first thing that gets rushed.
 
 ---
 
-*Last updated: 2026-06-02 — Phase 0 complete*
+*Last updated: 2026-06-02 — Phase 0 complete; Phase 1A positioning finalized*
 *See also: decisions.md — significant choices and reasoning*
 *See also: key-insights.md — strategic insights from initial analysis*
 *See also: process-journal.md — running build log*
