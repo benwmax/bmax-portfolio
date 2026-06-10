@@ -103,13 +103,15 @@ without password gates, anonymization, or confidentiality notes.
 ├── CLAUDE.md                        ← this file
 ├── README.md                        ← public-facing project description
 ├── docs/
-│   └── case-study/
-│       ├── key-insights.md          ← curated moments from AI analysis
-│       ├── decisions.md             ← significant choices + reasoning
-│       ├── process-journal.md       ← running dated build log
-│       ├── build-plan.md            ← phased build plan with live checkbox tracking
-│       ├── ai-prompts.md            ← prompts that produced useful output
-│       └── screenshots/             ← key conversation and process screenshots
+│   ├── case-study/
+│   │   ├── key-insights.md          ← curated moments from AI analysis
+│   │   ├── decisions.md             ← significant choices + reasoning
+│   │   ├── process-journal.md       ← running dated build log
+│   │   ├── build-plan.md            ← phased build plan with live checkbox tracking
+│   │   ├── ai-prompts.md            ← prompts that produced useful output
+│   │   └── screenshots/             ← key conversation and process screenshots
+│   └── case-studies/                ← draft content, pre-layout
+│       └── usaa.md                  ← USAA case study draft (Version B, 2026-06-09)
 ├── src/
 │   ├── components/                  ← custom components (built on ShadCN)
 │   ├── stories/                     ← Storybook stories
@@ -246,6 +248,25 @@ was redirected. Format:
   7. Outcomes
   8. What would be done differently
 
+- **Case study tone and length standard (established 2026-06-09):**
+  The USAA Version B draft is the reference. Match it. Specifically:
+  - **Length:** Each section should be a short paragraph — 2 to 4 sentences
+    max. The whole case study should be readable in 1–2 minutes. If a section
+    is running long, cut it, don't tighten it.
+  - **Tone:** Confident and direct. First person, active voice. Write like a
+    senior designer telling a story to a peer — not like a case study template
+    being filled in. No corporate filler. Short sentences land harder than long
+    ones.
+  - **Story over summary:** The goal is for the reader to feel the project, not
+    audit it. The "What Was Hard" section in particular should read like
+    something that happened to a person, not a risk log entry.
+  - **Specificity over comprehensiveness:** One sharp detail beats three vague
+    ones. Don't list every method used — name the ones that actually mattered
+    and say why.
+  - **Never write a first draft at full length and then trim.** Write short
+    from the start. If Ben asks for a revision to tighten length, that means
+    the first draft was too long — adjust calibration going forward.
+
 ### Never do
 
 - **Never reorder the case studies without flagging it explicitly** and
@@ -321,8 +342,8 @@ to check off?"*
 
 ## Current Project Status
 
-**Phase:** 0 — Setup and documentation
-**Last updated:** 2026-06-02
+**Phase:** 1 — Case study content
+**Last updated:** 2026-06-10
 
 **Completed:**
 - Domain confirmed: viewbens.work (existing site stays live until launch)
@@ -337,20 +358,28 @@ to check off?"*
 - GitHub repo created (bmax-portfolio, public)
 - Vite + React + TypeScript scaffolded and confirmed building locally
 - Vercel connected to repo and deploying successfully
+- USAA case study drafted (Version B selected; docs/case-studies/usaa.md)
+- Version A vs. Version B drafting methods stress-tested and compared
+- Sabre case study drafted (docs/case-studies/sabre.md)
 
 **Immediate next steps:**
+- Add usaa.md to repo at docs/case-studies/usaa.md
+- Add sabre.md to repo at docs/case-studies/sabre.md
+- Log decisions.md entry: USAA draft method decision (2026-06-09)
+- Log process-journal.md entry: USAA case study session (2026-06-09)
 - Screenshot key moments from initial analysis conversation
-- Write first process-journal.md entry
 - Provide visual style references (unblocks Phase 2)
-- Finalize positioning statement wording
 - Make Market Rebellion final disposition decision
 - Fix Upfluent 401 on existing site
 - Fix resume date conflicts on existing site
+- Begin Upfluent case study (next in order)
 
 **Decisions still open:**
 - Visual identity direction (pending style references)
 - Market Rebellion disposition (drop entirely or reference somewhere)
-- Sagent case study content (to be built from scratch in Phase 1)
+- Sagent case study content (to be built from scratch)
+- USAA case study: Question 7 (what outlasted the project beyond metrics)
+  skipped — revisit before finalizing
 
 ---
 

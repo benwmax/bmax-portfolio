@@ -19,3 +19,15 @@ Significant choices and the reasoning behind them.
 - Positioning statement: *I make expert-level tools learnable — for agents, adjusters, attorneys, and traders who can't afford to get it wrong.*
 - Expanded thesis: *I've worked across travel, insurance, fintech, and mortgage — building tools that experts actually adopt. The work is in the details: the decision that made onboarding 6 months faster, the user research that redesigned how an industry works, the chatbot that let retail traders think like professionals.*
 - Reasoning: The positioning statement names both the capability (making expert tools learnable) and the audience (high-stakes expert users) in a single line. The thesis grounds it in real outcomes — specific enough to be credible, varied enough to signal range. The examples implicitly reference Sagent, USAA/Sabre, and Upfluent without requiring the reader to already know the work.
+
+## 2026-06-09 — USAA case study draft method
+- Decision: Version B selected as the final base for the USAA case study.
+- Reasoning: Version B had more voice and told a story. Version A read
+  like a thorough project summary — credible but safe. For Principal/Director
+  reviewers, B demonstrated judgment rather than just competence. The
+  stakeholder pivot section in particular earned the outcomes rather than
+  just reporting them.
+- Alternatives considered: Version A (direct rewrite from source material);
+  hybrid of A and B. Both rejected — hybrid risked bloat, A lacked perspective.
+- Open question: Question 7 (what outlasted the project beyond metrics)
+  was skipped. Worth revisiting before the case study is finalized.
