@@ -108,7 +108,7 @@ without password gates, anonymization, or confidentiality notes.
 │   │   ├── decisions.md             ← significant choices + reasoning
 │   │   ├── process-journal.md       ← running dated build log
 │   │   ├── build-plan.md            ← phased build plan with live checkbox tracking
-│   │   ├── ai-prompts.md            ← prompts that produced useful output
+│   │   ├── ai-prompts.md             ← prompts that produced useful output
 │   │   └── screenshots/             ← key conversation and process screenshots
 │   └── case-studies/                ← draft content, pre-layout
 │       └── usaa.md                  ← USAA case study draft (Version B, 2026-06-09)
@@ -343,7 +343,7 @@ to check off?"*
 ## Current Project Status
 
 **Phase:** 1 — Case study content
-**Last updated:** 2026-06-10
+**Last updated:** 2026-06-14
 
 **Completed:**
 - Domain confirmed: viewbens.work (existing site stays live until launch)
@@ -361,6 +361,9 @@ to check off?"*
 - USAA case study drafted (Version B selected; docs/case-studies/usaa.md)
 - Version A vs. Version B drafting methods stress-tested and compared
 - Sabre case study drafted (docs/case-studies/sabre.md)
+- Project-level custom instructions (Claude Project settings) synced to
+  match this file's case study order — Sagent at #3, Market Rebellion not
+  listed as standalone (2026-06-14)
 
 **Immediate next steps:**
 - Add usaa.md to repo at docs/case-studies/usaa.md
@@ -373,6 +376,7 @@ to check off?"*
 - Fix Upfluent 401 on existing site
 - Fix resume date conflicts on existing site
 - Begin Upfluent case study (next in order)
+- Sagent brain dump in progress (parallel track, build-plan 1C)
 
 **Decisions still open:**
 - Visual identity direction (pending style references)
