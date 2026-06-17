@@ -147,27 +147,27 @@ first item) has started independently — see note.*
       Note: this happened ahead of Phase 2/tokens, which is fine for bare
       scaffolding — the remaining 3A items below genuinely need tokens or
       a defined visual direction first.
-- [ ] Tailwind CSS with custom theme (tokens from Phase 2)
-- [ ] ShadCN initialization
-- [ ] Storybook 8 initialization
+- [x] Tailwind CSS with custom theme (tokens from Phase 2)
+- [x] ShadCN initialization
+- [x] Storybook 8 initialization
 - [ ] ESLint, Prettier, path aliases
 - [ ] README written (public repo — make it intentional)
 
 ### 3B. Layer 1 — Token system
-- [ ] CSS custom properties in /src/tokens/
-- [ ] Tailwind config extending default scale with custom tokens
-- [ ] Storybook Foundations section:
-  - Color table (legible to non-developers)
-  - Typography table
-  - Spacing table
-  - Motion table
+- [x] CSS custom properties in /src/tokens/
+- [x] Tailwind config extending default scale with custom tokens
+- [x] Storybook Foundations section:
+  - [x] Color table (legible to non-developers)
+  - [x] Typography table
+  - [x] Spacing table
+  - [x] Motion table
 
 ### 3C. Layer 2 — Primitive components
 Each component requires: Default story + all meaningful state stories.
 Story descriptions explain design decisions, not just props.
-- [ ] Button (primary, secondary, ghost, destructive + all states)
+- [x] Button (primary, secondary, ghost, destructive + all states) (2026-06-17)
 - [ ] Input, Textarea, Select
-- [ ] Badge, Tag
+- [x] Badge, Tag (2026-06-17)
 - [ ] Icon wrapper
 - [ ] Link
 - [ ] Avatar
@@ -179,15 +179,18 @@ Story descriptions explain design decisions, not just props.
 - [ ] Divider
 
 ### 3E. Layer 4 — Portfolio-specific components
-- [ ] CaseStudyCard (homepage thumbnail)
+- [x] CaseStudyCard (homepage thumbnail) (2026-06-17)
 - [ ] CaseStudyHero (full-bleed header with title, company, outcome stat)
-- [ ] StatBlock (big number + label — outcomes deserve visual treatment)
-- [ ] ProcessStep (research/design methodology in sequence)
-- [ ] ImageCaption (image + label — fixes unlabeled artifact problem)
-- [ ] RoleCallout (styled block: "My role: X. Team: Y.")
-- [ ] QuoteBlock (standout outcomes or stakeholder feedback)
-- [ ] TimelineEntry (resume/experience page)
-- [ ] NavBar + MobileMenu
+- [ ] StatBlock
+- [ ] ProcessStep
+- [ ] ImageCaption
+- [ ] RoleCallout
+- [ ] QuoteBlock
+- [ ] TimelineEntry
+- [x] NavBar shell — desktop only (2026-06-17)
+- [ ] MobileMenu (pending — build after layout direction locked)
+- [x] ChatInput (shell — styling pending design exploration) (2026-06-17)
+- [x] StatusIndicator (shell — styling pending design exploration) (2026-06-17)
 
 ### 3F. Layer 5 — Page templates
 - [ ] Home

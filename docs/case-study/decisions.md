@@ -112,3 +112,17 @@ Significant choices and the reasoning behind them.
 - Google Fonts import: Space Mono (400, 700, italic variants) + IBM Plex Mono
   (400, 500, 600, italic). Import snippet is in src/tokens/tokens.css header comment.
 - Open question: None — font selection resolved.
+
+## 2026-06-17 — Storybook and component build strategy
+
+- Decision: Storybook 8 scaffolded and primitive component shells
+  created in parallel with Claude Design visual explorations.
+  Components are unstyled structure only — styling pass comes after
+  design direction is locked from Claude Design sessions.
+- Reasoning: Separating structure from styling means the Claude Design
+  exploration is unconstrained by what's already been built, while
+  the component shells are ready to receive styles immediately once
+  direction is confirmed. No rework required at the handoff point.
+- Parallel tracks: Claude Design (wordmark → homepage → case study page
+  → component details) runs independently of the Storybook build.
+  Handoff happens after Claude Design Session 4.

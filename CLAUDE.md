@@ -404,13 +404,14 @@ to check off?"*
 
 ## Current Project Status
 
-**Phase:** 1 — Case study content. 1A (positioning) and 1B (Upfluent, USAA,
-Sabre rewrites) are now complete; 1C (Sagent), 1D (meta case study outline),
-and 1E (image audit) remain. Phase 0 has one outstanding item — visual style
-references — confirmed still pending and now the critical-path blocker for
-Phases 2-4.
+**Phase:** 1 (content) + 2 (visual identity) + 3 (component foundations)
+all active in parallel. Phase 2 substantially complete — visual identity
+finalized, tokens written, one item remaining (wordmark asset). Phase 3
+foundations complete — Storybook scaffolded, tokens wired, primitive shells
+built. Claude Design sessions are the current critical path for layout direction
+before component styling begins.
 
-**Last updated:** 2026-06-15
+**Last updated:** 2026-06-17
 
 **Completed:**
 - Domain confirmed: viewbens.work (existing site stays live until launch)
@@ -434,10 +435,14 @@ Phases 2-4.
 - AI chat feature: architecture and safeguards plan drafted, core files
   written (api/chat.ts, system-prompt.ts, rate-limit.ts) (2026-06-15) — see
   decisions.md and build-plan.md Phase 4F
-  - Visual identity direction (pending style references) — confirmed
-  blocked, 2026-06-15
-  - Provide visual style references (unblocks Phase 2) — TOP PRIORITY,
-  confirmed pending 2026-06-15
+- Visual identity direction finalized — style references provided,
+  palette locked, tokens written (2026-06-17) — Phase 2 substantially complete
+- Storybook 8 installed and scaffolded (2026-06-17)
+- Token foundations documented in Storybook (2026-06-17)
+- src/tokens/tokens.css wired into Tailwind config (2026-06-17)
+- Primitive component shells created (Button, NavBar, ChatInput,
+  CaseStudyCard, Tag, StatusIndicator) with Storybook stories (2026-06-17)
+- Commit tokens.css and doc updates to repo before first Claude Design session
 
 **Immediate next steps:**
 - Add usaa.md, upfluent.md, and sabre.md to repo at docs/case-studies/
@@ -446,14 +451,17 @@ Phases 2-4.
 - Sagent brain dump in progress (parallel track, build-plan 1C)
 - AI chat feature: see build-plan.md Phase 4F for setup steps (Anthropic
   Workspace + Upstash setup, commit files, build widget, deploy, tune)
+- Claude Design Session 1: wordmark exploration (BM_, 3 directions)
+- Claude Design Session 2: homepage layout (after wordmark locked)
+- Claude Design Session 3: case study page layout
+- Claude Design Session 4: component detail explorations
+
+- Style primitive component shells once design explorations are locked (Phase 3)
 
 **Decisions still open:**
 - Market Rebellion: not a standalone case study (decided); whether/where to
   reference it elsewhere (e.g. About page) — still open
 - Sagent case study content (to be built from scratch)
-- USAA case study: Question 7 (what outlasted the project beyond metrics)
-  was open as of 2026-06-09 — confirm this was addressed in the 2026-06-15
-  rewrite
 
 ---
 
