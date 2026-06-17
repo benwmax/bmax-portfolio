@@ -61,6 +61,8 @@ throughout — not just in the opener.
 - **Hosting:** Vercel, connected to GitHub repo via automatic deploys
 - **Domain:** viewbens.work (already owned and live)
 - **Repo:** bmax-portfolio (public from day one)
+- **API/Backend (AI chat feature):** Vercel Edge Functions (serverless) +
+  Upstash Redis (rate limiting) — see "AI Chat Feature" section below
 
 ---
 
@@ -102,6 +104,12 @@ without password gates, anonymization, or confidentiality notes.
 /
 ├── CLAUDE.md                        ← this file
 ├── README.md                        ← public-facing project description
+├── .env.example                     ← required env vars (AI chat feature)
+├── api/
+│   ├── chat.ts                      ← AI chat feature: serverless endpoint
+│   └── lib/
+│       ├── system-prompt.ts         ← chat assistant system prompt
+│       └── rate-limit.ts            ← per-IP rate limiting (Upstash)
 ├── docs/
 │   ├── case-study/
 │   │   ├── key-insights.md          ← curated moments from AI analysis
@@ -111,7 +119,9 @@ without password gates, anonymization, or confidentiality notes.
 │   │   ├── ai-prompts.md             ← prompts that produced useful output
 │   │   └── screenshots/             ← key conversation and process screenshots
 │   └── case-studies/                ← draft content, pre-layout
-│       └── usaa.md                  ← USAA case study draft (Version B, 2026-06-09)
+│       ├── usaa.md                  ← USAA case study (rewritten 2026-06-15)
+│       ├── upfluent.md              ← Upfluent case study (rewritten 2026-06-15)
+│       └── sabre.md                 ← Sabre case study (rewritten 2026-06-15)
 ├── src/
 │   ├── components/                  ← custom components (built on ShadCN)
 │   ├── stories/                     ← Storybook stories
@@ -295,16 +305,34 @@ was redirected. Format:
 ---
 
 ## Visual Identity Principles
-*(Update this section when style references are reviewed and tokens are decided)*
 
-- Dark mode support is required from day one — build into token layer, not
-  retrofitted
-- Tokens use CSS custom properties mapped to Tailwind config
+- Dark mode default — light mode is an accessibility fallback, not a primary experience
+- Tokens use CSS custom properties in `src/tokens/tokens.css`, mapped to Tailwind config
 - ShadCN is a primitive foundation — custom components are the system
-- Visual identity should signal: financial/enterprise credibility +
-  technical fluency + individual craft (not generic AI aesthetic)
-- Type scale: TBD pending style references
-- Color palette: TBD pending style references
+
+**Aesthetic direction (finalized 2026-06-17):**
+- Background: warm dark charcoal with olive undertone — `#0e100f` page, `#141612` surface
+- Primary text: warm off-white `#ccd4b0` — never pure white
+- Accent green: phosphor terminal green `#00e054` primary / `#00ff5e` max-contrast moments
+  (cursor blink, status dot, focused input caret)
+- Accent amber: warm gold `#c08820` — secondary only, for tags and data callouts
+- Surface texture: dot grid via `radial-gradient` — page bg and hero section only
+- Border radius: 3px system default — sharp, not rounded; 0 for terminal-chrome elements
+- Wordmark: `BM_` — trailing underscore is a terminal cursor convention, intentional
+
+**Typography (finalized 2026-06-17):**
+- `--font-mono-display`: Space Mono (Google Fonts, free) — wordmark, nav, buttons,
+  case study numbers, tags, chat prompt indicator (`›`), ALL CAPS labels. Use where
+  the terminal aesthetic is the point. Runs wide — use negative tracking at display sizes.
+- `--font-mono-ui`: IBM Plex Mono (Google Fonts, free) — chat input text, metadata,
+  smaller labels, anything Space Mono makes too loud below ~13px.
+- `--font-sans`: System sans stack — prose and case study body copy only. Never for UI chrome.
+- Google Fonts import snippet lives in `src/tokens/tokens.css` header comment.
+
+**Token file:** `src/tokens/tokens.css` — CSS custom properties, Tailwind-ready,
+last updated 2026-06-17. Contains: color primitives, semantic tokens, type scale,
+letter spacing, line height, spacing, border radius, border shorthands, dot grid
+surface, motion, and per-component font/color/tracking tokens.
 
 ---
 
@@ -318,6 +346,40 @@ was redirected. Format:
 - Storybook is hosted publicly as a portfolio artifact, not just a dev tool
 - Storybook deployed to a separate Vercel project on a subdomain
   (e.g. system.viewbens.work)
+
+---
+
+## AI Chat Feature
+
+A live AI assistant embedded on the portfolio site, letting visitors ask
+about Ben's work directly. Architecture: a Vercel Edge Function (`api/chat.ts`)
+proxies to Claude Haiku 4.5, with a system prompt scoped to Ben's positioning
+and case study summaries. The API key is never exposed to the client. See
+decisions.md (2026-06-15) for the full reasoning and build-plan.md Phase 4F
+for the build checklist.
+
+**Files:**
+- `api/chat.ts` — endpoint: validation, rate limiting, history truncation,
+  session cap, streamed response
+- `api/lib/system-prompt.ts` — the assistant's brief (positioning, case study
+  summaries, tone, scope)
+- `api/lib/rate-limit.ts` — per-IP rate limiting via Upstash Redis
+- `.env.example` — required environment variables
+
+**Key constraints:**
+- The Anthropic API key lives in a dedicated Workspace with its own monthly
+  spend limit and email alert — never reuse a key from another workspace for
+  this feature. This is the hard ceiling on cost.
+- `api/lib/system-prompt.ts` is the assistant's brief and needs upkeep —
+  update it whenever a case study moves from "in progress" to "published" so
+  the assistant doesn't undersell or misstate finished work. As of
+  2026-06-15, Upfluent, USAA, and Sabre have all been rewritten and the
+  system prompt's "still being finalized" language for those is now stale.
+- Safeguard values (rate limits, session message cap, output token cap,
+  history length, message length cap) live as named constants at the top of
+  `api/chat.ts` — tune there, not inline.
+- The widget's visual styling depends on Phase 2/3 tokens; the backend does
+  not and can proceed independently.
 
 ---
 
@@ -342,8 +404,13 @@ to check off?"*
 
 ## Current Project Status
 
-**Phase:** 1 — Case study content
-**Last updated:** 2026-06-14
+**Phase:** 1 — Case study content. 1A (positioning) and 1B (Upfluent, USAA,
+Sabre rewrites) are now complete; 1C (Sagent), 1D (meta case study outline),
+and 1E (image audit) remain. Phase 0 has one outstanding item — visual style
+references — confirmed still pending and now the critical-path blocker for
+Phases 2-4.
+
+**Last updated:** 2026-06-15
 
 **Completed:**
 - Domain confirmed: viewbens.work (existing site stays live until launch)
@@ -358,32 +425,35 @@ to check off?"*
 - GitHub repo created (bmax-portfolio, public)
 - Vite + React + TypeScript scaffolded and confirmed building locally
 - Vercel connected to repo and deploying successfully
-- USAA case study drafted (Version B selected; docs/case-studies/usaa.md)
-- Version A vs. Version B drafting methods stress-tested and compared
-- Sabre case study drafted (docs/case-studies/sabre.md)
 - Project-level custom instructions (Claude Project settings) synced to
   match this file's case study order — Sagent at #3, Market Rebellion not
   listed as standalone (2026-06-14)
+- Version A vs. Version B drafting methods stress-tested and compared
+- Upfluent, USAA, and Sabre case studies all rewritten (2026-06-15) —
+  Phase 1B complete
+- AI chat feature: architecture and safeguards plan drafted, core files
+  written (api/chat.ts, system-prompt.ts, rate-limit.ts) (2026-06-15) — see
+  decisions.md and build-plan.md Phase 4F
+  - Visual identity direction (pending style references) — confirmed
+  blocked, 2026-06-15
+  - Provide visual style references (unblocks Phase 2) — TOP PRIORITY,
+  confirmed pending 2026-06-15
 
 **Immediate next steps:**
-- Add usaa.md to repo at docs/case-studies/usaa.md
-- Add sabre.md to repo at docs/case-studies/sabre.md
+- Add usaa.md, upfluent.md, and sabre.md to repo at docs/case-studies/
 - Log decisions.md entry: USAA draft method decision (2026-06-09)
 - Log process-journal.md entry: USAA case study session (2026-06-09)
-- Screenshot key moments from initial analysis conversation
-- Provide visual style references (unblocks Phase 2)
-- Make Market Rebellion final disposition decision
-- Fix Upfluent 401 on existing site
-- Fix resume date conflicts on existing site
-- Begin Upfluent case study (next in order)
 - Sagent brain dump in progress (parallel track, build-plan 1C)
+- AI chat feature: see build-plan.md Phase 4F for setup steps (Anthropic
+  Workspace + Upstash setup, commit files, build widget, deploy, tune)
 
 **Decisions still open:**
-- Visual identity direction (pending style references)
-- Market Rebellion disposition (drop entirely or reference somewhere)
+- Market Rebellion: not a standalone case study (decided); whether/where to
+  reference it elsewhere (e.g. About page) — still open
 - Sagent case study content (to be built from scratch)
 - USAA case study: Question 7 (what outlasted the project beyond metrics)
-  skipped — revisit before finalizing
+  was open as of 2026-06-09 — confirm this was addressed in the 2026-06-15
+  rewrite
 
 ---
 

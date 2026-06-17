@@ -1,0 +1,370 @@
+/*
+ * tokens.css — viewbens.work design tokens
+ * Dark mode default. All values derived from 2026-06-17 palette session.
+ *
+ * Font import — add to index.html <head> before this file loads:
+ *
+ *   <link rel="preconnect" href="https://fonts.googleapis.com">
+ *   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ *   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+ *
+ * Usage in Tailwind config:
+ *   colors: { 'bg-page': 'var(--color-bg-page)', ... }
+ *
+ * Usage in CSS:
+ *   background: var(--color-bg-page);
+ *   color: var(--color-text-primary);
+ */
+
+/* ============================================================
+   ROOT — DARK MODE DEFAULT
+   ============================================================ */
+
+:root {
+
+  /* ----------------------------------------------------------
+     BACKGROUNDS
+     Warm dark charcoal with slight olive undertone.
+     Cooler than pure olive, warmer than neutral dark.
+  ---------------------------------------------------------- */
+
+  --color-bg-page:       #0e100f;   /* Page background */
+  --color-bg-surface:    #141612;   /* Cards, panels, elevated surfaces */
+  --color-bg-raised:     #1c1f1a;   /* Inputs, hovers, slightly raised */
+  --color-bg-dot:        #232620;   /* Dot grid pattern color */
+  --color-bg-overlay:    #0e100fcc; /* Modals, overlays (80% opacity) */
+
+  /* ----------------------------------------------------------
+     BORDERS
+  ---------------------------------------------------------- */
+
+  --color-border-subtle:  #1c1f1a;  /* Default card/panel borders */
+  --color-border-default: #2c3028;  /* Input borders, visible dividers */
+  --color-border-strong:  #3d4035;  /* Emphasized borders, hover states */
+
+  /* ----------------------------------------------------------
+     TEXT
+     Warm off-white primary. Never pure white — too harsh
+     against the warm dark background.
+  ---------------------------------------------------------- */
+
+  --color-text-primary:   #ccd4b0;  /* Body copy, headings */
+  --color-text-secondary: #8a9478;  /* Subheadings, labels, metadata */
+  --color-text-tertiary:  #6b7055;  /* Timestamps, captions, hints */
+  --color-text-muted:     #5a6050;  /* Placeholder text, disabled states */
+  --color-text-disabled:  #3d4035;  /* Truly inactive elements */
+
+  /* ----------------------------------------------------------
+     ACCENT — GREEN (PRIMARY)
+     Phosphor terminal green. #00ff5e at full saturation,
+     pulled back to #00e054 for primary use — bright but
+     not retina-burning. Use #00ff5e for max-contrast moments
+     (cursor blink, active status dot, focused input caret).
+  ---------------------------------------------------------- */
+
+  --color-green-deepest:  #041a0a;  /* Darkest bg tint (hover states) */
+  --color-green-deep:     #062010;  /* Button backgrounds */
+  --color-green-border:   #0e4a1e;  /* Button borders, input focus rings */
+  --color-green-mid:      #1a8032;  /* Mid-range, progress fills */
+  --color-green-accent:   #00e054;  /* Primary accent — buttons, links, active nav */
+  --color-green-bright:   #00ff5e;  /* Max contrast — cursor, status dot, caret */
+  --color-green-light:    #80eea0;  /* Lightest — subtle highlights, tags */
+
+  /* ----------------------------------------------------------
+     ACCENT — AMBER (SECONDARY)
+     Warm gold. Used for industry tags, callout values,
+     data highlights. Never for interactive states.
+  ---------------------------------------------------------- */
+
+  --color-amber-deepest:  #1a1005;  /* Subtle amber bg tint */
+  --color-amber-deep:     #3a2808;  /* Amber borders, tag borders */
+  --color-amber-mid:      #8a6015;  /* Mid amber */
+  --color-amber-accent:   #c08820;  /* Primary amber — tags, callouts */
+  --color-amber-bright:   #e0a840;  /* Bright amber — emphasized values */
+
+  /* ----------------------------------------------------------
+     SEMANTIC
+     Map to green/amber above. Kept separate so semantic
+     meaning stays decoupled from aesthetic color choices.
+  ---------------------------------------------------------- */
+
+  --color-interactive:        var(--color-green-accent);
+  --color-interactive-hover:  var(--color-green-bright);
+  --color-interactive-bg:     var(--color-green-deep);
+  --color-interactive-border: var(--color-green-border);
+
+  --color-status-online:  var(--color-green-bright);
+  --color-status-warning: var(--color-amber-accent);
+  --color-status-error:   #e05050;  /* Red — used only for actual errors */
+
+  --color-callout:        var(--color-amber-accent);
+  --color-callout-border: var(--color-amber-deep);
+  --color-callout-bg:     var(--color-amber-deepest);
+
+  /* ----------------------------------------------------------
+     TYPOGRAPHY
+     Two-font system:
+     Space Mono    — display and UI chrome. Use for: wordmark,
+                     nav links, case study numbers, buttons,
+                     chat prompt indicator (›), status text,
+                     tags, ALL CAPS labels. Has personality —
+                     use where the terminal aesthetic is the
+                     point. Bold weight only for wordmark/hero.
+     IBM Plex Mono — functional mono. Use for: body metadata,
+                     smaller labels, code snippets, anything
+                     Space Mono would make too loud at small
+                     sizes. Eight weights — use 400 and 500.
+     System sans   — prose only. Case study body copy,
+                     long-form reading. Never for UI chrome.
+  ---------------------------------------------------------- */
+
+  --font-mono-display: 'Space Mono', 'IBM Plex Mono', ui-monospace, monospace;
+  --font-mono-ui:      'IBM Plex Mono', 'Space Mono', ui-monospace, monospace;
+  --font-sans:         ui-sans-serif, system-ui, -apple-system,
+                       BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* Shorthand alias — use --font-mono-display for hero/nav/buttons,
+     --font-mono-ui for everything else monospace */
+  --font-mono: var(--font-mono-display);
+
+  /* ----------------------------------------------------------
+     TYPE SCALE
+     All values in rem. Base = 16px browser default.
+     Space Mono runs wide — at small sizes use IBM Plex Mono.
+     Anything below --text-sm should always use --font-mono-ui.
+  ---------------------------------------------------------- */
+
+  --text-xs:   0.625rem;   /* 10px — labels, timestamps, status */
+  --text-sm:   0.6875rem;  /* 11px — nav links, tags, captions */
+  --text-base: 0.8125rem;  /* 13px — body, chat input, card titles */
+  --text-md:   0.875rem;   /* 14px — subheadings */
+  --text-lg:   1rem;       /* 16px — section headings */
+  --text-xl:   1.125rem;   /* 18px — page headings */
+  --text-2xl:  1.375rem;   /* 22px — hero text */
+  --text-3xl:  1.75rem;    /* 28px — large hero on wider viewports */
+
+  /* ----------------------------------------------------------
+     LETTER SPACING
+     Space Mono is naturally wide — use tighter tracking
+     at display sizes, standard or looser for UI labels.
+     IBM Plex Mono tracks more neutrally at all sizes.
+  ---------------------------------------------------------- */
+
+  --tracking-tight:   -0.02em;  /* Space Mono display sizes only */
+  --tracking-snug:    -0.01em;  /* Space Mono headings */
+  --tracking-normal:   0em;     /* Default */
+  --tracking-wide:     0.05em;  /* Nav links, metadata */
+  --tracking-wider:    0.08em;  /* Hero subtitle */
+  --tracking-widest:   0.12em;  /* ALL CAPS labels, status text */
+  --tracking-ultra:    0.15em;  /* Tags, badge text */
+
+  /* ----------------------------------------------------------
+     LINE HEIGHT
+  ---------------------------------------------------------- */
+
+  --leading-none:   1;
+  --leading-tight:  1.25;
+  --leading-snug:   1.375;
+  --leading-normal: 1.5;
+  --leading-prose:  1.7;   /* Case study body copy */
+
+  /* ----------------------------------------------------------
+     SPACING
+     Base 4px. Most components use multiples of 4 or 8.
+  ---------------------------------------------------------- */
+
+  --space-1:  0.25rem;   /*  4px */
+  --space-2:  0.5rem;    /*  8px */
+  --space-3:  0.75rem;   /* 12px */
+  --space-4:  1rem;      /* 16px */
+  --space-5:  1.25rem;   /* 20px */
+  --space-6:  1.5rem;    /* 24px */
+  --space-8:  2rem;      /* 32px */
+  --space-10: 2.5rem;    /* 40px */
+  --space-12: 3rem;      /* 48px */
+  --space-16: 4rem;      /* 64px */
+  --space-20: 5rem;      /* 80px */
+  --space-24: 6rem;      /* 96px */
+
+  /* ----------------------------------------------------------
+     BORDER RADIUS
+     Sharp — this aesthetic doesn't use heavy rounding.
+     3px is the system default. 0 for terminal-chrome elements
+     (nav underlines, prompt indicators, horizontal rules).
+  ---------------------------------------------------------- */
+
+  --radius-none: 0;
+  --radius-sm:   2px;    /* Tags, badges */
+  --radius-md:   3px;    /* Cards, inputs, buttons — system default */
+  --radius-lg:   6px;    /* Large cards, panels */
+  --radius-full: 9999px; /* Pills, status dots */
+
+  /* ----------------------------------------------------------
+     BORDERS
+  ---------------------------------------------------------- */
+
+  --border-width:   1px;
+  --border-default: 1px solid var(--color-border-subtle);
+  --border-visible: 1px solid var(--color-border-default);
+  --border-strong:  1px solid var(--color-border-strong);
+  --border-accent:  1px solid var(--color-interactive-border);
+
+  /* ----------------------------------------------------------
+     DOT GRID SURFACE
+     Applied as background-image on sections using the
+     terminal grid texture. Page bg and hero section only
+     by default — not every surface.
+  ---------------------------------------------------------- */
+
+  --dot-grid:      radial-gradient(circle, var(--color-bg-dot) 1px, transparent 1px);
+  --dot-grid-size: 20px 20px;
+
+  /* ----------------------------------------------------------
+     MOTION
+     Minimal. Transitions on interactive state changes only.
+     No decorative animation on static content.
+  ---------------------------------------------------------- */
+
+  --duration-fast:  100ms;
+  --duration-base:  150ms;
+  --duration-slow:  250ms;
+  --ease-default:   cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ----------------------------------------------------------
+     COMPONENT TOKENS
+     Derived from primitives above. Update primitives,
+     these update automatically.
+  ---------------------------------------------------------- */
+
+  /* Chat input */
+  --chat-bg:           var(--color-bg-surface);
+  --chat-border:       var(--color-border-default);
+  --chat-text:         var(--color-text-primary);
+  --chat-placeholder:  var(--color-text-muted);
+  --chat-prompt-color: var(--color-green-accent);
+  --chat-caret:        var(--color-green-bright);
+  --chat-focus-border: var(--color-interactive-border);
+  --chat-font:         var(--font-mono-ui);
+
+  /* Button — primary (ASK, submit) */
+  --btn-primary-bg:         var(--color-interactive-bg);
+  --btn-primary-border:     var(--color-interactive-border);
+  --btn-primary-text:       var(--color-green-accent);
+  --btn-primary-hover-bg:   #0e2e14;
+  --btn-primary-hover-text: var(--color-green-bright);
+  --btn-primary-font:       var(--font-mono-display);
+  --btn-primary-tracking:   var(--tracking-widest);
+
+  /* Nav */
+  --nav-text:        var(--color-text-disabled);
+  --nav-text-active: var(--color-green-accent);
+  --nav-mark-color:  var(--color-text-primary);
+  --nav-font:        var(--font-mono-display);
+  --nav-tracking:    var(--tracking-wide);
+
+  /* Case study cards */
+  --card-bg:           var(--color-bg-surface);
+  --card-border:       var(--color-border-subtle);
+  --card-border-hover: var(--color-border-default);
+  --card-num-color:    var(--color-green-border);
+  --card-num-font:     var(--font-mono-display);
+  --card-title-color:  var(--color-text-secondary);
+  --card-title-hover:  var(--color-text-primary);
+  --card-title-font:   var(--font-mono-ui);
+
+  /* Industry tags (amber) */
+  --tag-bg:       transparent;
+  --tag-border:   var(--color-amber-deep);
+  --tag-text:     var(--color-amber-accent);
+  --tag-font:     var(--font-mono-display);
+  --tag-tracking: var(--tracking-ultra);
+
+  /* Status indicator */
+  --status-dot-color:  var(--color-status-online);
+  --status-text-color: var(--color-text-tertiary);
+  --status-font:       var(--font-mono-ui);
+  --status-tracking:   var(--tracking-wide);
+
+  /* Case study body prose */
+  --prose-font:     var(--font-sans);
+  --prose-size:     var(--text-base);
+  --prose-leading:  var(--leading-prose);
+  --prose-color:    var(--color-text-primary);
+  --prose-secondary: var(--color-text-secondary);
+}
+
+
+/* ============================================================
+   LIGHT MODE OVERRIDE
+   The portfolio is dark-mode default. Light mode exists for
+   accessibility — it is not the primary experience.
+   Only define if/when you decide to ship a light mode variant.
+   ============================================================ */
+
+/*
+@media (prefers-color-scheme: light) {
+  :root {
+    --color-bg-page:      #f5f5f0;
+    --color-bg-surface:   #ffffff;
+    --color-text-primary: #1a1c18;
+    ... (define if/when light mode is added)
+  }
+}
+*/
+
+
+/* ============================================================
+   UTILITY CLASSES
+   Minimal — Tailwind handles most utilities.
+   These are token-specific patterns Tailwind can't express
+   cleanly as config values.
+   ============================================================ */
+
+/* Surface textures */
+.dot-grid-bg {
+  background-color: var(--color-bg-page);
+  background-image: var(--dot-grid);
+  background-size:  var(--dot-grid-size);
+}
+
+/* Font assignments */
+.font-display {
+  font-family: var(--font-mono-display);
+}
+
+.font-mono {
+  font-family: var(--font-mono-ui);
+}
+
+.font-sans {
+  font-family: var(--font-sans);
+}
+
+/* Color shorthands */
+.text-accent {
+  color: var(--color-interactive);
+}
+
+.text-callout {
+  color: var(--color-callout);
+}
+
+.border-accent {
+  border-color: var(--color-interactive-border);
+}
+
+/* Cursor blink — for terminal prompt indicators */
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+.cursor-blink {
+  animation: cursor-blink 1s step-end infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor-blink {
+    animation: none;
+  }
+}

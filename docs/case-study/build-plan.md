@@ -33,10 +33,10 @@ lead case study — documenting it as it happens is as important as building it.
 
 | Phase | Name | Status | Blocked By |
 |-------|------|--------|------------|
-| 0 | Setup | Complete | — |
-| 1 | Strategy and Content | Not started | — |
-| 2 | Visual Identity | Not started | Style references |
-| 3 | Storybook Foundation | Not started | Phase 2 |
+| 0 | Setup | In progress — 1 item remaining (visual style references) | — |
+| 1 | Strategy and Content | In progress | — |
+| 2 | Visual Identity | Not started | Style references — confirmed pending (2026-06-15), top priority |
+| 3 | Storybook Foundation | In progress | Phase 2 (for token-dependent sub-items only) |
 | 4 | Site Assembly | Not started | Phases 1 + 3 |
 | 5 | QA and Pre-Launch | Not started | Phase 4 |
 | 6 | Launch | Not started | Phase 5 |
@@ -45,7 +45,8 @@ lead case study — documenting it as it happens is as important as building it.
 ---
 
 ## Phase 0 — Setup
-*Complete*
+*In progress — one item remaining: visual style references (confirmed
+still pending, 2026-06-15 — now the critical-path blocker)*
 
 - [x] Add CLAUDE.md to Claude Project files
 - [x] Add key-insights.md to Claude Project files
@@ -62,7 +63,10 @@ lead case study — documenting it as it happens is as important as building it.
 - [x] Fix Upfluent 401 on existing site
 - [x] Fix resume date conflicts on existing site
 - [x] Make Market Rebellion final disposition decision
-- [x] Provide visual style references (unblocks Phase 2)
+- [ ] Provide visual style references (unblocks Phase 2) — CONFIRMED still
+      pending (2026-06-15, Ben). This is now the active critical-path
+      blocker: it unblocks Phase 2, which unblocks the rest of Phase 3,
+      which unblocks Phase 4. Highest-priority open item.
 - [x] Finalize positioning statement wording
 
 ---
@@ -88,9 +92,13 @@ Each case study follows this structure:
 7. Outcomes
 8. What you'd do differently
 
-- [ ] Upfluent (highest priority — most differentiated, most recent)
-- [ ] USAA
-- [ ] Sabre
+- [x] Upfluent — rewritten (2026-06-15, per Ben)
+- [x] USAA — rewritten (2026-06-15, per Ben; docs/case-studies/usaa.md).
+      Note: Question 7 (what outlasted the project beyond metrics) was
+      logged as open in CLAUDE.md as of 2026-06-09 — worth a quick check
+      that this rewrite addressed it before treating it as fully final.
+- [x] Sabre — drafted, rewritten, and approved (docs/case-studies/sabre.md)
+      (2026-06-09)
 
 ### 1C. Sagent — build from scratch (parallel)
 - [ ] Brain dump: problem, what you owned, what changed, what was hard
@@ -116,29 +124,29 @@ Per case study, document:
 ---
 
 ## Phase 2 — Visual Identity
-*Blocked until style references are provided*
+*Blocked until style references are provided — confirmed still pending
+(2026-06-15), see Phase 0*
 
-- [ ] Review style references
-- [ ] Define color palette
-  - Primary, secondary, accent
-  - Semantic tokens: surface, text, border, interactive states
-  - Dark mode variants (required — build in from day one, not retrofitted)
-- [ ] Define type scale
-  - Font selection (variable font or deliberate pairing)
-  - Size scale, weight, line height, letter spacing tokens
-- [ ] Define spacing scale
-- [ ] Define border radius, shadow, motion tokens
-- [ ] Create wordmark / identity mark
-- [ ] Document all tokens in reference sheet before writing any code
-- [ ] Log key identity decisions in decisions.md
+- [x] Review style references (2026-06-17)
+- [x] Define color palette (2026-06-17)
+- [x] Define type scale (2026-06-17)
+- [x] Define spacing scale (2026-06-17)
+- [x] Define border radius, shadow, motion tokens (2026-06-17)
+- [x] Document all tokens in reference sheet before writing any code (2026-06-17)
+- [x] Log key identity decisions in decisions.md (2026-06-17)
 
 ---
 
 ## Phase 3 — Storybook Foundation
-*Depends on Phase 2. Build in layers — do not skip ahead.*
+*Most of this phase depends on Phase 2 tokens. Basic tooling setup (3A,
+first item) has started independently — see note.*
 
 ### 3A. Repo and tooling setup
-- [ ] Vite + React + TypeScript
+- [x] Vite + React + TypeScript — scaffolded and confirmed building
+      locally; Vercel deploy confirmed working (per CLAUDE.md, 2026-06-14).
+      Note: this happened ahead of Phase 2/tokens, which is fine for bare
+      scaffolding — the remaining 3A items below genuinely need tokens or
+      a defined visual direction first.
 - [ ] Tailwind CSS with custom theme (tokens from Phase 2)
 - [ ] ShadCN initialization
 - [ ] Storybook 8 initialization
@@ -230,6 +238,28 @@ Each documented as a full-page Storybook story.
 - [ ] Canonical tags pointing to viewbens.work
 - [ ] robots.txt
 
+### 4F. AI Chat Feature
+*Live AI assistant on the portfolio — see decisions.md, 2026-06-15.
+Backend setup does not depend on Phase 2/3 visual tokens and can start
+independently; only the widget's visual styling depends on those.*
+
+- [x] Architecture and safeguards plan drafted: Edge Function proxy,
+      Haiku 4.5, system prompt, Upstash rate limiting, dedicated Anthropic
+      Workspace with spend limit (2026-06-15)
+- [ ] Create dedicated Anthropic Workspace + API key, set spend limit and
+      email alert
+- [ ] Create Upstash Redis database, add REST credentials to Vercel env
+- [ ] Install @upstash/ratelimit and @upstash/redis
+- [ ] Commit api/chat.ts, api/lib/system-prompt.ts, api/lib/rate-limit.ts
+      to repo
+- [ ] Replace [CONTACT_LINK] placeholders with real contact info
+- [ ] Build frontend chat widget (depends on Phase 3 tokens for styling)
+- [ ] Deploy to Vercel, test endpoint with curl
+- [ ] Tune rate limits / caps against real traffic
+- [ ] Update system-prompt.ts as Upfluent, USAA, and Sagent case studies
+      are finalized (ongoing — revisit each time a case study moves to
+      "published")
+
 ---
 
 ## Phase 5 — QA and Pre-Launch
@@ -284,7 +314,8 @@ Each documented as a full-page Storybook story.
 The two items with the most downstream dependencies:
 
 **Visual style references** — unblocks Phase 2, which unblocks Phase 3,
-which unblocks Phase 4. Everything waits on this.
+which unblocks Phase 4. Everything waits on this. Confirmed still pending
+as of 2026-06-15 — this is the single highest-priority open item right now.
 
 **Sagent content** — your strongest Director-level evidence. Starts from
 zero. Must run in parallel with other Phase 1 work or it becomes the
@@ -302,7 +333,13 @@ last thing written and the first thing that gets rushed.
 
 ---
 
-*Last updated: 2026-06-02 — Phase 0 complete; Phase 1A positioning finalized*
+*Last updated: 2026-06-15 — Added Phase 4F (AI chat feature); corrected
+Phase 1 status to "In progress"; checked off Phase 3A Vite/React/TS
+scaffolding per CLAUDE.md and moved Phase 3 to "In progress"; confirmed with
+Ben that visual style references are still pending — unchecked that item in
+Phase 0, moved Phase 0 to "In progress," and reconfirmed Phase 2's block as
+the active critical-path item; marked Upfluent, USAA, and Sabre all complete
+in Phase 1B per Ben (all three case studies have been rewritten).*
 *See also: decisions.md — significant choices and reasoning*
 *See also: key-insights.md — strategic insights from initial analysis*
 *See also: process-journal.md — running build log*

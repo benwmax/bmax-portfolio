@@ -39,3 +39,76 @@ Significant choices and the reasoning behind them.
 - **Reasoning:** key-insights.md (#4, #5, #9) identified Upfluent as the most differentiated but most underdeveloped case study in the portfolio — "we" language obscured individual ownership, and the hybrid NLP + structured-UI chatbot architecture was never articulated despite being the most interesting design decision in the project. The non-launch needed careful framing to avoid implying design caused delays, since that wasn't the case. The early-model constraint connects to the portfolio's "AI before it was mainstream" throughline (key-insights.md #9), pairing this project with the portfolio rebuild itself.
 - **Alternatives considered:** Considered keeping the 12-month delivery scope ("full platform + chatbot concepts + research + brand from scratch in 12 months") inside "What Was Hard or Failed" as part of the struggle narrative. Moved it to Outcomes instead — it reads as a delivery achievement, not a difficulty, and keeps the "hard" section focused on the genuine design tension (desktop-grade complexity vs. mobile feasibility).
 - **Open question:** Sections 4 (Process) and 7 (Outcomes) currently cover multiple threads each — competitive research, signup, and the chatbot in Process; delivery scope, signup stat, and chatbot outcome in Outcomes — rather than the "one sharp detail beats three vague ones" standard. Claude flagged this as a deviation from the CLAUDE.md tone/length standard; Ben opted to keep as written. Revisit if overall portfolio length needs trimming, or if a future pass wants to narrow these sections to focus on the chatbot specifically.
+
+
+## 2026-06-15 — Live AI chat feature: architecture and safeguards
+
+- Decision: Add a live AI assistant to the portfolio so visitors can ask
+  about Ben's work directly. Built as a Vercel Edge Function
+  (`api/chat.ts`) that proxies to Claude Haiku 4.5, using a system prompt
+  scoped to Ben's positioning and case studies (`api/lib/system-prompt.ts`).
+  API key never reaches the client.
+
+- Reasoning: Reinforces the AI-fluency throughline that already pairs
+  Upfluent and the meta case study (key-insights.md #9) — this is a second,
+  current example of directing AI tooling deliberately. Haiku 4.5 was
+  chosen for cost ($1/$5 per MTok) since the task (short, scoped Q&A about
+  Ben's work) doesn't need a larger model. Budget risk is bounded
+  structurally rather than relying on application code alone: a dedicated
+  Anthropic Workspace holds its own API key with a hard monthly spend limit
+  and an email alert threshold, isolated from any other Anthropic usage.
+  Application-level safeguards (per-IP rate limiting via Upstash,
+  server-enforced session/message caps, output token caps, CORS lock)
+  layer on top of that.
+
+- Alternatives considered: Calling the Anthropic API directly from the
+  client (rejected — exposes the API key). Sonnet 4.6 for a lower
+  prompt-caching activation threshold (rejected for now — Haiku is the
+  cheaper baseline regardless, and caching only meaningfully kicks in once
+  the system prompt grows past Haiku's 4,096-token minimum, which is
+  expected to happen naturally as Upfluent/USAA/Sagent case studies are
+  folded in).
+
+- Open question: Current limits (20 messages/hour/IP, 30-message session
+  cap, 400 max output tokens, $10-20/mo workspace spend limit) are starting
+  defaults, not tuned against real traffic — revisit after deployment.
+  Whether this feature itself becomes a documented example in the meta case
+  study (anticipating cost/abuse risk before shipping) is also open.
+
+  ## 2026-06-17 — Visual identity direction
+
+- Decision: Dark mode default with warm olive-charcoal backgrounds, phosphor terminal
+  green as primary accent, amber/gold as secondary accent, two-font monospace system
+  for UI chrome, sharp 3px border radius, dot grid surface texture.
+- Reasoning: References provided included Cyberpunk 2077 UI, terminal/CLI aesthetics,
+  satellite control dashboards, and minimal dark UI. The direction synthesizes these
+  into something that reads as "serious tool built by someone with taste" — not a game
+  UI, not a generic dark portfolio. The warm olive undertone distinguishes it from the
+  neutral-dark crowd. Phosphor green (#00ff5e / #00e054) chosen over earthy green for
+  stronger terminal signal. Amber chosen as secondary to avoid reds/negatives and to
+  complement green without competing.
+- Alternatives considered: Cool blue-gray background (rejected — too generic), neon
+  green full phosphor #00ff5e as primary (retained as max-contrast variant only — too
+  intense for sustained use), earthy green #39a84a (rejected — too muted, lost the
+  terminal read), Berkeley Mono (rejected — $75 license, replaced with free options).
+- Token file written: src/tokens/tokens.css (updated 2026-06-17)
+
+## 2026-06-17 — Monospace font selection
+
+- Decision: Two-font monospace system. Space Mono (Google Fonts, SIL OFL) for display
+  and UI chrome — wordmark, nav, buttons, case study numbers, tags, chat prompt
+  indicator. IBM Plex Mono (Google Fonts, SIL OFL) for functional mono — chat input
+  text, metadata, smaller labels, anything Space Mono would make too loud at small
+  sizes. System sans for prose and case study body copy only.
+- Reasoning: Berkeley Mono was the original first-choice but requires a $75 license.
+  Space Mono is the closest free equivalent for the terminal/retro-tech aesthetic —
+  designed by Colophon for speculative fiction contexts, evokes monitor readouts and
+  spacecraft status screens. IBM Plex Mono covers the functional mono role across eight
+  weights with industrial precision. Together they give the system range: Space Mono
+  for moments where the aesthetic is the point, IBM Plex Mono for sustained readability.
+- Alternatives considered: JetBrains Mono (too neutral, no aesthetic signal), Geist
+  Mono (contemporary but not on Google Fonts), Fira Code (good fallback but superseded
+  by IBM Plex Mono for this use case).
+- Google Fonts import: Space Mono (400, 700, italic variants) + IBM Plex Mono
+  (400, 500, 600, italic). Import snippet is in src/tokens/tokens.css header comment.
+- Open question: None — font selection resolved.
