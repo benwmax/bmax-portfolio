@@ -1,0 +1,172 @@
+/* CaseStudyCard — terminal spec-sheet layout with hover corner brackets and phosphor overlay. */
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition:
+    border-color var(--duration-base) var(--ease-default),
+    box-shadow var(--duration-base) var(--ease-default);
+}
+
+/* Corner bracket decorations — revealed on hover */
+.card::before,
+.card::after {
+  content: '';
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  z-index: 3;
+  pointer-events: none;
+  border-color: var(--color-green-border);
+  border-style: solid;
+  border-width: 0;
+  transition: border-color var(--duration-base) var(--ease-default);
+}
+.card::before { top: 6px; left: 6px; border-top-width: 1px; border-left-width: 1px; }
+.card::after  { bottom: 6px; right: 6px; border-bottom-width: 1px; border-right-width: 1px; }
+
+.card:hover,
+.hover {
+  border-color: var(--color-green-border);
+}
+.card:hover::before,
+.card:hover::after,
+.hover::before,
+.hover::after {
+  border-color: var(--color-green-accent);
+}
+
+/* 16:9 thumbnail */
+.media {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background-color: var(--color-bg-raised);
+  background-image: var(--dot-grid);
+  background-size: 14px 14px;
+  border-bottom: 1px solid var(--card-border);
+  overflow: hidden;
+}
+
+/* Phosphor scanline overlay — fades in on hover */
+.media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0 2px,
+    rgba(0, 224, 84, 0.04) 2px 3px
+  );
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+.card:hover .media::after,
+.hover .media::after { opacity: 1; }
+.card:hover .media,
+.hover .media { border-bottom-color: var(--color-green-border); }
+
+.media img {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Green index chip — top-left of thumbnail */
+.chip {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+  font-family: var(--card-num-font);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.10em;
+  color: var(--color-green-accent);
+  background: var(--color-green-deepest);
+  border: 1px solid var(--color-green-border);
+  border-radius: var(--radius-sm);
+  padding: 3px 7px;
+}
+
+/* Amber sector tag — top-right of thumbnail */
+.chipTag {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+}
+
+
+/* Body */
+.body {
+  padding: 16px 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+/* Project title */
+.title {
+  font-family: var(--font-mono-display);
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+/* One-line description hook */
+.desc {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+/* Meta grid — role / year / stat / sector */
+.meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 14px;
+  border-top: 1px solid var(--color-border-subtle);
+  padding-top: 12px;
+  margin-top: auto;
+}
+
+.cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.metaKey {
+  font-family: var(--font-mono-display);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+}
+
+.metaVal {
+  font-family: var(--font-mono-ui);
+  font-size: 12px;
+  color: var(--color-text-primary);
+}
+
+.metaValGreen {
+  color: var(--color-green-accent);
+  font-family: var(--font-mono-display);
+  font-weight: 700;
+}

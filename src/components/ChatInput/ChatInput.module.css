@@ -1,0 +1,289 @@
+/* ChatInput — full chat widget: terminal prompt, ASK button, status indicator. */
+
+@keyframes loader-sweep {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(300%); }
+}
+
+/* Root wrapper — column, status sits below the form row */
+.root {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Form row: field label + ASK button side by side */
+.form {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+
+/* Clickable field area — wraps prompt + input as a label so clicking › focuses the input */
+.field {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background: var(--color-bg-raised);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: text;
+  transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+}
+
+/* Active: focused, filled, or loading — green border + phosphor bg tint */
+.active {
+  border-color: var(--color-green-border);
+  background: #0a1410;
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 224, 84, 0.06),
+    0 0 0 3px rgba(0, 224, 84, 0.05);
+}
+
+/* Multiline: prompt and ASK button top-align instead of center */
+.multiline {
+  align-items: flex-start;
+}
+
+/* › terminal prompt indicator */
+.prompt {
+  font-family: var(--font-mono-display);
+  font-size: 14px;
+  color: var(--color-green-accent);
+  padding-left: 14px;
+  line-height: 1;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.multiline .prompt {
+  padding-top: 14px;
+}
+
+/* Block caret — 7×14px phosphor rectangle */
+.caret {
+  position: absolute;
+  left: 32px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 7px;
+  height: 14px;
+  background: var(--color-green-bright);
+  animation: cursor-blink 1s step-end infinite;
+  pointer-events: none;
+}
+
+/* In multiline mode the field grows tall — pin caret beside the › prompt at top */
+.caretMulti {
+  top: 14px;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .caret { animation: none; }
+}
+
+/* Input / textarea shared */
+.input {
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: 0;
+  outline: none;
+  font-family: var(--font-mono-ui);
+  font-size: var(--text-base);
+  color: var(--chat-text);
+  padding: 12px 12px;
+  caret-color: var(--color-green-bright);
+  caret-shape: block;
+}
+
+.input::placeholder {
+  color: var(--chat-placeholder);
+}
+
+textarea.input {
+  resize: none;
+  line-height: 1.55;
+  overflow: hidden;
+}
+
+/* Loading (single-line): truncate text before "thinking" label */
+.inputLoading {
+  padding-right: 92px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* Loading (multiline): pad bottom so text clears the thinking indicator */
+.inputMultiLoading {
+  padding-right: 12px;
+  padding-bottom: 22px;
+}
+
+/* Multiline with counter visible: pad bottom-right so text clears the counter */
+.inputMultiCounter {
+  padding-bottom: 26px;
+}
+
+/* Character counter — multiline only, bottom-right of field */
+.counter {
+  position: absolute;
+  right: 12px;
+  bottom: 8px;
+  font-family: var(--font-mono-ui);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--color-text-tertiary);
+  pointer-events: none;
+}
+
+/* "thinking" label — pulsing dot + text, inside field while loading */
+.loadText {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-mono-ui);
+  font-size: var(--text-sm);
+  color: var(--color-text-tertiary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* Multiline loading: repositioned to bottom-right (replaces counter) */
+.loadTextMulti {
+  top: auto;
+  bottom: 7px;
+  right: 12px;
+  transform: none;
+}
+
+/* Pulsing dot inside "thinking" label */
+.pulse {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--color-green-bright);
+  animation: cursor-blink 0.9s step-end infinite;
+  flex-shrink: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse { animation: none; }
+}
+
+/* Phosphor sweep — 1px bottom border animation during loading */
+.sweep {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.sweep::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 30%;
+  background: linear-gradient(90deg, transparent, var(--color-green-accent), transparent);
+  animation: loader-sweep 1.4s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sweep::after { animation: none; }
+}
+
+/* ASK button */
+.btn {
+  position: relative;
+  overflow: hidden;
+  font-family: var(--font-mono-display);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-green-accent);
+  background: var(--color-green-deep);
+  border: 1px solid var(--color-green-border);
+  border-radius: var(--radius-md);
+  padding: 0 22px;
+  cursor: pointer;
+  flex-shrink: 0;
+  white-space: nowrap;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 200ms ease;
+}
+
+.btn:hover:not(:disabled) {
+  background: #0e2e14;
+  color: var(--color-green-bright);
+  border-color: var(--color-green-accent);
+  box-shadow: inset 0 1px 0 rgba(0, 255, 94, 0.18);
+}
+
+.btn:active:not(:disabled) {
+  background: #062010;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.btn:focus-visible {
+  outline: none;
+  border-color: var(--color-green-accent);
+  box-shadow: 0 0 0 2px rgba(0, 224, 84, 0.25);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Multiline: button stretches to match full textarea height */
+.btnMulti {
+  align-self: stretch;
+  padding: 14px 22px;
+}
+
+/* Status indicator row — sits 12px below the form */
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono-ui);
+  font-size: var(--text-sm);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+  margin-top: 12px;
+}
+
+.statusOffline {
+  color: var(--color-text-disabled);
+}
+
+.statusDot {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-full);
+  background: var(--color-green-bright);
+  animation: cursor-blink 1.4s step-end infinite;
+  flex-shrink: 0;
+}
+
+.statusDotOffline {
+  background: var(--color-text-disabled);
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .statusDot { animation: none; }
+}

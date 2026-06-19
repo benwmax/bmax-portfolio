@@ -9,7 +9,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Navigation card to an individual case study. The number (01–05) is a display element, not a heading — it signals that the order is deliberate. The amber tag identifies industry or method. The whole card is a single link; no secondary actions compete with the click target.',
+          'Spec-sheet card with a 16:9 scanlined thumbnail, a green index chip, an amber sector tag, project title, description hook, and a meta grid (role / year / outcome / sector). Corner brackets and a subtle green glow reveal on hover. Renders as an <a> when href is set, a <div> otherwise.',
       },
     },
   },
@@ -19,40 +19,134 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
+  name: 'Default',
   parameters: {
     docs: {
       description: {
         story:
-          'The lead case study. First because it is current work, shows AI fluency, and demonstrates the kind of Principal-level meta-thinking the target roles require. "01" is the most prominent number on the page — it should feel earned.',
+          'Resting state. Border is card-border (#1c1f1a) — barely visible against the surface. Hover to see the corner brackets reveal, scanlines fade in, and the VIEW chip slide in from the left. No shadow, no scale, no lift.',
       },
     },
   },
   args: {
-    number: '01',
-    title: 'Portfolio Rebuild with Claude',
-    description:
-      'Directing an AI collaborator to build a design portfolio — and making that process the lead case study.',
-    tag: 'AI Collaboration',
-    href: '/work/portfolio-rebuild',
+    index: '01',
+    title: 'Sabre Red Workspace',
+    desc: 'Making a command-line tool learnable — without slowing the veterans.',
+    tag: 'Travel',
+    href: '/work/sabre',
+    role: 'Lead UX Designer',
+    year: '2014–17',
+    stat: '$1B',
+    statLabel: 'Contract',
+    sector: 'Travel Tech',
   },
 };
 
-export const MidList: Story = {
-  name: 'Mid-list Card',
+export const Hover: Story = {
+  name: 'Hover state',
   parameters: {
     docs: {
       description: {
         story:
-          'A card from mid-list. Same structure, different number. The amber tag carries industry context — "Fintech" tells a recruiter at a glance what regulated domain the work lives in, before they click.',
+          'Forced hover — applied via the forceHover prop which adds the .hover CSS module class. In production this is triggered by :hover. Changes: border shifts to green-border (#0e4a1e), faint green glow appears, corner brackets reveal at 9px, VIEW chip slides in, phosphor scanlines fade in over the thumbnail.',
       },
     },
   },
   args: {
-    number: '03',
-    title: 'Sagent',
-    description:
-      'Design leadership on a mortgage servicing platform — building the team, the system, and the product simultaneously.',
-    tag: 'Fintech',
-    href: '/work/sagent',
+    index: '01',
+    title: 'Sabre Red Workspace',
+    desc: 'Making a command-line tool learnable — without slowing the veterans.',
+    tag: 'Travel',
+    href: '/work/sabre',
+    role: 'Lead UX Designer',
+    year: '2014–17',
+    stat: '$1B',
+    statLabel: 'Contract',
+    sector: 'Travel Tech',
+    forceHover: true,
   },
+};
+
+export const WithoutMeta: Story = {
+  name: 'Without meta grid',
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'When no role/year/stat/sector props are passed, the meta grid is omitted entirely. Use this layout for cards where the hook alone is sufficient — the card height collapses to fit content.',
+      },
+    },
+  },
+  args: {
+    index: '02',
+    title: 'Upfluent',
+    desc: 'A hybrid AI chatbot: talk like an advisor, act with real controls.',
+    tag: 'Fintech',
+    href: '/work/upfluent',
+  },
+};
+
+export const Grid: Story = {
+  name: '2×2 grid — all four case studies',
+  parameters: {
+    layout: 'padded',
+    docs: {
+      description: {
+        story:
+          'Homepage card grid. Four case studies, deliberate order: lead case study first (current work, AI fluency), then client work in reverse relevance to target roles. The grid is 2×2 at desktop — not a list, a composition.',
+      },
+    },
+  },
+  render: () => (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(2, 296px)',
+        gap: '20px',
+      }}
+    >
+      <CaseStudyCard
+        index="01"
+        title="Sabre Red Workspace"
+        desc="Making a command-line tool learnable — without slowing the veterans."
+        tag="Travel"
+        href="/work/sabre"
+        role="Lead UX Designer"
+        year="2014–17"
+        stat="$1B"
+        statLabel="Contract"
+        sector="Travel Tech"
+      />
+      <CaseStudyCard
+        index="02"
+        title="Upfluent"
+        desc="A hybrid AI chatbot: talk like an advisor, act with real controls."
+        tag="Fintech"
+        href="/work/upfluent"
+        role="Lead UX Designer"
+        year="2023–24"
+        sector="Fintech"
+      />
+      <CaseStudyCard
+        index="03"
+        title="Sagent"
+        desc="Design leadership on a mortgage platform with no design director."
+        tag="Mortgage"
+        href="/work/sagent"
+        role="Principal UX Designer"
+        year="2021–22"
+        sector="Mortgage"
+      />
+      <CaseStudyCard
+        index="04"
+        title="USAA"
+        desc="Modernizing P&C insurance without losing the members who trusted it."
+        tag="Insurance"
+        href="/work/usaa"
+        role="Senior UX Designer"
+        year="2018–20"
+        sector="Insurance"
+      />
+    </div>
+  ),
 };

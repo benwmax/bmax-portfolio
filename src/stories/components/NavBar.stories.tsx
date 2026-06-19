@@ -1,12 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { NavBar } from '../../components/NavBar';
 
-const DEFAULT_LINKS = [
-  { label: 'Work',   href: '/work' },
-  { label: 'About',  href: '/about' },
-  { label: 'Resume', href: '/resume' },
-];
-
 const meta = {
   title: 'Components/NavBar',
   component: NavBar,
@@ -15,45 +9,69 @@ const meta = {
     docs: {
       description: {
         component:
-          'Site header. Wordmark left, navigation links right. Space Mono throughout — the nav is UI chrome, not prose. Active link identified with aria-current="page", which is both the semantic signal for screen readers and the CSS hook for the green accent treatment.',
+          'Site header — wordmark left, three nav links right. Transparent: sits ' +
+          'directly on --color-bg-page with only a 1px border-subtle rule at the ' +
+          'bottom. No shadow, no fill, no backdrop-blur. ' +
+          'The trailing underscore in BM_ is a terminal cursor convention — weight 700, ' +
+          'phosphor green #00e054, 1.1s step-end blink. It signals the site is actively ' +
+          'being built, which is true. The blink respects prefers-reduced-motion. ' +
+          'Active state is determined by passing activePath; in production wire this to ' +
+          'your router pathname. The active link gets green-accent color; no fill, no underline.',
       },
     },
-  },
-  args: {
-    wordmark: 'BM_',
-    links: DEFAULT_LINKS,
   },
 } satisfies Meta<typeof NavBar>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const WithActiveLink: Story = {
-  name: 'With Active Link',
+export const Default: Story = {
+  name: 'Default — no active route',
   parameters: {
     docs: {
       description: {
         story:
-          'Default nav state — one link is current. The trailing underscore in the wordmark is a terminal cursor convention: it signals that something is being actively built, which is true. The active link gets green accent; inactive links stay muted.',
+          'No pathname match — used on a 404 or before the router has resolved. ' +
+          'All three links render at their default disabled-text color (#3d4035). ' +
+          'The wordmark still links home; only the nav links lose their active treatment.',
       },
     },
   },
   args: {
-    activeHref: '/work',
+    activePath: '',
   },
 };
 
-export const NoActiveLink: Story = {
-  name: 'No Active Link',
+export const WorkActive: Story = {
+  name: 'Work active',
   parameters: {
     docs: {
       description: {
         story:
-          'No route match — 404 or root before a route resolves. All links render at the default (inactive) weight. The wordmark still links home; only the nav links lose their active state.',
+          'Production state on the homepage. Work resolves to /work, which matches ' +
+          'the active link — it shifts to green-accent (#00e054) and receives ' +
+          'aria-current="page". No underline, no fill, no background change — ' +
+          'color alone carries the active signal.',
       },
     },
   },
   args: {
-    activeHref: undefined,
+    activePath: '/work',
+  },
+};
+
+export const AboutActive: Story = {
+  name: 'About active',
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'About page state. Same active treatment — green-accent link, ' +
+          'aria-current="page", all other links remain at disabled-text.',
+      },
+    },
+  },
+  args: {
+    activePath: '/about',
   },
 };

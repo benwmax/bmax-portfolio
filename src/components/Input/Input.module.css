@@ -1,0 +1,93 @@
+/* Input — terminal text field with mono label, optional prompt indicator, focus ring. */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  font-family: var(--font-mono-ui);
+}
+
+.label {
+  font-family: var(--font-mono-display);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* › terminal prompt indicator */
+.prompt {
+  position: absolute;
+  left: 0.7rem;
+  font-family: var(--font-mono-display);
+  font-size: var(--text-base);
+  color: var(--chat-prompt-color);
+  pointer-events: none;
+  line-height: 1;
+  user-select: none;
+}
+
+.input {
+  font-family: var(--chat-font);
+  font-size: var(--text-base);
+  color: var(--chat-text);
+  background: var(--chat-bg);
+  caret-color: var(--chat-caret);
+  border: 1px solid var(--chat-border);
+  border-radius: var(--radius-md);
+  padding: 0.6rem 0.75rem;
+  width: 100%;
+  transition: border-color var(--duration-base) var(--ease-default),
+              background-color var(--duration-base) var(--ease-default);
+}
+
+/* Offset text so it clears the › prompt */
+.withPrompt {
+  padding-left: 1.7rem;
+}
+
+.input::placeholder {
+  color: var(--chat-placeholder);
+}
+
+.input:hover:not(:disabled) {
+  border-color: var(--color-border-strong);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--chat-focus-border);
+  background: #0a1410;
+}
+
+.input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.hasError {
+  border-color: var(--color-status-error);
+}
+
+textarea.input {
+  resize: vertical;
+  min-height: 4.5rem;
+  line-height: var(--leading-normal);
+  align-items: flex-start;
+}
+
+.hint {
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+}
+
+.hintError {
+  font-size: var(--text-xs);
+  color: var(--color-status-error);
+}

@@ -9,7 +9,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Availability signal — typically "Available for work" or "Currently engaged." The dot uses the phosphor green bright (#00ff5e) in the online state, matching the cursor blink and input caret. In its styled form, it pulses with the same keyframe as the terminal prompt cursor: green, blinking, live.',
+          'Availability signal below the chat input — 7px dot, IBM Plex Mono 10px, wide-tracked uppercase tertiary text. The online dot uses green-bright (#00ff5e), the same color as the cursor blink and input caret. Offline drops everything to disabled-text so absence reads as intentional, not broken.',
       },
     },
   },
@@ -23,13 +23,13 @@ export const Online: Story = {
     docs: {
       description: {
         story:
-          'Available state. The dot will carry the cursor-blink animation when styled — same CSS keyframe used for the terminal prompt cursor. The connection is intentional: green, blinking, ready is the same signal in both contexts.',
+          'Available state. The dot carries the cursor-blink animation — same 1.4s step-end keyframe as the terminal prompt cursor. Reads "green, blinking, ready" which is the same signal in both contexts. Label is tertiary (#6b7055) so it subordinates visually to the input above it.',
       },
     },
   },
   args: {
     status: 'online',
-    label: 'Available for work',
+    label: 'Online · assistant ready · ~2s response',
   },
 };
 
@@ -38,12 +38,44 @@ export const Offline: Story = {
     docs: {
       description: {
         story:
-          'Unavailable or currently engaged. Dot goes muted, no animation. Same component structure as online — only data-status changes. The label changes via props. This state is rarely shown; the site is optimized for the available case.',
+          'Unavailable state. Dot drops to text-disabled (#3d4035), blink stops. Label color matches the dot — both elements sink together so the offline state reads as a single quiet signal, not two competing pieces of text.',
       },
     },
   },
   args: {
     status: 'offline',
-    label: 'Currently engaged',
+    label: 'Offline · responses unavailable',
+  },
+};
+
+export const Warning: Story = {
+  name: 'Warning (reserved)',
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Reserved state — amber dot, same tertiary label. Not used in the chat widget (only online/offline appear there) but available for future contexts: rate-limit approaching, degraded response time, or a slow-mode flag. The dot uses status-warning (#c08820) matching the amber accent family.',
+      },
+    },
+  },
+  args: {
+    status: 'warning',
+    label: 'Degraded · slower than usual',
+  },
+};
+
+export const ErrorState: Story = {
+  name: 'Error (reserved)',
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Error state — red dot (#e05050), same tertiary label. Reserved for actual failure: API unreachable, auth error. The only use of red in the system — appears nowhere else. Not shown in the UI by default; surfaces programmatically when the endpoint fails.',
+      },
+    },
+  },
+  args: {
+    status: 'error',
+    label: 'Error · assistant unavailable',
   },
 };

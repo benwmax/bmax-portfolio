@@ -1,30 +1,77 @@
 import type { ReactNode } from 'react';
 
-export type ButtonVariant = 'primary' | 'ghost';
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost';
+export type ButtonSize = 'sm' | 'md' | 'lg';
 
 export interface ButtonProps {
   variant?: ButtonVariant;
+  size?: ButtonSize;
   children: ReactNode;
   onClick?: () => void;
   disabled?: boolean;
   type?: 'button' | 'submit' | 'reset';
+  href?: string;
+  fullWidth?: boolean;
+  className?: string;
 }
+
+const BASE = [
+  'inline-flex items-center justify-center gap-[0.5em]',
+  'border rounded-md cursor-pointer no-underline whitespace-nowrap',
+  'uppercase tracking-widest font-mono-display',
+  'transition-colors duration-base ease-default',
+  'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--color-interactive-border)] focus-visible:ring-offset-2',
+  'disabled:cursor-not-allowed disabled:opacity-45',
+].join(' ');
+
+const SIZES: Record<ButtonSize, string> = {
+  sm: 'text-xs py-[0.45rem] px-[0.8rem]',
+  md: 'text-sm py-[0.6rem] px-[1.1rem]',
+  lg: 'text-base py-3 px-[1.4rem]',
+};
+
+const VARIANTS: Record<ButtonVariant, string> = {
+  primary:   'bg-interactive-bg text-interactive border-interactive-border hover:bg-[#0e2e14] hover:text-green-bright hover:border-green-accent',
+  secondary: 'bg-transparent text-text-secondary border-border-default hover:text-text-primary hover:border-border-strong',
+  ghost:     'bg-transparent text-green-accent border-transparent px-2 hover:text-green-bright',
+};
 
 export function Button({
   variant = 'primary',
+  size = 'md',
   children,
   onClick,
   disabled = false,
   type = 'button',
+  href,
+  fullWidth = false,
+  className = '',
 }: ButtonProps) {
+  const cls = [
+    BASE,
+    variant === 'ghost' ? `text-sm py-[0.6rem]` : SIZES[size],
+    VARIANTS[variant],
+    fullWidth ? 'w-full' : '',
+    className,
+  ].filter(Boolean).join(' ');
+
+  if (href && !disabled) {
+    return (
+      <a className={cls} href={href} onClick={onClick}>
+        <span>{children}</span>
+      </a>
+    );
+  }
+
   return (
     <button
       type={type}
       onClick={onClick}
       disabled={disabled}
-      data-variant={variant}
+      aria-disabled={disabled || undefined}
+      className={cls}
     >
-      {children}
+      <span>{children}</span>
     </button>
   );
 }

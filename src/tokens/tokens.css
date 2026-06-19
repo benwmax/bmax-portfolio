@@ -187,6 +187,14 @@
   --space-24: 6rem;      /* 96px */
 
   /* ----------------------------------------------------------
+     LAYOUT
+  ---------------------------------------------------------- */
+
+  --container:        1080px;
+  --container-narrow: 680px;
+  --gutter:           clamp(1.25rem, 0.5rem + 3vw, 3rem);
+
+  /* ----------------------------------------------------------
      BORDER RADIUS
      Sharp — this aesthetic doesn't use heavy rounding.
      3px is the system default. 0 for terminal-chrome elements
@@ -351,6 +359,52 @@
 
 .border-accent {
   border-color: var(--color-interactive-border);
+}
+
+/* Typography helpers — composable text styles for components and prose */
+.t-hero {
+  font-family: var(--font-mono-display);
+  font-weight: 700;
+  font-size: var(--text-3xl);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-text-primary);
+}
+.t-page {
+  font-family: var(--font-mono-display);
+  font-weight: 700;
+  font-size: var(--text-xl);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-snug);
+  color: var(--color-text-primary);
+}
+.t-section {
+  font-family: var(--font-mono-display);
+  font-weight: 700;
+  font-size: var(--text-lg);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-snug);
+  color: var(--color-text-primary);
+}
+.t-label {
+  font-family: var(--font-mono-ui);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+.t-kicker {
+  font-family: var(--font-mono-display);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--color-green-accent);
+}
+.t-prose {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading-prose);
+  color: var(--color-text-primary);
 }
 
 /* Cursor blink — for terminal prompt indicators */
