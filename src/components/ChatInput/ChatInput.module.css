@@ -99,6 +99,11 @@
   caret-shape: block;
 }
 
+/* Hide the native block caret when the custom animated caret is showing (empty + focused) */
+.inputHideCaret {
+  caret-color: transparent;
+}
+
 .input::placeholder {
   color: var(--chat-placeholder);
 }

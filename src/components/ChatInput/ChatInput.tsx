@@ -91,6 +91,7 @@ export function ChatInput({
 
   const inputCls = [
     styles.input,
+    showCaret ? styles.inputHideCaret : '',
     isLoading && !multiline ? styles.inputLoading : '',
     isLoading && multiline ? styles.inputMultiLoading : '',
     !isLoading && multiline && isMultiRow ? styles.inputMultiCounter : '',
