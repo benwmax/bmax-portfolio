@@ -5,7 +5,6 @@ import { CaseStudyCard } from '../components/CaseStudyCard';
 import { ChatInput } from '../components/ChatInput';
 import type { ChatWidgetStatus } from '../components/ChatInput';
 import styles from './HomePage.module.css';
-
 export interface Message {
   role: 'user' | 'assistant';
   text: string;
@@ -95,17 +94,28 @@ async function streamChat(messages: Message[], onChunk: (text: string) => void):
 export function HomePage({ onChatSubmit, initialMessages = [] }: HomePageProps) {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [chatStatus, setChatStatus] = useState<ChatWidgetStatus>('online');
+  const [mobileChatOpen, setMobileChatOpen] = useState(false);
   const messagesRef = useRef(messages);
   const heroLogRef = useRef<HTMLDivElement | null>(null);
   const dockedLogRef = useRef<HTMLDivElement | null>(null);
+  const mobileLogRef = useRef<HTMLDivElement | null>(null);
+  const fabRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => { messagesRef.current = messages; }, [messages]);
 
-  // Scroll both logs to bottom when messages change
+  // Scroll all visible logs to bottom when messages change
   useEffect(() => {
     if (heroLogRef.current) heroLogRef.current.scrollTop = heroLogRef.current.scrollHeight;
     if (dockedLogRef.current) dockedLogRef.current.scrollTop = dockedLogRef.current.scrollHeight;
+    if (mobileLogRef.current) mobileLogRef.current.scrollTop = mobileLogRef.current.scrollHeight;
   }, [messages]);
+
+  // Return focus to FAB when mobile overlay closes
+  useEffect(() => {
+    if (!mobileChatOpen && fabRef.current) {
+      fabRef.current.focus();
+    }
+  }, [mobileChatOpen]);
 
   const handleSubmit = useCallback(async (text: string) => {
     if (onChatSubmit) {
@@ -197,6 +207,7 @@ export function HomePage({ onChatSubmit, initialMessages = [] }: HomePageProps) 
 
   return (
     <div className={styles.wrapper}>
+      <a href="#main-content" className="skip-link">Skip to main content</a>
       <NavBar activePath="/work" />
 
       <div
@@ -241,7 +252,10 @@ export function HomePage({ onChatSubmit, initialMessages = [] }: HomePageProps) 
           {/* Chat panel — right column, fades out when docked */}
           <aside
             className={[styles.chatPanel, isDocked ? styles.chatPanelHidden : ''].filter(Boolean).join(' ')}
+            aria-label="Ask Ben — assistant"
             aria-hidden={isDocked}
+            // @ts-expect-error — inert is a standard HTML attribute not yet in React's types
+            inert={isDocked ? '' : undefined}
           >
             {chatBarJSX}
             {renderLog(heroLogRef, styles.chatLog)}
@@ -263,6 +277,7 @@ export function HomePage({ onChatSubmit, initialMessages = [] }: HomePageProps) 
       </header>
 
       {/* ——— WORK ——— */}
+      <main id="main-content">
       <section className={styles.workSection} aria-label="Selected work">
         <div className={styles.workHead}>
           <div>
@@ -322,13 +337,16 @@ export function HomePage({ onChatSubmit, initialMessages = [] }: HomePageProps) 
         </div>
       </footer>
 
+      </main>
       </div>{/* end .pageContent */}
 
-      {/* ——— DOCKED CHAT PANEL (fixed right rail) ——— */}
+      {/* ——— DOCKED CHAT PANEL (fixed right rail, desktop only) ——— */}
       <aside
         className={[styles.dockedPanel, isDocked ? '' : styles.dockedPanelHidden].filter(Boolean).join(' ')}
-        aria-hidden={!isDocked}
         aria-label="Ask Ben — assistant"
+        aria-hidden={!isDocked}
+        // @ts-expect-error — inert is a standard HTML attribute not yet in React's types
+        inert={!isDocked ? '' : undefined}
       >
         {chatBarJSX}
         {renderLog(dockedLogRef, styles.dockedLog)}
@@ -342,6 +360,64 @@ export function HomePage({ onChatSubmit, initialMessages = [] }: HomePageProps) 
           />
         </div>
       </aside>
+
+      {/* ——— MOBILE FAB — visible on mobile only when conversation has started ——— */}
+      {isDocked && (
+        <button
+          ref={fabRef}
+          type="button"
+          className={styles.fab}
+          onClick={() => setMobileChatOpen(true)}
+          aria-label={`Open chat — ${messages.length} message${messages.length !== 1 ? 's' : ''}`}
+        >
+          <span className={styles.fabPrompt} aria-hidden>›</span>
+          Ask Ben
+          {messages.length > 0 && (
+            <span className={styles.fabBadge} aria-hidden>{messages.length}</span>
+          )}
+        </button>
+      )}
+
+      {/* ——— MOBILE CHAT OVERLAY — full screen sheet ——— */}
+      <div
+        className={[styles.mobileOverlay, mobileChatOpen ? styles.mobileOverlayOpen : ''].filter(Boolean).join(' ')}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Ask Ben — assistant"
+        aria-hidden={!mobileChatOpen}
+        // @ts-expect-error — inert is a standard HTML attribute not yet in React's types
+        inert={!mobileChatOpen ? '' : undefined}
+      >
+        <div className={styles.mobileOverlayBar}>
+          <span className={styles.chatBarLabel}>Ask Ben</span>
+          <div className={styles.mobileOverlayBarRight}>
+            <span className={styles.chatOnlineBadge}>
+              <span className={`${styles.chatOnlineDot} cursor-blink`} aria-hidden />
+              ONLINE
+            </span>
+            <button
+              type="button"
+              className={styles.mobileOverlayClose}
+              onClick={() => setMobileChatOpen(false)}
+              aria-label="Close chat"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+        {renderLog(mobileLogRef, styles.mobileOverlayLog)}
+        <div className={styles.chatInputWrap}>
+          <ChatInput
+            onSubmit={(text) => {
+              handleSubmit(text);
+            }}
+            status={chatStatus}
+            placeholder="ask about my work…"
+            multiline
+            showStatus={false}
+          />
+        </div>
+      </div>
     </div>
   );
 }

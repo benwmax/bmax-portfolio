@@ -6,3 +6,36 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Skip-to-content link — visible only on keyboard focus (WCAG 2.4.1) */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 16px;
+  z-index: 9999;
+  padding: 8px 16px;
+  background: var(--color-green-accent);
+  color: var(--color-bg-page);
+  font-family: var(--font-mono-ui);
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.skip-link:focus {
+  top: 16px;
+}
+
+/* Visually hidden — screen reader accessible, not visible */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}

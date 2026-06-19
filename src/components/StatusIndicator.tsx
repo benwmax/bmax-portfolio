@@ -37,7 +37,7 @@ export function StatusIndicator({
 
   return (
     <div className={containerCls} data-status={status} role="status">
-      <span className={dotCls} aria-label={`Status: ${status}`} />
+      <span className={dotCls} aria-hidden="true" />
       <span>{label}</span>
     </div>
   );

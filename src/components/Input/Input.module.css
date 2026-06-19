@@ -60,10 +60,11 @@
   border-color: var(--color-border-strong);
 }
 
-.input:focus {
+.input:focus-visible {
   outline: none;
   border-color: var(--chat-focus-border);
   background: #0a1410;
+  box-shadow: 0 0 0 2px rgba(0, 224, 84, 0.20);
 }
 
 .input:disabled {
