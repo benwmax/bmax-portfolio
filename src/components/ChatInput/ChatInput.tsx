@@ -176,12 +176,14 @@ export function ChatInput({
             </>
           )}
 
-          {multiline && !isLoading && isMultiRow && (
-            <span className={styles.counter} aria-live="polite">
-              {value.length} / {MAX_CHARS}
-            </span>
-          )}
         </label>
+
+        {/* Counter lives outside the <label> so aria-live announcements aren't suppressed */}
+        {multiline && !isLoading && isMultiRow && (
+          <span className={styles.counter} aria-live="polite" aria-atomic="true">
+            {value.length} / {MAX_CHARS}
+          </span>
+        )}
 
         <button
           type="submit"
@@ -192,6 +194,11 @@ export function ChatInput({
           Ask
         </button>
       </form>
+
+      {/* Screen-reader-only live region — announces loading state without visual noise */}
+      <p role="status" aria-live="polite" aria-atomic="true" className={styles.srOnly}>
+        {isLoading ? 'Sending your question. Please wait.' : ''}
+      </p>
 
       {showStatus && (
         <div className={statusCls} role="status">

@@ -66,7 +66,7 @@ export function CaseStudyCard({
     <Comp className={cardCls} href={href} {...rest}>
       <div className={styles.media}>
         {image && <img src={image} alt="" />}
-        {index != null && <span className={styles.chip}>{index}</span>}
+        {index != null && <span className={styles.chip} aria-hidden="true">{index}</span>}
 {sectorTag && (
           <span className={styles.chipTag}>
             <Tag label={sectorTag} />

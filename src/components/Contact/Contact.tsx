@@ -18,9 +18,10 @@ export function Contact() {
 
   return (
     <div className={styles.wrapper}>
+      <a href="#main-content" className="skip-link">Skip to main content</a>
       <NavBar activePath="/contact" />
 
-      <main className={styles.main}>
+      <main id="main-content" className={styles.main}>
         <p className={styles.kicker}>DIRECT LINE · RESPONSE ≤ 48H</p>
 
         <h1 className={styles.heading}>

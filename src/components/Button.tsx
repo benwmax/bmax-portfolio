@@ -56,8 +56,15 @@ export function Button({
   ].filter(Boolean).join(' ');
 
   if (href && !disabled) {
+    const isExternal = href.startsWith('http');
     return (
-      <a className={cls} href={href} onClick={onClick}>
+      <a
+        className={cls}
+        href={href}
+        onClick={onClick}
+        target={isExternal ? '_blank' : undefined}
+        rel={isExternal ? 'noopener noreferrer' : undefined}
+      >
         <span>{children}</span>
       </a>
     );

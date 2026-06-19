@@ -145,6 +145,12 @@
   color: var(--color-green-accent);
 }
 
+.cardAddress:focus-visible {
+  outline: 2px solid var(--color-green-accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
 /* @ symbol in email — phosphor accent */
 .addressAt {
   color: var(--color-green-accent);
@@ -175,6 +181,7 @@
 .btnPrimary {
   display: inline-flex;
   align-items: center;
+  min-height: 44px;
   font-family: var(--font-mono-display);
   font-size: var(--text-xs);
   letter-spacing: var(--tracking-widest);
@@ -198,9 +205,16 @@
   border-color: var(--color-green-accent);
 }
 
+.btnPrimary:focus-visible,
+.btnSecondary:focus-visible {
+  outline: 2px solid var(--color-green-accent);
+  outline-offset: 3px;
+}
+
 .btnSecondary {
   display: inline-flex;
   align-items: center;
+  min-height: 44px;
   font-family: var(--font-mono-display);
   font-size: var(--text-xs);
   letter-spacing: var(--tracking-widest);

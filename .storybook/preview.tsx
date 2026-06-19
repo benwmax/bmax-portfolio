@@ -1,4 +1,5 @@
 import type { Preview, Decorator } from '@storybook/react-vite';
+import { MINIMAL_VIEWPORTS } from 'storybook/viewport';
 import '../src/index.css';
 
 const withPageBackground: Decorator = (Story) => (
@@ -28,7 +29,14 @@ const preview: Preview = {
       },
     },
     a11y: {
-      test: 'todo',
+      test: 'error',
+    },
+    viewport: {
+      viewports: {
+        ...MINIMAL_VIEWPORTS,
+        mobile390: { name: 'Mobile 390', styles: { width: '390px', height: '844px' } },
+        tablet768: { name: 'Tablet 768', styles: { width: '768px', height: '1024px' } },
+      },
     },
     backgrounds: {
       default: 'dark',

@@ -214,6 +214,7 @@ textarea.input {
   border: 1px solid var(--color-green-border);
   border-radius: var(--radius-md);
   padding: 0 22px;
+  min-height: 44px;
   cursor: pointer;
   flex-shrink: 0;
   white-space: nowrap;
@@ -286,4 +287,17 @@ textarea.input {
 
 @media (prefers-reduced-motion: reduce) {
   .statusDot { animation: none; }
+}
+
+/* Visually hidden but readable by screen readers */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  margin: 0;
+  padding: 0;
+  border: 0;
 }

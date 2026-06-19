@@ -50,8 +50,8 @@
 
   --color-text-primary:   #ccd4b0;  /* Body copy, headings */
   --color-text-secondary: #8a9478;  /* Subheadings, labels, metadata */
-  --color-text-tertiary:  #6b7055;  /* Timestamps, captions, hints */
-  --color-text-muted:     #5a6050;  /* Placeholder text, disabled states */
+  --color-text-tertiary:  #6b7055;  /* Timestamps, captions, hints — 3.70:1; AA only at 18px+ or for non-text elements */
+  --color-text-muted:     #5a6050;  /* Placeholder text and disabled states ONLY — exempt per WCAG 1.4.3; never for active content */
   --color-text-disabled:  #3d4035;  /* Truly inactive elements */
 
   /* ----------------------------------------------------------

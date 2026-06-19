@@ -56,12 +56,14 @@
 }
 
 .link {
-  display: block;
+  display: flex;
+  align-items: center;
+  min-height: 44px;
   font-family: var(--font-mono-display);
   font-size: 12px;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: var(--color-text-disabled);
+  color: var(--color-text-secondary);
   text-decoration: none;
   padding: 10px 14px;
   transition: color 150ms ease;
@@ -74,4 +76,12 @@
 /* Active link — same color as hover, no fill, no underline */
 .linkActive {
   color: var(--color-green-accent);
+}
+
+/* Focus rings — keyboard navigation */
+.wordmark:focus-visible,
+.link:focus-visible {
+  outline: 2px solid var(--color-green-accent);
+  outline-offset: 3px;
+  border-radius: 2px;
 }

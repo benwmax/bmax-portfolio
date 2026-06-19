@@ -197,6 +197,7 @@ export function HomePage({ onChatSubmit, initialMessages = [] }: HomePageProps) 
 
   return (
     <div className={styles.wrapper}>
+      <a href="#main-content" className="skip-link">Skip to main content</a>
       <NavBar activePath="/work" />
 
       <div
@@ -241,7 +242,10 @@ export function HomePage({ onChatSubmit, initialMessages = [] }: HomePageProps) 
           {/* Chat panel — right column, fades out when docked */}
           <aside
             className={[styles.chatPanel, isDocked ? styles.chatPanelHidden : ''].filter(Boolean).join(' ')}
+            aria-label="Ask Ben — assistant"
             aria-hidden={isDocked}
+            // @ts-expect-error — inert is a standard HTML attribute not yet in React's types
+            inert={isDocked ? '' : undefined}
           >
             {chatBarJSX}
             {renderLog(heroLogRef, styles.chatLog)}
@@ -263,6 +267,7 @@ export function HomePage({ onChatSubmit, initialMessages = [] }: HomePageProps) 
       </header>
 
       {/* ——— WORK ——— */}
+      <main id="main-content">
       <section className={styles.workSection} aria-label="Selected work">
         <div className={styles.workHead}>
           <div>
@@ -322,13 +327,16 @@ export function HomePage({ onChatSubmit, initialMessages = [] }: HomePageProps) 
         </div>
       </footer>
 
+      </main>
       </div>{/* end .pageContent */}
 
       {/* ——— DOCKED CHAT PANEL (fixed right rail) ——— */}
       <aside
         className={[styles.dockedPanel, isDocked ? '' : styles.dockedPanelHidden].filter(Boolean).join(' ')}
-        aria-hidden={!isDocked}
         aria-label="Ask Ben — assistant"
+        aria-hidden={!isDocked}
+        // @ts-expect-error — inert is a standard HTML attribute not yet in React's types
+        inert={!isDocked ? '' : undefined}
       >
         {chatBarJSX}
         {renderLog(dockedLogRef, styles.dockedLog)}
