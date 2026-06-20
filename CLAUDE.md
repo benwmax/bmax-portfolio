@@ -330,9 +330,9 @@ was redirected. Format:
 - Google Fonts import snippet lives in `src/tokens/tokens.css` header comment.
 
 **Token file:** `src/tokens/tokens.css` — CSS custom properties, Tailwind-ready,
-last updated 2026-06-17. Contains: color primitives, semantic tokens, type scale,
+last updated 2026-06-20. Contains: color primitives, semantic tokens, type scale,
 letter spacing, line height, spacing, border radius, border shorthands, dot grid
-surface, motion, and per-component font/color/tracking tokens.
+surface, motion, shadow, layout widths, and per-component font/color/tracking tokens.
 
 ---
 
@@ -410,7 +410,7 @@ Phase 3 Layers 1–2 substantially complete; Layers 3–5 and Storybook deploy
 (3G) remaining. Design Sessions 1–3 complete; Session 4 (component detail
 explorations) is next.
 
-**Last updated:** 2026-06-19
+**Last updated:** 2026-06-20
 
 **Completed:**
 - Domain confirmed: viewbens.work (existing site stays live until launch)
@@ -446,6 +446,11 @@ explorations) is next.
 - FAB button for mobile chat continuity (2026-06-19)
 - Claude Design Sessions 1 (wordmark), 2 (homepage layout), 3 (case study
   page layout) complete
+- Page audit completed: all hardcoded colors tokenized, inline styles replaced
+  with CSS class toggles, WCAG AA contrast fixed on tertiary text, iOS input
+  zoom fixed, Button focus ring corrected, NavBar mobile padding added,
+  Contact page buttons refactored to use shared Button component (2026-06-20)
+  — see decisions.md 2026-06-20 for full reasoning
 
 **Immediate next steps:**
 - Sagent brain dump in progress (parallel track, build-plan 1C)

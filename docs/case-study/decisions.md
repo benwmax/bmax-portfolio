@@ -113,6 +113,49 @@ Significant choices and the reasoning behind them.
   (400, 500, 600, italic). Import snippet is in src/tokens/tokens.css header comment.
 - Open question: None — font selection resolved.
 
+## 2026-06-20 — Page audit: accessibility, style tech debt, and mobile
+
+Full audit of all built pages (HomePage, CaseStudyPage, Contact) and components
+against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
+
+**1. `--color-text-tertiary` raised from `#6b7055` → `#7a8870` (contrast: 3.77:1 → 4.78:1)**
+- Decision: Update the tertiary text token to pass WCAG AA at all text sizes.
+- Reasoning: Every use of tertiary text in the built components (sidebar labels,
+  StatBlock labels, ProcessStep phase, ChatInput counter, RoleCallout label) is
+  at 9–11px — well below the 18px threshold where 3.77:1 would be acceptable.
+  The new value maintains clear hierarchy below secondary (`#8a9478`, ~6.07:1).
+  The aesthetic direction is unchanged — still a muted olive tone, just lighter.
+
+**2. `--input-font-size: 1rem` (16px) as a floor for all input elements**
+- Decision: Add a dedicated input font-size token and apply it to ChatInput and
+  Input components, separate from `--text-base` (13px).
+- Reasoning: iOS Safari auto-zooms the viewport when any focused input has
+  `font-size < 16px`. With `--text-base` at 13px, every mobile iOS user was
+  getting an unwanted viewport zoom on chat input tap. The fix requires 16px
+  on the input element itself — not on surrounding UI. A dedicated token with
+  an explicit comment keeps the constraint documented at the source.
+- Alternatives considered: `maximum-scale=1` in the viewport meta tag
+  (rejected — prevents manual zoom for accessibility, a WCAG 1.4.4 failure).
+
+**3. Inline `paddingRight` styles eliminated; panel widths moved to tokens**
+- Decision: Replace JS inline `style={{ paddingRight: '400px' }}` on both pages
+  with CSS class toggles (`.pageContentDocked`, `.pageBodyWithChat`) backed by
+  `--docked-panel-width: 400px` and `--cs-panel-width: 380px` in tokens.css.
+- Reasoning: The panel width was defined twice — once in JS (inline) and once
+  in CSS (the panel's `width` rule). If either changed, they'd drift. The `!important`
+  override in the responsive media query was a symptom of the same problem.
+  Single-source-of-truth via CSS custom properties; class toggle replaces inline style.
+
+**4. Contact page buttons refactored to use the shared Button component**
+- Decision: Delete ~60 lines of hand-rolled `.btnPrimary` / `.btnSecondary` in
+  Contact.module.css and wire Contact.tsx to the existing Button component instead.
+  Also added `min-h-[44px]` to Button's `md` and `lg` sizes.
+- Reasoning: Duplicate button implementations mean two places that can drift.
+  The hardcoded hover color `#0e2e14` in Contact.module.css (already caught in the
+  audit) was the visible symptom. The right fix is elimination, not synchronization.
+  Moving `min-h-[44px]` into Button sizes enforces the touch target at the component
+  level rather than relying on per-page CSS.
+
 ## 2026-06-17 — Storybook and component build strategy
 
 - Decision: Storybook 8 scaffolded and primitive component shells
