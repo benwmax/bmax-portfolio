@@ -1,4 +1,3 @@
-import Anthropic from '@anthropic-ai/sdk';
 import { checkRateLimit } from './lib/rate-limit';
 import { SYSTEM_PROMPT } from './lib/system-prompt';
 
@@ -22,6 +21,8 @@ function corsHeaders(origin: string | null): Record<string, string> {
     'Access-Control-Allow-Headers': 'Content-Type',
   };
 }
+
+type MessageParam = { role: 'user' | 'assistant'; content: string };
 
 export default async function handler(req: Request): Promise<Response> {
   const origin = req.headers.get('origin');
@@ -78,7 +79,7 @@ export default async function handler(req: Request): Promise<Response> {
 
   // Validate shape and enforce per-message length cap
   const validRoles = new Set(['user', 'assistant']);
-  const sanitized: Anthropic.MessageParam[] = [];
+  const sanitized: MessageParam[] = [];
 
   for (const msg of messages) {
     if (
@@ -92,10 +93,7 @@ export default async function handler(req: Request): Promise<Response> {
         headers: { ...cors, 'Content-Type': 'application/json' },
       });
     }
-    const content = ((msg as Record<string, unknown>).content as string).slice(
-      0,
-      MAX_MESSAGE_LENGTH,
-    );
+    const content = ((msg as Record<string, unknown>).content as string).slice(0, MAX_MESSAGE_LENGTH);
     sanitized.push({
       role: (msg as Record<string, unknown>).role as 'user' | 'assistant',
       content,
@@ -105,24 +103,74 @@ export default async function handler(req: Request): Promise<Response> {
   // Trim history to keep context window costs predictable
   const trimmed = sanitized.slice(-MAX_HISTORY_MESSAGES);
 
-  const client = new Anthropic();
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    return new Response(JSON.stringify({ error: 'Service unavailable.' }), {
+      status: 503,
+      headers: { ...cors, 'Content-Type': 'application/json' },
+    });
+  }
 
-  const stream = await client.messages.stream({
-    model: 'claude-haiku-4-5-20251001',
-    max_tokens: MAX_OUTPUT_TOKENS,
-    system: SYSTEM_PROMPT,
-    messages: trimmed,
+  // Call Anthropic API directly — the SDK uses node:fs/node:path which the
+  // Edge runtime doesn't support. fetch is available everywhere.
+  const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: MAX_OUTPUT_TOKENS,
+      system: SYSTEM_PROMPT,
+      messages: trimmed,
+      stream: true,
+    }),
   });
 
-  // Transform Anthropic SSE → plain text chunks so the frontend just reads a stream
+  if (!anthropicRes.ok || !anthropicRes.body) {
+    return new Response(JSON.stringify({ error: 'Upstream error.' }), {
+      status: 502,
+      headers: { ...cors, 'Content-Type': 'application/json' },
+    });
+  }
+
+  // Parse Anthropic's SSE stream and forward only the text delta chunks
   const readable = new ReadableStream({
     async start(controller) {
+      const reader = anthropicRes.body!.getReader();
+      const decoder = new TextDecoder();
       const encoder = new TextEncoder();
-      for await (const event of stream) {
-        if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
-          controller.enqueue(encoder.encode(event.delta.text));
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() ?? '';
+
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue;
+          const data = line.slice(6).trim();
+          if (data === '[DONE]') continue;
+
+          try {
+            const event = JSON.parse(data) as {
+              type: string;
+              delta?: { type: string; text: string };
+            };
+            if (event.type === 'content_block_delta' && event.delta?.type === 'text_delta') {
+              controller.enqueue(encoder.encode(event.delta.text));
+            }
+          } catch {
+            // ignore malformed SSE lines
+          }
         }
       }
+
       controller.close();
     },
   });
