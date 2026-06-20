@@ -44,10 +44,6 @@ export const Default: Story = {
     ai: {
       guidance:
         'A single ownership row. Rarely used alone — typically combined in a RoleCallouts list.',
-      contentRules: [
-        'label: "Owned", "In the room", "Director layer", "Started as", "Became".',
-        'content: 1–2 sentences, first person, active voice.',
-      ],
     },
   },
   args: {
@@ -75,12 +71,7 @@ export const List: Story = {
       guidance:
         'The canonical 3-row pattern: what was owned, what the director layer handled, what the key in-the-room moment was.',
       contentRules: [
-        'Standard labels: "Owned", "Director layer", "In the room".',
-        'Wrap rows in RoleCallouts — never lay out rows manually.',
         'Content should be specific and first person: "I sat between the team and our Director" not "I was the lead designer".',
-      ],
-      avoid: [
-        "Don't list every task — pick the three rows that define scope and level.",
       ],
     },
   },

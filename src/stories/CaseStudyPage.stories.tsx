@@ -28,8 +28,6 @@ const meta = {
         'heroTitle must be a problem statement: "Modernizing X without Y", "Making X learnable for Y". Never use it as a project description.',
         'heroSubtitle is 2–4 sentences that set up the problem context.',
         'meta array: role and method cells are plain values; outcome cells use accent: true for hard numbers only.',
-        'process array maps to ProcessStep components — each entry needs phase, title, body, artifact.',
-        'outcomes array maps to StatBlock components — value, label, optional body.',
       ],
       avoid: [
         "Never build a case study page layout from scratch — always use this template.",
@@ -182,15 +180,8 @@ export const Default: Story = {
       guidance:
         'The canonical case study page: sidebar TOC, 8 content sections, docked chat panel, scroll progress bar. Pass a CaseStudyContent object — never build the layout from primitives.',
       contentRules: [
-        'layout="sidebar" is the intended production experience.',
-        'showChat={true} enables the docked chat panel on the right.',
-        'The 8 sections are mandatory: problem, role, userContext, process, keyDecision, whatWasHard, outcomes, whatIdDoDifferently.',
         'chatSuggestions: 2–3 conversation starters relevant to this case study.',
         'nextCase: { title, href } links to the next case study in order.',
-      ],
-      avoid: [
-        "Never build a case study page layout from scratch — always use this template.",
-        "Don't change the section order.",
       ],
     },
   },

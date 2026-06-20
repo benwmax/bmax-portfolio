@@ -18,14 +18,11 @@ const meta = {
       guidance:
         'Terminal-themed 404 page. Fully self-contained — no props. Shows a fake shell session where the page request fails, then links home.',
       contentRules: [
-        'No props required — all content is hardcoded.',
-        'The terminal shell visual is intentional — consistent with the portfolio aesthetic.',
         'The only CTA is a link back to the homepage.',
       ],
       avoid: [
         "Don't add a search bar or site map to the 404 page — link back home only.",
         "Don't replace the terminal-themed visual with a generic error illustration.",
-        "Don't add additional CTAs beyond the homepage link.",
       ],
     },
   },

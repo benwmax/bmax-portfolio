@@ -44,13 +44,8 @@ export const Default: Story = {
     ai: {
       guidance:
         'Use for industry labels on CaseStudyCard thumbnails. This is the default — reach for it first.',
-      contentRules: [
-        "Industry labels: 'Travel', 'Fintech', 'Mortgage', 'Insurance', 'AI Collaboration'.",
-        'Variant default, size sm — these are the defaults; no need to specify them explicitly.',
-      ],
       avoid: [
         "Never use green or solid variant for industry labels.",
-        "Never add onClick to a Tag.",
       ],
     },
   },
@@ -75,11 +70,9 @@ export const Green: Story = {
         "Use for method, build-process, or AI-collaboration labels where the tag should read as 'process' not 'industry'.",
       contentRules: [
         "Example labels: 'AI Collaboration', 'Design Sprint', 'Research', 'Field Study'.",
-        "Green here means 'method' not 'action' — this tag is still never interactive.",
       ],
       avoid: [
         "Don't use green tags for industry categories.",
-        "Don't confuse green tags with interactive green elements.",
       ],
     },
   },
@@ -104,7 +97,6 @@ export const Solid: Story = {
         'Reserved for high-emphasis callout contexts where a hollow border tag would get lost. Not used in v1 card layouts.',
       avoid: [
         "Don't default to solid — it's the loudest variant.",
-        "Not used in the work grid or case study cards.",
       ],
     },
   },
@@ -127,10 +119,6 @@ export const LargeHero: Story = {
     ai: {
       guidance:
         'Use in case-study hero meta blocks and ProcessStep callouts where the tag must hold its own against 14–16px type.',
-      contentRules: [
-        'size="lg" is the only difference from the card-scale default.',
-        'Same amber variant — only the size changes.',
-      ],
       avoid: [
         "Don't use lg in CaseStudyCard thumbnails — sm is the card-scale size.",
       ],
@@ -183,11 +171,7 @@ export const AllIndustries: Story = {
     },
     ai: {
       guidance:
-        'Reference this story to confirm all five canonical industry labels. These are the only industry labels in the portfolio.',
-      contentRules: [
-        'Canonical five: Travel, Fintech, Mortgage, Insurance, AI Collaboration.',
-        "Don't invent new industry labels — if a new case study doesn't fit these, flag it for Ben.",
-      ],
+        'Reference to confirm all five canonical industry labels. These are the only industry labels in the portfolio — do not invent new ones.',
     },
   },
   render: () => (

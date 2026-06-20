@@ -23,7 +23,6 @@ const meta = {
         'Email: ben@viewbens.work. LinkedIn: linkedin.com/in/benwmax.',
         'Receipt strip values: "REPLY WITHIN ≤ 48 hrs", "TIMEZONE Dallas · UTC-5", "STATUS Available".',
         'Two contact methods only: email and LinkedIn. No contact form.',
-        'Update content by editing Contact.tsx directly — no props.',
       ],
       avoid: [
         "Don't add a contact form — the two channel cards are the contact method.",
@@ -60,10 +59,8 @@ export const Default: Story = {
         'The complete Contact page. No props needed — all content is static. Reference this story to confirm layout and copy-to-clipboard behavior after any changes.',
       contentRules: [
         'Copy buttons show "COPIED ✓" confirmation for 1.8s — this is the expected behavior.',
-        'Both cards have terminal corner bracket accents — this is the system aesthetic.',
       ],
       avoid: [
-        "Don't add a contact form or inquiry fields.",
         "Don't remove the receipt strip — it's a key design element.",
       ],
     },

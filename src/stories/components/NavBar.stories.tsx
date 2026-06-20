@@ -53,9 +53,6 @@ export const Default: Story = {
     ai: {
       guidance:
         'Use this pattern for 404 pages or before the router has resolved — all links at rest, none active.',
-      avoid: [
-        "Don't leave activePath unset in production — always wire it to the router pathname.",
-      ],
     },
   },
   args: {
@@ -78,10 +75,6 @@ export const WorkActive: Story = {
     ai: {
       guidance:
         "The homepage production state. Pass activePath='/work' to mark the Work link active.",
-      contentRules: [
-        "Active link: green-accent (#00e054) color + aria-current='page'.",
-        'No underline, no fill, no background change — color alone carries the active signal.',
-      ],
     },
   },
   args: {
@@ -102,9 +95,6 @@ export const AboutActive: Story = {
     ai: {
       guidance:
         "About page state. Pass activePath='/about'.",
-      avoid: [
-        "Don't add custom nav links or a mobile hamburger — three links fit at 390px.",
-      ],
     },
   },
   args: {

@@ -42,9 +42,6 @@ export const Default: Story = {
     ai: {
       guidance:
         'Base input with no label, no hint, no prompt. Use when label is supplied by surrounding context.',
-      avoid: [
-        "For chat functionality, use ChatInput — not this component.",
-      ],
     },
   },
   args: {
@@ -64,10 +61,6 @@ export const WithLabel: Story = {
     ai: {
       guidance:
         'Standard form field with Space Mono ALL CAPS label. Use whenever the field needs a visible accessible label.',
-      contentRules: [
-        'Labels are ALL CAPS — e.g., "YOUR QUESTION", "EMAIL ADDRESS".',
-        'The component renders labels as provided — capitalize in the prop string.',
-      ],
     },
   },
   args: {
@@ -133,7 +126,6 @@ export const WithHint: Story = {
         'Use hint for format guidance or character limits. Wired to aria-describedby — screen readers announce it after the label.',
       contentRules: [
         "Hint text examples: 'Max 2000 characters', 'Letters only', 'Name as it appears on ID'.",
-        'IBM Plex Mono, 10px, tertiary color (#6b7055).',
       ],
     },
   },
@@ -158,10 +150,6 @@ export const WithError: Story = {
         'Use error to show validation failure. Replaces hint, turns border red (#e05050), sets aria-invalid.',
       contentRules: [
         "Error messages should be specific: 'Please enter a question before submitting.' not 'Invalid input.'",
-        'Red (#e05050) is the only red in the system — use it only for actual errors.',
-      ],
-      avoid: [
-        "Don't use red for warnings or non-error emphasis.",
       ],
     },
   },
@@ -208,10 +196,6 @@ export const Multiline: Story = {
     ai: {
       guidance:
         'Use multiline={true} for long-form text: questions, descriptions, message bodies.',
-      contentRules: [
-        'Renders a <textarea>. Min-height 4.5rem (~3 lines). Vertically resizable.',
-        'Same focus treatment as single-line — green border, phosphor bg tint.',
-      ],
     },
   },
   args: {

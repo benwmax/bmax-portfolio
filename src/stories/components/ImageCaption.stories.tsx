@@ -45,10 +45,6 @@ export const Default: Story = {
     ai: {
       guidance:
         'Use while the actual screenshot is being sourced. The dot-grid placeholder with › prompt signals "image goes here" in the terminal aesthetic.',
-      contentRules: [
-        'tabLabel: "project · artifact-type" — "usaa · A/B test pipeline".',
-        'caption: "Fig. 01 — description." — numbered, em dash, period.',
-      ],
     },
   },
   args: {
@@ -65,7 +61,6 @@ export const SabrePlaceholder: Story = {
         'Reference for the correct tab-label format in the Sabre case study.',
       contentRules: [
         'Tab label uses the project codename in kebab-case: "sabre-red · hotel-workspace".',
-        'The · separator (U+00B7 middle dot) is the standard separator between project and artifact.',
       ],
     },
   },

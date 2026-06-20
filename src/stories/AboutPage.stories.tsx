@@ -23,7 +23,6 @@ const meta = {
         'Career arc runs from 2014 (Aperia Solutions) to present — nine roles listed chronologically.',
         'Market Rebellion is included as a brief career arc mention only — not a standalone case study.',
         'Location: Dallas, Texas. Not remote-only.',
-        'Update copy by editing AboutPage.tsx directly — there are no props.',
       ],
       avoid: [
         "Don't add interactivity to the About page.",
@@ -44,7 +43,6 @@ export const Default: Story = {
       guidance:
         'The complete About page. No props needed — all content is static. Reference this story to preview any copy updates made in AboutPage.tsx.',
       contentRules: [
-        'Nine roles in the career arc, chronological, most-recent-first in the display.',
         'Tone: confident and specific. First person, active voice. No corporate filler.',
       ],
       avoid: [

@@ -46,11 +46,6 @@ export const Default: Story = {
     ai: {
       guidance:
         'A single process step. Rarely used alone — typically composed in a ProcessSteps list of 2–4 steps.',
-      contentRules: [
-        'phase: "Assess", "Align", "Build", "Discover", "Define", "Test" — one word.',
-        'body: what actually happened, 1–3 sentences. Not "Conducted X".',
-        'artifact: "Method A · Method B" — method names with · separator.',
-      ],
     },
   },
   args: {
@@ -82,9 +77,6 @@ export const List: Story = {
     ai: {
       guidance:
         'The canonical 3-step process section. Wrap all steps in ProcessSteps — never lay out cards manually.',
-      avoid: [
-        "Don't exceed 5 steps — the process section should be scannable.",
-      ],
     },
   },
   render: () => (
@@ -135,7 +127,6 @@ export const FieldResearch: Story = {
         'Reference for how to write the body — it reads as an observation, not a methodology. "They kept leaving the tool mid-call for Expedia" not "Conducted field observation sessions".',
       contentRules: [
         'One sharp observation beats a bullet list of frameworks.',
-        'Past tense, first or third person: "We found...", "They told us...", "The data showed...".',
       ],
     },
   },

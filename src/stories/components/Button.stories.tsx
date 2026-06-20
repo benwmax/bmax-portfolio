@@ -50,11 +50,9 @@ export const Primary: Story = {
       contentRules: [
         "Canonical chat submit label is 'ASK'.",
         "Contact page labels: 'COMPOSE EMAIL +' and 'OPEN PROFILE +'.",
-        'Labels should be short imperative commands.',
       ],
       avoid: [
         "Don't place two primary buttons side by side.",
-        "Don't use for reversible or low-stakes actions.",
       ],
     },
   },
@@ -82,7 +80,6 @@ export const Secondary: Story = {
       ],
       avoid: [
         "Don't use secondary as the only button on a surface — it needs a primary to defer to.",
-        "Don't use for navigation.",
       ],
     },
   },
@@ -106,11 +103,9 @@ export const Ghost: Story = {
         'Use for optional navigation-adjacent actions (Back, More, View) that should not compete visually with a nearby primary.',
       contentRules: [
         'Keep ghost labels to 1–2 words.',
-        'Ghost has reduced horizontal padding — it lives next to content, not in a button group.',
       ],
       avoid: [
         "Don't pair ghost with primary in the same row — visual noise.",
-        "Don't use ghost as the primary CTA.",
       ],
     },
   },
@@ -184,9 +179,7 @@ export const Sizes: Story = {
       guidance:
         'md is the only size used in production. Reference this story to confirm size tokens if a future context needs sm or lg.',
       contentRules: [
-        'sm: nav-adjacent tight contexts (future use).',
-        'md: all current production uses — this is the default.',
-        'lg: reserved, not yet deployed.',
+        'md is the only size in production — sm and lg are available but not yet deployed.',
       ],
       avoid: [
         "Don't deviate from md without documenting the reason.",

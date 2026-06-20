@@ -45,11 +45,6 @@ export const Default: Story = {
     ai: {
       guidance:
         'The standard stat cell: headline value + ALL CAPS label + one-line context body.',
-      contentRules: [
-        'value: "+4–6%", "$1B", "< 3 mo.", "Scaled", "Shipped".',
-        'label: ALL CAPS — "Conversion lift · P&C", "Contract won", "Mobile redesign ship".',
-        'body: one sentence — "Homeowners up 5%." Short, specific.',
-      ],
     },
   },
   args: {
@@ -75,9 +70,6 @@ export const NoBody: Story = {
     ai: {
       guidance:
         "Use when the value is self-explanatory. '$1B' with 'Contract won' needs no body sentence.",
-      avoid: [
-        "Don't force a body sentence if the value speaks for itself.",
-      ],
     },
   },
 };
@@ -102,9 +94,6 @@ export const TextValue: Story = {
       contentRules: [
         'Non-numeric values: past tense or qualitative — "Scaled", "Adopted", "Launched", "Shipped".',
       ],
-      avoid: [
-        "Don't use vague qualifiers: 'Improved', 'Better', 'Enhanced' — these don't land.",
-      ],
     },
   },
 };
@@ -126,7 +115,6 @@ export const TwoColumn: Story = {
       guidance:
         'Use StatGrid (default 2-col) for 2 or 4 outcome cells. The 1px hairline is the background color showing through — never replicate this manually.',
       contentRules: [
-        'Always use StatGrid wrapper.',
         '2-col grid (default) holds 2 or 4 cells.',
       ],
     },

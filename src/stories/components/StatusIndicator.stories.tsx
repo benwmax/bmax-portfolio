@@ -43,8 +43,6 @@ export const Online: Story = {
       guidance:
         'Place below the ChatInput when the AI assistant is reachable. This is the default starting state.',
       contentRules: [
-        "Label: 'ONLINE · assistant ready' or 'Online · assistant ready · ~2s response'.",
-        'Always uppercase.',
         "blink defaults to true when status='online' — do not override.",
       ],
       avoid: [
@@ -69,13 +67,6 @@ export const Offline: Story = {
     ai: {
       guidance:
         'Use when the API endpoint is unreachable or the backend is down.',
-      contentRules: [
-        "Label: 'OFFLINE · responses unavailable'.",
-        'Dot and label both drop to text-disabled — absence should read as intentional, not broken.',
-      ],
-      avoid: [
-        "Don't use 'offline' for in-flight loading state — a request in progress is still 'online'.",
-      ],
     },
   },
   args: {
@@ -121,12 +112,10 @@ export const ErrorState: Story = {
       guidance:
         'Reserved for actual failures: API unreachable, auth error. Surfaces programmatically, never by default.',
       contentRules: [
-        'Red (#e05050) is the only red in the entire system — use it only for actual errors.',
         "Label: 'ERROR · assistant unavailable' or similar.",
       ],
       avoid: [
         "Don't use error state for degraded performance — that's 'warning'.",
-        "Don't show error state as a default or visual placeholder.",
       ],
     },
   },

@@ -53,13 +53,7 @@ export const Default: Story = {
     ai: {
       guidance:
         'The homepage before any chat message is sent — hero panel visible in right column, greeting text and three suggestion chips shown. This is the default state.',
-      contentRules: [
-        'Three suggestion chips should be conversation starters about specific work.',
-        'status="online" is the starting state for the ChatInput.',
-        'Default placeholder: "ask about my work…" — lowercase, no period.',
-      ],
       avoid: [
-        "Don't add content outside the existing hero layout — identity left, chat right.",
         "Don't show the docked rail in this state — it's hidden until the first message.",
       ],
     },
@@ -95,11 +89,9 @@ export const ConversationStarted: Story = {
         'The homepage after the first message exchange — hero panel fades out, the 400px docked rail slides in from the right. This is the persistent conversation state.',
       contentRules: [
         'Pass initialMessages to seed the conversation for demonstration.',
-        'The docked rail is 400px wide; the page acquires padding-right to match.',
       ],
       avoid: [
         "Don't try to keep the hero panel visible during a conversation — it disappears by design.",
-        "Don't build a separate conversation page — the docked rail handles the full conversation state.",
         "Don't show the docked rail on mobile — it's desktop-only by design.",
       ],
     },
