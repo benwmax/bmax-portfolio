@@ -253,9 +253,9 @@ independently; only the widget's visual styling depends on those.*
 - [ ] Create dedicated Anthropic Workspace + API key, set spend limit and
       email alert
 - [ ] Create Upstash Redis database, add REST credentials to Vercel env
-- [ ] Install @upstash/ratelimit and @upstash/redis
-- [ ] Commit api/chat.ts, api/lib/system-prompt.ts, api/lib/rate-limit.ts
-      to repo
+- [x] Install @upstash/ratelimit and @upstash/redis (2026-06-20)
+- [x] Commit api/chat.ts, api/lib/system-prompt.ts, api/lib/rate-limit.ts
+      to repo (2026-06-20)
 - [ ] Replace [CONTACT_LINK] placeholders with real contact info
 - [ ] Build frontend chat widget (depends on Phase 3 tokens for styling)
 - [ ] Deploy to Vercel, test endpoint with curl
