@@ -31,9 +31,11 @@ const SIZES: Record<ButtonSize, string> = {
 };
 
 const VARIANTS: Record<ButtonVariant, string> = {
-  primary:   'bg-interactive-bg text-interactive border-interactive-border hover:bg-[var(--btn-primary-hover-bg)] hover:text-green-bright hover:border-green-accent',
-  secondary: 'bg-transparent text-text-secondary border-border-default hover:text-text-primary hover:border-border-strong',
-  ghost:     'bg-transparent text-green-accent border-transparent px-2 hover:text-green-bright',
+  primary:
+    'bg-interactive-bg text-interactive border-interactive-border hover:bg-[var(--btn-primary-hover-bg)] hover:text-green-bright hover:border-green-accent',
+  secondary:
+    'bg-transparent text-text-secondary border-border-default hover:text-text-primary hover:border-border-strong',
+  ghost: 'bg-transparent text-green-accent border-transparent px-2 hover:text-green-bright',
 };
 
 export function Button({
@@ -53,7 +55,9 @@ export function Button({
     VARIANTS[variant],
     fullWidth ? 'w-full' : '',
     className,
-  ].filter(Boolean).join(' ');
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   if (href && !disabled) {
     const isExternal = href.startsWith('http');

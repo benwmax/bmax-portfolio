@@ -67,7 +67,8 @@ export const LeadershipStory: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'When a role includes unexpected scope expansion, the label slot can call it out directly.',
+        story:
+          'When a role includes unexpected scope expansion, the label slot can call it out directly.',
       },
     },
   },

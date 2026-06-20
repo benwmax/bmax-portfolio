@@ -9,31 +9,30 @@ export interface StatusIndicatorProps {
 }
 
 const DOT_COLORS: Record<StatusState, string> = {
-  online:  'bg-status-online',
+  online: 'bg-status-online',
   offline: 'bg-text-disabled',
   warning: 'bg-status-warning',
-  error:   'bg-status-error',
+  error: 'bg-status-error',
 };
 
-export function StatusIndicator({
-  label,
-  status,
-  blink,
-  className = '',
-}: StatusIndicatorProps) {
+export function StatusIndicator({ label, status, blink, className = '' }: StatusIndicatorProps) {
   const shouldBlink = blink ?? status === 'online';
 
   const containerCls = [
     'inline-flex items-center gap-2',
     'font-mono-ui text-xs tracking-wide uppercase text-text-tertiary',
     className,
-  ].filter(Boolean).join(' ');
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   const dotCls = [
     'w-[7px] h-[7px] rounded-full flex-none',
     DOT_COLORS[status],
     shouldBlink ? 'cursor-blink' : '',
-  ].filter(Boolean).join(' ');
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <div className={containerCls} data-status={status} role="status">

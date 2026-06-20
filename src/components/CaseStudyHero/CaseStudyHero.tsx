@@ -23,14 +23,20 @@ export interface CaseStudyHeroProps {
 export function CaseStudyHero({ number, dateRange, title, subtitle, meta }: CaseStudyHeroProps) {
   return (
     <header className={styles.hero}>
-      <div className={styles.crumb}>Case study {number} · {dateRange}</div>
+      <div className={styles.crumb}>
+        Case study {number} · {dateRange}
+      </div>
       <h1 className={styles.title}>{title}</h1>
       <p className={styles.subtitle}>{subtitle}</p>
       <div className={styles.metaGrid} aria-label="Project metadata">
-        {meta.map(m => (
+        {meta.map((m) => (
           <span key={m.label} className={styles.metaCell}>
             <span className={styles.metaLabel}>{m.label}</span>
-            <span className={[styles.metaValue, m.accent ? styles.metaValueAccent : ''].filter(Boolean).join(' ')}>
+            <span
+              className={[styles.metaValue, m.accent ? styles.metaValueAccent : '']
+                .filter(Boolean)
+                .join(' ')}
+            >
               {m.value}
             </span>
           </span>

@@ -34,7 +34,9 @@ export function Input({
     prompt ? styles.withPrompt : '',
     error ? styles.hasError : '',
     className,
-  ].filter(Boolean).join(' ');
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   const sharedProps = {
     id: fieldId,
@@ -52,7 +54,9 @@ export function Input({
       )}
       <div className={styles.wrap}>
         {prompt && (
-          <span className={styles.prompt} aria-hidden>›</span>
+          <span className={styles.prompt} aria-hidden>
+            ›
+          </span>
         )}
         {multiline ? (
           /* eslint-disable-next-line @typescript-eslint/no-explicit-any */

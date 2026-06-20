@@ -56,18 +56,20 @@ export function CaseStudyCard({
   const sectorTag = tag ?? (Array.isArray(tags) ? tags[0] : undefined);
   const showMeta = role || year || stat || sector;
 
-  const cardCls = [
-    styles.card,
-    forceHover ? styles.hover : '',
-    className,
-  ].filter(Boolean).join(' ');
+  const cardCls = [styles.card, forceHover ? styles.hover : '', className]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <Comp className={cardCls} href={href} {...rest}>
       <div className={styles.media}>
         {image && <img src={image} alt="" />}
-        {index != null && <span className={styles.chip} aria-hidden="true">{index}</span>}
-{sectorTag && (
+        {index != null && (
+          <span className={styles.chip} aria-hidden="true">
+            {index}
+          </span>
+        )}
+        {sectorTag && (
           <span className={styles.chipTag}>
             <Tag label={sectorTag} />
           </span>

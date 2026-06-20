@@ -147,7 +147,7 @@ first item) has started independently — see note.*
 - [x] Tailwind CSS with custom theme (tokens from Phase 2)
 - [x] ShadCN initialization
 - [x] Storybook 8 initialization
-- [ ] ESLint, Prettier, path aliases — ESLint done (`eslint.config.js` exists); Prettier config and path aliases still pending
+- [x] ESLint, Prettier, path aliases — all complete (2026-06-20): ESLint (`eslint.config.js`), Prettier (`.prettierrc` + prettier-plugin-tailwindcss), path alias `@/` → `src/` in tsconfig and vite.config
 - [ ] README written (public repo — make it intentional)
 
 ### 3B. Layer 1 — Token system
@@ -180,7 +180,7 @@ Story descriptions explain design decisions, not just props.
 - [x] RoleCallout (role ownership row with fixed label column; RoleCallouts wrapper) (2026-06-19)
 - ~~QuoteBlock, TimelineEntry~~ — removed from scope 2026-06-20 (not needed for current page set)
 - [x] NavBar shell — desktop only (2026-06-17)
-- [ ] MobileMenu (pending — build after layout direction locked)
+- ~~MobileMenu~~ — removed from scope 2026-06-20; three nav links fit at 390px without collapsing
 - [x] ChatInput (2026-06-17)
 - [x] StatusIndicator (2026-06-17)
 - [x] Contact page component (email + LinkedIn channels, receipt strip, copy actions) (2026-06-19)

@@ -15,11 +15,13 @@ async function copyText(text: string, setter: (v: boolean) => void) {
 
 export function Contact() {
   const [emailCopied, setEmailCopied] = useState(false);
-  const [urlCopied, setUrlCopied]     = useState(false);
+  const [urlCopied, setUrlCopied] = useState(false);
 
   return (
     <div className={styles.wrapper}>
-      <a href="#main-content" className="skip-link">Skip to main content</a>
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
       <NavBar activePath="/contact" />
 
       <main id="main-content" className={styles.main}>
@@ -45,8 +47,8 @@ export function Contact() {
             </a>
 
             <p className={styles.cardDesc}>
-              Briefs, role conversations, attachments. Land in my inbox and I'll
-              reply within two business days — usually the same one.
+              Briefs, role conversations, attachments. Land in my inbox and I'll reply within two
+              business days — usually the same one.
             </p>
 
             <div className={styles.cardActions}>
@@ -83,8 +85,8 @@ export function Contact() {
             </a>
 
             <p className={styles.cardDesc}>
-              For "hello, are you free for a call," recruiter intros, and the
-              chronological version of the work shown on this site.
+              For "hello, are you free for a call," recruiter intros, and the chronological version
+              of the work shown on this site.
             </p>
 
             <div className={styles.cardActions}>

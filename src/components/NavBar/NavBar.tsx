@@ -1,8 +1,8 @@
 import styles from './NavBar.module.css';
 
 const NAV_LINKS = [
-  { label: 'Work',    href: '/work' },
-  { label: 'About',  href: '/about' },
+  { label: 'Work', href: '/work' },
+  { label: 'About', href: '/about' },
   { label: 'Contact', href: '/contact' },
 ] as const;
 
@@ -28,7 +28,10 @@ export function NavBar({ activePath, className = '' }: NavBarProps) {
   return (
     <header className={[styles.header, className].filter(Boolean).join(' ')}>
       <a href="/" className={styles.wordmark}>
-        BM<span className={styles.underscore} aria-hidden="true">_</span>
+        BM
+        <span className={styles.underscore} aria-hidden="true">
+          _
+        </span>
       </a>
       <nav aria-label="Site navigation">
         <ul className={styles.links} role="list">
@@ -38,7 +41,9 @@ export function NavBar({ activePath, className = '' }: NavBarProps) {
               <li key={href}>
                 <a
                   href={href}
-                  className={[styles.link, isActive ? styles.linkActive : ''].filter(Boolean).join(' ')}
+                  className={[styles.link, isActive ? styles.linkActive : '']
+                    .filter(Boolean)
+                    .join(' ')}
                   aria-current={isActive ? 'page' : undefined}
                 >
                   {label}

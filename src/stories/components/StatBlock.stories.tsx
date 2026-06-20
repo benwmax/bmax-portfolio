@@ -42,7 +42,8 @@ export const NoBody: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'When the value is self-explanatory, omit the body. The green number carries the weight.',
+        story:
+          'When the value is self-explanatory, omit the body. The green number carries the weight.',
       },
     },
   },
@@ -58,7 +59,8 @@ export const TextValue: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Not all outcomes are numbers. Short words ("Scaled", "Shipped", "Adopted") work in the value slot when the body adds the specifics.',
+        story:
+          'Not all outcomes are numbers. Short words ("Scaled", "Shipped", "Adopted") work in the value slot when the body adds the specifics.',
       },
     },
   },
@@ -69,16 +71,29 @@ export const TwoColumn: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'StatGrid (2-col default) composing four StatBlock cells. The 1px hairline grid is the background color showing through 1px gaps.',
+        story:
+          'StatGrid (2-col default) composing four StatBlock cells. The 1px hairline grid is the background color showing through 1px gaps.',
       },
     },
   },
   render: () => (
     <StatGrid>
-      <StatBlock value="+4–6%"   label="Conversion lift · P&C"  body="Homeowners up 5%." />
-      <StatBlock value="↓ Calls" label="Self-service tasks"      body="Support call volume dropped for basic actions." />
-      <StatBlock value="< 3 mo." label="Mobile redesign ship"    body="Test-validated, under 3 months." />
-      <StatBlock value="Scaled"  label="Service blueprint"       body="Running cross-org without dedicated headcount." />
+      <StatBlock value="+4–6%" label="Conversion lift · P&C" body="Homeowners up 5%." />
+      <StatBlock
+        value="↓ Calls"
+        label="Self-service tasks"
+        body="Support call volume dropped for basic actions."
+      />
+      <StatBlock
+        value="< 3 mo."
+        label="Mobile redesign ship"
+        body="Test-validated, under 3 months."
+      />
+      <StatBlock
+        value="Scaled"
+        label="Service blueprint"
+        body="Running cross-org without dedicated headcount."
+      />
     </StatGrid>
   ),
 };
@@ -94,9 +109,13 @@ export const ThreeColumn: Story = {
   },
   render: () => (
     <StatGrid cols={3}>
-      <StatBlock value="$1B"   label="Contract won"       body="Sabre won the Flightcentre bid." />
-      <StatBlock value="+23%"  label="Revenue lift" />
-      <StatBlock value="$800M" label="TTV gain, year one" body="Total Transaction Volume up 8.7%." />
+      <StatBlock value="$1B" label="Contract won" body="Sabre won the Flightcentre bid." />
+      <StatBlock value="+23%" label="Revenue lift" />
+      <StatBlock
+        value="$800M"
+        label="TTV gain, year one"
+        body="Total Transaction Volume up 8.7%."
+      />
     </StatGrid>
   ),
 };

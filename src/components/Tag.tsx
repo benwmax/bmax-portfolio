@@ -13,8 +13,8 @@ export interface TagProps {
 
 const VARIANTS: Record<TagVariant, string> = {
   default: 'text-amber-accent border-amber-deep bg-transparent',
-  green:   'text-green-light border-green-border bg-green-deepest',
-  solid:   'text-bg-page bg-amber-accent border-amber-accent',
+  green: 'text-green-light border-green-border bg-green-deepest',
+  solid: 'text-bg-page bg-amber-accent border-amber-accent',
 };
 
 const SIZES: Record<TagSize, string> = {
@@ -36,12 +36,14 @@ export function Tag({
     VARIANTS[variant],
     SIZES[size],
     className,
-  ].filter(Boolean).join(' ');
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <span className={cls}>
       {dot && (
-        <span className="w-[0.45em] h-[0.45em] rounded-full bg-current flex-none" aria-hidden />
+        <span className="h-[0.45em] w-[0.45em] flex-none rounded-full bg-current" aria-hidden />
       )}
       {label}
     </span>

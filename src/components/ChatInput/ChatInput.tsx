@@ -83,11 +83,9 @@ export function ChatInput({
     }
   }
 
-  const fieldCls = [
-    styles.field,
-    isActive ? styles.active : '',
-    multiline ? styles.multiline : '',
-  ].filter(Boolean).join(' ');
+  const fieldCls = [styles.field, isActive ? styles.active : '', multiline ? styles.multiline : '']
+    .filter(Boolean)
+    .join(' ');
 
   const inputCls = [
     styles.input,
@@ -95,33 +93,34 @@ export function ChatInput({
     isLoading && !multiline ? styles.inputLoading : '',
     isLoading && multiline ? styles.inputMultiLoading : '',
     !isLoading && multiline && isMultiRow ? styles.inputMultiCounter : '',
-  ].filter(Boolean).join(' ');
+  ]
+    .filter(Boolean)
+    .join(' ');
 
-  const btnCls = [
-    styles.btn,
-    multiline ? styles.btnMulti : '',
-  ].filter(Boolean).join(' ');
+  const btnCls = [styles.btn, multiline ? styles.btnMulti : ''].filter(Boolean).join(' ');
 
-  const statusCls = [
-    styles.status,
-    isOffline ? styles.statusOffline : '',
-  ].filter(Boolean).join(' ');
+  const statusCls = [styles.status, isOffline ? styles.statusOffline : '']
+    .filter(Boolean)
+    .join(' ');
 
-  const dotCls = [
-    styles.statusDot,
-    isOffline ? styles.statusDotOffline : '',
-  ].filter(Boolean).join(' ');
+  const dotCls = [styles.statusDot, isOffline ? styles.statusDotOffline : '']
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <div className={[styles.root, className].filter(Boolean).join(' ')}>
       <form className={styles.form} onSubmit={handleSubmit} noValidate>
         {/* label wrapper makes the entire field area (including › prompt) clickable to focus */}
         <label className={fieldCls}>
-          <span className={styles.prompt} aria-hidden>›</span>
+          <span className={styles.prompt} aria-hidden>
+            ›
+          </span>
 
           {showCaret && (
             <span
-              className={[styles.caret, multiline ? styles.caretMulti : ''].filter(Boolean).join(' ')}
+              className={[styles.caret, multiline ? styles.caretMulti : '']
+                .filter(Boolean)
+                .join(' ')}
               aria-hidden
             />
           )}
@@ -165,10 +164,9 @@ export function ChatInput({
           {isLoading && (
             <>
               <span
-                className={[
-                  styles.loadText,
-                  multiline ? styles.loadTextMulti : '',
-                ].filter(Boolean).join(' ')}
+                className={[styles.loadText, multiline ? styles.loadTextMulti : '']
+                  .filter(Boolean)
+                  .join(' ')}
               >
                 <span className={styles.pulse} aria-hidden />
                 thinking
@@ -176,7 +174,6 @@ export function ChatInput({
               <span className={styles.sweep} aria-hidden />
             </>
           )}
-
         </label>
 
         {/* Counter lives outside the <label> so aria-live announcements aren't suppressed */}
@@ -204,9 +201,7 @@ export function ChatInput({
       {showStatus && (
         <div className={statusCls} role="status">
           <span className={dotCls} aria-hidden />
-          {isOffline
-            ? 'OFFLINE · responses unavailable'
-            : 'ONLINE · assistant ready'}
+          {isOffline ? 'OFFLINE · responses unavailable' : 'ONLINE · assistant ready'}
         </div>
       )}
     </div>

@@ -84,7 +84,8 @@ export const FieldResearch: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'The body should read like something that happened — not a methodology list. One observation beats a bullet of frameworks.',
+        story:
+          'The body should read like something that happened — not a methodology list. One observation beats a bullet of frameworks.',
       },
     },
   },

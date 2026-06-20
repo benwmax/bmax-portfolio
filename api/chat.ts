@@ -12,11 +12,7 @@ const MAX_OUTPUT_TOKENS = 400;
 const MAX_HISTORY_MESSAGES = 20;
 const MAX_MESSAGE_LENGTH = 500;
 
-const ALLOWED_ORIGINS = [
-  'https://viewbens.work',
-  'http://localhost:5173',
-  'http://localhost:4173',
-];
+const ALLOWED_ORIGINS = ['https://viewbens.work', 'http://localhost:5173', 'http://localhost:4173'];
 
 function corsHeaders(origin: string | null): Record<string, string> {
   const allowed = origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
@@ -100,7 +96,10 @@ export default async function handler(req: Request): Promise<Response> {
       0,
       MAX_MESSAGE_LENGTH,
     );
-    sanitized.push({ role: (msg as Record<string, unknown>).role as 'user' | 'assistant', content });
+    sanitized.push({
+      role: (msg as Record<string, unknown>).role as 'user' | 'assistant',
+      content,
+    });
   }
 
   // Trim history to keep context window costs predictable
@@ -120,10 +119,7 @@ export default async function handler(req: Request): Promise<Response> {
     async start(controller) {
       const encoder = new TextEncoder();
       for await (const event of stream) {
-        if (
-          event.type === 'content_block_delta' &&
-          event.delta.type === 'text_delta'
-        ) {
+        if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
           controller.enqueue(encoder.encode(event.delta.text));
         }
       }

@@ -31,10 +31,10 @@ export const Default: Story = {
     subtitle:
       "USAA's digital experience was showing its age. Mobile acquisition was leaking, members were calling support for things they should've done themselves, and fintech competitors were making insurance feel easy. We had the trust advantage. The experience wasn't holding up its end.",
     meta: [
-      { label: 'My role',    value: 'Lead UX Designer · P&C' },
-      { label: 'Method',     value: 'Heuristic review · Design sprint' },
+      { label: 'My role', value: 'Lead UX Designer · P&C' },
+      { label: 'Method', value: 'Heuristic review · Design sprint' },
       { label: 'Conversion', value: '+4–6%', accent: true },
-      { label: 'Ship time',  value: '< 3 mo.', accent: true },
+      { label: 'Ship time', value: '< 3 mo.', accent: true },
     ],
   },
 };
@@ -48,16 +48,17 @@ export const Sabre: Story = {
     subtitle:
       'Agents booked travel by typing cryptic command strings. Proficiency took weeks, mastery months. Flightcentre put the platform out to bid: make it learnable fast, without taking power away from the veterans.',
     meta: [
-      { label: 'My role',  value: 'UX Designer · Hotel' },
-      { label: 'Method',   value: 'Field research · Buy a Feature' },
-      { label: 'Contract', value: '$1B',  accent: true },
-      { label: 'Revenue',  value: '+23%', accent: true },
+      { label: 'My role', value: 'UX Designer · Hotel' },
+      { label: 'Method', value: 'Field research · Buy a Feature' },
+      { label: 'Contract', value: '$1B', accent: true },
+      { label: 'Revenue', value: '+23%', accent: true },
     ],
   },
   parameters: {
     docs: {
       description: {
-        story: 'Both accent slots filled with hard numbers. The green display-weight values are the first thing the eye lands on — the role and method cells subordinate.',
+        story:
+          'Both accent slots filled with hard numbers. The green display-weight values are the first thing the eye lands on — the role and method cells subordinate.',
       },
     },
   },
@@ -73,13 +74,14 @@ export const TwoMetaCells: Story = {
       'Retail traders needed professional-grade insight without needing to be professionals. The solution was a chatbot that could speak naturally and execute trades — without ever losing the guardrails.',
     meta: [
       { label: 'My role', value: 'Lead UX Designer' },
-      { label: 'Method',  value: 'Concept testing · Prototyping' },
+      { label: 'Method', value: 'Concept testing · Prototyping' },
     ],
   },
   parameters: {
     docs: {
       description: {
-        story: 'When outcome data is not yet available or not applicable, the meta grid flexes gracefully to two wider cells.',
+        story:
+          'When outcome data is not yet available or not applicable, the meta grid flexes gracefully to two wider cells.',
       },
     },
   },

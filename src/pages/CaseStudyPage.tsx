@@ -72,24 +72,21 @@ export interface CaseStudyPageProps extends CaseStudyContent {
 }
 
 const NAV_SECTIONS = [
-  { id: 'problem',    label: 'Problem',                num: '01' },
-  { id: 'role',       label: 'Role',                   num: '02' },
-  { id: 'context',    label: 'User context',            num: '03' },
-  { id: 'process',    label: 'Process',                 num: '04' },
-  { id: 'decision',   label: 'Key decision',            num: '05' },
-  { id: 'hard',       label: 'What was hard',           num: '06' },
-  { id: 'outcomes',   label: 'Outcomes',                num: '07' },
+  { id: 'problem', label: 'Problem', num: '01' },
+  { id: 'role', label: 'Role', num: '02' },
+  { id: 'context', label: 'User context', num: '03' },
+  { id: 'process', label: 'Process', num: '04' },
+  { id: 'decision', label: 'Key decision', num: '05' },
+  { id: 'hard', label: 'What was hard', num: '06' },
+  { id: 'outcomes', label: 'Outcomes', num: '07' },
   { id: 'reflection', label: "What I'd do differently", num: '08' },
 ] as const;
 
-async function streamChat(
-  msgs: CsMessage[],
-  onChunk: (t: string) => void,
-): Promise<void> {
+async function streamChat(msgs: CsMessage[], onChunk: (t: string) => void): Promise<void> {
   const res = await fetch('/api/chat', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ messages: msgs.map(m => ({ role: m.role, content: m.text })) }),
+    body: JSON.stringify({ messages: msgs.map((m) => ({ role: m.role, content: m.text })) }),
   });
   if (!res.ok || !res.body) throw new Error(`Chat error ${res.status}`);
   const reader = res.body.getReader();
@@ -130,7 +127,9 @@ export function CaseStudyPage({
   const progressBarRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number>(0);
   const msgsRef = useRef(messages);
-  useEffect(() => { msgsRef.current = messages; }, [messages]);
+  useEffect(() => {
+    msgsRef.current = messages;
+  }, [messages]);
 
   // Scroll progress (direct DOM write — bypasses React render cycle for smoothness)
   // + active section (state — drives sidebar, re-render is acceptable there)
@@ -149,7 +148,7 @@ export function CaseStudyPage({
           const el = document.getElementById(`sec-${id}`);
           if (el && el.getBoundingClientRect().top <= 100) active = id;
         }
-        setActiveSection(prev => prev === active ? prev : active);
+        setActiveSection((prev) => (prev === active ? prev : active));
       });
     };
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -166,30 +165,39 @@ export function CaseStudyPage({
     }
   }, [messages]);
 
-  const handleSubmit = useCallback(async (text: string) => {
-    if (onChatSubmit) { onChatSubmit(text); return; }
-    const withUser: CsMessage[] = [...msgsRef.current, { role: 'user', text }];
-    setMessages(withUser);
-    setChatStatus('loading');
-    try {
-      setMessages(prev => [...prev, { role: 'assistant', text: '' }]);
-      await streamChat(withUser, chunk => {
-        setMessages(prev => {
-          const next = [...prev];
-          const last = next[next.length - 1];
-          next[next.length - 1] = { ...last, text: last.text + chunk };
-          return next;
+  const handleSubmit = useCallback(
+    async (text: string) => {
+      if (onChatSubmit) {
+        onChatSubmit(text);
+        return;
+      }
+      const withUser: CsMessage[] = [...msgsRef.current, { role: 'user', text }];
+      setMessages(withUser);
+      setChatStatus('loading');
+      try {
+        setMessages((prev) => [...prev, { role: 'assistant', text: '' }]);
+        await streamChat(withUser, (chunk) => {
+          setMessages((prev) => {
+            const next = [...prev];
+            const last = next[next.length - 1];
+            next[next.length - 1] = { ...last, text: last.text + chunk };
+            return next;
+          });
         });
-      });
-    } catch {
-      setMessages(prev => [
-        ...prev,
-        { role: 'assistant', text: "The assistant isn't available right now — try again in a moment." },
-      ]);
-    } finally {
-      setChatStatus('online');
-    }
-  }, [onChatSubmit]);
+      } catch {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: 'assistant',
+            text: "The assistant isn't available right now — try again in a moment.",
+          },
+        ]);
+      } finally {
+        setChatStatus('online');
+      }
+    },
+    [onChatSubmit],
+  );
 
   const scrollToSection = (id: string) => {
     const el = document.getElementById(`sec-${id}`);
@@ -200,7 +208,6 @@ export function CaseStudyPage({
 
   return (
     <div className={styles.wrapper}>
-
       {/* ——— NAV ——— */}
       <NavBar activePath="/work" />
 
@@ -211,10 +218,11 @@ export function CaseStudyPage({
 
       {/* ——— PAGE BODY ——— */}
       <div
-        className={[styles.pageBody, showChat ? styles.pageBodyWithChat : ''].filter(Boolean).join(' ')}
+        className={[styles.pageBody, showChat ? styles.pageBodyWithChat : '']
+          .filter(Boolean)
+          .join(' ')}
       >
         <div className={styles.layoutInner}>
-
           {/* ——— SIDEBAR ——— */}
           {layout === 'sidebar' && (
             <aside className={styles.sidebar} aria-label="Contents">
@@ -227,14 +235,23 @@ export function CaseStudyPage({
                     className={[
                       styles.sidebarLink,
                       activeSection === id ? styles.sidebarLinkActive : '',
-                    ].filter(Boolean).join(' ')}
-                    onClick={e => { e.preventDefault(); scrollToSection(id); }}
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      scrollToSection(id);
+                    }}
                     aria-current={activeSection === id ? 'location' : undefined}
                   >
-                    <span className={[
-                      styles.sidebarNum,
-                      activeSection === id ? styles.sidebarNumActive : '',
-                    ].filter(Boolean).join(' ')}>
+                    <span
+                      className={[
+                        styles.sidebarNum,
+                        activeSection === id ? styles.sidebarNumActive : '',
+                      ]
+                        .filter(Boolean)
+                        .join(' ')}
+                    >
                       {num}
                     </span>
                     <span>{label}</span>
@@ -246,7 +263,6 @@ export function CaseStudyPage({
 
           {/* ——— MAIN ——— */}
           <main className={styles.main} id="main-content">
-
             {/* HERO */}
             <CaseStudyHero
               number={number}
@@ -259,16 +275,22 @@ export function CaseStudyPage({
             {/* 01 · PROBLEM */}
             <section id="sec-problem" className={styles.section} aria-labelledby="heading-problem">
               <span className={styles.sectionKicker}>01 · Problem</span>
-              <h2 id="heading-problem" className={styles.sectionHeading}>{problem.heading}</h2>
+              <h2 id="heading-problem" className={styles.sectionHeading}>
+                {problem.heading}
+              </h2>
               <div className={styles.prose}>
-                {problem.paragraphs.map((p, i) => <p key={i}>{p}</p>)}
+                {problem.paragraphs.map((p, i) => (
+                  <p key={i}>{p}</p>
+                ))}
               </div>
             </section>
 
             {/* 02 · ROLE */}
             <section id="sec-role" className={styles.section} aria-labelledby="heading-role">
               <span className={styles.sectionKicker}>02 · Role</span>
-              <h2 id="heading-role" className="sr-only">Role</h2>
+              <h2 id="heading-role" className="sr-only">
+                Role
+              </h2>
               <RoleCallouts>
                 {role.map((row, i) => (
                   <RoleCallout key={i} label={row.label} content={row.content} />
@@ -279,16 +301,22 @@ export function CaseStudyPage({
             {/* 03 · USER CONTEXT */}
             <section id="sec-context" className={styles.section} aria-labelledby="heading-context">
               <span className={styles.sectionKicker}>03 · User context</span>
-              <h2 id="heading-context" className="sr-only">User context</h2>
+              <h2 id="heading-context" className="sr-only">
+                User context
+              </h2>
               <div className={styles.prose}>
-                {userContext.paragraphs.map((p, i) => <p key={i}>{p}</p>)}
+                {userContext.paragraphs.map((p, i) => (
+                  <p key={i}>{p}</p>
+                ))}
               </div>
             </section>
 
             {/* 04 · PROCESS */}
             <section id="sec-process" className={styles.section} aria-labelledby="heading-process">
               <span className={styles.sectionKicker}>04 · Process</span>
-              <h2 id="heading-process" className="sr-only">Process</h2>
+              <h2 id="heading-process" className="sr-only">
+                Process
+              </h2>
               <ProcessSteps>
                 {process.map((step, i) => (
                   <ProcessStep
@@ -304,11 +332,19 @@ export function CaseStudyPage({
             </section>
 
             {/* 05 · KEY DECISION */}
-            <section id="sec-decision" className={styles.section} aria-labelledby="heading-decision">
+            <section
+              id="sec-decision"
+              className={styles.section}
+              aria-labelledby="heading-decision"
+            >
               <span className={styles.sectionKicker}>05 · Key decision</span>
-              <h2 id="heading-decision" className={styles.sectionHeading}>{keyDecision.heading}</h2>
+              <h2 id="heading-decision" className={styles.sectionHeading}>
+                {keyDecision.heading}
+              </h2>
               <div className={styles.prose}>
-                {keyDecision.paragraphs.map((p, i) => <p key={i}>{p}</p>)}
+                {keyDecision.paragraphs.map((p, i) => (
+                  <p key={i}>{p}</p>
+                ))}
               </div>
               {keyDecision.artifactLabel && (
                 <ImageCaption
@@ -321,16 +357,26 @@ export function CaseStudyPage({
             {/* 06 · WHAT WAS HARD */}
             <section id="sec-hard" className={styles.section} aria-labelledby="heading-hard">
               <span className={styles.sectionKicker}>06 · What was hard</span>
-              <h2 id="heading-hard" className="sr-only">What was hard</h2>
+              <h2 id="heading-hard" className="sr-only">
+                What was hard
+              </h2>
               <div className={styles.prose}>
-                {whatWasHard.paragraphs.map((p, i) => <p key={i}>{p}</p>)}
+                {whatWasHard.paragraphs.map((p, i) => (
+                  <p key={i}>{p}</p>
+                ))}
               </div>
             </section>
 
             {/* 07 · OUTCOMES */}
-            <section id="sec-outcomes" className={styles.section} aria-labelledby="heading-outcomes">
+            <section
+              id="sec-outcomes"
+              className={styles.section}
+              aria-labelledby="heading-outcomes"
+            >
               <span className={styles.sectionKicker}>07 · Outcomes</span>
-              <h2 id="heading-outcomes" className="sr-only">Outcomes</h2>
+              <h2 id="heading-outcomes" className="sr-only">
+                Outcomes
+              </h2>
               <StatGrid>
                 {outcomes.map((o, i) => (
                   <StatBlock key={i} value={o.value} label={o.label} body={o.body} />
@@ -339,11 +385,19 @@ export function CaseStudyPage({
             </section>
 
             {/* 08 · WHAT I'D DO DIFFERENTLY */}
-            <section id="sec-reflection" className={styles.section} aria-labelledby="heading-reflection">
+            <section
+              id="sec-reflection"
+              className={styles.section}
+              aria-labelledby="heading-reflection"
+            >
               <span className={styles.sectionKicker}>08 · What I'd do differently</span>
-              <h2 id="heading-reflection" className="sr-only">What I'd do differently</h2>
+              <h2 id="heading-reflection" className="sr-only">
+                What I'd do differently
+              </h2>
               <div className={styles.prose}>
-                {whatIdDoDifferently.paragraphs.map((p, i) => <p key={i}>{p}</p>)}
+                {whatIdDoDifferently.paragraphs.map((p, i) => (
+                  <p key={i}>{p}</p>
+                ))}
               </div>
             </section>
 
@@ -357,7 +411,6 @@ export function CaseStudyPage({
                 </a>
               )}
             </div>
-
           </main>
         </div>
       </div>
@@ -379,17 +432,25 @@ export function CaseStudyPage({
             <span className={styles.chatContextValue}>{company}</span>
           </div>
 
-          <div className={styles.chatLog} ref={chatLogRef} aria-live="polite" aria-label="Chat messages">
+          <div
+            className={styles.chatLog}
+            ref={chatLogRef}
+            aria-live="polite"
+            aria-label="Chat messages"
+          >
             {messages.length === 0 ? (
               <>
                 <p className={styles.msgAssistant}>
-                  Reading about {company} — ask anything about this project, or jump to another case study.
-                  <span className={`${styles.msgCursor} cursor-blink`} aria-hidden="true">_</span>
+                  Reading about {company} — ask anything about this project, or jump to another case
+                  study.
+                  <span className={`${styles.msgCursor} cursor-blink`} aria-hidden="true">
+                    _
+                  </span>
                 </p>
                 {chatSuggestions.length > 0 && (
                   <div className={styles.chatSuggestions}>
                     <span className={styles.chatSuggestLabel}>Try asking</span>
-                    {chatSuggestions.map(s => (
+                    {chatSuggestions.map((s) => (
                       <button
                         key={s}
                         type="button"
@@ -406,17 +467,21 @@ export function CaseStudyPage({
               messages.map((m, i) =>
                 m.role === 'user' ? (
                   <p key={i} className={styles.msgUser}>
-                    <span className={styles.msgUserPrompt} aria-hidden="true">›  </span>
+                    <span className={styles.msgUserPrompt} aria-hidden="true">
+                      ›{' '}
+                    </span>
                     {m.text}
                   </p>
                 ) : (
                   <p key={i} className={styles.msgAssistant}>
                     {m.text}
                     {i === messages.length - 1 && chatStatus === 'loading' && (
-                      <span className={`${styles.msgCursor} cursor-blink`} aria-hidden="true">_</span>
+                      <span className={`${styles.msgCursor} cursor-blink`} aria-hidden="true">
+                        _
+                      </span>
                     )}
                   </p>
-                )
+                ),
               )
             )}
           </div>
