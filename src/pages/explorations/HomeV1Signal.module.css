@@ -1,0 +1,524 @@
+/*
+ * HomeV1Signal — "Signal"
+ * The current homepage, elevated. Calm but alive: a spotlight that tracks the
+ * cursor across the dot grid, a headline that types itself in, stat readouts
+ * that count up, a phosphor scanline drifting through the hero, and case cards
+ * that catch a sweep of light on hover. Nothing loud — the dynamism is in the
+ * details, the same way the work is.
+ */
+
+.wrapper {
+  min-height: 100vh;
+  background: var(--color-bg-page);
+  display: flex;
+  flex-direction: column;
+  color: var(--color-text-primary);
+}
+
+.pageContent {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding-top: 72px;
+}
+
+/* ——— HERO ——— */
+.hero {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--color-bg-page);
+  background-image: radial-gradient(circle, var(--color-bg-dot) 1px, transparent 1px);
+  background-size: 24px 24px;
+  border-bottom: 1px solid var(--color-border-subtle);
+  min-height: calc(100vh - 72px);
+  display: flex;
+  align-items: center;
+}
+
+/* Cursor-tracked phosphor spotlight — position driven by --mx/--my CSS vars set in JS */
+.heroSpotlight {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    420px circle at var(--mx, 30%) var(--my, 40%),
+    rgba(0, 224, 84, 0.1),
+    transparent 60%
+  );
+  transition: background 0.18s ease-out;
+  z-index: 0;
+}
+
+/* A faint horizontal scanline that drifts down the hero forever */
+.heroScan {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 140px;
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(180deg, transparent, rgba(0, 255, 94, 0.04) 50%, transparent);
+  animation: scanDrift 7s linear infinite;
+}
+
+@keyframes scanDrift {
+  0% {
+    transform: translateY(-160px);
+  }
+  100% {
+    transform: translateY(calc(100vh + 160px));
+  }
+}
+
+.heroInner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: 64px;
+  align-items: center;
+  padding: 64px 80px;
+  box-sizing: border-box;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono-ui);
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+  margin-bottom: 28px;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-full);
+  padding: 6px 14px;
+}
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-green-bright);
+  box-shadow: 0 0 8px var(--color-green-bright);
+  flex-shrink: 0;
+}
+
+.heroH1 {
+  font-family: var(--font-mono-display);
+  font-weight: 700;
+  font-size: clamp(40px, 6vw, 72px);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  color: var(--color-text-primary);
+  margin: 0;
+  max-width: 14ch;
+  min-height: 1.04em;
+}
+
+.heroAmber {
+  color: var(--color-amber-accent);
+}
+
+/* The block cursor trailing the typewriter headline */
+.typeCursor {
+  display: inline-block;
+  width: 0.55ch;
+  height: 0.95em;
+  margin-left: 0.08em;
+  vertical-align: -0.08em;
+  background: var(--color-green-bright);
+  box-shadow: 0 0 10px var(--color-green-bright);
+}
+
+.heroLede {
+  font-family: var(--font-sans);
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  margin: 28px 0 0;
+  max-width: 52ch;
+  opacity: 0;
+  animation: fadeUp 0.7s var(--ease-default) 0.5s forwards;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.statRow {
+  margin-top: 36px;
+  display: flex;
+  align-items: stretch;
+  opacity: 0;
+  animation: fadeUp 0.7s var(--ease-default) 0.7s forwards;
+}
+
+.statCell {
+  padding: 0 28px;
+  border-right: 1px solid var(--color-border-subtle);
+}
+.statCell:first-child {
+  padding-left: 0;
+}
+.statCell:last-child {
+  border-right: none;
+}
+
+.statFigure {
+  font-family: var(--font-mono-display);
+  font-weight: 700;
+  font-size: 24px;
+  letter-spacing: -0.01em;
+  color: var(--color-green-accent);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.statLabel {
+  font-family: var(--font-mono-ui);
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+  margin-top: 8px;
+}
+
+/* ——— HERO CHAT PANEL ——— */
+.chatPanel {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background: color-mix(in srgb, var(--color-bg-surface) 88%, transparent);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  opacity: 0;
+  animation: fadeUp 0.7s var(--ease-default) 0.4s forwards;
+  box-shadow: 0 0 0 1px rgba(0, 224, 84, 0.04), 0 24px 60px -30px rgba(0, 0, 0, 0.8);
+}
+
+.chatBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.chatBarLabel {
+  font-family: var(--font-mono-display);
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.chatOnlineBadge {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-mono-ui);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--color-text-tertiary);
+}
+
+.chatOnlineDot {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-full);
+  background: var(--color-green-bright);
+}
+
+.chatLog {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 200px;
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.msgUser {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+.msgUserPrompt {
+  font-family: var(--font-mono-display);
+  color: var(--color-green-accent);
+}
+
+.msgAssistant {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--color-text-secondary);
+  margin: 0;
+  border-left: 2px solid var(--color-green-border);
+  padding-left: 16px;
+}
+
+.msgCursor {
+  color: var(--color-green-bright);
+}
+
+.chatSuggestions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.chatSuggestLabel {
+  font-family: var(--font-mono-display);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+}
+
+.chatSuggestBtn {
+  font-family: var(--font-mono-ui);
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  background: transparent;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-full);
+  padding: 7px 15px;
+  align-self: flex-start;
+  cursor: pointer;
+  transition:
+    border-color var(--duration-base) var(--ease-default),
+    color var(--duration-base) var(--ease-default),
+    transform var(--duration-base) var(--ease-default);
+  text-align: left;
+}
+
+.chatSuggestBtn:hover {
+  border-color: var(--color-green-border);
+  color: var(--color-green-accent);
+  transform: translateX(3px);
+}
+
+.chatInputWrap {
+  border-top: 1px solid var(--color-border-subtle);
+  padding: 14px 16px 16px;
+}
+
+.chatFootnote {
+  margin: 10px 0 0;
+  font-family: var(--font-mono-ui);
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+  color: var(--color-text-tertiary);
+}
+
+/* ——— WORK SECTION ——— */
+.workSection {
+  width: 100%;
+  padding: 88px 80px 0;
+  box-sizing: border-box;
+}
+
+.workHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.workKicker {
+  font-family: var(--font-mono-display);
+  font-size: var(--text-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-green-accent);
+}
+
+.workTitle {
+  font-family: var(--font-mono-display);
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+  color: var(--color-text-primary);
+  margin: 8px 0 0;
+}
+
+.workGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+/* Reveal-on-scroll wrapper around each card. Stagger set inline via --i. */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 0.6s var(--ease-default),
+    transform 0.6s var(--ease-default);
+  transition-delay: calc(var(--i, 0) * 90ms);
+}
+
+.revealIn {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Shine sweep overlay on card hover */
+.cardWrap {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.cardWrap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(115deg, transparent 30%, rgba(0, 255, 94, 0.07) 50%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform 0.7s var(--ease-default);
+  z-index: 2;
+}
+
+.cardWrap:hover::after {
+  transform: translateX(120%);
+}
+
+/* ——— FOOTER ——— */
+.footer {
+  margin-top: 88px;
+  border-top: 1px solid var(--color-border-default);
+  background: var(--color-bg-surface);
+  padding: 56px 80px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  box-sizing: border-box;
+}
+
+.footerTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 32px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.footerHeading {
+  font-family: var(--font-mono-display);
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--color-text-primary);
+  margin: 0;
+  max-width: 20ch;
+}
+
+.footerQuestion {
+  color: var(--color-green-accent);
+}
+
+.footerLinks {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.footerLink {
+  font-family: var(--font-mono-ui);
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  padding: 9px 16px;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  transition:
+    color var(--duration-base) var(--ease-default),
+    border-color var(--duration-base) var(--ease-default);
+}
+
+.footerLink:hover {
+  color: var(--color-green-accent);
+  border-color: var(--color-green-border);
+}
+
+.footerFine {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-family: var(--font-mono-ui);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  color: var(--color-text-tertiary);
+  padding-top: 24px;
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+/* ——— RESPONSIVE ——— */
+@media (max-width: 960px) {
+  .heroInner {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding: 48px 40px;
+  }
+  .hero {
+    min-height: 0;
+  }
+  .workSection {
+    padding: 56px 40px 0;
+  }
+  .workGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .heroInner {
+    padding: 40px 20px;
+  }
+  .workSection {
+    padding: 48px 20px 0;
+  }
+  .workGrid {
+    grid-template-columns: 1fr;
+  }
+  .footer {
+    padding: 40px 20px 28px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heroScan,
+  .heroLede,
+  .statRow,
+  .chatPanel,
+  .reveal {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .cardWrap::after {
+    display: none;
+  }
+}

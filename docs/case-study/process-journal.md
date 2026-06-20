@@ -43,3 +43,34 @@ made a direction recommendation with reasoning.
 **Where I overrode or redirected Claude:**
 Rejected the recommendation to fold Version A items into Version B.
 Kept B clean.
+## 2026-06-20
+**What I did:**
+Created three homepage explorations on a `homepage-explorations` branch,
+each progressively more futuristic and dynamic, all built on the locked
+phosphor-terminal design system (no new tokens — only CSS extensions).
+Added a new "Explorations" section to Storybook to review them side by side.
+
+**What I decided:**
+Build three distinct directions rather than iterate one, so the contrast is
+legible: 01 · Signal (current homepage with the dynamism turned up —
+cursor spotlight, self-typing headline, count-up stats, hover shine);
+02 · Boot (machine boot sequence, CRT scanlines, live telemetry, glyph-decode
+case records); 03 · Phosphor (animated synthwave-grid canvas, kinetic hero,
+3D-tilt holographic cards, magnetic CTA). All three reuse the production
+NavBar, ChatInput, and useChatSession so the assistant behaves identically.
+
+**Why:**
+The brief was to wow on entry while staying recognizably "us." Three points
+on a spectrum make the risk/reward of each easy to feel before committing.
+
+**What I'm uncertain about:**
+Which direction to actually ship — Signal is safest, Phosphor is the boldest
+and may be heavier than the rest of the site warrants. Open for Ben's call.
+
+**What Claude contributed:**
+Built all three variants end to end: shared data/hooks modules, the canvas
+animation, the components and CSS, and the Storybook stories. Gated every
+effect on prefers-reduced-motion so motion resolves to a static, legible state.
+
+**Where I overrode or redirected Claude:**
+(Pending Ben's review of the three directions.)
