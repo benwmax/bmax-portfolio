@@ -1,0 +1,54 @@
+import { Meta, Canvas, ArgTypes } from '@storybook/blocks';
+import * as RoleStories from './RoleCallout.stories';
+
+<Meta of={RoleStories} />
+
+# RoleCallout
+
+Explicit ownership rows for the Role section of a case study — 132px fixed label column in mono-ui uppercase, flowing prose content column in sans serif. The label/content contrast creates hierarchy without headings: labels read as a spec sheet, content reads as a story.
+
+Always use the `RoleCallouts` wrapper for multiple rows.
+
+## Standard 3-row pattern
+
+What was owned, what the director layer handled, what the key in-the-room moment was.
+
+<Canvas of={RoleStories.List} />
+
+## Leadership departure pattern
+
+For roles that evolved significantly mid-engagement. Use "Started as" → "Became" → "In the room."
+
+<Canvas of={RoleStories.LeadershipStory} />
+
+## Single row
+
+Rarely used alone. Shown here for prop reference.
+
+<Canvas of={RoleStories.Default} />
+
+## Label vocabulary
+
+| Label | When to use |
+|-------|-------------|
+| `Owned` | The scope of direct ownership |
+| `Director layer` | What was handled above the player |
+| `In the room` | The key moment or highest-stakes contribution |
+| `Started as` | Opening scope (Sagent pattern only) |
+| `Became` | Expanded scope after an unexpected event |
+
+## Do's
+
+- **Wrap rows in `RoleCallouts`.** Never lay out rows manually.
+- **Write content in first person, active voice.** "I sat between the team and our Director."
+- **Be specific.** "I ran stakeholder alignment for 12 teams" beats "I was the lead designer."
+- **Limit to 3 rows.** Pick the three that define scope and level.
+
+## Don'ts
+
+- **Don't list every task.** One row per ownership dimension, not one per responsibility.
+- **Don't use the "Started as / Became" pattern for stable roles.** It's specific to unexpected scope expansion.
+
+## Props
+
+<ArgTypes of={RoleStories} />

@@ -1,0 +1,62 @@
+import { Meta, Canvas, ArgTypes } from '@storybook/blocks';
+import * as InputStories from './Input.stories';
+
+<Meta of={InputStories} />
+
+# Input
+
+Bare terminal text field — IBM Plex Mono body, Space Mono ALL CAPS label. For the AI chat widget use [ChatInput](/docs/components-chatinput--docs) instead. This component is for standard form fields.
+
+## Variants
+
+### With label
+
+Space Mono label renders above the field in ALL CAPS. Capitalize in the prop string.
+
+<Canvas of={InputStories.WithLabel} />
+
+### With prompt indicator
+
+Adds the `›` terminal prompt inside the field. Use in terminal-aesthetic contexts.
+
+<Canvas of={InputStories.Prompt} />
+
+### With hint
+
+Format guidance or character limits. Wired to `aria-describedby` for screen readers.
+
+<Canvas of={InputStories.WithHint} />
+
+### Error state
+
+Replaces hint text, shifts border to red (#e05050), sets `aria-invalid`. Red is the only red in the system — use it only for actual validation failures.
+
+<Canvas of={InputStories.WithError} />
+
+### Multiline
+
+Renders a `<textarea>` with the same focus treatment as the single-line field.
+
+<Canvas of={InputStories.Multiline} />
+
+## Do's
+
+- **Capitalize labels in the prop.** The component renders text exactly as provided — `"YOUR QUESTION"` not `"Your question"`.
+- **Use `error` for validation failures.** It replaces the hint and sets accessibility attributes.
+- **Use `prompt={true}` in terminal contexts.** The `›` indicator and green caret reinforce the theme.
+
+## Don'ts
+
+- **Don't use for chat functionality.** Use ChatInput — it includes the ASK button and status bar.
+- **Don't use sans-serif labels.** Space Mono ALL CAPS is the system default; never override it.
+- **Don't use red for warnings or decoration.** Error state is the only valid red.
+
+## Filled vs focused
+
+Unlike ChatInput, the bare Input does **not** brighten its border when it has content but isn't focused. The active border only appears on `:focus`.
+
+<Canvas of={InputStories.Filled} />
+
+## Props
+
+<ArgTypes of={InputStories} />

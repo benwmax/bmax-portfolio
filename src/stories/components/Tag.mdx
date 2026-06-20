@@ -1,0 +1,60 @@
+import { Meta, Canvas, ArgTypes } from '@storybook/blocks';
+import * as TagStories from './Tag.stories';
+
+<Meta of={TagStories} />
+
+# Tag
+
+Informational label — Space Mono, ultra-wide tracking. Two color families: amber for industry/context, green for method/process. Tags are **never interactive** — no `onClick`, no `href`.
+
+## Variants
+
+### Amber (default) — industry labels
+
+Used in case study card footers and hero meta blocks.
+
+<Canvas of={TagStories.Default} />
+
+### Green — method/process labels
+
+Reads as "this is what we did," not "this is what it is."
+
+<Canvas of={TagStories.Green} />
+
+### Solid — high-emphasis only
+
+Reserved for callout contexts where a bordered tag would get lost. Not used in card layouts.
+
+<Canvas of={TagStories.Solid} />
+
+## Sizes
+
+`sm` for card-scale use, `lg` for hero and process step contexts.
+
+<Canvas of={TagStories.LargeHero} />
+
+## Dot prefix
+
+Optional bullet to reinforce list membership — timeline entries, process lists.
+
+<Canvas of={TagStories.WithDot} />
+
+## The five canonical industry labels
+
+<Canvas of={TagStories.AllIndustries} />
+
+## Do's
+
+- **Use amber for industry.** Travel, Fintech, Mortgage, Insurance, AI Collaboration.
+- **Use green for method.** Design Sprint, Research, Field Study, AI Collaboration (when method-framed).
+- **Singular, title-case.** "Fintech" not "Fintechs" or "FINTECH".
+
+## Don'ts
+
+- **Don't make Tags interactive.** They carry no `onClick`, `href`, or focus state.
+- **Don't invent new industry labels.** Only the five canonical labels are used.
+- **Don't use amber for interactive contexts.** Amber means "context," not "action."
+
+## Props
+
+<ArgTypes of={TagStories} />

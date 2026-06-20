@@ -1,0 +1,53 @@
+import { Meta, Canvas, ArgTypes } from '@storybook/blocks';
+import * as ChatInputStories from './ChatInput.stories';
+
+<Meta of={ChatInputStories} />
+
+# ChatInput
+
+Full AI chat widget — terminal `›` prompt, ASK button, and StatusIndicator composed into one component. Use this for the AI assistant on the homepage and case study pages. For regular form fields, use the bare [Input](/docs/components-input--docs) component instead.
+
+## States
+
+### Default — idle
+
+Empty field at rest. Click to trigger focus state.
+
+<Canvas of={ChatInputStories.Default} />
+
+### Loading
+
+Field goes read-only while a response is in-flight. A phosphor sweep crosses the bottom border; ASK drops to 55% opacity. The sweep animation is the loading affordance — no separate spinner needed.
+
+<Canvas of={ChatInputStories.Loading} />
+
+### Offline
+
+ASK disables. Field stays interactive so the user can draft a question while waiting.
+
+<Canvas of={ChatInputStories.Offline} />
+
+### Multiline
+
+Textarea mode for the expanded case study right-rail or docked panel. Grows to 6 lines then scrolls. Submit with Cmd/Ctrl+Enter.
+
+<Canvas of={ChatInputStories.Multiline} />
+
+## Do's
+
+- **Set `status='online'` as the starting state.**
+- **Use standard placeholder:** `ask about my work…` — lowercase, trailing ellipsis.
+- **Use multiline for the expanded rail.** Single-line for the compact homepage hero panel.
+- **Set `showStatus={false}`** when the surrounding panel already has its own StatusIndicator.
+
+## Don'ts
+
+- **Don't use ChatInput as a generic form field.** Use the bare Input component for that.
+- **Don't show a separate spinner.** The ChatInput sweep animation is the affordance.
+- **Don't clear the field while loading.** The user's question stays visible.
+- **Don't set `status='offline'` during loading.** Loading is still "online."
+- **Don't use `forceFocused` outside Storybook.** It's a preview-only prop.
+
+## Props
+
+<ArgTypes of={ChatInputStories} />
