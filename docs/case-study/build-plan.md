@@ -164,17 +164,12 @@ Each component requires: Default story + all meaningful state stories.
 Story descriptions explain design decisions, not just props.
 - [x] Button (primary, secondary, ghost, destructive + all states) (2026-06-17)
 - [x] Input / Textarea (Input component with multiline prop covers Textarea; full stories) (2026-06-19)
-- [ ] Select
+- ~~Select~~ — removed from scope 2026-06-20 (not needed for current page set)
 - [x] Badge, Tag (2026-06-17)
-- [ ] Icon wrapper
-- [ ] Link
-- [ ] Avatar
+- ~~Icon wrapper, Link, Avatar~~ — removed from scope 2026-06-20 (not needed for current page set)
 
 ### 3D. Layer 3 — Layout components
-- [ ] Container (max-width + responsive padding)
-- [ ] Section (vertical rhythm)
-- [ ] Grid (flexible layout primitive)
-- [ ] Divider
+- ~~Container, Section, Grid, Divider~~ — removed from scope 2026-06-20 (not needed for current page set; layout handled by page-level CSS)
 
 ### 3E. Layer 4 — Portfolio-specific components
 - [x] CaseStudyCard (homepage thumbnail) (2026-06-17)
@@ -183,8 +178,7 @@ Story descriptions explain design decisions, not just props.
 - [x] ProcessStep (numbered process card with phase, title, body, artifact tag; ProcessSteps wrapper) (2026-06-19)
 - [x] ImageCaption (terminal-chrome image frame with tab label, dot-grid placeholder, caption) (2026-06-19)
 - [x] RoleCallout (role ownership row with fixed label column; RoleCallouts wrapper) (2026-06-19)
-- [ ] QuoteBlock
-- [ ] TimelineEntry
+- ~~QuoteBlock, TimelineEntry~~ — removed from scope 2026-06-20 (not needed for current page set)
 - [x] NavBar shell — desktop only (2026-06-17)
 - [ ] MobileMenu (pending — build after layout direction locked)
 - [x] ChatInput (2026-06-17)

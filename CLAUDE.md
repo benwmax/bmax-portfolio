@@ -406,9 +406,9 @@ to check off?"*
 
 **Phase:** 1 (content) + 3 (component build-out) active in parallel. Phase 2
 complete — visual identity finalized, tokens written, wordmark locked.
-Phase 3 Layers 1–2 substantially complete; Layers 3–5 and Storybook deploy
-(3G) remaining. Design Sessions 1–3 complete; Session 4 (component detail
-explorations) is next.
+Phase 3 Layers 1–2 substantially complete; remaining: MobileMenu, About/Resume
+page template, 404 page template, Storybook deploy (3G), Prettier config and
+path aliases (3A). Design Sessions 1–3 complete; Session 4 next.
 
 **Last updated:** 2026-06-20
 
@@ -431,8 +431,6 @@ explorations) is next.
 - Version A vs. Version B drafting methods stress-tested and compared
 - Upfluent, USAA, and Sabre case studies all rewritten (2026-06-15) —
   Phase 1B complete
-- AI chat feature: architecture and safeguards plan drafted (2026-06-15) —
-  api/ files not yet created (see build-plan.md Phase 4F for remaining steps)
 - Visual identity direction finalized — style references provided,
   palette locked, tokens written, wordmark locked (2026-06-17) — Phase 2 complete
 - Storybook 8 installed and scaffolded (2026-06-17)
@@ -451,14 +449,19 @@ explorations) is next.
   zoom fixed, Button focus ring corrected, NavBar mobile padding added,
   Contact page buttons refactored to use shared Button component (2026-06-20)
   — see decisions.md 2026-06-20 for full reasoning
+- AI chat backend created: api/chat.ts (Vercel Edge Function), api/lib/system-prompt.ts,
+  api/lib/rate-limit.ts, .env.example, packages installed (2026-06-20) —
+  Phase 4F partially complete; pending Anthropic Workspace + Upstash setup (Ben)
+- Phase 3 scope reduced: Select, Icon wrapper, Link, Avatar, Container/Section/Grid/
+  Divider, QuoteBlock, TimelineEntry removed from scope — not needed for current page
+  set (2026-06-20)
 
 **Immediate next steps:**
 - Sagent brain dump in progress (parallel track, build-plan 1C)
-- AI chat feature: create api/ files (chat.ts, system-prompt.ts,
-  rate-limit.ts) and .env.example, then commit — see build-plan.md Phase 4F
+- Add Prettier config and path aliases (Phase 3A — ESLint done, these two still pending)
+- Build MobileMenu, About/Resume page template, 404 page template (Phase 3E–3F)
 - Claude Design Session 4: component detail explorations (Sessions 1–3 done)
-- Style remaining Phase 3 component shells (Layers 3–5 per build-plan.md)
-- ESLint config exists; add Prettier config and path aliases (Phase 3A)
+- Phase 4F: Ben to create Anthropic Workspace + Upstash Redis, add env vars to Vercel
 
 **Decisions still open:**
 - Market Rebellion: not a standalone case study (decided); whether/where to
