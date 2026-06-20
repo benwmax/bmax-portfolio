@@ -211,8 +211,7 @@ export function CaseStudyPage({
 
       {/* ——— PAGE BODY ——— */}
       <div
-        className={styles.pageBody}
-        style={showChat ? { paddingRight: '380px' } : undefined}
+        className={[styles.pageBody, showChat ? styles.pageBodyWithChat : ''].filter(Boolean).join(' ')}
       >
         <div className={styles.layoutInner}>
 

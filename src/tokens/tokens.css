@@ -28,11 +28,12 @@
      Cooler than pure olive, warmer than neutral dark.
   ---------------------------------------------------------- */
 
-  --color-bg-page:       #0e100f;   /* Page background */
-  --color-bg-surface:    #141612;   /* Cards, panels, elevated surfaces */
-  --color-bg-raised:     #1c1f1a;   /* Inputs, hovers, slightly raised */
-  --color-bg-dot:        #232620;   /* Dot grid pattern color */
-  --color-bg-overlay:    #0e100fcc; /* Modals, overlays (80% opacity) */
+  --color-bg-page:         #0e100f;   /* Page background */
+  --color-bg-surface:      #141612;   /* Cards, panels, elevated surfaces */
+  --color-bg-raised:       #1c1f1a;   /* Inputs, hovers, slightly raised */
+  --color-bg-dot:          #232620;   /* Dot grid pattern color */
+  --color-bg-overlay:      #0e100fcc; /* Modals, overlays (80% opacity) */
+  --color-bg-input-active: #0a1410;   /* Phosphor-tinted bg for focused inputs */
 
   /* ----------------------------------------------------------
      BORDERS
@@ -50,7 +51,7 @@
 
   --color-text-primary:   #ccd4b0;  /* Body copy, headings */
   --color-text-secondary: #8a9478;  /* Subheadings, labels, metadata */
-  --color-text-tertiary:  #6b7055;  /* Timestamps, captions, hints — 3.70:1; AA only at 18px+ or for non-text elements */
+  --color-text-tertiary:  #7a8870;  /* Timestamps, captions, hints — 4.78:1; passes WCAG AA at all sizes */
   --color-text-muted:     #5a6050;  /* Placeholder text and disabled states ONLY — exempt per WCAG 1.4.3; never for active content */
   --color-text-disabled:  #3d4035;  /* Truly inactive elements */
 
@@ -136,7 +137,10 @@
 
   --text-xs:   0.625rem;   /* 10px — labels, timestamps, status */
   --text-sm:   0.6875rem;  /* 11px — nav links, tags, captions */
-  --text-base: 0.8125rem;  /* 13px — body, chat input, card titles */
+  --text-base: 0.8125rem;  /* 13px — body, card titles */
+
+  /* Input fields must be ≥ 16px to prevent iOS Safari auto-zoom on focus */
+  --input-font-size: 1rem; /* 16px — ChatInput, Input — do not go below this */
   --text-md:   0.875rem;   /* 14px — subheadings */
   --text-lg:   1rem;       /* 16px — section headings */
   --text-xl:   1.125rem;   /* 18px — page headings */
@@ -237,6 +241,27 @@
   --duration-base:  150ms;
   --duration-slow:  250ms;
   --ease-default:   cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ----------------------------------------------------------
+     SHADOWS
+     Named glow values used by inputs and interactive fields.
+  ---------------------------------------------------------- */
+
+  /* Double-layer green glow for active chat/search fields */
+  --shadow-green-glow:  inset 0 0 0 1px rgba(0, 224, 84, 0.06),
+                        0 0 0 3px rgba(0, 224, 84, 0.05);
+  /* Single-layer focus ring for form inputs */
+  --shadow-green-focus: 0 0 0 2px rgba(0, 224, 84, 0.20);
+
+  /* ----------------------------------------------------------
+     LAYOUT WIDTHS
+     Docked panel dimensions shared between CSS and JS.
+     JS should reference these via getComputedStyle if needed,
+     but prefer CSS class toggles over inline styles.
+  ---------------------------------------------------------- */
+
+  --docked-panel-width: 400px;  /* Homepage docked chat rail */
+  --cs-panel-width:     380px;  /* Case study docked chat rail */
 
   /* ----------------------------------------------------------
      COMPONENT TOKENS

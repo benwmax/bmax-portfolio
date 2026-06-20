@@ -211,8 +211,7 @@ export function HomePage({ onChatSubmit, initialMessages = [] }: HomePageProps) 
       <NavBar activePath="/work" />
 
       <div
-        className={styles.pageContent}
-        style={{ paddingRight: isDocked ? '400px' : '0px' }}
+        className={[styles.pageContent, isDocked ? styles.pageContentDocked : ''].filter(Boolean).join(' ')}
       >
 
       {/* ——— HERO ——— */}

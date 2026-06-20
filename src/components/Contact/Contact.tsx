@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { NavBar } from '../NavBar';
+import { Button } from '../Button';
 import styles from './Contact.module.css';
 
 async function copyText(text: string, setter: (v: boolean) => void) {
@@ -49,16 +50,15 @@ export function Contact() {
             </p>
 
             <div className={styles.cardActions}>
-              <a href="mailto:ben@viewbens.work" className={styles.btnPrimary}>
+              <Button variant="primary" href="mailto:ben@viewbens.work">
                 COMPOSE EMAIL +
-              </a>
-              <button
-                type="button"
-                className={styles.btnSecondary}
+              </Button>
+              <Button
+                variant="secondary"
                 onClick={() => copyText('ben@viewbens.work', setEmailCopied)}
               >
                 {emailCopied ? 'COPIED ✓' : 'COPY ADDRESS'}
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -88,21 +88,15 @@ export function Contact() {
             </p>
 
             <div className={styles.cardActions}>
-              <a
-                href="https://linkedin.com/in/benwmax"
-                className={styles.btnPrimary}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <Button variant="primary" href="https://linkedin.com/in/benwmax">
                 OPEN PROFILE +
-              </a>
-              <button
-                type="button"
-                className={styles.btnSecondary}
+              </Button>
+              <Button
+                variant="secondary"
                 onClick={() => copyText('https://linkedin.com/in/benwmax', setUrlCopied)}
               >
                 {urlCopied ? 'COPIED ✓' : 'COPY URL'}
-              </button>
+              </Button>
             </div>
           </div>
         </div>

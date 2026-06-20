@@ -35,10 +35,8 @@
 /* Active: focused, filled, or loading — green border + phosphor bg tint */
 .active {
   border-color: var(--color-green-border);
-  background: #0a1410;
-  box-shadow:
-    inset 0 0 0 1px rgba(0, 224, 84, 0.06),
-    0 0 0 3px rgba(0, 224, 84, 0.05);
+  background: var(--color-bg-input-active);
+  box-shadow: var(--shadow-green-glow);
 }
 
 /* Multiline: prompt and ASK button top-align instead of center */
@@ -92,7 +90,7 @@
   border: 0;
   outline: none;
   font-family: var(--font-mono-ui);
-  font-size: var(--text-base);
+  font-size: var(--input-font-size);
   color: var(--chat-text);
   padding: 12px 12px;
   caret-color: var(--color-green-bright);
@@ -231,14 +229,14 @@ textarea.input {
 }
 
 .btn:hover:not(:disabled) {
-  background: #0e2e14;
+  background: var(--btn-primary-hover-bg);
   color: var(--color-green-bright);
   border-color: var(--color-green-accent);
   box-shadow: inset 0 1px 0 rgba(0, 255, 94, 0.18);
 }
 
 .btn:active:not(:disabled) {
-  background: #062010;
+  background: var(--color-green-deep);
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
