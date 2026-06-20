@@ -337,7 +337,11 @@ All component layers, page templates, tooling (Prettier, path aliases), and READ
 complete); README replaced with intentional project README (3A complete); Phase
 0 marked complete; Phase 3 status updated — only Storybook deploy (3G) remaining.
 Early career history added to About and Resume pages (Aperia Solutions, PeopleAnswers,
-AT&T — 2014–15); Resume date-column CSS fixed to prevent overflow on longer date strings.*
+AT&T — 2014–15); Resume date-column CSS fixed to prevent overflow on longer date strings.
+3 homepage exploration variants built (Signal, Boot, Phosphor) as Storybook Explorations
+stories — awaiting Ben's direction decision. docs/ai-component-guide.md created (783-line
+component reference with decision tree and out-of-scope list); parameters.ai guidance
+blocks added to all stories; 12 MDX documentation pages created for all 12 components.*
 *See also: decisions.md — significant choices and reasoning*
 *See also: key-insights.md — strategic insights from initial analysis*
 *See also: process-journal.md — running build log*

@@ -441,7 +441,7 @@ to check off?"*
 complete. Phase 3 all Layers and tooling complete; only Storybook deploy (3G)
 remaining before Phase 4 can start. Design Sessions 1–3 complete; Session 4 next.
 
-**Last updated:** 2026-06-20 (early career history added to About + Resume)
+**Last updated:** 2026-06-20 (MDX component docs + parameters.ai guidance system + 3 homepage exploration variants)
 
 **Completed:**
 - Domain confirmed: viewbens.work (existing site stays live until launch)
@@ -502,14 +502,26 @@ remaining before Phase 4 can start. Design Sessions 1–3 complete; Session 4 ne
 - README replaced: Vite boilerplate removed, replaced with intentional project README
   covering purpose, tech stack, structure, local setup, design system, and build docs
   (2026-06-20) — Phase 3A complete
+- 3 homepage exploration variants built (Signal, Boot, Phosphor) as full React pages
+  with shared animation hooks/data modules and Storybook stories in
+  src/stories/explorations/ — awaiting Ben's direction decision (2026-06-20)
+- docs/ai-component-guide.md created — 783-line authoritative component reference
+  with decision tree, prop cheat sheets, composition patterns, and explicit
+  out-of-scope list (2026-06-20)
+- parameters.ai guidance blocks added to every Storybook story — each story now has
+  guidance, contentRules, and avoid fields reflecting real design decisions (2026-06-20)
+- 12 MDX documentation pages created for all 12 components — embedded canvas previews,
+  do's/don'ts, ArgTable prop tables; Storybook now reads as public documentation
+  (2026-06-20)
 
 **Immediate next steps:**
 - **Ben's actions to go live:** Create Anthropic Workspace + API key and Upstash Redis
   database, add all three env vars to Vercel — chat is fully wired, blocked only on these
 - **Phase 3G:** Deploy Storybook to separate Vercel project on system.viewbens.work
   — last gate before Phase 4 can start
+- **Ben to choose homepage direction:** Signal / Boot / Phosphor — all three are in
+  Storybook Explorations section for side-by-side comparison
 - Sagent brain dump in progress (parallel track, build-plan 1C)
-- Claude Design Session 4: component detail explorations (Sessions 1–3 done)
 
 **Decisions still open:**
 - Market Rebellion: referenced on About page as brief career arc item (decided 2026-06-20)

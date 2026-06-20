@@ -169,3 +169,33 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
 - Parallel tracks: Claude Design (wordmark → homepage → case study page
   → component details) runs independently of the Storybook build.
   Handoff happens after Claude Design Session 4.
+
+## 2026-06-20 — Storybook AI guidance system (parameters.ai + ai-component-guide.md)
+
+- Decision: Added a `parameters.ai` block to every story file with `guidance`,
+  `contentRules`, and `avoid` fields. Created `docs/ai-component-guide.md` as the
+  macro-level companion — a 783-line authoritative reference with a decision tree,
+  prop cheat sheets, composition patterns, and an explicit out-of-scope list.
+- Reasoning: Each new Claude session was starting from zero on which components
+  exist, which were deliberately cut, and what the token rules are. Two layers of
+  guidance address two different questions: ai-component-guide.md answers
+  "what should I build?" before any code is written; parameters.ai answers "how
+  should I use this component?" while writing stories or variants. Together they
+  prevent building excluded components (Select, Avatar, MobileMenu, etc.),
+  hardcoding values, or inventing new industry tags.
+- Alternatives considered: CLAUDE.md alone (too high-level for per-component
+  decisions); inline code comments (not queryable holistically, easy to miss).
+
+## 2026-06-20 — MDX documentation pages for all components
+
+- Decision: Created MDX docs pages for all 12 components alongside their existing
+  stories, with prose descriptions, embedded Canvas previews, do's/don'ts, and
+  ArgTable prop tables.
+- Reasoning: Storybook is hosted publicly as a portfolio artifact. A hiring manager
+  or design director landing on it should understand each component's purpose,
+  usage constraints, and design rationale without reading source code. Story files
+  alone don't surface this at the Docs tab level — MDX does. The do's/don'ts were
+  extracted directly from the parameters.ai blocks so they stay in sync.
+- Alternatives considered: README files per component directory (not co-located
+  with Storybook, not rendered in the UI); relying on story `parameters.docs`
+  descriptions alone (not surfaced prominently at the Docs tab level for all users).
