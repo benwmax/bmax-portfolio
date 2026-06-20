@@ -1,0 +1,50 @@
+import { Meta, Canvas, ArgTypes } from '@storybook/blocks';
+import * as CardStories from './CaseStudyCard.stories';
+
+<Meta of={CardStories} />
+
+# CaseStudyCard
+
+Work-grid entry point — 16:9 scanlined thumbnail, green index chip, amber sector tag, title, one-sentence hook, and a meta grid. Always renders as an `<a>` when `href` is provided. Corner brackets and a green glow reveal on hover.
+
+## Resting state
+
+<Canvas of={CardStories.Default} />
+
+## Hover state
+
+Forced via `forceHover` (Storybook preview only — in production this triggers on `:hover`).
+
+<Canvas of={CardStories.Hover} />
+
+## Without meta grid
+
+When `role`, `year`, `stat`, and `sector` are omitted, the meta grid collapses entirely.
+
+<Canvas of={CardStories.WithoutMeta} />
+
+## Work grid — all five case studies
+
+The canonical homepage layout: 2 columns, 296px each, 20px gap.
+
+<Canvas of={CardStories.Grid} />
+
+## Do's
+
+- **Always pass `href`.** The card should always be a navigation link.
+- **`desc` is the hook.** One sentence, the problem angle — not the project name.
+- **Follow the finalized case study order:** 01 Portfolio Rebuild, 02 Upfluent, 03 Sagent, 04 USAA, 05 Sabre.
+- **Use canonical index chips:** zero-padded two digits — `"01"`, `"02"`, etc.
+- **Use a canonical industry tag:** Travel, Fintech, Mortgage, Insurance, AI Collaboration.
+
+## Don'ts
+
+- **Don't omit `href`.** A card without a link defeats its purpose.
+- **Don't use `title` as the hook.** `title` is the project name; `desc` is the hook.
+- **Don't pass empty strings for meta props.** Omit them entirely — the grid collapses gracefully.
+- **Don't build a single-column list or masonry layout.** The 2-column grid is fixed.
+- **Don't use `forceHover` in application code.** It's a Storybook preview prop only.
+
+## Props
+
+<ArgTypes of={CardStories} />

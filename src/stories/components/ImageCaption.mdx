@@ -1,0 +1,54 @@
+import { Meta, Canvas, ArgTypes } from '@storybook/blocks';
+import * as ImageStories from './ImageCaption.stories';
+
+<Meta of={ImageStories} />
+
+# ImageCaption
+
+Terminal-chrome frame for all case study screenshots and artifact images — a desktop-window mock with traffic-light dots, a tab label, and a 16:9 content area. Never use a plain `<img>` tag for portfolio artifacts; always use this component.
+
+When `src` is omitted, a dot-grid placeholder renders with a terminal `›` prompt — the intentional "image goes here" signal.
+
+## Placeholder (no image)
+
+<Canvas of={ImageStories.Default} />
+
+## Sabre placeholder
+
+<Canvas of={ImageStories.SabrePlaceholder} />
+
+## Tab label format
+
+```
+"project · artifact-type"
+```
+
+Examples:
+- `usaa · A/B test pipeline`
+- `sabre-red · hotel-workspace`
+- `sagent · origination-flow`
+
+Use the project codename in kebab-case, a middle dot separator (`·`), then the artifact type in kebab-case.
+
+## Caption format
+
+```
+"Fig. 01 — description."
+```
+
+Numbered, em dash, sentence ending in a period. Rendered in IBM Plex Mono 10px tertiary — subordinate to the image.
+
+## Do's
+
+- **Always use this component for artifacts.** Never a plain `<img>` tag.
+- **Omit `src` while sourcing screenshots.** The dot-grid placeholder is the system default.
+- **Number captions sequentially** per case study: Fig. 01, Fig. 02, etc.
+
+## Don'ts
+
+- **Don't use a grey box as a placeholder.** The dot-grid treatment is intentional.
+- **Don't skip the caption.** The `figcaption` is part of the semantic structure.
+
+## Props
+
+<ArgTypes of={ImageStories} />

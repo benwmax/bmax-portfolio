@@ -1,0 +1,57 @@
+import { Meta, Canvas, ArgTypes } from '@storybook/blocks';
+import * as ButtonStories from './Button.stories';
+
+<Meta of={ButtonStories} />
+
+# Button
+
+Space Mono, ALL CAPS, wide-tracked — reads as a terminal command. Three variants cover every action context in the system. Labels are rendered exactly as provided; capitalize in the prop string.
+
+## Variants
+
+### Primary
+
+The single committed action on a surface. Phosphor green text on deep-green fill.
+
+<Canvas of={ButtonStories.Primary} />
+
+### Secondary
+
+Available but not the recommended next step. Always paired with a primary nearby.
+
+<Canvas of={ButtonStories.Secondary} />
+
+### Ghost
+
+Optional navigation-adjacent action. No fill, no border — reduced visual weight.
+
+<Canvas of={ButtonStories.Ghost} />
+
+### Disabled / Loading
+
+The ASK button disables when the input is empty, and while a response is in-flight.
+
+<Canvas of={ButtonStories.Disabled} />
+
+## Do's
+
+- **One primary per surface.** Two primaries side by side create visual ambiguity.
+- **Short ALL CAPS commands.** `ASK`, `COMPOSE EMAIL +`, `COPY ADDRESS`, `OPEN PROFILE +`.
+- **Pair secondary with a primary.** A secondary standing alone has no anchor.
+- **Ghost for optional choices.** Back, More, View — actions that shouldn't compete.
+
+## Don'ts
+
+- **Don't invent a fourth variant.** Primary / secondary / ghost cover every case.
+- **Don't use Button for navigation.** Use an `<a>` tag or pass `href` to render as an anchor.
+- **Don't use sentence-case labels.** The component renders text as-is — capitalize in the prop.
+
+## Size
+
+`md` is the only size in production. `sm` and `lg` exist for future contexts.
+
+<Canvas of={ButtonStories.Sizes} />
+
+## Props
+
+<ArgTypes of={ButtonStories} />

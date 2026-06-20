@@ -1,0 +1,44 @@
+import { Meta, Canvas, ArgTypes } from '@storybook/blocks';
+import * as HeroStories from './CaseStudyHero.stories';
+
+<Meta of={HeroStories} />
+
+# CaseStudyHero
+
+Case study page header — case number, date range, H1 problem statement, subtitle, and a bordered meta grid. The H1 (`title` prop) is always a problem statement, never a project description. Meta cells with `accent={true}` render the value in phosphor green at display weight — reserved for hard numbers only.
+
+## Standard layout (4 meta cells)
+
+Role, method, and two outcome stats. Target layout for all case studies with measurable outcomes.
+
+<Canvas of={HeroStories.Default} />
+
+## High-stakes stats
+
+Both accent slots filled with hard numbers. Green display-weight values are the first thing the eye lands on.
+
+<Canvas of={HeroStories.Sabre} />
+
+## Two meta cells
+
+When outcome data isn't available, the meta grid flexes to two wider cells.
+
+<Canvas of={HeroStories.TwoMetaCells} />
+
+## Do's
+
+- **Write `title` as a problem statement.** "Modernizing X without Y" / "Making X learnable."
+- **Use `accent={true}` for hard numbers only.** `$1B`, `+23%`, `+4–6%`, `< 3 mo.`
+- **`subtitle` sets up the context** — 2–4 sentences, the problem not the solution.
+- **Omit outcome cells entirely** when real data doesn't exist yet.
+
+## Don'ts
+
+- **Don't write `title` as a project description.** "Redesigned the USAA P&C experience" is wrong.
+- **Don't put `accent={true}` on role or method values.** Only hard numbers get the green treatment.
+- **Don't list more than 2 accent stats.** Four green cells dilutes the impact.
+- **Don't pass empty placeholder stats.** Omit those cells — the grid flexes.
+
+## Props
+
+<ArgTypes of={HeroStories} />

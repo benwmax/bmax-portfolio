@@ -1,0 +1,39 @@
+import { Meta, Canvas, ArgTypes } from '@storybook/blocks';
+import * as NavBarStories from './NavBar.stories';
+
+<Meta of={NavBarStories} />
+
+# NavBar
+
+Site header — wordmark left, three nav links right. Present on every page. Transparent: sits directly on the page background with only a 1px bottom rule. Wire `activePath` to the router pathname to mark the active link.
+
+The `BM_` wordmark with blinking underscore is a terminal cursor convention — do not modify the wordmark or remove the blink.
+
+## States
+
+### Work active (homepage)
+
+<Canvas of={NavBarStories.WorkActive} />
+
+### About active
+
+<Canvas of={NavBarStories.AboutActive} />
+
+### No active route (404 / loading)
+
+<Canvas of={NavBarStories.Default} />
+
+## Do's
+
+- **Wire `activePath` to the current router pathname** on every page.
+- **Use the three fixed links:** Work `/work`, About `/about`, Contact `/contact`.
+
+## Don'ts
+
+- **Don't leave `activePath` undefined in production.** All links render at disabled-text when no route matches.
+- **Don't add nav links or dropdown menus.** Three links fit at 390px without collapsing.
+- **Don't add a mobile hamburger.** The nav is intentionally always visible.
+
+## Props
+
+<ArgTypes of={NavBarStories} />

@@ -1,0 +1,44 @@
+import { Meta, Canvas, ArgTypes } from '@storybook/blocks';
+import * as StatusStories from './StatusIndicator.stories';
+
+<Meta of={StatusStories} />
+
+# StatusIndicator
+
+Availability signal for the AI chat assistant — 7px dot, IBM Plex Mono 10px uppercase. Renders **below** ChatInput, never inside it. Online state blinks; offline state is static and dropped to disabled-text.
+
+## States
+
+### Online
+
+Default state. Blinking green-bright dot signals readiness — same color as the cursor blink and input caret.
+
+<Canvas of={StatusStories.Online} />
+
+### Offline
+
+API unreachable or backend down. Dot and label both drop to text-disabled.
+
+<Canvas of={StatusStories.Offline} />
+
+### Reserved states
+
+Warning and Error are available programmatically but not shown by default in the chat widget.
+
+<Canvas of={StatusStories.Warning} />
+<Canvas of={StatusStories.ErrorState} />
+
+## Do's
+
+- **Render below ChatInput.** Never nest it inside the input component.
+- **Use standard labels.** `ONLINE · assistant ready` / `OFFLINE · responses unavailable`.
+- **Keep online blink enabled.** `blink` defaults to `true` for online — the blink is the readiness signal.
+
+## Don'ts
+
+- **Don't use "offline" for loading.** A request in-flight is still "online" — loading is an active state.
+- **Don't show error state by default.** It surfaces programmatically on API failure only.
+
+## Props
+
+<ArgTypes of={StatusStories} />

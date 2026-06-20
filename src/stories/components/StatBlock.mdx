@@ -1,0 +1,63 @@
+import { Meta, Canvas, ArgTypes } from '@storybook/blocks';
+import * as StatStories from './StatBlock.stories';
+
+<Meta of={StatStories} />
+
+# StatBlock
+
+Outcome stat cell — headline value in phosphor green at display weight, short label in ALL CAPS, optional one-line context body. The value is what the eye lands on first. Always use `StatGrid` to compose multiple cells — the grid technique (background: border-subtle, gap: 1px) produces hairline dividers without doubling borders.
+
+## With context body
+
+<Canvas of={StatStories.Default} />
+
+## Without context body
+
+When the value speaks for itself, omit the body.
+
+<Canvas of={StatStories.NoBody} />
+
+## Non-numeric value
+
+Short words work in the value slot when the body adds specifics.
+
+<Canvas of={StatStories.TextValue} />
+
+## 2-column grid
+
+Default `StatGrid` layout — holds 2 or 4 cells.
+
+<Canvas of={StatStories.TwoColumn} />
+
+## 3-column grid
+
+Use `cols={3}` when there are exactly 3 headline outcome stats.
+
+<Canvas of={StatStories.ThreeColumn} />
+
+## Value vocabulary
+
+| Type | Examples |
+|------|---------|
+| Percentage | `+4–6%`, `+23%` |
+| Currency | `$1B`, `$800M` |
+| Time | `< 3 mo.` |
+| Direction | `↓ Calls` |
+| Qualitative | `Scaled`, `Shipped`, `Adopted`, `Launched` |
+
+## Do's
+
+- **Always use `StatGrid` wrapper.** Never lay out cells manually.
+- **Use concrete values.** `+4–6%` not "Improved significantly."
+- **Omit `body` when the value is self-explanatory.** `$1B` with "Contract won" needs no body.
+- **Label in ALL CAPS.** "Conversion lift · P&C", "Contract won".
+
+## Don'ts
+
+- **Don't use vague qualifiers as values.** "Improved", "Better", "Enhanced" are not values.
+- **Don't force a body sentence** if the value already tells the story.
+- **Don't use `cols={3}` for 2 cells.** Use the default 2-col grid.
+
+## Props
+
+<ArgTypes of={StatStories} />
