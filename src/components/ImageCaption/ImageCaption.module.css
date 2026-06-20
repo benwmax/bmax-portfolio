@@ -1,0 +1,84 @@
+/* Outer figure wrapper */
+.figure {
+  margin: 28px 0 0;
+}
+
+/* Terminal-chrome inset — mimics a desktop window */
+.chrome {
+  border: 1px solid var(--color-border-default);
+  border-radius: 3px;
+  background: var(--color-bg-surface);
+  overflow: hidden;
+}
+
+/* Title bar with traffic-light dots + tab label */
+.titleBar {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: var(--radius-full);
+  background: var(--color-border-strong);
+  flex-shrink: 0;
+}
+
+/* Third dot uses green-mid to signal "live" — consistent with terminal green system */
+.dotGreen {
+  background: var(--color-green-mid);
+}
+
+.tabLabel {
+  font-family: var(--font-mono-ui);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--color-text-tertiary);
+  margin-left: 8px;
+}
+
+/* Content area — dot-grid background when no image is provided */
+.body {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background-color: var(--color-bg-raised);
+  background-image: radial-gradient(circle, var(--color-bg-dot) 1px, transparent 1px);
+  background-size: 18px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Placeholder text shown until a real screenshot is dropped in */
+.placeholder {
+  font-family: var(--font-mono-ui);
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  color: var(--color-text-muted);
+}
+
+.placeholderPrompt {
+  color: var(--color-green-accent);
+}
+
+/* Real image — fills the chrome body, no letterboxing */
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Fig caption — mono-ui, tertiary, below the chrome */
+.caption {
+  font-family: var(--font-mono-ui);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--color-text-tertiary);
+  margin-top: 10px;
+}

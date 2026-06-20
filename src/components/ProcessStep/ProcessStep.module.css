@@ -1,0 +1,83 @@
+/* Individual step card */
+.step {
+  display: flex;
+  gap: 18px;
+  padding: 18px;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+}
+
+/* Numbered chip — green accent, left-aligned */
+.num {
+  flex: 0 0 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono-display);
+  font-weight: 700;
+  font-size: 12px;
+  color: var(--color-green-accent);
+  border: 1px solid var(--color-green-border);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Phase label — e.g. "Align", "Discover" — tertiary, ultra-wide tracking */
+.phase {
+  font-family: var(--font-mono-display);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+}
+
+/* Step title — primary, display font */
+.title {
+  font-family: var(--font-mono-display);
+  font-size: 14px;
+  color: var(--color-text-primary);
+}
+
+.body {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  margin: 0;
+  max-width: 62ch;
+}
+
+/* Artifact method tag — amber, signals "this is what we used" */
+.artifact {
+  align-self: flex-start;
+  font-family: var(--font-mono-display);
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-amber-accent);
+  border: 1px solid var(--color-amber-deep);
+  border-radius: 2px;
+  padding: 3px 8px;
+  margin-top: 2px;
+}
+
+/* List wrapper — 2px gap creates a faint seam between cards */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}

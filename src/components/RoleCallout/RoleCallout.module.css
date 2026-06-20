@@ -1,0 +1,36 @@
+/* Table-style row: fixed-width label column + flowing content */
+.row {
+  display: flex;
+  gap: 16px;
+  padding: 13px 0;
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.row:last-child {
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+/* Label — fixed 132px, mono-ui, uppercase, tertiary */
+.label {
+  flex: 0 0 132px;
+  font-family: var(--font-mono-ui);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+  padding-top: 2px;
+}
+
+/* Content — sans serif prose, primary color */
+.content {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-text-primary);
+}
+
+/* List wrapper — stacks rows with no gap (borders handle separation) */
+.list {
+  display: flex;
+  flex-direction: column;
+}

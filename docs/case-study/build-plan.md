@@ -35,8 +35,8 @@ lead case study — documenting it as it happens is as important as building it.
 |-------|------|--------|------------|
 | 0 | Setup | In progress — 1 item remaining (visual style references) | — |
 | 1 | Strategy and Content | In progress | — |
-| 2 | Visual Identity | Not started | Style references — confirmed pending (2026-06-15), top priority |
-| 3 | Storybook Foundation | In progress | Phase 2 (for token-dependent sub-items only) |
+| 2 | Visual Identity | Complete (2026-06-17) | — |
+| 3 | Storybook Foundation | In progress — Layers 1–2 substantially complete; Layers 3–5 and 3G remaining | — |
 | 4 | Site Assembly | Not started | Phases 1 + 3 |
 | 5 | QA and Pre-Launch | Not started | Phase 4 |
 | 6 | Launch | Not started | Phase 5 |
@@ -124,8 +124,7 @@ Per case study, document:
 ---
 
 ## Phase 2 — Visual Identity
-*Blocked until style references are provided — confirmed still pending
-(2026-06-15), see Phase 0*
+*Complete (2026-06-17)*
 
 - [x] Review style references (2026-06-17)
 - [x] Define color palette (2026-06-17)
@@ -150,7 +149,7 @@ first item) has started independently — see note.*
 - [x] Tailwind CSS with custom theme (tokens from Phase 2)
 - [x] ShadCN initialization
 - [x] Storybook 8 initialization
-- [ ] ESLint, Prettier, path aliases
+- [ ] ESLint, Prettier, path aliases — ESLint done (`eslint.config.js` exists); Prettier config and path aliases still pending
 - [ ] README written (public repo — make it intentional)
 
 ### 3B. Layer 1 — Token system
@@ -166,7 +165,8 @@ first item) has started independently — see note.*
 Each component requires: Default story + all meaningful state stories.
 Story descriptions explain design decisions, not just props.
 - [x] Button (primary, secondary, ghost, destructive + all states) (2026-06-17)
-- [ ] Input, Textarea, Select
+- [x] Input / Textarea (Input component with multiline prop covers Textarea; full stories) (2026-06-19)
+- [ ] Select
 - [x] Badge, Tag (2026-06-17)
 - [ ] Icon wrapper
 - [ ] Link
@@ -180,21 +180,22 @@ Story descriptions explain design decisions, not just props.
 
 ### 3E. Layer 4 — Portfolio-specific components
 - [x] CaseStudyCard (homepage thumbnail) (2026-06-17)
-- [ ] CaseStudyHero (full-bleed header with title, company, outcome stat)
-- [ ] StatBlock
-- [ ] ProcessStep
-- [ ] ImageCaption
-- [ ] RoleCallout
+- [x] CaseStudyHero (hero header: number, date range, title, subtitle, meta grid) (2026-06-19)
+- [x] StatBlock (outcome stat cell with value, label, optional body; StatGrid wrapper) (2026-06-19)
+- [x] ProcessStep (numbered process card with phase, title, body, artifact tag; ProcessSteps wrapper) (2026-06-19)
+- [x] ImageCaption (terminal-chrome image frame with tab label, dot-grid placeholder, caption) (2026-06-19)
+- [x] RoleCallout (role ownership row with fixed label column; RoleCallouts wrapper) (2026-06-19)
 - [ ] QuoteBlock
 - [ ] TimelineEntry
 - [x] NavBar shell — desktop only (2026-06-17)
 - [ ] MobileMenu (pending — build after layout direction locked)
-- [x] ChatInput (shell — styling pending design exploration) (2026-06-17)
-- [x] StatusIndicator (shell — styling pending design exploration) (2026-06-17)
+- [x] ChatInput (2026-06-17)
+- [x] StatusIndicator (2026-06-17)
+- [x] Contact page component (email + LinkedIn channels, receipt strip, copy actions) (2026-06-19)
 
 ### 3F. Layer 5 — Page templates
-- [ ] Home
-- [ ] Case Study
+- [x] Home (Homepage.stories.tsx — split hero, work grid, docked rail, mobile viewport) (2026-06-19)
+- [x] Case Study (CaseStudyPage.tsx — sidebar TOC, scroll progress, 8 sections, artifact inset, outcome grid, docked chat) (2026-06-19)
 - [ ] About / Resume
 - [ ] 404
 Each documented as a full-page Storybook story.
@@ -249,6 +250,8 @@ independently; only the widget's visual styling depends on those.*
 - [x] Architecture and safeguards plan drafted: Edge Function proxy,
       Haiku 4.5, system prompt, Upstash rate limiting, dedicated Anthropic
       Workspace with spend limit (2026-06-15)
+- [x] FAB button — mobile floating chat button for continuity between
+      homepage hero and docked rail (2026-06-19)
 - [ ] Create dedicated Anthropic Workspace + API key, set spend limit and
       email alert
 - [ ] Create Upstash Redis database, add REST credentials to Vercel env
@@ -336,13 +339,13 @@ last thing written and the first thing that gets rushed.
 
 ---
 
-*Last updated: 2026-06-15 — Added Phase 4F (AI chat feature); corrected
-Phase 1 status to "In progress"; checked off Phase 3A Vite/React/TS
-scaffolding per CLAUDE.md and moved Phase 3 to "In progress"; confirmed with
-Ben that visual style references are still pending — unchecked that item in
-Phase 0, moved Phase 0 to "In progress," and reconfirmed Phase 2's block as
-the active critical-path item; marked Upfluent, USAA, and Sabre all complete
-in Phase 1B per Ben (all three case studies have been rewritten).*
+*Last updated: 2026-06-19 — Phase 2 marked complete (wordmark finalized);
+Input/Textarea checked off (Input component with multiline prop); Contact
+page component added and checked off; Homepage.stories.tsx full-page template
+checked off in Phase 3F; FAB button added and checked off under Phase 4F;
+ChatInput and StatusIndicator "shell/pending" qualifiers removed (both fully
+styled); Phase Status table updated for Phases 2 and 3; ESLint noted as done
+within the Prettier/aliases item. Design Sessions 1–3 noted where relevant.*
 *See also: decisions.md — significant choices and reasoning*
 *See also: key-insights.md — strategic insights from initial analysis*
 *See also: process-journal.md — running build log*

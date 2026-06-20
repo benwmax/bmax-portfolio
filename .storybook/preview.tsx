@@ -6,6 +6,7 @@ const withPageBackground: Decorator = (Story) => (
   <div
     style={{
       minHeight: '100vh',
+      width: '100%',
       background: 'var(--color-bg-page)',
       display: 'flex',
       alignItems: 'center',

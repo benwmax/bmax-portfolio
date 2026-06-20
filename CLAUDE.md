@@ -404,14 +404,13 @@ to check off?"*
 
 ## Current Project Status
 
-**Phase:** 1 (content) + 2 (visual identity) + 3 (component foundations)
-all active in parallel. Phase 2 substantially complete — visual identity
-finalized, tokens written, one item remaining (wordmark asset). Phase 3
-foundations complete — Storybook scaffolded, tokens wired, primitive shells
-built. Claude Design sessions are the current critical path for layout direction
-before component styling begins.
+**Phase:** 1 (content) + 3 (component build-out) active in parallel. Phase 2
+complete — visual identity finalized, tokens written, wordmark locked.
+Phase 3 Layers 1–2 substantially complete; Layers 3–5 and Storybook deploy
+(3G) remaining. Design Sessions 1–3 complete; Session 4 (component detail
+explorations) is next.
 
-**Last updated:** 2026-06-17
+**Last updated:** 2026-06-19
 
 **Completed:**
 - Domain confirmed: viewbens.work (existing site stays live until launch)
@@ -432,31 +431,29 @@ before component styling begins.
 - Version A vs. Version B drafting methods stress-tested and compared
 - Upfluent, USAA, and Sabre case studies all rewritten (2026-06-15) —
   Phase 1B complete
-- AI chat feature: architecture and safeguards plan drafted, core files
-  written (api/chat.ts, system-prompt.ts, rate-limit.ts) (2026-06-15) — see
-  decisions.md and build-plan.md Phase 4F
+- AI chat feature: architecture and safeguards plan drafted (2026-06-15) —
+  api/ files not yet created (see build-plan.md Phase 4F for remaining steps)
 - Visual identity direction finalized — style references provided,
-  palette locked, tokens written (2026-06-17) — Phase 2 substantially complete
+  palette locked, tokens written, wordmark locked (2026-06-17) — Phase 2 complete
 - Storybook 8 installed and scaffolded (2026-06-17)
 - Token foundations documented in Storybook (2026-06-17)
 - src/tokens/tokens.css wired into Tailwind config (2026-06-17)
-- Primitive component shells created (Button, NavBar, ChatInput,
-  CaseStudyCard, Tag, StatusIndicator) with Storybook stories (2026-06-17)
-- Commit tokens.css and doc updates to repo before first Claude Design session
+- Primitive components built with full Storybook stories: Button, NavBar,
+  ChatInput, Input (Textarea via multiline prop), CaseStudyCard, Tag,
+  StatusIndicator, Contact page component (2026-06-17–2026-06-19)
+- Homepage.stories.tsx full-page layout template (split hero, work grid,
+  docked rail, mobile viewport) (2026-06-19)
+- FAB button for mobile chat continuity (2026-06-19)
+- Claude Design Sessions 1 (wordmark), 2 (homepage layout), 3 (case study
+  page layout) complete
 
 **Immediate next steps:**
-- Add usaa.md, upfluent.md, and sabre.md to repo at docs/case-studies/
-- Log decisions.md entry: USAA draft method decision (2026-06-09)
-- Log process-journal.md entry: USAA case study session (2026-06-09)
 - Sagent brain dump in progress (parallel track, build-plan 1C)
-- AI chat feature: see build-plan.md Phase 4F for setup steps (Anthropic
-  Workspace + Upstash setup, commit files, build widget, deploy, tune)
-- Claude Design Session 1: wordmark exploration (BM_, 3 directions)
-- Claude Design Session 2: homepage layout (after wordmark locked)
-- Claude Design Session 3: case study page layout
-- Claude Design Session 4: component detail explorations
-
-- Style primitive component shells once design explorations are locked (Phase 3)
+- AI chat feature: create api/ files (chat.ts, system-prompt.ts,
+  rate-limit.ts) and .env.example, then commit — see build-plan.md Phase 4F
+- Claude Design Session 4: component detail explorations (Sessions 1–3 done)
+- Style remaining Phase 3 component shells (Layers 3–5 per build-plan.md)
+- ESLint config exists; add Prettier config and path aliases (Phase 3A)
 
 **Decisions still open:**
 - Market Rebellion: not a standalone case study (decided); whether/where to
