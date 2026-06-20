@@ -18,6 +18,21 @@ const meta = {
           'without doubling borders — each cell has its own background that covers the grid color.',
       },
     },
+    ai: {
+      guidance:
+        'Outcome stat cell — phosphor green headline value, ALL CAPS label, optional context body. Always use StatGrid wrapper for multiple cells. Never lay out cells manually.',
+      contentRules: [
+        'value: concrete number or short word — "+4–6%", "$1B", "< 3 mo.", "Scaled", "Shipped".',
+        'label: ALL CAPS descriptor — "Conversion lift · P&C", "Contract won".',
+        'body: one sentence of context — "Homeowners up 5%." Keep it short.',
+        'Always use StatGrid wrapper — never lay out cells manually.',
+      ],
+      avoid: [
+        "Don't use vague qualifiers as values: 'Improved', 'Better', 'Enhanced'.",
+        "Don't force a body sentence if the value speaks for itself.",
+        "Don't lay out StatBlock cells without StatGrid.",
+      ],
+    },
   },
 } satisfies Meta<typeof StatBlock>;
 
@@ -26,6 +41,17 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   name: 'With context body',
+  parameters: {
+    ai: {
+      guidance:
+        'The standard stat cell: headline value + ALL CAPS label + one-line context body.',
+      contentRules: [
+        'value: "+4–6%", "$1B", "< 3 mo.", "Scaled", "Shipped".',
+        'label: ALL CAPS — "Conversion lift · P&C", "Contract won", "Mobile redesign ship".',
+        'body: one sentence — "Homeowners up 5%." Short, specific.',
+      ],
+    },
+  },
   args: {
     value: '+4–6%',
     label: 'Conversion lift · P&C',
@@ -46,6 +72,13 @@ export const NoBody: Story = {
           'When the value is self-explanatory, omit the body. The green number carries the weight.',
       },
     },
+    ai: {
+      guidance:
+        "Use when the value is self-explanatory. '$1B' with 'Contract won' needs no body sentence.",
+      avoid: [
+        "Don't force a body sentence if the value speaks for itself.",
+      ],
+    },
   },
 };
 
@@ -63,6 +96,16 @@ export const TextValue: Story = {
           'Not all outcomes are numbers. Short words ("Scaled", "Shipped", "Adopted") work in the value slot when the body adds the specifics.',
       },
     },
+    ai: {
+      guidance:
+        'Short words ("Scaled", "Shipped", "Adopted") work in the value slot when the body adds the specifics.',
+      contentRules: [
+        'Non-numeric values: past tense or qualitative — "Scaled", "Adopted", "Launched", "Shipped".',
+      ],
+      avoid: [
+        "Don't use vague qualifiers: 'Improved', 'Better', 'Enhanced' — these don't land.",
+      ],
+    },
   },
 };
 
@@ -78,6 +121,14 @@ export const TwoColumn: Story = {
         story:
           'StatGrid (2-col default) composing four StatBlock cells. The 1px hairline grid is the background color showing through 1px gaps.',
       },
+    },
+    ai: {
+      guidance:
+        'Use StatGrid (default 2-col) for 2 or 4 outcome cells. The 1px hairline is the background color showing through — never replicate this manually.',
+      contentRules: [
+        'Always use StatGrid wrapper.',
+        '2-col grid (default) holds 2 or 4 cells.',
+      ],
     },
   },
   render: () => (
@@ -113,6 +164,13 @@ export const ThreeColumn: Story = {
       description: {
         story: 'StatGrid cols={3} for cases with three headline stats.',
       },
+    },
+    ai: {
+      guidance:
+        'Use StatGrid cols={3} when there are exactly 3 headline outcome stats.',
+      avoid: [
+        "Don't force 3 cells when you only have 2 — use the default 2-col grid.",
+      ],
     },
   },
   render: () => (

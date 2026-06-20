@@ -19,6 +19,20 @@ const meta = {
           'your router pathname. The active link gets green-accent color; no fill, no underline.',
       },
     },
+    ai: {
+      guidance:
+        'Site header — present on every page. Three fixed nav links: Work, About, Contact. Always wire activePath to the current router pathname.',
+      contentRules: [
+        'Nav links are fixed: Work (/work), About (/about), Contact (/contact). Do not add custom links.',
+        'The BM_ wordmark with blinking underscore is the identity mark — do not modify it.',
+        'Active link gets green-accent color + aria-current="page". No underline, no fill.',
+      ],
+      avoid: [
+        "Don't add a mobile hamburger — three links fit at 390px without collapsing.",
+        "Don't leave activePath undefined in production — always wire it to the router pathname.",
+        "Don't add extra nav links or dropdown menus.",
+      ],
+    },
   },
 } satisfies Meta<typeof NavBar>;
 
@@ -35,6 +49,13 @@ export const Default: Story = {
           'All three links render at their default disabled-text color (#3d4035). ' +
           'The wordmark still links home; only the nav links lose their active treatment.',
       },
+    },
+    ai: {
+      guidance:
+        'Use this pattern for 404 pages or before the router has resolved — all links at rest, none active.',
+      avoid: [
+        "Don't leave activePath unset in production — always wire it to the router pathname.",
+      ],
     },
   },
   args: {
@@ -54,6 +75,14 @@ export const WorkActive: Story = {
           'color alone carries the active signal.',
       },
     },
+    ai: {
+      guidance:
+        "The homepage production state. Pass activePath='/work' to mark the Work link active.",
+      contentRules: [
+        "Active link: green-accent (#00e054) color + aria-current='page'.",
+        'No underline, no fill, no background change — color alone carries the active signal.',
+      ],
+    },
   },
   args: {
     activePath: '/work',
@@ -69,6 +98,13 @@ export const AboutActive: Story = {
           'About page state. Same active treatment — green-accent link, ' +
           'aria-current="page", all other links remain at disabled-text.',
       },
+    },
+    ai: {
+      guidance:
+        "About page state. Pass activePath='/about'.",
+      avoid: [
+        "Don't add custom nav links or a mobile hamburger — three links fit at 390px.",
+      ],
     },
   },
   args: {

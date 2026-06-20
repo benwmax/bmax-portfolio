@@ -19,6 +19,20 @@ const meta = {
           'Caption is mono-ui 10px tertiary — subordinate to the image, visible but not competing.',
       },
     },
+    ai: {
+      guidance:
+        'Terminal-chrome frame for all case study screenshots and artifact images. Always use this — never a plain <img> tag for portfolio artifacts.',
+      contentRules: [
+        'tabLabel format: "project · artifact-type" — e.g., "usaa · A/B test pipeline", "sabre-red · hotel-workspace".',
+        'caption format: "Fig. 01 — description." — numbered, em dash, period.',
+        'Omit src while the actual screenshot is being sourced — the dot-grid placeholder is intentional.',
+      ],
+      avoid: [
+        "Never use a plain <img> tag for case study artifacts.",
+        "Don't use a grey box placeholder — the dot-grid treatment is the system default.",
+        "Don't skip the caption — figcaption is part of the semantic structure.",
+      ],
+    },
   },
 } satisfies Meta<typeof ImageCaption>;
 
@@ -27,6 +41,16 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   name: 'Placeholder (no image)',
+  parameters: {
+    ai: {
+      guidance:
+        'Use while the actual screenshot is being sourced. The dot-grid placeholder with › prompt signals "image goes here" in the terminal aesthetic.',
+      contentRules: [
+        'tabLabel: "project · artifact-type" — "usaa · A/B test pipeline".',
+        'caption: "Fig. 01 — description." — numbered, em dash, period.',
+      ],
+    },
+  },
   args: {
     tabLabel: 'usaa · A/B test → redesign pipeline',
     caption: 'Fig. 01 — A/B test → redesign pipeline.',
@@ -35,6 +59,16 @@ export const Default: Story = {
 
 export const SabrePlaceholder: Story = {
   name: 'Sabre — hotel workspace placeholder',
+  parameters: {
+    ai: {
+      guidance:
+        'Reference for the correct tab-label format in the Sabre case study.',
+      contentRules: [
+        'Tab label uses the project codename in kebab-case: "sabre-red · hotel-workspace".',
+        'The · separator (U+00B7 middle dot) is the standard separator between project and artifact.',
+      ],
+    },
+  },
   args: {
     tabLabel: 'sabre-red · hotel-workspace',
     caption:

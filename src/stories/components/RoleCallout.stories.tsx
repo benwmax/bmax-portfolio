@@ -18,6 +18,20 @@ const meta = {
           'content reads as a story — the contrast between them creates hierarchy without headings.',
       },
     },
+    ai: {
+      guidance:
+        'Explicit ownership rows for the Role section of a case study. 132px fixed label column, flowing prose content. Always use RoleCallouts wrapper for multiple rows.',
+      contentRules: [
+        'label: short ownership descriptor — "Owned", "In the room", "Director layer", "Started as", "Became".',
+        'content: 1–2 sentences, first person, active voice.',
+        'Standard 3-row pattern: Owned → Director layer → In the room.',
+        'Always wrap rows in RoleCallouts — never lay out rows manually.',
+      ],
+      avoid: [
+        "Don't list every task — pick the three that define the scope and level of ownership.",
+        "Don't use vague content: 'I was the lead designer'. Be specific: 'I sat between the team and our Director'.",
+      ],
+    },
   },
 } satisfies Meta<typeof RoleCallout>;
 
@@ -26,6 +40,16 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   name: 'Single row',
+  parameters: {
+    ai: {
+      guidance:
+        'A single ownership row. Rarely used alone — typically combined in a RoleCallouts list.',
+      contentRules: [
+        'label: "Owned", "In the room", "Director layer", "Started as", "Became".',
+        'content: 1–2 sentences, first person, active voice.',
+      ],
+    },
+  },
   args: {
     label: 'Owned',
     content:
@@ -46,6 +70,18 @@ export const List: Story = {
           'Three rows composed with the RoleCallouts wrapper. ' +
           'Each row answers a different question: what was owned, what was not, what was the key moment.',
       },
+    },
+    ai: {
+      guidance:
+        'The canonical 3-row pattern: what was owned, what the director layer handled, what the key in-the-room moment was.',
+      contentRules: [
+        'Standard labels: "Owned", "Director layer", "In the room".',
+        'Wrap rows in RoleCallouts — never lay out rows manually.',
+        'Content should be specific and first person: "I sat between the team and our Director" not "I was the lead designer".',
+      ],
+      avoid: [
+        "Don't list every task — pick the three rows that define scope and level.",
+      ],
     },
   },
   render: () => (
@@ -78,6 +114,17 @@ export const LeadershipStory: Story = {
         story:
           'When a role includes unexpected scope expansion, the label slot can call it out directly.',
       },
+    },
+    ai: {
+      guidance:
+        'Use when the role evolved significantly mid-engagement — label the progression explicitly: "Started as" → "Became" → "In the room".',
+      contentRules: [
+        'This pattern is specific to Sagent — where the Design Director left unexpectedly.',
+        'Labels: "Started as", "Became", "In the room".',
+      ],
+      avoid: [
+        "Don't use this progression pattern for roles that didn't have unexpected scope expansion.",
+      ],
     },
   },
   render: () => (

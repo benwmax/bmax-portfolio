@@ -18,6 +18,26 @@ const meta = {
           'and hides below 1100px viewport width.',
       },
     },
+    ai: {
+      guidance:
+        'The canonical case study page template. Always use this template — never build a case study page from scratch. Pass a CaseStudyContent object for each case study.',
+      contentRules: [
+        'CaseStudyContent has a strict 8-section schema: problem, role, userContext, process, keyDecision, whatWasHard, outcomes, whatIdDoDifferently.',
+        'The 8 sections are mandatory and in that order — the sidebar TOC is generated from them.',
+        'All 8 sections must be populated. Do not skip sections.',
+        'heroTitle must be a problem statement: "Modernizing X without Y", "Making X learnable for Y". Never use it as a project description.',
+        'heroSubtitle is 2–4 sentences that set up the problem context.',
+        'meta array: role and method cells are plain values; outcome cells use accent: true for hard numbers only.',
+        'process array maps to ProcessStep components — each entry needs phase, title, body, artifact.',
+        'outcomes array maps to StatBlock components — value, label, optional body.',
+      ],
+      avoid: [
+        "Never build a case study page layout from scratch — always use this template.",
+        "Don't change the 8-section order.",
+        "Don't use accent: true for role, method, or non-numeric meta values.",
+        "Don't write heroTitle as a project description — it must be a problem statement.",
+      ],
+    },
   },
   argTypes: {
     layout: {
@@ -150,6 +170,30 @@ const USAA: CaseStudyContent = {
 
 export const Default: Story = {
   name: 'USAA — Sidebar + Chat',
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The canonical case study layout: sidebar TOC, 8 content sections, docked chat panel. ' +
+          'USAA is the reference implementation — all other case studies follow this structure.',
+      },
+    },
+    ai: {
+      guidance:
+        'The canonical case study page: sidebar TOC, 8 content sections, docked chat panel, scroll progress bar. Pass a CaseStudyContent object — never build the layout from primitives.',
+      contentRules: [
+        'layout="sidebar" is the intended production experience.',
+        'showChat={true} enables the docked chat panel on the right.',
+        'The 8 sections are mandatory: problem, role, userContext, process, keyDecision, whatWasHard, outcomes, whatIdDoDifferently.',
+        'chatSuggestions: 2–3 conversation starters relevant to this case study.',
+        'nextCase: { title, href } links to the next case study in order.',
+      ],
+      avoid: [
+        "Never build a case study page layout from scratch — always use this template.",
+        "Don't change the section order.",
+      ],
+    },
+  },
   args: {
     ...USAA,
     layout: 'sidebar',
@@ -171,6 +215,14 @@ export const Linear: Story = {
         story:
           'Linear layout with no sidebar TOC and no chat panel — fallback for smaller viewports or when sidebar is not wanted.',
       },
+    },
+    ai: {
+      guidance:
+        'Fallback layout for narrower viewports or when sidebar is not needed. Use layout="linear" and showChat={false}.',
+      avoid: [
+        "Don't use linear as the default — sidebar + chat is the intended production experience.",
+        "Don't omit sections just because the layout is linear — all 8 sections are still required.",
+      ],
     },
   },
 };
@@ -195,6 +247,14 @@ export const WithConversation: Story = {
       description: {
         story: 'Docked panel with an in-progress conversation pre-seeded.',
       },
+    },
+    ai: {
+      guidance:
+        'Case study page with the docked chat panel pre-populated. Use initialMessages to seed the conversation for demonstration or testing.',
+      contentRules: [
+        'Pass initialMessages as [{ role: "user", text: "..." }, { role: "assistant", text: "..." }].',
+        'chatSuggestions on the case study become the initial prompt chips.',
+      ],
     },
   },
 };

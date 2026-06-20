@@ -349,6 +349,39 @@ surface, motion, shadow, layout widths, and per-component font/color/tracking to
 
 ---
 
+## Component Usage
+
+Before building any new UI component or page section, read `docs/ai-component-guide.md`.
+It is the authoritative reference for all components, page templates, composition patterns,
+and things that were intentionally left out of scope.
+
+1. **Prefer existing components over building new ones.** If the component you need doesn't
+   appear in the component inventory, check whether it was intentionally removed from scope
+   before building something new. Many obvious components (Select, Avatar, Icon wrapper,
+   MobileMenu) were explicitly cut.
+
+2. **Every component and story has `parameters.ai` guidance.** When working in a story file,
+   read the `ai` parameter block before writing new stories or new component variants. The
+   guidance, contentRules, and avoid fields reflect real decisions — not defaults.
+
+3. **Never hardcode hex values or arbitrary spacing.** Always use CSS custom properties
+   (`--color-*`, `--space-*`, `--radius-*`) or Tailwind token classes. All hex values are
+   documented in Foundations/Colors. All spacing values are documented in Foundations/Spacing.
+
+4. **The five canonical industry labels are: Travel, Fintech, Mortgage, Insurance, AI Collaboration.**
+   Do not invent new industry labels. These are the only tags used across all case study cards
+   and Tag components.
+
+5. **The case study order is finalized:** 01 Portfolio Rebuild, 02 Upfluent, 03 Sagent,
+   04 USAA, 05 Sabre. Index chips and meta must reflect this order. Do not reorder without
+   flagging it explicitly and explaining the strategic reason.
+
+6. **Components removed from scope are intentionally absent.** The following were cut and
+   should not be built: Select, Icon wrapper, Link component, Avatar, Container/Section/Grid/
+   Divider layout primitives, QuoteBlock, TimelineEntry, MobileMenu. See the guide for details.
+
+---
+
 ## AI Chat Feature
 
 A live AI assistant embedded on the portfolio site, letting visitors ask

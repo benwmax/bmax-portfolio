@@ -17,6 +17,23 @@ const meta = {
           'Use ProcessSteps wrapper to compose multiple cards with the 2px seam between them.',
       },
     },
+    ai: {
+      guidance:
+        'Numbered process step cards for case study process sections. Always use ProcessSteps wrapper for multiple steps. Body reads like something that happened — not a methodology list.',
+      contentRules: [
+        'num: 1-based integer.',
+        'phase: one-word label — "Assess", "Align", "Build", "Discover", "Define", "Test".',
+        'title: one-line step label.',
+        'body: 1–3 sentences describing what actually happened. First person or observational.',
+        'artifact: method names joined with · — "Field observation · Analytics review".',
+        'Always wrap steps in ProcessSteps — never lay out cards manually.',
+      ],
+      avoid: [
+        "Don't write body as a methodology list: 'Conducted X methodology'. Write what happened: 'They kept leaving the tool mid-call'.",
+        "Don't exceed 5 steps — the process section should be scannable.",
+        "Don't use ProcessSteps outside of a case study process section.",
+      ],
+    },
   },
 } satisfies Meta<typeof ProcessStep>;
 
@@ -25,6 +42,17 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   name: 'Single step',
+  parameters: {
+    ai: {
+      guidance:
+        'A single process step. Rarely used alone — typically composed in a ProcessSteps list of 2–4 steps.',
+      contentRules: [
+        'phase: "Assess", "Align", "Build", "Discover", "Define", "Test" — one word.',
+        'body: what actually happened, 1–3 sentences. Not "Conducted X".',
+        'artifact: "Method A · Method B" — method names with · separator.',
+      ],
+    },
+  },
   args: {
     num: 1,
     phase: 'Assess',
@@ -50,6 +78,13 @@ export const List: Story = {
           'Three steps composed with the ProcessSteps wrapper. ' +
           'The 2px gap between cards creates a faint seam that groups them visually without merging borders.',
       },
+    },
+    ai: {
+      guidance:
+        'The canonical 3-step process section. Wrap all steps in ProcessSteps — never lay out cards manually.',
+      avoid: [
+        "Don't exceed 5 steps — the process section should be scannable.",
+      ],
     },
   },
   render: () => (
@@ -94,6 +129,14 @@ export const FieldResearch: Story = {
         story:
           'The body should read like something that happened — not a methodology list. One observation beats a bullet of frameworks.',
       },
+    },
+    ai: {
+      guidance:
+        'Reference for how to write the body — it reads as an observation, not a methodology. "They kept leaving the tool mid-call for Expedia" not "Conducted field observation sessions".',
+      contentRules: [
+        'One sharp observation beats a bullet list of frameworks.',
+        'Past tense, first or third person: "We found...", "They told us...", "The data showed...".',
+      ],
     },
   },
 };

@@ -3,7 +3,24 @@ import type { ReactNode } from 'react';
 
 const meta = {
   title: 'Foundations/Spacing',
-  parameters: { layout: 'fullscreen' },
+  parameters: {
+    layout: 'fullscreen',
+    ai: {
+      guidance:
+        'Consult before choosing spacing, radius, or motion values. Base-4 spacing scale, sharp radius system, minimal motion.',
+      contentRules: [
+        'Spacing: base-4 scale, --space-1 (4px) through --space-24 (96px). Use token names — never arbitrary px values.',
+        'Border radius: 3px (--radius-md) is the system default. 0 for terminal-chrome elements. 9999px for dots and pills.',
+        'Motion: always --ease-default (cubic-bezier(0.4, 0, 0.2, 1)). Durations: fast (100ms) button presses, base (150ms) hover/focus, slow (250ms) panel transitions.',
+      ],
+      avoid: [
+        "Never use border-radius values outside the defined scale.",
+        "Never use arbitrary spacing values — always use token names.",
+        "Never use a different easing curve than --ease-default.",
+        "Never use motion durations longer than 250ms.",
+      ],
+    },
+  },
 } satisfies Meta;
 
 export default meta;
@@ -102,6 +119,17 @@ const MOTION = [
 
 export const Reference: Story = {
   name: 'Spacing & Layout Reference',
+  parameters: {
+    ai: {
+      guidance:
+        'Base-4 spacing scale, sharp radius system, minimal motion tokens. Consult before choosing any spacing, radius, or transition value.',
+      contentRules: [
+        '3px radius (--radius-md) is the system default. Use 0 for terminal-chrome elements, 9999px for dots.',
+        'All transitions use --ease-default and one of the three duration tokens.',
+        'Space scale: --space-1 (4px) to --space-24 (96px). Always use token names.',
+      ],
+    },
+  },
   render: () => (
     <div style={{ background: s.bg, padding: '48px', fontFamily: s.fontMono, minHeight: '100vh' }}>
       {/* Header */}

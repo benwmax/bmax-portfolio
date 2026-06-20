@@ -20,6 +20,20 @@ const meta = {
           'or offline (static grey dot).',
       },
     },
+    ai: {
+      guidance:
+        'Full AI chat widget — terminal prompt, ASK button, and StatusIndicator in one component. Use for the AI assistant on both the homepage and case study pages. Not a generic form input — use the bare Input component for that.',
+      contentRules: [
+        "Default placeholder: 'ask about my work…' — lowercase, trailing ellipsis, no period.",
+        "status='online' is the starting state.",
+        "Set showStatus={false} when the surrounding panel already carries its own StatusIndicator.",
+      ],
+      avoid: [
+        "Don't use ChatInput as a generic form input — use the bare Input component instead.",
+        "forceFocused is Storybook-only — never wire it to application state.",
+        "Don't use multiline for the compact homepage hero panel — single-line only there.",
+      ],
+    },
   },
   args: {
     onSubmit: fn(),
@@ -41,6 +55,14 @@ export const Default: Story = {
           'Click the field to trigger the focused state.',
       },
     },
+    ai: {
+      guidance:
+        'Use as the base pattern for an idle chat surface — no messages yet, assistant ready.',
+      contentRules: [
+        "status='online' is the default.",
+        "Placeholder 'ask about my work…' is the canonical default — match it exactly.",
+      ],
+    },
   },
   args: {
     status: 'online',
@@ -61,6 +83,13 @@ export const Focused: Story = {
           'same color when the field actually has keyboard focus.',
       },
     },
+    ai: {
+      guidance:
+        'Reference to preview the focused state: green border, phosphor bg, block caret. In production this triggers on real :focus.',
+      avoid: [
+        "forceFocused is a Storybook-only prop — don't wire it to application state.",
+      ],
+    },
   },
   args: {
     status: 'online',
@@ -78,6 +107,10 @@ export const Filled: Story = {
           'bg) persists while the field is populated — it invites submit even after blur. ' +
           'No block caret (caret only shows on focused-empty). Text in primary #ccd4b0.',
       },
+    },
+    ai: {
+      guidance:
+        'The active state (green border + phosphor bg) persists while the field has text, even after blur. Reference this story to confirm that behavior.',
     },
   },
   args: {
@@ -99,6 +132,15 @@ export const Loading: Story = {
           'loading is an active state, not an error.',
       },
     },
+    ai: {
+      guidance:
+        "Apply status='loading' while an API request is in-flight. The field goes read-only and the sweep animation runs.",
+      avoid: [
+        "Don't show a separate loading spinner — the ChatInput sweep animation is the loading affordance.",
+        "Don't clear the field while loading — the user's question stays visible.",
+        "Don't change the status to 'offline' during loading — loading is still 'online'.",
+      ],
+    },
   },
   args: {
     status: 'loading',
@@ -118,6 +160,14 @@ export const Offline: Story = {
           'draft a question while waiting for the connection to restore.',
       },
     },
+    ai: {
+      guidance:
+        "Apply status='offline' when the API endpoint is unreachable. ASK disables; the field stays interactive for drafting.",
+      contentRules: [
+        "The status bar shows 'OFFLINE · responses unavailable'.",
+        'The field stays interactive so the user can draft a question while waiting.',
+      ],
+    },
   },
   args: {
     status: 'offline',
@@ -136,6 +186,19 @@ export const Multiline: Story = {
           'the field. Submit via Cmd+Enter (Mac) or Ctrl+Enter (Win/Linux) — plain ' +
           'Enter inserts a newline.',
       },
+    },
+    ai: {
+      guidance:
+        'Use multiline={true} when the composer is the main input surface — the full case study right rail or an expanded chat panel. Grows to 6 lines, then scrolls.',
+      contentRules: [
+        'Cmd+Enter (Mac) or Ctrl+Enter (Win/Linux) submits.',
+        'Plain Enter inserts a newline.',
+        'Character counter shows in the bottom-right when content is multi-row.',
+      ],
+      avoid: [
+        "Don't use multiline for the compact homepage hero panel — single-line only there.",
+        "Don't set multiline on both homepage states — it's only for the expanded rail.",
+      ],
     },
   },
   args: {
@@ -158,6 +221,10 @@ export const MultilineLoading: Story = {
           'last line of text from colliding with the indicator. The 1px phosphor sweep ' +
           'still runs along the bottom border.',
       },
+    },
+    ai: {
+      guidance:
+        'Reference to confirm the loading state in the multiline composer — the char counter slot is replaced by the thinking indicator.',
     },
   },
   args: {
