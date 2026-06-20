@@ -188,8 +188,8 @@ Story descriptions explain design decisions, not just props.
 ### 3F. Layer 5 — Page templates
 - [x] Home (Homepage.stories.tsx — split hero, work grid, docked rail, mobile viewport) (2026-06-19)
 - [x] Case Study (CaseStudyPage.tsx — sidebar TOC, scroll progress, 8 sections, artifact inset, outcome grid, docked chat) (2026-06-19)
-- [x] About (AboutPage.tsx — intro, approach, leadership, career arc incl. Market Rebellion, what I'm looking for; footer) (2026-06-20)
-- [x] Resume (ResumePage.tsx — designed header, 6-role experience list with outcome bullets, 4-column skills grid) (2026-06-20)
+- [x] About (AboutPage.tsx — intro, approach, leadership, career arc incl. Market Rebellion, what I'm looking for; footer) (2026-06-20); career arc extended to include Aperia Solutions, PeopleAnswers, and AT&T (early roles, 2014–15) (2026-06-20)
+- [x] Resume (ResumePage.tsx — designed header, 9-role experience list with outcome bullets, 4-column skills grid; date-column width fixed from 80px → 140px to prevent overflow on longer date strings) (2026-06-20)
 - [x] 404 (NotFoundPage.tsx — terminal-themed shell error, link back home) (2026-06-20)
 Each documented as a full-page Storybook story.
 
@@ -335,7 +335,9 @@ All component layers, page templates, tooling (Prettier, path aliases), and READ
 
 *Last updated: 2026-06-20 — About, Resume, and 404 page templates built (3F
 complete); README replaced with intentional project README (3A complete); Phase
-0 marked complete; Phase 3 status updated — only Storybook deploy (3G) remaining.*
+0 marked complete; Phase 3 status updated — only Storybook deploy (3G) remaining.
+Early career history added to About and Resume pages (Aperia Solutions, PeopleAnswers,
+AT&T — 2014–15); Resume date-column CSS fixed to prevent overflow on longer date strings.*
 *See also: decisions.md — significant choices and reasoning*
 *See also: key-insights.md — strategic insights from initial analysis*
 *See also: process-journal.md — running build log*

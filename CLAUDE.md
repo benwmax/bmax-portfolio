@@ -408,7 +408,7 @@ to check off?"*
 complete. Phase 3 all Layers and tooling complete; only Storybook deploy (3G)
 remaining before Phase 4 can start. Design Sessions 1–3 complete; Session 4 next.
 
-**Last updated:** 2026-06-20
+**Last updated:** 2026-06-20 (early career history added to About + Resume)
 
 **Completed:**
 - Domain confirmed: viewbens.work (existing site stays live until launch)
@@ -461,8 +461,11 @@ remaining before Phase 4 can start. Design Sessions 1–3 complete; Session 4 ne
   API error messages (rate limit, session cap) as assistant messages (2026-06-20)
 - About, Resume, and 404 page templates built with full Storybook stories (2026-06-20) —
   Phase 3F complete. Market Rebellion included as a brief mention in About career arc
-  (decided 2026-06-20). AboutPage.tsx content is placeholder — Ben should review and
-  finalize the location placeholder and exact prose before Phase 4 site assembly.
+  (decided 2026-06-20). Location confirmed as Dallas, Texas.
+- Early career history added to About and Resume pages (2026-06-20): Aperia Solutions
+  (May–Oct 2014), PeopleAnswers (Oct 2014–Mar 2015), AT&T (Mar–Oct 2015) — career arc
+  now runs from 2014 to present. Resume updated to 9 roles; date-column width fixed
+  (80px → 140px) to prevent overflow on longer date strings.
 - README replaced: Vite boilerplate removed, replaced with intentional project README
   covering purpose, tech stack, structure, local setup, design system, and build docs
   (2026-06-20) — Phase 3A complete
@@ -472,14 +475,15 @@ remaining before Phase 4 can start. Design Sessions 1–3 complete; Session 4 ne
   database, add all three env vars to Vercel — chat is fully wired, blocked only on these
 - **Phase 3G:** Deploy Storybook to separate Vercel project on system.viewbens.work
   — last gate before Phase 4 can start
-- Review and finalize About page prose (location placeholder + copy review)
 - Sagent brain dump in progress (parallel track, build-plan 1C)
 - Claude Design Session 4: component detail explorations (Sessions 1–3 done)
 
 **Decisions still open:**
 - Market Rebellion: referenced on About page as brief career arc item (decided 2026-06-20)
 - Sagent case study content (to be built from scratch)
-- About page location — placeholder in current code needs Ben's city/state
+- "Fifteen years" / "15+ years" copy on About and Resume: career arc now starts May 2014,
+  which is ~12 years to 2026 — decide whether to update copy to "twelve years", "over a
+  decade", or leave it as a loose approximation
 
 ---
 

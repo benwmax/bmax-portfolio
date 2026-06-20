@@ -61,6 +61,36 @@ const EXPERIENCE = [
       'Built complex tools for travel agents who need speed, accuracy, and zero-tolerance for UX errors.',
     ],
   },
+  {
+    role: 'UX Designer',
+    company: 'AT&T',
+    dates: 'Mar–Oct 2015',
+    sector: 'Telecom enterprise',
+    outcomes: [
+      'Analyzed end-to-end B2B user registration across all AT&T products and architected solutions covering online and offline touchpoints.',
+      'Created designs for B2B internet and phone signup and servicing experiences in collaboration with product, engineering, and research.',
+    ],
+  },
+  {
+    role: 'UX/UI Designer',
+    company: 'PeopleAnswers',
+    dates: 'Oct 2014–Mar 2015',
+    sector: 'HR technology',
+    outcomes: [
+      'Established the UX department and designed HR tools for hiring and employee management.',
+      'Researched multi-lingual best practices for an internationalization project spanning six countries; provided UX recommendations across all markets.',
+    ],
+  },
+  {
+    role: 'UX Designer',
+    company: 'Aperia Solutions',
+    dates: 'May–Oct 2014',
+    sector: 'Fintech / compliance',
+    outcomes: [
+      'Helped establish the UX department and overhauled B2B financial and compliance applications used by millions of merchants nationwide.',
+      'Reduced call-center costs and improved call-time efficiency by studying employee workflows and redesigning internal tools; led PCI compliance software redesign through usability testing with beta clients.',
+    ],
+  },
 ] as const;
 
 const SKILLS = [

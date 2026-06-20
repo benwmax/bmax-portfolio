@@ -3,6 +3,24 @@ import styles from './AboutPage.module.css';
 
 const CAREER = [
   {
+    company: 'Aperia Solutions',
+    role: 'UX Designer',
+    sector: 'Fintech / compliance',
+    outcomes: ['Established UX department', 'PCI compliance software overhaul', 'B2B tools for millions of merchants'],
+  },
+  {
+    company: 'PeopleAnswers',
+    role: 'UX/UI Designer',
+    sector: 'HR technology',
+    outcomes: ['Founded UX practice', 'HR hiring & management tools', 'Internationalization across 6 countries'],
+  },
+  {
+    company: 'AT&T',
+    role: 'UX Designer',
+    sector: 'Telecom enterprise',
+    outcomes: ['B2B signup & servicing redesign', 'End-to-end registration architecture', 'Cross-functional product collaboration'],
+  },
+  {
     company: 'Sabre',
     role: 'Senior UX Designer',
     sector: 'Travel technology',
