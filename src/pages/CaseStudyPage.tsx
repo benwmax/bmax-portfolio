@@ -1,7 +1,8 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { NavBar } from '../components/NavBar';
 import { ChatInput } from '../components/ChatInput';
-import type { ChatWidgetStatus } from '../components/ChatInput';
+import { useChatSession } from '../hooks/useChatSession';
+import type { Message as CsMessage } from '../hooks/useChatSession';
 import { CaseStudyHero } from '../components/CaseStudyHero';
 import { ProcessStep, ProcessSteps } from '../components/ProcessStep';
 import { StatBlock, StatGrid } from '../components/StatBlock';
@@ -9,10 +10,7 @@ import { RoleCallout, RoleCallouts } from '../components/RoleCallout';
 import { ImageCaption } from '../components/ImageCaption';
 import styles from './CaseStudyPage.module.css';
 
-export interface CsMessage {
-  role: 'user' | 'assistant';
-  text: string;
-}
+export type { CsMessage };
 
 export interface ProcessStep {
   phase: string;
@@ -82,21 +80,6 @@ const NAV_SECTIONS = [
   { id: 'reflection', label: "What I'd do differently", num: '08' },
 ] as const;
 
-async function streamChat(msgs: CsMessage[], onChunk: (t: string) => void): Promise<void> {
-  const res = await fetch('/api/chat', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ messages: msgs.map((m) => ({ role: m.role, content: m.text })) }),
-  });
-  if (!res.ok || !res.body) throw new Error(`Chat error ${res.status}`);
-  const reader = res.body.getReader();
-  const dec = new TextDecoder();
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    onChunk(dec.decode(value));
-  }
-}
 
 export function CaseStudyPage({
   number,
@@ -120,16 +103,14 @@ export function CaseStudyPage({
   onChatSubmit,
   initialMessages = [],
 }: CaseStudyPageProps) {
-  const [messages, setMessages] = useState<CsMessage[]>(initialMessages);
-  const [chatStatus, setChatStatus] = useState<ChatWidgetStatus>('online');
+  const { messages, chatStatus, handleSubmit } = useChatSession({
+    onSubmit: onChatSubmit,
+    initialMessages,
+  });
   const [activeSection, setActiveSection] = useState('problem');
   const chatLogRef = useRef<HTMLDivElement>(null);
   const progressBarRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number>(0);
-  const msgsRef = useRef(messages);
-  useEffect(() => {
-    msgsRef.current = messages;
-  }, [messages]);
 
   // Scroll progress (direct DOM write — bypasses React render cycle for smoothness)
   // + active section (state — drives sidebar, re-render is acceptable there)
@@ -164,40 +145,6 @@ export function CaseStudyPage({
       chatLogRef.current.scrollTop = chatLogRef.current.scrollHeight;
     }
   }, [messages]);
-
-  const handleSubmit = useCallback(
-    async (text: string) => {
-      if (onChatSubmit) {
-        onChatSubmit(text);
-        return;
-      }
-      const withUser: CsMessage[] = [...msgsRef.current, { role: 'user', text }];
-      setMessages(withUser);
-      setChatStatus('loading');
-      try {
-        setMessages((prev) => [...prev, { role: 'assistant', text: '' }]);
-        await streamChat(withUser, (chunk) => {
-          setMessages((prev) => {
-            const next = [...prev];
-            const last = next[next.length - 1];
-            next[next.length - 1] = { ...last, text: last.text + chunk };
-            return next;
-          });
-        });
-      } catch {
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: 'assistant',
-            text: "The assistant isn't available right now — try again in a moment.",
-          },
-        ]);
-      } finally {
-        setChatStatus('online');
-      }
-    },
-    [onChatSubmit],
-  );
 
   const scrollToSection = (id: string) => {
     const el = document.getElementById(`sec-${id}`);
