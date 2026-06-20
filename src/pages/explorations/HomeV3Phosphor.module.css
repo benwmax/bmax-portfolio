@@ -31,7 +31,7 @@
   z-index: 1;
   pointer-events: none;
   background:
-    linear-gradient(180deg, var(--color-bg-page) 0%, transparent 18%, transparent 70%, var(--color-bg-page)),
+    linear-gradient(180deg, var(--color-bg-page) 0%, transparent 18%, transparent 82%, var(--color-bg-page)),
     radial-gradient(80% 50% at 50% 38%, transparent, rgba(14, 16, 15, 0.55));
 }
 

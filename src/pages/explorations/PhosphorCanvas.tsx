@@ -45,8 +45,8 @@ export function PhosphorCanvas({ className }: { className?: string }) {
     });
 
     const resize = () => {
-      w = canvas.clientWidth;
-      h = canvas.clientHeight;
+      w = window.innerWidth;
+      h = window.innerHeight;
       dpr = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = Math.floor(w * dpr);
       canvas.height = Math.floor(h * dpr);
@@ -57,26 +57,29 @@ export function PhosphorCanvas({ className }: { className?: string }) {
     };
 
     const drawGrid = (time: number) => {
-      const horizonY = h * 0.62 + pointer.y * 0.01;
+      // Horizon near the top so the grid fills the full viewport downward.
+      // The canvasFade top gradient clears by 18%, so 18% is where the grid first
+      // becomes fully visible. Vanishing point sits just inside that zone.
+      const horizonY = h * 0.18 + pointer.y * 0.01;
       const cx = w / 2 + pointer.x * 0.02;
 
-      // horizon glow
-      const glow = ctx.createRadialGradient(cx, horizonY, 0, cx, horizonY, w * 0.5);
-      glow.addColorStop(0, 'rgba(0, 224, 84, 0.10)');
+      // horizon glow — wide enough to light the top third of the canvas
+      const glow = ctx.createRadialGradient(cx, horizonY, 0, cx, horizonY, w * 0.65);
+      glow.addColorStop(0, 'rgba(0, 224, 84, 0.20)');
       glow.addColorStop(1, 'rgba(0, 224, 84, 0)');
       ctx.fillStyle = glow;
-      ctx.fillRect(0, horizonY - h * 0.25, w, h);
+      ctx.fillRect(0, 0, w, h);
 
-      ctx.lineWidth = 1;
+      ctx.lineWidth = 1.5;
 
       // horizontal lines rushing forward — log-spaced rows scrolling with time
-      const rows = 22;
+      const rows = 26;
       const speed = reduced ? 0 : (time * 0.00006) % 1;
       for (let i = 0; i < rows; i += 1) {
         const t = (i + speed) / rows;
         const p = t * t; // perspective bunching toward horizon
         const y = horizonY + p * (h - horizonY);
-        const alpha = 0.04 + t * 0.22;
+        const alpha = 0.22 + t * 0.42;
         ctx.strokeStyle = `rgba(0, 224, 84, ${alpha})`;
         ctx.beginPath();
         ctx.moveTo(0, y);
@@ -84,12 +87,12 @@ export function PhosphorCanvas({ className }: { className?: string }) {
         ctx.stroke();
       }
 
-      // vertical lines fanning from the horizon point
-      const cols = 24;
+      // vertical lines fanning from the horizon point — more columns to fill the wider span
+      const cols = 32;
       for (let i = 0; i <= cols; i += 1) {
         const f = (i / cols - 0.5) * 2; // -1..1
         const xBottom = cx + f * w * 1.4;
-        ctx.strokeStyle = `rgba(0, 224, 84, ${0.05 + Math.abs(f) * 0.06 + 0.05})`;
+        ctx.strokeStyle = `rgba(0, 224, 84, ${0.10 + Math.abs(f) * 0.18 + 0.06})`;
         ctx.beginPath();
         ctx.moveTo(cx, horizonY);
         ctx.lineTo(xBottom, h);
