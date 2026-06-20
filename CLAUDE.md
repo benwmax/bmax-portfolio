@@ -405,8 +405,8 @@ to check off?"*
 ## Current Project Status
 
 **Phase:** 1 (content) + 3 (component build-out) active in parallel. Phase 2
-complete. Phase 3A fully complete; remaining: About/Resume page template, 404
-page template, Storybook deploy (3G). Design Sessions 1–3 complete; Session 4 next.
+complete. Phase 3 all Layers and tooling complete; only Storybook deploy (3G)
+remaining before Phase 4 can start. Design Sessions 1–3 complete; Session 4 next.
 
 **Last updated:** 2026-06-20
 
@@ -459,19 +459,27 @@ page template, Storybook deploy (3G). Design Sessions 1–3 complete; Session 4 
   src/hooks/useChatSession.ts — deduplicates streamChat from both pages, sends
   sessionMessageCount with every request (activates server-side session cap), surfaces
   API error messages (rate limit, session cap) as assistant messages (2026-06-20)
+- About, Resume, and 404 page templates built with full Storybook stories (2026-06-20) —
+  Phase 3F complete. Market Rebellion included as a brief mention in About career arc
+  (decided 2026-06-20). AboutPage.tsx content is placeholder — Ben should review and
+  finalize the location placeholder and exact prose before Phase 4 site assembly.
+- README replaced: Vite boilerplate removed, replaced with intentional project README
+  covering purpose, tech stack, structure, local setup, design system, and build docs
+  (2026-06-20) — Phase 3A complete
 
 **Immediate next steps:**
 - **Ben's actions to go live:** Create Anthropic Workspace + API key and Upstash Redis
   database, add all three env vars to Vercel — chat is fully wired, blocked only on these
-- Merge PR #3 (backend) and PR #4 (hook/frontend) once Vercel checks pass
-- Build About/Resume page template and 404 page template (Phase 3F)
+- **Phase 3G:** Deploy Storybook to separate Vercel project on system.viewbens.work
+  — last gate before Phase 4 can start
+- Review and finalize About page prose (location placeholder + copy review)
 - Sagent brain dump in progress (parallel track, build-plan 1C)
 - Claude Design Session 4: component detail explorations (Sessions 1–3 done)
 
 **Decisions still open:**
-- Market Rebellion: not a standalone case study (decided); whether/where to
-  reference it elsewhere (e.g. About page) — still open
+- Market Rebellion: referenced on About page as brief career arc item (decided 2026-06-20)
 - Sagent case study content (to be built from scratch)
+- About page location — placeholder in current code needs Ben's city/state
 
 ---
 

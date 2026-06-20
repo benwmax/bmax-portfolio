@@ -33,10 +33,10 @@ lead case study — documenting it as it happens is as important as building it.
 
 | Phase | Name | Status | Blocked By |
 |-------|------|--------|------------|
-| 0 | Setup | In progress — 1 item remaining (visual style references) | — |
+| 0 | Setup | Complete (2026-06-20) | — |
 | 1 | Strategy and Content | In progress | — |
 | 2 | Visual Identity | Complete (2026-06-17) | — |
-| 3 | Storybook Foundation | In progress — Layers 1–2 substantially complete; Layers 3–5 and 3G remaining | — |
+| 3 | Storybook Foundation | In progress — all Layers complete; Storybook deploy (3G) remaining | — |
 | 4 | Site Assembly | Not started | Phases 1 + 3 |
 | 5 | QA and Pre-Launch | Not started | Phase 4 |
 | 6 | Launch | Not started | Phase 5 |
@@ -148,7 +148,7 @@ first item) has started independently — see note.*
 - [x] ShadCN initialization
 - [x] Storybook 8 initialization
 - [x] ESLint, Prettier, path aliases — all complete (2026-06-20): ESLint (`eslint.config.js`), Prettier (`.prettierrc` + prettier-plugin-tailwindcss), path alias `@/` → `src/` in tsconfig and vite.config
-- [ ] README written (public repo — make it intentional)
+- [x] README written (public repo — make it intentional) (2026-06-20): replaced Vite boilerplate with project-specific README covering purpose, tech stack, project structure, local setup, design system, and build documentation
 
 ### 3B. Layer 1 — Token system
 - [x] CSS custom properties in /src/tokens/
@@ -188,8 +188,9 @@ Story descriptions explain design decisions, not just props.
 ### 3F. Layer 5 — Page templates
 - [x] Home (Homepage.stories.tsx — split hero, work grid, docked rail, mobile viewport) (2026-06-19)
 - [x] Case Study (CaseStudyPage.tsx — sidebar TOC, scroll progress, 8 sections, artifact inset, outcome grid, docked chat) (2026-06-19)
-- [ ] About / Resume
-- [ ] 404
+- [x] About (AboutPage.tsx — intro, approach, leadership, career arc incl. Market Rebellion, what I'm looking for; footer) (2026-06-20)
+- [x] Resume (ResumePage.tsx — designed header, 6-role experience list with outcome bullets, 4-column skills grid) (2026-06-20)
+- [x] 404 (NotFoundPage.tsx — terminal-themed shell error, link back home) (2026-06-20)
 Each documented as a full-page Storybook story.
 
 ### 3G. Storybook deployment
@@ -315,10 +316,10 @@ independently; only the widget's visual styling depends on those.*
 zero. Must run in parallel with other Phase 1 work or it becomes the
 last thing written and the first thing that gets rushed. Still open.
 
-**Remaining Phase 3 blockers before Phase 4 can start:**
-- Layers 3–5 component build-out (Storybook)
-- Storybook deploy (3G)
-- Prettier config and path aliases (3A)
+**Remaining Phase 3 blocker before Phase 4 can start:**
+- Storybook deploy (3G) — all Layers and tooling complete; deploy is the last gate
+
+All component layers, page templates, tooling (Prettier, path aliases), and README are complete as of 2026-06-20.
 
 ---
 
@@ -332,11 +333,9 @@ last thing written and the first thing that gets rushed. Still open.
 
 ---
 
-*Last updated: 2026-06-20 — Phase 0 visual style references checked off (was
-done 2026-06-17 but never marked); Critical Path section updated to reflect
-Phase 2 complete and identify current blockers. Page audit work (a11y, tech
-debt, mobile) logged in decisions.md 2026-06-20 — no build-plan checkboxes
-apply since this was proactive Phase 3 cleanup, not Phase 5 QA.*
+*Last updated: 2026-06-20 — About, Resume, and 404 page templates built (3F
+complete); README replaced with intentional project README (3A complete); Phase
+0 marked complete; Phase 3 status updated — only Storybook deploy (3G) remaining.*
 *See also: decisions.md — significant choices and reasoning*
 *See also: key-insights.md — strategic insights from initial analysis*
 *See also: process-journal.md — running build log*

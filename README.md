@@ -1,73 +1,92 @@
-# React + TypeScript + Vite
+# bmax-portfolio
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Portfolio of Ben Maxwell — UX Principal and Design Director. Live at [viewbens.work](https://viewbens.work).
 
-Currently, two official plugins are available:
+This repo is public from day one. The build process is intentional: Ben directed the work, Claude assisted with code generation and design exploration. That distinction is the point — and it's the lead case study.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## What this is
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+A ground-up portfolio rebuild targeting UX Principal and Design Director roles across fintech, insurance, mortgage, and travel. Five case studies, a live AI assistant, and a component library built in public.
 
-## Expanding the ESLint configuration
+The rebuild process itself is documented as a case study — design decisions logged in `docs/case-study/`, prompts that produced useful output in `ai-prompts.md`, and a running build journal in `process-journal.md`. If you're curious how a senior designer actually directs AI tools rather than just using them, that's the case study.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Tech stack
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+| Layer | Choice | Why |
+|---|---|---|
+| Framework | React + Vite + TypeScript | Fast iteration, type safety, broad deployment support |
+| Styling | Tailwind CSS + CSS Modules | Custom token system; CSS Modules for component isolation |
+| Components | ShadCN UI + custom | ShadCN as primitive floor, not the system |
+| Component library | Storybook 8 | Hosted publicly as a portfolio artifact |
+| Hosting | Vercel | GitHub integration, Edge Functions, zero-config deploys |
+| AI chat | Vercel Edge Functions + Anthropic | Portfolio assistant proxies to Claude Haiku via edge runtime |
+| Rate limiting | Upstash Redis | Per-IP sliding window; no Node.js runtime dependency |
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+---
+
+## Project structure
+
+```
+/
+├── api/                     ← Vercel Edge Functions
+│   ├── chat.ts              ← AI chat proxy (validation, rate limiting, streaming)
+│   └── lib/
+│       ├── system-prompt.ts ← Assistant brief — update as case studies finalize
+│       └── rate-limit.ts    ← Per-IP rate limiting via Upstash
+├── docs/
+│   └── case-study/          ← Build documentation
+│       ├── build-plan.md    ← Phased plan with live checkbox tracking
+│       ├── decisions.md     ← Significant choices and reasoning
+│       ├── process-journal.md ← Dated build log
+│       └── ai-prompts.md    ← Prompts that produced useful output
+├── src/
+│   ├── components/          ← UI component library (see Storybook)
+│   ├── pages/               ← Page-level components
+│   ├── stories/             ← Storybook stories
+│   ├── hooks/               ← Shared React hooks
+│   └── tokens/tokens.css    ← Design token definitions (CSS custom properties)
+└── public/
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Running locally
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev          # Vite dev server — http://localhost:5173
+npm run storybook    # Storybook — http://localhost:6006
+npm run build        # Production build
+npm run typecheck    # TypeScript check
 ```
+
+For the AI chat feature, you'll need environment variables — see `.env.example`.
+
+---
+
+## Design system
+
+The component library will be hosted publicly as a Storybook at `system.viewbens.work` (Phase 3G in `build-plan.md`).
+
+Token definitions live in `src/tokens/tokens.css` — CSS custom properties, wired into the Tailwind config. The system uses two monospace fonts (Space Mono for display/UI chrome, IBM Plex Mono for functional mono), a system sans stack for prose, and a phosphor terminal green (`#00e054`) as the primary accent.
+
+---
+
+## Build documentation
+
+The process is documented in `docs/case-study/` as it happens:
+
+- **`build-plan.md`** — phased plan with live checkbox tracking across 7 phases
+- **`decisions.md`** — significant choices and the reasoning behind them
+- **`process-journal.md`** — running dated log of build activity
+- **`ai-prompts.md`** — prompts that produced useful output, and what was done with them
+
+If you're hiring for a Principal or Director role and want to understand how I work with AI tools, start there.
+
+---
+
+*Ben Maxwell · ben@viewbens.work · [linkedin.com/in/benwmax](https://linkedin.com/in/benwmax)*
