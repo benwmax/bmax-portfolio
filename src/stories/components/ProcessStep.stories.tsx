@@ -36,6 +36,13 @@ export const Default: Story = {
 
 export const List: Story = {
   name: 'List of steps',
+  args: {
+    num: 1,
+    phase: 'Phase',
+    title: 'Title',
+    body: 'Body',
+    artifact: 'Artifact',
+  },
   parameters: {
     docs: {
       description: {
@@ -84,7 +91,8 @@ export const FieldResearch: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'The body should read like something that happened — not a methodology list. One observation beats a bullet of frameworks.',
+        story:
+          'The body should read like something that happened — not a methodology list. One observation beats a bullet of frameworks.',
       },
     },
   },

@@ -3,8 +3,13 @@
    Only depth is the 1px border-subtle rule at the bottom edge. */
 
 @keyframes nav-underscore-blink {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }
 
 .header {

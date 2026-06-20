@@ -1,8 +1,12 @@
 /* ChatInput — full chat widget: terminal prompt, ASK button, status indicator. */
 
 @keyframes loader-sweep {
-  0%   { transform: translateX(-100%); }
-  100% { transform: translateX(300%); }
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(300%);
+  }
 }
 
 /* Root wrapper — column, status sits below the form row */
@@ -29,7 +33,10 @@
   border-radius: var(--radius-md);
   overflow: hidden;
   cursor: text;
-  transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease,
+    box-shadow 150ms ease;
 }
 
 /* Active: focused, filled, or loading — green border + phosphor bg tint */
@@ -79,7 +86,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .caret { animation: none; }
+  .caret {
+    animation: none;
+  }
 }
 
 /* Input / textarea shared */
@@ -178,7 +187,9 @@ textarea.input {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pulse { animation: none; }
+  .pulse {
+    animation: none;
+  }
 }
 
 /* Phosphor sweep — 1px bottom border animation during loading */
@@ -201,7 +212,9 @@ textarea.input {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .sweep::after { animation: none; }
+  .sweep::after {
+    animation: none;
+  }
 }
 
 /* ASK button */
@@ -289,7 +302,9 @@ textarea.input {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .statusDot { animation: none; }
+  .statusDot {
+    animation: none;
+  }
 }
 
 /* Visually hidden but readable by screen readers */

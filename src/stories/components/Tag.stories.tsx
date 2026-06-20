@@ -92,7 +92,7 @@ export const WithDot: Story = {
     docs: {
       description: {
         story:
-          'Optional dot prefix — a filled circle before the label in currentColor. Available on all variants for contexts where a visual bullet reinforces the tag\'s categorical role (e.g., a timeline or process list).',
+          "Optional dot prefix — a filled circle before the label in currentColor. Available on all variants for contexts where a visual bullet reinforces the tag's categorical role (e.g., a timeline or process list).",
       },
     },
   },
@@ -106,6 +106,9 @@ export const WithDot: Story = {
 
 export const AllIndustries: Story = {
   name: 'All industry tags',
+  args: {
+    label: 'Fintech',
+  },
   parameters: {
     layout: 'padded',
     docs: {

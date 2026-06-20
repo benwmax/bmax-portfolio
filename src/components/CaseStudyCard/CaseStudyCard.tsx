@@ -2,7 +2,7 @@ import type { HTMLAttributes, ReactNode } from 'react';
 import { Tag } from '../Tag';
 import styles from './CaseStudyCard.module.css';
 
-export interface CaseStudyCardProps extends HTMLAttributes<HTMLElement> {
+export interface CaseStudyCardProps extends Omit<HTMLAttributes<HTMLElement>, 'title' | 'role'> {
   /** Index shown in the thumbnail chip — e.g. "01". */
   index?: string | number;
   /** Project / case-study name. */
@@ -56,18 +56,20 @@ export function CaseStudyCard({
   const sectorTag = tag ?? (Array.isArray(tags) ? tags[0] : undefined);
   const showMeta = role || year || stat || sector;
 
-  const cardCls = [
-    styles.card,
-    forceHover ? styles.hover : '',
-    className,
-  ].filter(Boolean).join(' ');
+  const cardCls = [styles.card, forceHover ? styles.hover : '', className]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <Comp className={cardCls} href={href} {...rest}>
       <div className={styles.media}>
         {image && <img src={image} alt="" />}
-        {index != null && <span className={styles.chip} aria-hidden="true">{index}</span>}
-{sectorTag && (
+        {index != null && (
+          <span className={styles.chip} aria-hidden="true">
+            {index}
+          </span>
+        )}
+        {sectorTag && (
           <span className={styles.chipTag}>
             <Tag label={sectorTag} />
           </span>

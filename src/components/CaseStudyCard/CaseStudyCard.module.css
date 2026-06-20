@@ -29,8 +29,18 @@
   border-width: 0;
   transition: border-color var(--duration-base) var(--ease-default);
 }
-.card::before { top: 6px; left: 6px; border-top-width: 1px; border-left-width: 1px; }
-.card::after  { bottom: 6px; right: 6px; border-bottom-width: 1px; border-right-width: 1px; }
+.card::before {
+  top: 6px;
+  left: 6px;
+  border-top-width: 1px;
+  border-left-width: 1px;
+}
+.card::after {
+  bottom: 6px;
+  right: 6px;
+  border-bottom-width: 1px;
+  border-right-width: 1px;
+}
 
 .card:hover,
 .hover {
@@ -60,18 +70,18 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent 0 2px,
-    rgba(0, 224, 84, 0.04) 2px 3px
-  );
+  background: repeating-linear-gradient(0deg, transparent 0 2px, rgba(0, 224, 84, 0.04) 2px 3px);
   opacity: 0;
   transition: opacity 200ms ease;
 }
 .card:hover .media::after,
-.hover .media::after { opacity: 1; }
+.hover .media::after {
+  opacity: 1;
+}
 .card:hover .media,
-.hover .media { border-bottom-color: var(--color-green-border); }
+.hover .media {
+  border-bottom-color: var(--color-green-border);
+}
 
 .media img {
   position: relative;
@@ -91,7 +101,7 @@
   font-family: var(--card-num-font);
   font-weight: 700;
   font-size: 11px;
-  letter-spacing: 0.10em;
+  letter-spacing: 0.1em;
   color: var(--color-green-accent);
   background: var(--color-green-deepest);
   border: 1px solid var(--color-green-border);
@@ -106,7 +116,6 @@
   right: 10px;
   z-index: 2;
 }
-
 
 /* Body */
 .body {

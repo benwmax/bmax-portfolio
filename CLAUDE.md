@@ -330,9 +330,9 @@ was redirected. Format:
 - Google Fonts import snippet lives in `src/tokens/tokens.css` header comment.
 
 **Token file:** `src/tokens/tokens.css` — CSS custom properties, Tailwind-ready,
-last updated 2026-06-17. Contains: color primitives, semantic tokens, type scale,
+last updated 2026-06-20. Contains: color primitives, semantic tokens, type scale,
 letter spacing, line height, spacing, border radius, border shorthands, dot grid
-surface, motion, and per-component font/color/tracking tokens.
+surface, motion, shadow, layout widths, and per-component font/color/tracking tokens.
 
 ---
 
@@ -405,12 +405,10 @@ to check off?"*
 ## Current Project Status
 
 **Phase:** 1 (content) + 3 (component build-out) active in parallel. Phase 2
-complete — visual identity finalized, tokens written, wordmark locked.
-Phase 3 Layers 1–2 substantially complete; Layers 3–5 and Storybook deploy
-(3G) remaining. Design Sessions 1–3 complete; Session 4 (component detail
-explorations) is next.
+complete. Phase 3A fully complete; remaining: About/Resume page template, 404
+page template, Storybook deploy (3G). Design Sessions 1–3 complete; Session 4 next.
 
-**Last updated:** 2026-06-19
+**Last updated:** 2026-06-20
 
 **Completed:**
 - Domain confirmed: viewbens.work (existing site stays live until launch)
@@ -431,8 +429,6 @@ explorations) is next.
 - Version A vs. Version B drafting methods stress-tested and compared
 - Upfluent, USAA, and Sabre case studies all rewritten (2026-06-15) —
   Phase 1B complete
-- AI chat feature: architecture and safeguards plan drafted (2026-06-15) —
-  api/ files not yet created (see build-plan.md Phase 4F for remaining steps)
 - Visual identity direction finalized — style references provided,
   palette locked, tokens written, wordmark locked (2026-06-17) — Phase 2 complete
 - Storybook 8 installed and scaffolded (2026-06-17)
@@ -446,14 +442,25 @@ explorations) is next.
 - FAB button for mobile chat continuity (2026-06-19)
 - Claude Design Sessions 1 (wordmark), 2 (homepage layout), 3 (case study
   page layout) complete
+- Page audit completed: all hardcoded colors tokenized, inline styles replaced
+  with CSS class toggles, WCAG AA contrast fixed on tertiary text, iOS input
+  zoom fixed, Button focus ring corrected, NavBar mobile padding added,
+  Contact page buttons refactored to use shared Button component (2026-06-20)
+  — see decisions.md 2026-06-20 for full reasoning
+- AI chat backend created: api/chat.ts (Vercel Edge Function), api/lib/system-prompt.ts,
+  api/lib/rate-limit.ts, .env.example, packages installed (2026-06-20) —
+  Phase 4F partially complete; pending Anthropic Workspace + Upstash setup (Ben)
+- Phase 3 scope reduced: Select, Icon wrapper, Link, Avatar, Container/Section/Grid/
+  Divider, QuoteBlock, TimelineEntry, MobileMenu removed — not needed for current page
+  set; three nav links fit at 390px without collapsing (2026-06-20)
+- Phase 3A complete: Prettier (`.prettierrc` + prettier-plugin-tailwindcss installed,
+  full formatting pass run), path alias `@/` → `src/` in tsconfig and vite.config (2026-06-20)
 
 **Immediate next steps:**
 - Sagent brain dump in progress (parallel track, build-plan 1C)
-- AI chat feature: create api/ files (chat.ts, system-prompt.ts,
-  rate-limit.ts) and .env.example, then commit — see build-plan.md Phase 4F
+- Build About/Resume page template and 404 page template (Phase 3F)
 - Claude Design Session 4: component detail explorations (Sessions 1–3 done)
-- Style remaining Phase 3 component shells (Layers 3–5 per build-plan.md)
-- ESLint config exists; add Prettier config and path aliases (Phase 3A)
+- Phase 4F: Ben to create Anthropic Workspace + Upstash Redis, add env vars to Vercel
 
 **Decisions still open:**
 - Market Rebellion: not a standalone case study (decided); whether/where to

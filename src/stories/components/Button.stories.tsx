@@ -117,12 +117,19 @@ export const Sizes: Story = {
   },
   render: (args) => (
     <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-      <Button {...args} size="sm">ASK</Button>
-      <Button {...args} size="md">ASK</Button>
-      <Button {...args} size="lg">ASK</Button>
+      <Button {...args} size="sm">
+        ASK
+      </Button>
+      <Button {...args} size="md">
+        ASK
+      </Button>
+      <Button {...args} size="lg">
+        ASK
+      </Button>
     </div>
   ),
   args: {
     variant: 'primary',
+    children: 'ASK',
   },
 };

@@ -37,6 +37,7 @@ export const SabrePlaceholder: Story = {
   name: 'Sabre — hotel workspace placeholder',
   args: {
     tabLabel: 'sabre-red · hotel-workspace',
-    caption: 'Fig. 01 — Graphical Hotel mode with the command interface intact; agents move between the two freely.',
+    caption:
+      'Fig. 01 — Graphical Hotel mode with the command interface intact; agents move between the two freely.',
   },
 };

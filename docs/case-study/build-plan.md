@@ -63,10 +63,8 @@ still pending, 2026-06-15 — now the critical-path blocker)*
 - [x] Fix Upfluent 401 on existing site
 - [x] Fix resume date conflicts on existing site
 - [x] Make Market Rebellion final disposition decision
-- [ ] Provide visual style references (unblocks Phase 2) — CONFIRMED still
-      pending (2026-06-15, Ben). This is now the active critical-path
-      blocker: it unblocks Phase 2, which unblocks the rest of Phase 3,
-      which unblocks Phase 4. Highest-priority open item.
+- [x] Provide visual style references — provided (2026-06-17); unblocked Phase 2,
+      which is now complete.
 - [x] Finalize positioning statement wording
 
 ---
@@ -149,7 +147,7 @@ first item) has started independently — see note.*
 - [x] Tailwind CSS with custom theme (tokens from Phase 2)
 - [x] ShadCN initialization
 - [x] Storybook 8 initialization
-- [ ] ESLint, Prettier, path aliases — ESLint done (`eslint.config.js` exists); Prettier config and path aliases still pending
+- [x] ESLint, Prettier, path aliases — all complete (2026-06-20): ESLint (`eslint.config.js`), Prettier (`.prettierrc` + prettier-plugin-tailwindcss), path alias `@/` → `src/` in tsconfig and vite.config
 - [ ] README written (public repo — make it intentional)
 
 ### 3B. Layer 1 — Token system
@@ -166,17 +164,12 @@ Each component requires: Default story + all meaningful state stories.
 Story descriptions explain design decisions, not just props.
 - [x] Button (primary, secondary, ghost, destructive + all states) (2026-06-17)
 - [x] Input / Textarea (Input component with multiline prop covers Textarea; full stories) (2026-06-19)
-- [ ] Select
+- ~~Select~~ — removed from scope 2026-06-20 (not needed for current page set)
 - [x] Badge, Tag (2026-06-17)
-- [ ] Icon wrapper
-- [ ] Link
-- [ ] Avatar
+- ~~Icon wrapper, Link, Avatar~~ — removed from scope 2026-06-20 (not needed for current page set)
 
 ### 3D. Layer 3 — Layout components
-- [ ] Container (max-width + responsive padding)
-- [ ] Section (vertical rhythm)
-- [ ] Grid (flexible layout primitive)
-- [ ] Divider
+- ~~Container, Section, Grid, Divider~~ — removed from scope 2026-06-20 (not needed for current page set; layout handled by page-level CSS)
 
 ### 3E. Layer 4 — Portfolio-specific components
 - [x] CaseStudyCard (homepage thumbnail) (2026-06-17)
@@ -185,10 +178,9 @@ Story descriptions explain design decisions, not just props.
 - [x] ProcessStep (numbered process card with phase, title, body, artifact tag; ProcessSteps wrapper) (2026-06-19)
 - [x] ImageCaption (terminal-chrome image frame with tab label, dot-grid placeholder, caption) (2026-06-19)
 - [x] RoleCallout (role ownership row with fixed label column; RoleCallouts wrapper) (2026-06-19)
-- [ ] QuoteBlock
-- [ ] TimelineEntry
+- ~~QuoteBlock, TimelineEntry~~ — removed from scope 2026-06-20 (not needed for current page set)
 - [x] NavBar shell — desktop only (2026-06-17)
-- [ ] MobileMenu (pending — build after layout direction locked)
+- ~~MobileMenu~~ — removed from scope 2026-06-20; three nav links fit at 390px without collapsing
 - [x] ChatInput (2026-06-17)
 - [x] StatusIndicator (2026-06-17)
 - [x] Contact page component (email + LinkedIn channels, receipt strip, copy actions) (2026-06-19)
@@ -255,9 +247,9 @@ independently; only the widget's visual styling depends on those.*
 - [ ] Create dedicated Anthropic Workspace + API key, set spend limit and
       email alert
 - [ ] Create Upstash Redis database, add REST credentials to Vercel env
-- [ ] Install @upstash/ratelimit and @upstash/redis
-- [ ] Commit api/chat.ts, api/lib/system-prompt.ts, api/lib/rate-limit.ts
-      to repo
+- [x] Install @upstash/ratelimit and @upstash/redis (2026-06-20)
+- [x] Commit api/chat.ts, api/lib/system-prompt.ts, api/lib/rate-limit.ts
+      to repo (2026-06-20)
 - [ ] Replace [CONTACT_LINK] placeholders with real contact info
 - [ ] Build frontend chat widget (depends on Phase 3 tokens for styling)
 - [ ] Deploy to Vercel, test endpoint with curl
@@ -317,15 +309,16 @@ independently; only the widget's visual styling depends on those.*
 
 ## Critical Path
 
-The two items with the most downstream dependencies:
-
-**Visual style references** — unblocks Phase 2, which unblocks Phase 3,
-which unblocks Phase 4. Everything waits on this. Confirmed still pending
-as of 2026-06-15 — this is the single highest-priority open item right now.
+**Visual style references** — resolved (Phase 2 complete, 2026-06-17). No longer blocking.
 
 **Sagent content** — your strongest Director-level evidence. Starts from
 zero. Must run in parallel with other Phase 1 work or it becomes the
-last thing written and the first thing that gets rushed.
+last thing written and the first thing that gets rushed. Still open.
+
+**Remaining Phase 3 blockers before Phase 4 can start:**
+- Layers 3–5 component build-out (Storybook)
+- Storybook deploy (3G)
+- Prettier config and path aliases (3A)
 
 ---
 
@@ -339,13 +332,11 @@ last thing written and the first thing that gets rushed.
 
 ---
 
-*Last updated: 2026-06-19 — Phase 2 marked complete (wordmark finalized);
-Input/Textarea checked off (Input component with multiline prop); Contact
-page component added and checked off; Homepage.stories.tsx full-page template
-checked off in Phase 3F; FAB button added and checked off under Phase 4F;
-ChatInput and StatusIndicator "shell/pending" qualifiers removed (both fully
-styled); Phase Status table updated for Phases 2 and 3; ESLint noted as done
-within the Prettier/aliases item. Design Sessions 1–3 noted where relevant.*
+*Last updated: 2026-06-20 — Phase 0 visual style references checked off (was
+done 2026-06-17 but never marked); Critical Path section updated to reflect
+Phase 2 complete and identify current blockers. Page audit work (a11y, tech
+debt, mobile) logged in decisions.md 2026-06-20 — no build-plan checkboxes
+apply since this was proactive Phase 3 cleanup, not Phase 5 QA.*
 *See also: decisions.md — significant choices and reasoning*
 *See also: key-insights.md — strategic insights from initial analysis*
 *See also: process-journal.md — running build log*

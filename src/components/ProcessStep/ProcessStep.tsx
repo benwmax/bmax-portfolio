@@ -16,7 +16,9 @@ export interface ProcessStepProps {
 export function ProcessStep({ num, phase, title, body, artifact }: ProcessStepProps) {
   return (
     <div className={styles.step}>
-      <span className={styles.num} aria-hidden="true">{num}</span>
+      <span className={styles.num} aria-hidden="true">
+        {num}
+      </span>
       <div className={styles.content}>
         <div className={styles.header}>
           <span className={styles.phase}>{phase}</span>

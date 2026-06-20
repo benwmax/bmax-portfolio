@@ -78,7 +78,7 @@ async function streamChat(messages: Message[], onChunk: (text: string) => void):
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      messages: messages.map(m => ({ role: m.role, content: m.text })),
+      messages: messages.map((m) => ({ role: m.role, content: m.text })),
     }),
   });
   if (!res.ok || !res.body) throw new Error(`Chat error ${res.status}`);
@@ -101,7 +101,9 @@ export function HomePage({ onChatSubmit, initialMessages = [] }: HomePageProps) 
   const mobileLogRef = useRef<HTMLDivElement | null>(null);
   const fabRef = useRef<HTMLButtonElement | null>(null);
 
-  useEffect(() => { messagesRef.current = messages; }, [messages]);
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
 
   // Scroll all visible logs to bottom when messages change
   useEffect(() => {
@@ -117,35 +119,41 @@ export function HomePage({ onChatSubmit, initialMessages = [] }: HomePageProps) 
     }
   }, [mobileChatOpen]);
 
-  const handleSubmit = useCallback(async (text: string) => {
-    if (onChatSubmit) {
-      onChatSubmit(text);
-      return;
-    }
-    const current = messagesRef.current;
-    const withUser: Message[] = [...current, { role: 'user', text }];
-    setMessages(withUser);
-    setChatStatus('loading');
-    try {
-      // Append empty assistant message immediately so the cursor shows
-      setMessages(prev => [...prev, { role: 'assistant', text: '' }]);
-      await streamChat(withUser, chunk => {
-        setMessages(prev => {
-          const next = [...prev];
-          const last = next[next.length - 1];
-          next[next.length - 1] = { role: 'assistant', text: last.text + chunk };
-          return next;
+  const handleSubmit = useCallback(
+    async (text: string) => {
+      if (onChatSubmit) {
+        onChatSubmit(text);
+        return;
+      }
+      const current = messagesRef.current;
+      const withUser: Message[] = [...current, { role: 'user', text }];
+      setMessages(withUser);
+      setChatStatus('loading');
+      try {
+        // Append empty assistant message immediately so the cursor shows
+        setMessages((prev) => [...prev, { role: 'assistant', text: '' }]);
+        await streamChat(withUser, (chunk) => {
+          setMessages((prev) => {
+            const next = [...prev];
+            const last = next[next.length - 1];
+            next[next.length - 1] = { role: 'assistant', text: last.text + chunk };
+            return next;
+          });
         });
-      });
-    } catch {
-      setMessages(prev => [
-        ...prev,
-        { role: 'assistant', text: "The assistant isn't available right now — try again in a moment." },
-      ]);
-    } finally {
-      setChatStatus('online');
-    }
-  }, [onChatSubmit]);
+      } catch {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: 'assistant',
+            text: "The assistant isn't available right now — try again in a moment.",
+          },
+        ]);
+      } finally {
+        setChatStatus('online');
+      }
+    },
+    [onChatSubmit],
+  );
 
   const isDocked = messages.length > 0;
 
@@ -168,11 +176,13 @@ export function HomePage({ onChatSubmit, initialMessages = [] }: HomePageProps) 
           <>
             <p className={styles.msgAssistant}>
               Howdy. Ask about any case study, what I'm looking for, or how I work with AI.{' '}
-              <span className={`${styles.msgCursor} cursor-blink`} aria-hidden>_</span>
+              <span className={`${styles.msgCursor} cursor-blink`} aria-hidden>
+                _
+              </span>
             </p>
             <div className={styles.chatSuggestions}>
               <span className={styles.chatSuggestLabel}>Try asking</span>
-              {SUGGESTIONS.map(s => (
+              {SUGGESTIONS.map((s) => (
                 <button
                   key={s}
                   type="button"
@@ -188,17 +198,21 @@ export function HomePage({ onChatSubmit, initialMessages = [] }: HomePageProps) 
           messages.map((m, i) =>
             m.role === 'user' ? (
               <p key={i} className={styles.msgUser}>
-                <span className={styles.msgUserPrompt} aria-hidden>{'› '}</span>
+                <span className={styles.msgUserPrompt} aria-hidden>
+                  {'› '}
+                </span>
                 {m.text}
               </p>
             ) : (
               <p key={i} className={styles.msgAssistant}>
                 {m.text}
                 {i === messages.length - 1 && m.text === '' && (
-                  <span className={`${styles.msgCursor} cursor-blink`} aria-hidden>_</span>
+                  <span className={`${styles.msgCursor} cursor-blink`} aria-hidden>
+                    _
+                  </span>
                 )}
               </p>
-            )
+            ),
           )
         )}
       </div>
@@ -207,141 +221,142 @@ export function HomePage({ onChatSubmit, initialMessages = [] }: HomePageProps) 
 
   return (
     <div className={styles.wrapper}>
-      <a href="#main-content" className="skip-link">Skip to main content</a>
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
       <NavBar activePath="/work" />
 
       <div
-        className={[styles.pageContent, isDocked ? styles.pageContentDocked : ''].filter(Boolean).join(' ')}
+        className={[styles.pageContent, isDocked ? styles.pageContentDocked : '']
+          .filter(Boolean)
+          .join(' ')}
       >
-
-      {/* ——— HERO ——— */}
-      <header className={styles.hero}>
-        <div className={styles.heroInner}>
-
-          {/* Identity — left column */}
-          <div>
-            <div className={styles.statusBadge}>
-              Available for Design Leader roles
-            </div>
-            <h1 className={styles.heroH1}>
-              I make expert tools{' '}
-              <span className={styles.heroAmber}>learnable</span>.
-            </h1>
-            <p className={styles.heroLede}>
-              Design Leader across travel, insurance, fintech, and mortgage — building
-              tools experts actually adopt. Ask the assistant anything, or scroll to read
-              the work.
-            </p>
-            <div className={styles.statRow}>
-              <div className={styles.statCell}>
-                <div className={styles.statFigure}>15+ yrs</div>
-                <div className={styles.statLabel}>4 regulated industries</div>
-              </div>
-              <div className={styles.statCell}>
-                <div className={styles.statFigure}>$1B · +23%</div>
-                <div className={styles.statLabel}>contract · revenue · Sabre</div>
-              </div>
-              <div className={styles.statCell}>
-                <div className={styles.statFigure}>now</div>
-                <div className={styles.statLabel}>seeking Design Leader roles</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Chat panel — right column, fades out when docked */}
-          <aside
-            className={[styles.chatPanel, isDocked ? styles.chatPanelHidden : ''].filter(Boolean).join(' ')}
-            aria-label="Ask Ben — assistant"
-            aria-hidden={isDocked}
-            // @ts-expect-error — inert is a standard HTML attribute not yet in React's types
-            inert={isDocked ? '' : undefined}
-          >
-            {chatBarJSX}
-            {renderLog(heroLogRef, styles.chatLog)}
-            <div className={styles.chatInputWrap}>
-              <ChatInput
-                onSubmit={handleSubmit}
-                status={chatStatus}
-                placeholder="ask about my work…"
-                multiline
-                showStatus={false}
-              />
-              <p className={styles.chatFootnote}>
-                ONLINE · assistant ready · ~2s response
+        {/* ——— HERO ——— */}
+        <header className={styles.hero}>
+          <div className={styles.heroInner}>
+            {/* Identity — left column */}
+            <div>
+              <div className={styles.statusBadge}>Available for Design Leader roles</div>
+              <h1 className={styles.heroH1}>
+                I make expert tools <span className={styles.heroAmber}>learnable</span>.
+              </h1>
+              <p className={styles.heroLede}>
+                Design Leader across travel, insurance, fintech, and mortgage — building tools
+                experts actually adopt. Ask the assistant anything, or scroll to read the work.
               </p>
+              <div className={styles.statRow}>
+                <div className={styles.statCell}>
+                  <div className={styles.statFigure}>15+ yrs</div>
+                  <div className={styles.statLabel}>4 regulated industries</div>
+                </div>
+                <div className={styles.statCell}>
+                  <div className={styles.statFigure}>$1B · +23%</div>
+                  <div className={styles.statLabel}>contract · revenue · Sabre</div>
+                </div>
+                <div className={styles.statCell}>
+                  <div className={styles.statFigure}>now</div>
+                  <div className={styles.statLabel}>seeking Design Leader roles</div>
+                </div>
+              </div>
             </div>
-          </aside>
 
-        </div>
-      </header>
-
-      {/* ——— WORK ——— */}
-      <main id="main-content">
-      <section className={styles.workSection} aria-label="Selected work">
-        <div className={styles.workHead}>
-          <div>
-            <div className={styles.workKicker}>Selected work · 2014–2026</div>
-            <h2 className={styles.workTitle}>Four tools, four regulated industries</h2>
+            {/* Chat panel — right column, fades out when docked */}
+            <aside
+              className={[styles.chatPanel, isDocked ? styles.chatPanelHidden : '']
+                .filter(Boolean)
+                .join(' ')}
+              aria-label="Ask Ben — assistant"
+              aria-hidden={isDocked}
+              // @ts-expect-error — inert is a standard HTML attribute not yet in React's types
+              inert={isDocked ? '' : undefined}
+            >
+              {chatBarJSX}
+              {renderLog(heroLogRef, styles.chatLog)}
+              <div className={styles.chatInputWrap}>
+                <ChatInput
+                  onSubmit={handleSubmit}
+                  status={chatStatus}
+                  placeholder="ask about my work…"
+                  multiline
+                  showStatus={false}
+                />
+                <p className={styles.chatFootnote}>ONLINE · assistant ready · ~2s response</p>
+              </div>
+            </aside>
           </div>
-        </div>
-        <div className={styles.workGrid}>
-          {CASE_STUDIES.map(cs => (
-            <CaseStudyCard key={cs.index} {...cs} />
-          ))}
-        </div>
-      </section>
+        </header>
 
-      {/* ——— STAT RAIL ——— */}
-      <div className={styles.statRail} aria-hidden>
-        {STAT_RAIL_DATA.map(r => (
-          <div key={r.date} className={styles.statRailCell}>
-            <span className={styles.statRailDate}>{r.date}</span>
-            <span className={styles.statRailOutcome}>{r.outcome}</span>
+        {/* ——— WORK ——— */}
+        <main id="main-content">
+          <section className={styles.workSection} aria-label="Selected work">
+            <div className={styles.workHead}>
+              <div>
+                <div className={styles.workKicker}>Selected work · 2014–2026</div>
+                <h2 className={styles.workTitle}>Four tools, four regulated industries</h2>
+              </div>
+            </div>
+            <div className={styles.workGrid}>
+              {CASE_STUDIES.map((cs) => (
+                <CaseStudyCard key={cs.index} {...cs} />
+              ))}
+            </div>
+          </section>
+
+          {/* ——— STAT RAIL ——— */}
+          <div className={styles.statRail} aria-hidden>
+            {STAT_RAIL_DATA.map((r) => (
+              <div key={r.date} className={styles.statRailCell}>
+                <span className={styles.statRailDate}>{r.date}</span>
+                <span className={styles.statRailOutcome}>{r.outcome}</span>
+              </div>
+            ))}
           </div>
-        ))}
+
+          {/* ——— FOOTER ——— */}
+          <footer className={styles.footer}>
+            <div className={styles.footerTop}>
+              <p className={styles.footerHeading}>
+                Building something experts can't get wrong
+                <span className={styles.footerQuestion}>?</span>
+              </p>
+              <div className={styles.footerLinks}>
+                <a href="mailto:ben@benjaminwmaxwell.com" className={styles.footerLink}>
+                  ben@benjaminwmaxwell.com
+                </a>
+                <a
+                  href="https://linkedin.com/in/benwmax"
+                  className={styles.footerLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  LinkedIn
+                </a>
+                <a
+                  href="https://github.com/benwmax"
+                  className={styles.footerLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  GitHub
+                </a>
+              </div>
+            </div>
+            <div className={styles.footerFine}>
+              <span>© 2026 Ben Maxwell · viewbens.work</span>
+              <span>
+                Built with Claude — directed, not autopiloted. The process is the case study.
+              </span>
+            </div>
+          </footer>
+        </main>
       </div>
-
-      {/* ——— FOOTER ——— */}
-      <footer className={styles.footer}>
-        <div className={styles.footerTop}>
-          <p className={styles.footerHeading}>
-            Building something experts can't get wrong
-            <span className={styles.footerQuestion}>?</span>
-          </p>
-          <div className={styles.footerLinks}>
-            <a href="mailto:ben@benjaminwmaxwell.com" className={styles.footerLink}>
-              ben@benjaminwmaxwell.com
-            </a>
-            <a
-              href="https://linkedin.com/in/benwmax"
-              className={styles.footerLink}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              LinkedIn
-            </a>
-            <a
-              href="https://github.com/benwmax"
-              className={styles.footerLink}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              GitHub
-            </a>
-          </div>
-        </div>
-        <div className={styles.footerFine}>
-          <span>© 2026 Ben Maxwell · viewbens.work</span>
-          <span>Built with Claude — directed, not autopiloted. The process is the case study.</span>
-        </div>
-      </footer>
-
-      </main>
-      </div>{/* end .pageContent */}
+      {/* end .pageContent */}
 
       {/* ——— DOCKED CHAT PANEL (fixed right rail, desktop only) ——— */}
       <aside
-        className={[styles.dockedPanel, isDocked ? '' : styles.dockedPanelHidden].filter(Boolean).join(' ')}
+        className={[styles.dockedPanel, isDocked ? '' : styles.dockedPanelHidden]
+          .filter(Boolean)
+          .join(' ')}
         aria-label="Ask Ben — assistant"
         aria-hidden={!isDocked}
         // @ts-expect-error — inert is a standard HTML attribute not yet in React's types
@@ -369,17 +384,23 @@ export function HomePage({ onChatSubmit, initialMessages = [] }: HomePageProps) 
           onClick={() => setMobileChatOpen(true)}
           aria-label={`Open chat — ${messages.length} message${messages.length !== 1 ? 's' : ''}`}
         >
-          <span className={styles.fabPrompt} aria-hidden>›</span>
+          <span className={styles.fabPrompt} aria-hidden>
+            ›
+          </span>
           Ask Ben
           {messages.length > 0 && (
-            <span className={styles.fabBadge} aria-hidden>{messages.length}</span>
+            <span className={styles.fabBadge} aria-hidden>
+              {messages.length}
+            </span>
           )}
         </button>
       )}
 
       {/* ——— MOBILE CHAT OVERLAY — full screen sheet ——— */}
       <div
-        className={[styles.mobileOverlay, mobileChatOpen ? styles.mobileOverlayOpen : ''].filter(Boolean).join(' ')}
+        className={[styles.mobileOverlay, mobileChatOpen ? styles.mobileOverlayOpen : '']
+          .filter(Boolean)
+          .join(' ')}
         role="dialog"
         aria-modal="true"
         aria-label="Ask Ben — assistant"
