@@ -405,10 +405,8 @@ to check off?"*
 ## Current Project Status
 
 **Phase:** 1 (content) + 3 (component build-out) active in parallel. Phase 2
-complete — visual identity finalized, tokens written, wordmark locked.
-Phase 3 Layers 1–2 substantially complete; remaining: MobileMenu, About/Resume
-page template, 404 page template, Storybook deploy (3G), Prettier config and
-path aliases (3A). Design Sessions 1–3 complete; Session 4 next.
+complete. Phase 3A fully complete; remaining: About/Resume page template, 404
+page template, Storybook deploy (3G). Design Sessions 1–3 complete; Session 4 next.
 
 **Last updated:** 2026-06-20
 
@@ -453,13 +451,14 @@ path aliases (3A). Design Sessions 1–3 complete; Session 4 next.
   api/lib/rate-limit.ts, .env.example, packages installed (2026-06-20) —
   Phase 4F partially complete; pending Anthropic Workspace + Upstash setup (Ben)
 - Phase 3 scope reduced: Select, Icon wrapper, Link, Avatar, Container/Section/Grid/
-  Divider, QuoteBlock, TimelineEntry removed from scope — not needed for current page
-  set (2026-06-20)
+  Divider, QuoteBlock, TimelineEntry, MobileMenu removed — not needed for current page
+  set; three nav links fit at 390px without collapsing (2026-06-20)
+- Phase 3A complete: Prettier (`.prettierrc` + prettier-plugin-tailwindcss installed,
+  full formatting pass run), path alias `@/` → `src/` in tsconfig and vite.config (2026-06-20)
 
 **Immediate next steps:**
 - Sagent brain dump in progress (parallel track, build-plan 1C)
-- Add Prettier config and path aliases (Phase 3A — ESLint done, these two still pending)
-- Build MobileMenu, About/Resume page template, 404 page template (Phase 3E–3F)
+- Build About/Resume page template and 404 page template (Phase 3F)
 - Claude Design Session 4: component detail explorations (Sessions 1–3 done)
 - Phase 4F: Ben to create Anthropic Workspace + Upstash Redis, add env vars to Vercel
 
