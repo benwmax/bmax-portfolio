@@ -160,7 +160,7 @@ export function AboutPage() {
                 to talk.
               </p>
               <p>
-                I'm based in [location] and open to remote or hybrid. Portfolio is at{' '}
+                I'm based in Dallas, Texas and open to remote or hybrid. Portfolio is at{' '}
                 <a href="/" className={styles.inlineLink}>
                   viewbens.work
                 </a>
