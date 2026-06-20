@@ -58,7 +58,7 @@ export const Default: Story = {
     },
   },
   args: {
-    index: '01',
+    index: '05',
     title: 'Sabre Red Workspace',
     desc: 'Making a command-line tool learnable — without slowing the veterans.',
     tag: 'Travel',
@@ -89,7 +89,7 @@ export const Hover: Story = {
     },
   },
   args: {
-    index: '01',
+    index: '05',
     title: 'Sabre Red Workspace',
     desc: 'Making a command-line tool learnable — without slowing the veterans.',
     tag: 'Travel',
@@ -130,13 +130,13 @@ export const WithoutMeta: Story = {
 };
 
 export const Grid: Story = {
-  name: '2×2 grid — all four case studies',
+  name: '2×2 grid — all five case studies',
   parameters: {
     layout: 'padded',
     docs: {
       description: {
         story:
-          'Homepage card grid. Four case studies, deliberate order: lead case study first (current work, AI fluency), then client work in reverse relevance to target roles. The grid is 2×2 at desktop — not a list, a composition.',
+          'Homepage card grid. Five case studies, deliberate order: lead case study first (current work, AI fluency), then client work in reverse relevance to target roles. The grid is 2-column at desktop — not a list, a composition.',
       },
     },
     ai: {
@@ -145,7 +145,6 @@ export const Grid: Story = {
       contentRules: [
         'Finalized order: 01 Portfolio Rebuild (lead), 02 Upfluent, 03 Sagent, 04 USAA, 05 Sabre.',
         'All five case studies appear. The lead case study (Portfolio Rebuild) is always first.',
-        'NOTE: This story currently shows placeholder ordering (Sabre as 01). Index numbers will be corrected when case study content is finalized.',
       ],
       avoid: [
         "Don't use a single-column list for the work grid.",
@@ -164,15 +163,12 @@ export const Grid: Story = {
     >
       <CaseStudyCard
         index="01"
-        title="Sabre Red Workspace"
-        desc="Making a command-line tool learnable — without slowing the veterans."
-        tag="Travel"
-        href="/work/sabre"
-        role="Lead UX Designer"
-        year="2014–17"
-        stat="$1B"
-        statLabel="Contract"
-        sector="Travel Tech"
+        title="Portfolio Rebuild"
+        desc="Directing AI to rebuild a portfolio — where the process itself is the case study."
+        tag="AI Collaboration"
+        href="/work/portfolio"
+        role="UX Designer · Director"
+        year="2025–"
       />
       <CaseStudyCard
         index="02"
@@ -203,6 +199,18 @@ export const Grid: Story = {
         role="Senior UX Designer"
         year="2018–20"
         sector="Insurance"
+      />
+      <CaseStudyCard
+        index="05"
+        title="Sabre Red Workspace"
+        desc="Making a command-line tool learnable — without slowing the veterans."
+        tag="Travel"
+        href="/work/sabre"
+        role="Lead UX Designer"
+        year="2014–17"
+        stat="$1B"
+        statLabel="Contract"
+        sector="Travel Tech"
       />
     </div>
   ),

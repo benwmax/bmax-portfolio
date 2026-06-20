@@ -81,7 +81,7 @@ export const Sabre: Story = {
     },
   },
   args: {
-    number: '01',
+    number: '05',
     dateRange: '2014–2017',
     title: 'Making a command-line tool learnable — without slowing the veterans.',
     subtitle:
@@ -121,6 +121,42 @@ export const TwoMetaCells: Story = {
     meta: [
       { label: 'My role', value: 'Lead UX Designer' },
       { label: 'Method', value: 'Concept testing · Prototyping' },
+    ],
+  },
+};
+
+export const Sagent: Story = {
+  name: 'Sagent — placeholder',
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Placeholder hero for the Sagent case study (03). Two meta cells — outcomes not yet drafted. ' +
+          'Update title, subtitle, and meta when Sagent content is finalized.',
+      },
+    },
+    ai: {
+      guidance:
+        'Placeholder for the Sagent case study (03). Two meta cells only — no outcomes drafted yet. Replace with 4-cell layout when Sagent content is finalized.',
+      contentRules: [
+        'number: "03" (Sagent is the third case study in the finalized order).',
+        'title must be a problem statement when finalized — "Leading design on a mortgage platform mid-reorganization." or similar.',
+        'Once outcomes are drafted, add 2 accent meta cells and remove the placeholder label.',
+      ],
+      avoid: [
+        "Don't add placeholder outcome stats — omit those cells entirely until real data exists.",
+      ],
+    },
+  },
+  args: {
+    number: '03',
+    dateRange: '2021–2022',
+    title: 'Leading design on a mortgage platform after the director left.',
+    subtitle:
+      'Sagent was a complex enterprise mortgage platform mid-rebuild when the design director departed unexpectedly. What started as a senior IC role became something closer to director-level ownership — stakeholder management, IC mentorship, and product strategy without the title.',
+    meta: [
+      { label: 'My role', value: 'Principal UX Designer' },
+      { label: 'Method', value: 'Service design · Stakeholder alignment' },
     ],
   },
 };
