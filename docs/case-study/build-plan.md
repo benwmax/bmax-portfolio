@@ -250,8 +250,8 @@ independently; only the widget's visual styling depends on those.*
 - [x] Install @upstash/ratelimit and @upstash/redis (2026-06-20)
 - [x] Commit api/chat.ts, api/lib/system-prompt.ts, api/lib/rate-limit.ts
       to repo (2026-06-20)
-- [ ] Replace [CONTACT_LINK] placeholders with real contact info
-- [ ] Build frontend chat widget (depends on Phase 3 tokens for styling)
+- ~~Replace [CONTACT_LINK] placeholders~~ — not applicable; system-prompt.ts used real email (ben@viewbens.work) from the start
+- [x] Build frontend chat widget — UI was already built in both pages; extracted shared useChatSession hook, wired sessionMessageCount so server-side session cap actually fires, surfaced API error messages to the user (2026-06-20)
 - [ ] Deploy to Vercel, test endpoint with curl
 - [ ] Tune rate limits / caps against real traffic
 - [ ] Update system-prompt.ts as Upfluent, USAA, and Sagent case studies
