@@ -130,5 +130,6 @@ export const Sizes: Story = {
   ),
   args: {
     variant: 'primary',
+    children: 'ASK',
   },
 };

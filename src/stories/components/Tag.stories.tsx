@@ -106,6 +106,9 @@ export const WithDot: Story = {
 
 export const AllIndustries: Story = {
   name: 'All industry tags',
+  args: {
+    label: 'Fintech',
+  },
   parameters: {
     layout: 'padded',
     docs: {

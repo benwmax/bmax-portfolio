@@ -35,6 +35,10 @@ export const Default: Story = {
 
 export const List: Story = {
   name: 'Role section — USAA',
+  args: {
+    label: 'Owned',
+    content: 'Role content.',
+  },
   parameters: {
     docs: {
       description: {
@@ -64,6 +68,10 @@ export const List: Story = {
 
 export const LeadershipStory: Story = {
   name: 'Leadership departure story — Sagent',
+  args: {
+    label: 'Started as',
+    content: 'Role content.',
+  },
   parameters: {
     docs: {
       description: {

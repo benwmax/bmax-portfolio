@@ -1,5 +1,3 @@
-import type { ReactNode } from 'react';
-
 export type TagVariant = 'default' | 'green' | 'solid';
 export type TagSize = 'sm' | 'lg';
 

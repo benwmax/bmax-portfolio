@@ -218,7 +218,7 @@ export const Reference: Story = {
 
       {/* Letter Spacing */}
       <SectionTitle>Letter Spacing</SectionTitle>
-      {TRACKING.map(({ token, value, note }) => (
+      {TRACKING.map(({ token, value }) => (
         <div
           key={token}
           style={{

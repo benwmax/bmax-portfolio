@@ -68,6 +68,10 @@ export const TextValue: Story = {
 
 export const TwoColumn: Story = {
   name: '2-column grid — USAA outcomes',
+  args: {
+    value: '+4–6%',
+    label: 'Conversion lift',
+  },
   parameters: {
     docs: {
       description: {
@@ -100,6 +104,10 @@ export const TwoColumn: Story = {
 
 export const ThreeColumn: Story = {
   name: '3-column grid — Sabre outcomes',
+  args: {
+    value: '$1B',
+    label: 'Contract won',
+  },
   parameters: {
     docs: {
       description: {

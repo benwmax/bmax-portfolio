@@ -36,6 +36,13 @@ export const Default: Story = {
 
 export const List: Story = {
   name: 'List of steps',
+  args: {
+    num: 1,
+    phase: 'Phase',
+    title: 'Title',
+    body: 'Body',
+    artifact: 'Artifact',
+  },
   parameters: {
     docs: {
       description: {

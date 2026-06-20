@@ -2,7 +2,7 @@ import type { HTMLAttributes, ReactNode } from 'react';
 import { Tag } from '../Tag';
 import styles from './CaseStudyCard.module.css';
 
-export interface CaseStudyCardProps extends HTMLAttributes<HTMLElement> {
+export interface CaseStudyCardProps extends Omit<HTMLAttributes<HTMLElement>, 'title' | 'role'> {
   /** Index shown in the thumbnail chip — e.g. "01". */
   index?: string | number;
   /** Project / case-study name. */
