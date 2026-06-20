@@ -3,7 +3,26 @@ import type { ReactNode } from 'react';
 
 const meta = {
   title: 'Foundations/Colors',
-  parameters: { layout: 'fullscreen' },
+  parameters: {
+    layout: 'fullscreen',
+    ai: {
+      guidance:
+        'Consult this story before choosing any color. All colors live as CSS custom properties — never hardcode hex values in component code.',
+      contentRules: [
+        'Two accent families: phosphor green (interactive) and warm amber (callouts, industry tags).',
+        'Never use green for informational/categorical content. Never use amber for interactive elements.',
+        'Red (#e05050) is reserved for actual errors only — never for warnings, emphasis, or decoration.',
+        'Text hierarchy: primary (#ccd4b0) → secondary (#8a9478) → tertiary (#6b7055) → muted (#5a6050) → disabled (#3d4035).',
+        'Always use CSS custom properties (--color-*) or Tailwind token classes — never raw hex values.',
+      ],
+      avoid: [
+        "Never hardcode hex values in component or story files.",
+        "Don't invent a new color outside the token system.",
+        "Don't use amber for interactive elements.",
+        "Don't use green for industry/category tags.",
+      ],
+    },
+  },
 } satisfies Meta;
 
 export default meta;
@@ -244,6 +263,22 @@ const SEMANTIC: SwatchRow[] = [
 
 export const Reference: Story = {
   name: 'Color Reference',
+  parameters: {
+    ai: {
+      guidance:
+        'The full color token palette. Consult before choosing any color — all values live as CSS custom properties.',
+      contentRules: [
+        'Always use --color-* CSS custom properties or Tailwind token classes.',
+        'Green family: interactive only (buttons, links, active states, focus rings).',
+        'Amber family: callouts and industry tags only.',
+        'Red (#e05050, --color-status-error): actual errors only.',
+      ],
+      avoid: [
+        "Never hardcode hex values in component or story code.",
+        "Don't use raw hex in Tailwind class values — use the mapped token names.",
+      ],
+    },
+  },
   render: () => (
     <div style={{ background: s.bg, padding: '48px', fontFamily: s.fontMono, minHeight: '100vh' }}>
       <PageHeader />

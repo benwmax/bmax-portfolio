@@ -18,6 +18,20 @@ const meta = {
           'content stays clear of the rail.',
       },
     },
+    ai: {
+      guidance:
+        'The full homepage template — split hero, work grid, docked rail, footer. Never build a homepage layout from scratch; always pass props to this component.',
+      contentRules: [
+        'Three suggestion chips should be conversation starters about specific work: "How did Sabre win the $1B contract?", "Tell me about the USAA redesign.", "What was the Upfluent chatbot challenge?"',
+        'The identity column (left) is static — update via HomePage.tsx, not props.',
+        'Work grid order is finalized: 01 Portfolio Rebuild, 02 Upfluent, 03 Sagent, 04 USAA, 05 Sabre.',
+      ],
+      avoid: [
+        "Don't add content outside the existing hero layout — identity left, chat right.",
+        "Don't build a separate page component for the homepage.",
+        "Don't change the work grid order without checking CLAUDE.md case study order.",
+      ],
+    },
   },
 } satisfies Meta<typeof HomePage>;
 
@@ -35,6 +49,13 @@ export const Default: Story = {
           'Docked rail is hidden (opacity 0, translateX 105%). ' +
           'Submit wired to a Storybook action — no API call.',
       },
+    },
+    ai: {
+      guidance:
+        'The homepage before any chat message is sent — hero panel visible in right column, greeting text and three suggestion chips shown. This is the default state.',
+      avoid: [
+        "Don't show the docked rail in this state — it's hidden until the first message.",
+      ],
     },
   },
   args: {
@@ -63,6 +84,17 @@ export const ConversationStarted: Story = {
           'Seeded with one user message and one assistant response.',
       },
     },
+    ai: {
+      guidance:
+        'The homepage after the first message exchange — hero panel fades out, the 400px docked rail slides in from the right. This is the persistent conversation state.',
+      contentRules: [
+        'Pass initialMessages to seed the conversation for demonstration.',
+      ],
+      avoid: [
+        "Don't try to keep the hero panel visible during a conversation — it disappears by design.",
+        "Don't show the docked rail on mobile — it's desktop-only by design.",
+      ],
+    },
   },
   args: {
     onChatSubmit: fn(),
@@ -89,6 +121,14 @@ export const MobileBreakpoint: Story = {
           'Below 760px the docked panel is hidden entirely via CSS — hero panel is the only chat surface. ' +
           'Work grid collapses to single column. Padding drops to 20px.',
       },
+    },
+    ai: {
+      guidance:
+        'At 768px the hero collapses to single column and the docked panel is hidden. Below 760px, the hero chat panel is the only chat surface.',
+      avoid: [
+        "Don't add the docked rail to mobile — it's desktop-only by design.",
+        "Don't add a mobile hamburger menu — three nav links fit at 390px without collapsing.",
+      ],
     },
   },
   args: {

@@ -3,7 +3,25 @@ import type { ReactNode } from 'react';
 
 const meta = {
   title: 'Foundations/Typography',
-  parameters: { layout: 'fullscreen' },
+  parameters: {
+    layout: 'fullscreen',
+    ai: {
+      guidance:
+        'Consult before choosing a font or type size. The two-mono system has strict rules — mixing family roles breaks the aesthetic.',
+      contentRules: [
+        'Space Mono (--font-mono-display): wordmark, nav, buttons, tags, ALL CAPS labels. Runs wide — use negative tracking at display sizes.',
+        'IBM Plex Mono (--font-mono-ui): metadata, small labels, code, anything Space Mono makes too loud below ~13px.',
+        'System sans (--font-sans): case study body copy and long-form prose ONLY. Never for UI chrome or labels.',
+        'Type scale is in rem — use token names (text-xs, text-sm, etc.), never arbitrary px values.',
+      ],
+      avoid: [
+        "Never use system sans for navigation, buttons, tags, or labels.",
+        "Never use Space Mono for body text or continuous reading.",
+        "Never mix font-mono-display and font-mono-ui in the same text block.",
+        "Never use arbitrary font sizes outside the token scale.",
+      ],
+    },
+  },
 } satisfies Meta;
 
 export default meta;
@@ -113,6 +131,18 @@ const PROSE_SAMPLE =
 
 export const Reference: Story = {
   name: 'Typography Reference',
+  parameters: {
+    ai: {
+      guidance:
+        'The two-mono font system reference. Space Mono for UI chrome, IBM Plex Mono for functional text, system sans for prose only.',
+      contentRules: [
+        'Space Mono: wordmark, nav, buttons, tags, ALL CAPS labels.',
+        'IBM Plex Mono: metadata, small labels, code, everything Space Mono makes too loud below ~13px.',
+        'System sans: case study body copy only — never for UI chrome.',
+        'Type scale uses rem tokens — never arbitrary px values.',
+      ],
+    },
+  },
   render: () => (
     <div style={{ background: s.bg, padding: '48px', fontFamily: s.fontMono, minHeight: '100vh' }}>
       {/* Header */}

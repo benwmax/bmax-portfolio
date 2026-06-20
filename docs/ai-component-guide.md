@@ -1,0 +1,783 @@
+# AI Component Guide
+
+*Authoritative reference for all components and page templates in the bmax-portfolio design system.
+Read this before building any new UI — it will save you from re-inventing components that already
+exist or using them wrong.*
+
+*Last updated: 2026-06-20*
+
+---
+
+## How to Use This Guide
+
+1. Check the **Decision Tree** below to identify which component handles your use case.
+2. Read the component section — especially **Prop cheat sheet** and **Pitfalls**.
+3. Check the Storybook story for that component; every story has a `parameters.ai` block with
+   `guidance`, `contentRules`, and `avoid` fields.
+4. When in doubt, look at how the component is used in existing page stories
+   (`Pages/Homepage`, `Pages/Case Study`) before building something new.
+
+**Golden rule:** Never hardcode hex values or arbitrary spacing. Every color and every space
+value has a CSS custom property. They are documented in `Foundations/Colors` and
+`Foundations/Spacing`.
+
+---
+
+## Decision Tree
+
+| Use case | Component |
+|---|---|
+| Primary / committed action button | `Button` variant="primary" |
+| Secondary / available-but-not-recommended action | `Button` variant="secondary" |
+| Ghost / optional nav-adjacent action | `Button` variant="ghost" |
+| Industry label (Travel, Fintech, etc.) | `Tag` variant="amber" (default) |
+| Method / process label | `Tag` variant="green" |
+| AI assistant availability signal | `StatusIndicator` |
+| Full AI chat widget (prompt + button + status) | `ChatInput` |
+| Generic form text field | `Input` |
+| Site header / navigation | `NavBar` |
+| Work grid thumbnail + link | `CaseStudyCard` |
+| Case study page hero (title, meta grid) | `CaseStudyHero` |
+| Screenshot / artifact with caption | `ImageCaption` |
+| Explicit ownership rows | `RoleCallout` + `RoleCallouts` |
+| Numbered case study process steps | `ProcessStep` + `ProcessSteps` |
+| Outcome stat cell | `StatBlock` + `StatGrid` |
+| Full homepage | `HomePage` (page component) |
+| Full case study page | `CaseStudyPage` (page component) |
+| About page | `AboutPage` (page component) |
+| Resume page | `ResumePage` (page component) |
+| 404 page | `NotFoundPage` (page component) |
+| Contact page | `Contact` (page component) |
+
+---
+
+## Foundations
+
+### Colors
+
+**Storybook:** `Foundations/Colors`
+**File:** `src/tokens/tokens.css`
+
+Two accent families: phosphor green (interactive) and warm amber (callouts, industry tags).
+
+- **Green** (`--color-green-*`): interactive only — buttons, links, active nav, focus rings, status dots.
+- **Amber** (`--color-amber-*`): callouts and industry tags only. Never for interactive elements.
+- **Red** (`#e05050`, `--color-status-error`): actual errors only — never for warnings, emphasis, or decoration.
+- **Text hierarchy:** primary (`#ccd4b0`) → secondary (`#8a9478`) → tertiary (`#6b7055`) → muted (`#5a6050`) → disabled (`#3d4035`).
+
+Never hardcode hex values. Always use `--color-*` CSS custom properties or Tailwind token classes.
+
+---
+
+### Typography
+
+**Storybook:** `Foundations/Typography`
+
+Three fonts, three roles — never mix them:
+
+| Font | Token | Role |
+|---|---|---|
+| Space Mono | `--font-mono-display` | Wordmark, nav, buttons, tags, ALL CAPS labels |
+| IBM Plex Mono | `--font-mono-ui` | Metadata, small labels, code, anything Space Mono makes too loud below ~13px |
+| System sans | `--font-sans` | Case study body copy and long-form prose **only** |
+
+Type scale tokens (never use arbitrary px values): `--text-xs` (10px) through `--text-3xl` (28px).
+
+---
+
+### Spacing
+
+**Storybook:** `Foundations/Spacing`
+
+- **Border radius:** 3px (`--radius-md`) is the system default. 0 for terminal-chrome elements. 9999px for dots and pills.
+- **Motion:** always `--ease-default` (`cubic-bezier(0.4, 0, 0.2, 1)`). Durations: `--duration-fast` (100ms) button presses, `--duration-base` (150ms) hover/focus, `--duration-slow` (250ms) panel transitions.
+- **Space scale:** `--space-1` (4px) through `--space-24` (96px). Always use token names.
+
+---
+
+## Component Reference
+
+### Button
+
+**File:** `src/components/Button.tsx`
+**Storybook:** `Components/Button`
+
+Terminal command aesthetic — Space Mono, ALL CAPS, wide tracking. The component enforces uppercase; never pass sentence-case labels.
+
+#### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `variant` | `"primary" \| "secondary" \| "ghost"` | `"primary"` | Three variants only — never invent a fourth |
+| `size` | `"sm" \| "md" \| "lg"` | `"md"` | `md` is the only size in production |
+| `disabled` | `boolean` | `false` | Use sparingly — prefer hiding over disabling |
+| `loading` | `boolean` | `false` | Applies disabled state while in-flight |
+
+#### When to use each variant
+
+- **Primary:** The single committed action per surface — "ASK", "VIEW CASE STUDY +", "COMPOSE EMAIL +". One primary per surface.
+- **Secondary:** Available but not the recommended next step — "COPY ADDRESS", "COPY URL". Always paired with a nearby primary.
+- **Ghost:** Optional navigation-adjacent actions that must not compete with a primary — "BACK", "MORE", "VIEW".
+
+#### Content rules
+
+- Labels: SHORT COMMANDS — "ASK", "VIEW CASE STUDY +", "COPY ADDRESS", "COMPOSE EMAIL +"
+- The canonical chat submit label is "ASK"
+- All text is ALL CAPS — the component enforces this
+
+#### Pitfalls
+
+- Never place two primary buttons side by side
+- Never use secondary as the only button on a surface
+- Never use ghost as the primary CTA
+- Don't show a spinner inside the button — the ChatInput sweep animation is the loading affordance
+
+---
+
+### Tag
+
+**File:** `src/components/Tag.tsx`
+**Storybook:** `Components/Tag`
+
+Space Mono, ultra-wide tracking. Never interactive — no onClick, no href.
+
+#### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `variant` | `"amber" \| "green" \| "solid"` | `"amber"` | amber=industry, green=method |
+| `size` | `"sm" \| "lg"` | `"sm"` | sm for cards, lg for hero meta blocks |
+| `dot` | `boolean` | `false` | Visual bullet — implies list membership |
+
+#### When to use each variant
+
+- **Amber (default):** Industry labels on CaseStudyCard thumbnails and ProcessStep artifact callouts — "Travel", "Fintech", "Mortgage", "Insurance", "AI Collaboration"
+- **Green:** Method, build-process, or AI-collaboration labels where the tag reads as "process" not "industry"
+- **Solid:** Reserved for high-emphasis callout contexts — not in v1 card layouts
+
+#### The five canonical industry labels
+
+Travel · Fintech · Mortgage · Insurance · AI Collaboration
+
+These are the only industry labels in the portfolio. Do not invent new ones.
+
+#### Pitfalls
+
+- Never make a Tag interactive
+- Never use green for industry categories
+- Never use amber for interactive elements
+- Never use solid as the default variant
+
+---
+
+### StatusIndicator
+
+**File:** `src/components/StatusIndicator.tsx`
+**Storybook:** `Components/StatusIndicator`
+
+Availability signal. 7px dot, IBM Plex Mono 10px uppercase. Renders **below** ChatInput — never inside it.
+
+#### Props
+
+| Prop | Type | Notes |
+|---|---|---|
+| `status` | `"online" \| "offline" \| "warning" \| "error"` | Online: green-bright blinking dot. Offline: text-disabled, no blink |
+| `label` | `string` | Always uppercase. Format: "ONLINE · assistant ready · ~2s response" |
+
+#### States
+
+- **Online:** Default. Green-bright dot, blink animation. Label: "ONLINE · assistant ready"
+- **Offline:** No blink, text-disabled dot. Label: "OFFLINE · responses unavailable"
+- **Warning:** Degraded-but-functional (rate limit approaching). Activate programmatically, not by default
+- **Error:** Actual failure (API unreachable, auth error). Only red non-green element. Programmatic only
+
+#### Pitfalls
+
+- Never render StatusIndicator inside ChatInput — it renders separately below it
+- Don't set `blink={false}` for online state — the blink is the signal
+- Don't use "offline" for loading state — loading is still "online" (responding, just slow)
+
+---
+
+### ChatInput
+
+**File:** `src/components/ChatInput.tsx`
+**Storybook:** `Components/ChatInput`
+
+The full AI chat widget — terminal `›` prompt indicator, input field, ASK button, and StatusIndicator below. Use this component, not the bare `Input`, for any AI chat surface.
+
+#### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `status` | `"online" \| "loading" \| "offline"` | `"online"` | Controls field interactivity and loading animation |
+| `multiline` | `boolean` | `false` | Grows to 6 lines then scrolls. Cmd/Ctrl+Enter submits |
+| `showStatus` | `boolean` | `true` | Set false when the surrounding panel already has a StatusIndicator |
+| `placeholder` | `string` | `"ask about my work…"` | Lowercase, no period — matches the system default |
+| `forceFocused` | `boolean` | — | **Storybook-only.** Do not use in application code |
+
+#### States
+
+- **Default / idle:** status="online", empty field
+- **Focused / active:** Green border, phosphor bg tint, block caret — triggers on real `:focus`
+- **Filled:** Active state (green border + bg) persists while field has text, even after blur
+- **Loading:** status="loading" — field read-only, sweep animation on bottom border, ASK at 55% opacity
+- **Offline:** status="offline" — ASK disabled; field stays interactive
+
+#### When to use multiline
+
+- `multiline={true}` for the full case study right rail (expanded chat composer) and standalone chat surfaces
+- Single-line for the compact homepage hero panel
+
+#### Pitfalls
+
+- Never use ChatInput as a generic form input — use the bare `Input` component for that
+- Don't show a spinner inside the button — the sweep animation is the loading affordance
+- Don't clear the field while loading — the user's question stays visible
+- `forceFocused` is Storybook-only — never wire it to application state
+
+---
+
+### Input
+
+**File:** `src/components/Input.tsx`
+**Storybook:** `Components/Input`
+
+Bare terminal text field. Use for forms — not for the AI chat widget (use `ChatInput` for that).
+
+#### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `label` | `string` | — | Space Mono ALL CAPS. Rendered above the field |
+| `hint` | `string` | — | IBM Plex Mono 10px, tertiary. Wired to aria-describedby |
+| `error` | `string` | — | Replaces hint, turns border red, sets aria-invalid |
+| `prompt` | `boolean` | `false` | Adds terminal `›` indicator for terminal-aesthetic contexts |
+| `multiline` | `boolean` | `false` | Renders `<textarea>`. Min-height 4.5rem, vertically resizable |
+| `disabled` | `boolean` | `false` | 50% opacity, not-allowed cursor |
+
+#### Content rules
+
+- Labels are ALL CAPS — "YOUR QUESTION", "EMAIL ADDRESS"
+- Hint: format guidance or limits — "Max 2000 characters", "Letters only"
+- Error messages: specific — "Please enter a question before submitting." not "Invalid input."
+
+#### Pitfalls
+
+- For AI chat functionality, use `ChatInput` — not this component
+- Don't add a `prompt` to a standard form field outside the terminal context
+- Don't use red for any state other than actual errors
+
+---
+
+### NavBar
+
+**File:** `src/components/NavBar.tsx`
+**Storybook:** `Components/NavBar`
+
+Site header. Present on every page. Three fixed nav links. Pass `activePath` from the router.
+
+#### Props
+
+| Prop | Type | Notes |
+|---|---|---|
+| `activePath` | `string` | Wire to router pathname. One of: "/work", "/about", "/resume" |
+
+#### Pitfalls
+
+- Always wire `activePath` to the router pathname — never leave it undefined in production
+- Don't add custom nav links or a mobile hamburger — three links fit at 390px without collapsing
+- Don't add a fourth nav link without checking with Ben
+
+---
+
+### CaseStudyCard
+
+**File:** `src/components/CaseStudyCard.tsx`
+**Storybook:** `Components/CaseStudyCard`
+
+The work-grid entry point. Always a link (`href` required). 16:9 thumbnail, index chip, sector tag, title, hook, meta grid.
+
+#### Props (key decisions)
+
+| Prop | Type | Notes |
+|---|---|---|
+| `index` | `string` | Zero-padded two digits: "01", "02", "03", "04", "05" |
+| `title` | `string` | Project name (not the hook) |
+| `desc` | `string` | One-sentence hook — the problem angle |
+| `tag` | `string` | Industry label — one of the five canonical labels |
+| `href` | `string` | Required. Card should always navigate |
+| `role` | `string` | Role title — omit to hide meta grid |
+| `year` | `string` | Year or date range |
+| `stat` | `string` | Headline outcome value — "+4–6%", "$1B" |
+| `statLabel` | `string` | Outcome label |
+| `sector` | `string` | Industry context |
+| `forceHover` | `boolean` | **Storybook-only.** Never use in application code |
+
+#### Content rules
+
+- `index`: always zero-padded — "01", "02" — matches the finalized case study order
+- `desc` is the hook (problem angle), not the project title. "title" is the project name
+- `tag`: one of the five canonical industry labels only
+
+#### Case study index reference
+
+| Index | Case Study |
+|---|---|
+| 01 | Portfolio Rebuild |
+| 02 | Upfluent |
+| 03 | Sagent |
+| 04 | USAA |
+| 05 | Sabre |
+
+#### Pitfalls
+
+- Never omit `href` — the card should always navigate
+- Don't use title as the hook — `desc` is the hook; `title` is the project name
+- Don't pass empty strings for meta props — omit them entirely to collapse the meta grid
+- `forceHover` is Storybook-only — never use in application code
+
+---
+
+### CaseStudyHero
+
+**File:** `src/components/CaseStudyHero.tsx`
+**Storybook:** `Components/CaseStudyHero`
+
+The case study page header. H1 is always a problem statement. Accent meta values are reserved for hard numbers only.
+
+#### Props
+
+| Prop | Type | Notes |
+|---|---|---|
+| `title` | `string` | **Must be a problem statement:** "Modernizing X without Y" |
+| `subtitle` | `string` | 2–4 sentences of problem context |
+| `meta` | `MetaItem[]` | Array of `{ label, value, accent? }`. accent=true for hard numbers only |
+
+#### Content rules
+
+- `title` is the H1 — always a problem statement, never a project description
+  - ✓ "Modernizing P&C insurance without losing the members who trusted it."
+  - ✗ "Redesigned the USAA P&C experience"
+- `accent: true` only for hard numbers — "+4–6%", "$1B", "< 3 mo."
+- Max 2 accent slots — role and method should never be green
+
+#### Pitfalls
+
+- Never write the title as a project description
+- Never use `accent: true` for role, method, or non-numeric values
+
+---
+
+### ImageCaption
+
+**File:** `src/components/ImageCaption.tsx`
+**Storybook:** `Components/ImageCaption`
+
+Terminal-chrome frame for all case study screenshots. Never use a plain `<img>` tag for portfolio artifacts — always use `ImageCaption`.
+
+#### Props
+
+| Prop | Type | Notes |
+|---|---|---|
+| `src` | `string` | Image URL. Omit to show dot-grid placeholder |
+| `alt` | `string` | Always required for accessibility |
+| `tabLabel` | `string` | Format: "project · artifact-type" |
+| `caption` | `string` | Format: "Fig. 01 — description." |
+
+#### Content rules
+
+- `tabLabel` format: "project · artifact-type" — e.g., "usaa · A/B test pipeline", "sabre-red · hotel-workspace"
+- `caption` format: "Fig. 01 — description." — numbered, em dash, period
+- Omit `src` to show the dot-grid placeholder (intentional — signals "image goes here")
+
+#### Pitfalls
+
+- Never use a plain `<img>` tag for case study artifacts
+- Never use a grey box placeholder — the dot-grid treatment is the system default
+
+---
+
+### RoleCallout + RoleCallouts
+
+**File:** `src/components/RoleCallout.tsx`
+**Storybook:** `Components/RoleCallout`
+
+Explicit ownership rows for the Role section of a case study. 132px fixed label, flowing prose content. Always use `RoleCallouts` wrapper for multiple rows.
+
+#### Props — RoleCallout
+
+| Prop | Type | Notes |
+|---|---|---|
+| `label` | `string` | Short descriptor — "Owned", "In the room", "Director layer", "Started as", "Became" |
+| `content` | `string` | 1–2 sentences, first person, active voice |
+
+#### Standard 3-row pattern
+
+```tsx
+<RoleCallouts>
+  <RoleCallout label="Owned" content="..." />
+  <RoleCallout label="Director layer" content="..." />
+  <RoleCallout label="In the room" content="..." />
+</RoleCallouts>
+```
+
+#### Content rules
+
+- Standard labels: "Owned", "Director layer", "In the room"
+- Content: specific, first person — "I sat between the team and our Director" not "I was the lead designer"
+- Pick the three that define scope and level — don't list every task
+
+#### Pitfalls
+
+- Always use `RoleCallouts` wrapper — never lay out rows manually
+- Don't exceed the 3-row pattern without a specific reason
+
+---
+
+### ProcessStep + ProcessSteps
+
+**File:** `src/components/ProcessStep.tsx`
+**Storybook:** `Components/ProcessStep`
+
+Numbered process step cards for case study process sections. Always use `ProcessSteps` wrapper. The body reads like something that happened — not a methodology list.
+
+#### Props — ProcessStep
+
+| Prop | Type | Notes |
+|---|---|---|
+| `num` | `number` | 1-based integer |
+| `phase` | `string` | One-word label — "Assess", "Align", "Build", "Discover", "Define", "Test" |
+| `title` | `string` | One-line step label |
+| `body` | `string` | 1–3 sentences of what actually happened |
+| `artifact` | `string` | Method names joined with ` · ` — "Field observation · Analytics review" |
+
+#### Composition
+
+```tsx
+<ProcessSteps>
+  <ProcessStep num={1} phase="Assess" title="..." body="..." artifact="..." />
+  <ProcessStep num={2} phase="Align" title="..." body="..." artifact="..." />
+  <ProcessStep num={3} phase="Build" title="..." body="..." artifact="..." />
+</ProcessSteps>
+```
+
+#### Content rules
+
+- `body` reads as an observation, not a methodology: "They kept leaving the tool mid-call for Expedia" not "Conducted field observation sessions"
+- Past tense, first or third person: "We found...", "They told us...", "The data showed..."
+- One sharp observation beats a bullet list of frameworks
+
+#### Pitfalls
+
+- Always use `ProcessSteps` wrapper — never lay out cards manually
+- Don't exceed 5 steps — the process section should be scannable
+- Don't use `ProcessSteps` outside of a case study process section
+
+---
+
+### StatBlock + StatGrid
+
+**File:** `src/components/StatBlock.tsx`
+**Storybook:** `Components/StatBlock`
+
+Outcome stat cell — phosphor green headline value, ALL CAPS label, optional one-line context body. Always use `StatGrid` wrapper for multiple cells.
+
+#### Props — StatBlock
+
+| Prop | Type | Notes |
+|---|---|---|
+| `value` | `string` | The number or short word — "+4–6%", "$1B", "< 3 mo.", "Scaled", "Shipped" |
+| `label` | `string` | ALL CAPS descriptor — "Conversion lift · P&C", "Contract won" |
+| `body` | `string` | Optional. One sentence of context — "Homeowners up 5%." |
+
+#### Props — StatGrid
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `cols` | `2 \| 3` | `2` | 2-col for 2 or 4 cells; 3-col for exactly 3 cells |
+
+#### Composition
+
+```tsx
+<StatGrid>                        {/* default 2-col */}
+  <StatBlock value="+4–6%" label="Conversion lift · P&C" body="Homeowners up 5%." />
+  <StatBlock value="↓ Calls" label="Self-service tasks" body="..." />
+  <StatBlock value="< 3 mo." label="Mobile redesign ship" body="..." />
+  <StatBlock value="Scaled" label="Service blueprint" body="..." />
+</StatGrid>
+
+<StatGrid cols={3}>               {/* 3-col for exactly 3 stats */}
+  <StatBlock value="$1B" label="Contract won" body="..." />
+  <StatBlock value="+23%" label="Revenue lift" />
+  <StatBlock value="$800M" label="TTV gain, year one" body="..." />
+</StatGrid>
+```
+
+#### Content rules
+
+- `value`: concrete number or short word — "+4–6%", "$1B", "< 3 mo.", "Scaled", "Shipped"
+- Non-numeric values: past tense or qualitative — "Scaled", "Adopted", "Launched", "Shipped"
+- Omit `body` when the value speaks for itself — don't force a sentence
+- `label`: ALL CAPS — "Conversion lift · P&C", "Contract won", "Mobile redesign ship"
+
+#### Pitfalls
+
+- Always use `StatGrid` wrapper — never lay out cells manually
+- Don't use vague qualifiers as values: "Improved", "Better", "Enhanced" — these don't land
+- Don't force 3 cells when you only have 2 — use the default 2-col grid
+- The 1px hairline is the grid background color showing through 1px gaps — never replicate manually
+
+---
+
+## Page Templates
+
+### Homepage
+
+**File:** `src/pages/HomePage.tsx`
+**Storybook:** `Pages/Homepage`
+
+Split hero (identity left, chat right), work grid, stat rail, footer. When the user sends the first message, the hero chat panel fades out and the 400px docked rail slides in.
+
+#### Props
+
+| Prop | Type | Notes |
+|---|---|---|
+| `onChatSubmit` | `function` | Handler for chat message submission |
+| `initialMessages` | `Message[]` | Seed messages to pre-populate the conversation |
+
+#### States
+
+- **Hero idle (Default):** No messages, greeting text and three suggestion chips shown, docked rail hidden
+- **Conversation started:** Hero panel faded, docked 400px rail visible, page acquires padding-right
+- **Mobile (≤768px):** Single column, docked rail hidden, hero chat panel is the only chat surface
+
+#### Pitfalls
+
+- Don't add content outside the existing hero layout — identity left, chat right
+- Don't try to keep the hero panel visible during a conversation
+- Don't show the docked rail on mobile — it's desktop-only
+
+---
+
+### CaseStudyPage
+
+**File:** `src/pages/CaseStudyPage.tsx`
+**Storybook:** `Pages/Case Study`
+
+Full case study page template. 8 labeled sections, sticky sidebar TOC, scroll progress bar, docked chat panel. Pass a `CaseStudyContent` object — never build from primitives.
+
+#### CaseStudyContent Schema
+
+```typescript
+interface CaseStudyContent {
+  number: string;           // "04" — zero-padded, matches finalized order
+  dateRange: string;        // "2018–2020"
+  company: string;          // "USAA"
+  heroTitle: string;        // Problem statement — "Modernizing X without Y"
+  heroSubtitle: string;     // 2–4 sentence problem context
+  meta: MetaItem[];         // [{ label, value, accent? }] — accent:true for hard numbers only
+  problem: Section;         // { heading, paragraphs[] }
+  role: RoleItem[];         // [{ label, content }] — maps to RoleCallout
+  userContext: Section;     // { paragraphs[] }
+  process: ProcessItem[];   // [{ phase, title, body, artifact }] — maps to ProcessStep
+  keyDecision: Section;     // { heading, paragraphs[], artifactLabel? }
+  whatWasHard: Section;     // { paragraphs[] }
+  outcomes: StatItem[];     // [{ value, label, body? }] — maps to StatBlock
+  whatIdDoDifferently: Section; // { paragraphs[] }
+  chatSuggestions?: string[];   // 2–3 conversation starters for the docked chat
+  nextCase?: { title, href };   // Link to next case study
+}
+```
+
+#### Section order (mandatory)
+
+1. Problem
+2. Role
+3. User Context
+4. Process
+5. Key Decision
+6. What Was Hard
+7. Outcomes
+8. What I'd Do Differently
+
+All 8 sections are mandatory. The sidebar TOC is generated from them. Do not skip or reorder.
+
+#### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `layout` | `"sidebar" \| "linear"` | `"sidebar"` | Sidebar is the intended production experience |
+| `showChat` | `boolean` | `true` | Show/hide docked chat panel |
+| `onChatSubmit` | `function` | — | Chat message handler |
+| `initialMessages` | `Message[]` | — | Seed messages |
+
+#### Pitfalls
+
+- Never build a case study page layout from scratch — always use this template
+- Don't change the section order
+- Don't use `accent: true` for role, method, or non-numeric meta values
+- Don't write `heroTitle` as a project description — it must be a problem statement
+- Don't use `layout="linear"` as the default — sidebar + chat is the intended experience
+
+---
+
+### AboutPage
+
+**File:** `src/pages/AboutPage.tsx`
+**Storybook:** `Pages/About`
+
+Static content page — four sections: approach, leadership, career arc, what I'm looking for. No props — all content is embedded in the file.
+
+**Update content:** edit `AboutPage.tsx` directly.
+
+**Career arc:** Runs from May 2014 (Aperia Solutions) to present — nine roles total. Market Rebellion is included as a brief mention, not a standalone case study.
+
+**Location:** Dallas, Texas (not remote-only).
+
+---
+
+### ResumePage
+
+**File:** `src/pages/ResumePage.tsx`
+**Storybook:** `Pages/Resume`
+
+Designed resume page — not a PDF dump. Nine roles, most-recent-first. Each role has: title, company, date range, sector `Tag`, and two outcome bullets. Date column is 140px wide (fixed to prevent overflow on longer date strings).
+
+**Update content:** edit `ResumePage.tsx` directly. No props.
+
+---
+
+### NotFoundPage
+
+**File:** `src/pages/NotFoundPage.tsx`
+**Storybook:** `Pages/404`
+
+Terminal-themed 404 — fake shell session where the page request fails, with a link back home. Fully self-contained. No props.
+
+**Pitfalls:**
+- No search bar or site map — link back home only
+- No generic error illustration — the terminal visual is the aesthetic
+
+---
+
+### Contact
+
+**File:** `src/components/Contact/Contact.tsx`
+**Storybook:** `Pages/Contact`
+
+Contact page — two channel cards (email + LinkedIn) with copy-to-clipboard actions and a receipt strip. All content is hardcoded.
+
+**Content:**
+- Email: ben@viewbens.work
+- LinkedIn: linkedin.com/in/benwmax
+- Receipt strip: "REPLY WITHIN ≤ 48 hrs" · "TIMEZONE Dallas · UTC-5" · "STATUS Available"
+
+**Update content:** edit `Contact.tsx` directly. No props.
+
+**Pitfalls:**
+- No contact form — two channel cards are the contact method
+- Don't change email address or timezone without checking with Ben
+
+---
+
+## Composition Patterns
+
+### AI Chat Surface (Homepage Hero)
+
+```tsx
+<ChatInput
+  status={chatStatus}
+  placeholder="ask about my work…"
+  onSubmit={handleSubmit}
+  multiline={false}
+/>
+{/* StatusIndicator rendered by ChatInput via showStatus={true} */}
+```
+
+### AI Chat Surface (Case Study Right Rail)
+
+```tsx
+<ChatInput
+  status={chatStatus}
+  multiline={true}
+  showStatus={false}   {/* rail panel has its own status display */}
+  onSubmit={handleSubmit}
+/>
+<StatusIndicator status={chatStatus} label="ONLINE · assistant ready" />
+```
+
+### Case Study Process Section
+
+```tsx
+<ProcessSteps>
+  <ProcessStep num={1} phase="Assess" title="..." body="..." artifact="..." />
+  <ProcessStep num={2} phase="Align" title="..." body="..." artifact="..." />
+  <ProcessStep num={3} phase="Build" title="..." body="..." artifact="..." />
+</ProcessSteps>
+```
+
+### Case Study Role Section
+
+```tsx
+<RoleCallouts>
+  <RoleCallout label="Owned" content="..." />
+  <RoleCallout label="Director layer" content="..." />
+  <RoleCallout label="In the room" content="..." />
+</RoleCallouts>
+```
+
+### Case Study Outcomes Section
+
+```tsx
+<StatGrid>
+  <StatBlock value="+4–6%" label="Conversion lift · P&C" body="Homeowners up 5%." />
+  <StatBlock value="↓ Calls" label="Self-service tasks" body="..." />
+  <StatBlock value="< 3 mo." label="Mobile redesign ship" body="..." />
+  <StatBlock value="Scaled" label="Service blueprint" body="..." />
+</StatGrid>
+```
+
+### Work Grid (Homepage)
+
+```tsx
+{/* 2×2 grid — all five case studies */}
+<CaseStudyCard index="01" title="Portfolio Rebuild" desc="..." tag="AI Collaboration" href="/work/portfolio" ... />
+<CaseStudyCard index="02" title="Upfluent" desc="..." tag="Fintech" href="/work/upfluent" ... />
+<CaseStudyCard index="03" title="Sagent" desc="..." tag="Mortgage" href="/work/sagent" ... />
+<CaseStudyCard index="04" title="USAA" desc="..." tag="Insurance" href="/work/usaa" ... />
+<CaseStudyCard index="05" title="Sabre" desc="..." tag="Travel" href="/work/sabre" ... />
+```
+
+---
+
+## Things That Don't Exist Yet
+
+The following components were explicitly removed from scope during Phase 3 (2026-06-20).
+Do not build them unless Ben explicitly re-adds them to the plan.
+
+| Component | Why removed |
+|---|---|
+| `Select` | Not needed for current page set |
+| Icon wrapper | Using inline SVG or direct emoji where needed |
+| `Link` component | Native `<a>` tags serve the current need |
+| `Avatar` | Not in current page designs |
+| `Container` / `Section` / `Grid` / `Divider` | Layout handled at page level |
+| `QuoteBlock` | Not in current case study layouts |
+| `TimelineEntry` | Not in current page designs |
+| `MobileMenu` | Three nav links fit at 390px without collapsing |
+
+---
+
+## Open Questions for Ben
+
+See the questions report (delivered 2026-06-20) for items needing decisions before the guide
+can be fully finalized. Key open items:
+
+1. **Case study index mismatch in CaseStudyCard.stories.tsx** — Grid story doesn't match finalized order
+2. **`@storybook/addon-mcp` parameter schema** — confirm it uses `parameters.ai` or different namespace
+3. **CaseStudyContent field-by-field docs** — full TypeScript interface in this guide, or link to source?
+4. **"Fifteen years" copy** — career arc starts May 2014 (~12 years); decide copy update
+5. **Sagent CaseStudyHero story** — add placeholder now or wait for content?
+6. **Portfolio Rebuild case study** — add placeholder CaseStudyCard now or wait?
+7. **Contact page classification** — "Page Templates" section (current) or separate section?

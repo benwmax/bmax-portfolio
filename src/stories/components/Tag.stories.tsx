@@ -12,6 +12,20 @@ const meta = {
           'Industry and method label. Amber (default) separates tags from interactive green — amber signals "context," green signals "action." Space Mono with ultra-wide tracking makes short labels read as data. Tags are informational only, never interactive.',
       },
     },
+    ai: {
+      guidance:
+        'Tags are informational only — never interactive. Amber = industry/context. Green = method/process. Never invent a color outside these two families.',
+      contentRules: [
+        'Five canonical industry labels: Travel, Fintech, Mortgage, Insurance, AI Collaboration.',
+        'Always singular, title-case.',
+        'Tags are never clickable — no onClick, no href.',
+      ],
+      avoid: [
+        "Don't make a Tag interactive.",
+        "Don't invent a new industry label — use only the five canonical ones.",
+        "Don't use amber for anything interactive.",
+      ],
+    },
   },
 } satisfies Meta<typeof Tag>;
 
@@ -26,6 +40,13 @@ export const Default: Story = {
         story:
           'Card-scale amber tag — 11px Space Mono, 0.15em tracking, transparent background, amber-deep border. Used in the case-study card footer. Amber was chosen specifically so tags can never be confused with interactive elements.',
       },
+    },
+    ai: {
+      guidance:
+        'Use for industry labels on CaseStudyCard thumbnails. This is the default — reach for it first.',
+      avoid: [
+        "Never use green or solid variant for industry labels.",
+      ],
     },
   },
   args: {
@@ -44,6 +65,16 @@ export const Green: Story = {
           'Green tag for status-adjacent chips — "AI Collaboration," build-method labels, or any tag that should read as process rather than industry. Uses green-light text on green-deepest background with a green-border border. Not interactive; green here means "method" not "action."',
       },
     },
+    ai: {
+      guidance:
+        "Use for method, build-process, or AI-collaboration labels where the tag should read as 'process' not 'industry'.",
+      contentRules: [
+        "Example labels: 'AI Collaboration', 'Design Sprint', 'Research', 'Field Study'.",
+      ],
+      avoid: [
+        "Don't use green tags for industry categories.",
+      ],
+    },
   },
   args: {
     label: 'AI Collaboration',
@@ -60,6 +91,13 @@ export const Solid: Story = {
         story:
           'Filled amber tag — amber-accent background with dark page-background text. Reserved for high-emphasis callout contexts where a hollow border tag would get lost. Not used in v1 card layouts; available for case-study hero pull stats or emphasis blocks.',
       },
+    },
+    ai: {
+      guidance:
+        'Reserved for high-emphasis callout contexts where a hollow border tag would get lost. Not used in v1 card layouts.',
+      avoid: [
+        "Don't default to solid — it's the loudest variant.",
+      ],
     },
   },
   args: {
@@ -78,6 +116,13 @@ export const LargeHero: Story = {
           'Hero-scale tag — 14px, 0.18em tracking, 7px/14px padding. Used in case-study hero meta blocks and process-step callouts where the tag must hold its own against larger type. Same amber default variant; size is the only change.',
       },
     },
+    ai: {
+      guidance:
+        'Use in case-study hero meta blocks and ProcessStep callouts where the tag must hold its own against 14–16px type.',
+      avoid: [
+        "Don't use lg in CaseStudyCard thumbnails — sm is the card-scale size.",
+      ],
+    },
   },
   args: {
     label: 'Travel',
@@ -94,6 +139,13 @@ export const WithDot: Story = {
         story:
           "Optional dot prefix — a filled circle before the label in currentColor. Available on all variants for contexts where a visual bullet reinforces the tag's categorical role (e.g., a timeline or process list).",
       },
+    },
+    ai: {
+      guidance:
+        "Use when a visual bullet reinforces the tag's categorical role — timeline entries, process lists.",
+      avoid: [
+        "Don't add a dot just for decoration — it implies list membership.",
+      ],
     },
   },
   args: {
@@ -116,6 +168,10 @@ export const AllIndustries: Story = {
         story:
           'The five industry labels used across the portfolio. All render identically — only the label text distinguishes them.',
       },
+    },
+    ai: {
+      guidance:
+        'Reference to confirm all five canonical industry labels. These are the only industry labels in the portfolio — do not invent new ones.',
     },
   },
   render: () => (
