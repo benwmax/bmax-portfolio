@@ -1,14 +1,14 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import type { RefObject } from 'react';
 import { NavBar } from '../components/NavBar';
 import { CaseStudyCard } from '../components/CaseStudyCard';
 import { ChatInput } from '../components/ChatInput';
-import type { ChatWidgetStatus } from '../components/ChatInput';
+import { useChatSession } from '../hooks/useChatSession';
+import type { Message } from '../hooks/useChatSession';
 import styles from './HomePage.module.css';
-export interface Message {
-  role: 'user' | 'assistant';
-  text: string;
-}
+
+// Re-exported so Storybook stories can import the type from this module
+export type { Message };
 
 export interface HomePageProps {
   /** Storybook only — intercepts submit instead of calling /api/chat. */
@@ -16,6 +16,7 @@ export interface HomePageProps {
   /** Pre-seed messages — triggers docked mode automatically. */
   initialMessages?: Message[];
 }
+
 
 const SUGGESTIONS = [
   'How did Sabre win the $1B contract?',
@@ -73,37 +74,16 @@ const STAT_RAIL_DATA = [
   { date: 'USAA · 2018–20', outcome: 'Lead, P&C · conversion +4–6%.' },
 ] as const;
 
-async function streamChat(messages: Message[], onChunk: (text: string) => void): Promise<void> {
-  const res = await fetch('/api/chat', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      messages: messages.map((m) => ({ role: m.role, content: m.text })),
-    }),
-  });
-  if (!res.ok || !res.body) throw new Error(`Chat error ${res.status}`);
-  const reader = res.body.getReader();
-  const decoder = new TextDecoder();
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    onChunk(decoder.decode(value));
-  }
-}
-
 export function HomePage({ onChatSubmit, initialMessages = [] }: HomePageProps) {
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
-  const [chatStatus, setChatStatus] = useState<ChatWidgetStatus>('online');
+  const { messages, chatStatus, handleSubmit } = useChatSession({
+    onSubmit: onChatSubmit,
+    initialMessages,
+  });
   const [mobileChatOpen, setMobileChatOpen] = useState(false);
-  const messagesRef = useRef(messages);
   const heroLogRef = useRef<HTMLDivElement | null>(null);
   const dockedLogRef = useRef<HTMLDivElement | null>(null);
   const mobileLogRef = useRef<HTMLDivElement | null>(null);
   const fabRef = useRef<HTMLButtonElement | null>(null);
-
-  useEffect(() => {
-    messagesRef.current = messages;
-  }, [messages]);
 
   // Scroll all visible logs to bottom when messages change
   useEffect(() => {
@@ -118,42 +98,6 @@ export function HomePage({ onChatSubmit, initialMessages = [] }: HomePageProps) 
       fabRef.current.focus();
     }
   }, [mobileChatOpen]);
-
-  const handleSubmit = useCallback(
-    async (text: string) => {
-      if (onChatSubmit) {
-        onChatSubmit(text);
-        return;
-      }
-      const current = messagesRef.current;
-      const withUser: Message[] = [...current, { role: 'user', text }];
-      setMessages(withUser);
-      setChatStatus('loading');
-      try {
-        // Append empty assistant message immediately so the cursor shows
-        setMessages((prev) => [...prev, { role: 'assistant', text: '' }]);
-        await streamChat(withUser, (chunk) => {
-          setMessages((prev) => {
-            const next = [...prev];
-            const last = next[next.length - 1];
-            next[next.length - 1] = { role: 'assistant', text: last.text + chunk };
-            return next;
-          });
-        });
-      } catch {
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: 'assistant',
-            text: "The assistant isn't available right now — try again in a moment.",
-          },
-        ]);
-      } finally {
-        setChatStatus('online');
-      }
-    },
-    [onChatSubmit],
-  );
 
   const isDocked = messages.length > 0;
 

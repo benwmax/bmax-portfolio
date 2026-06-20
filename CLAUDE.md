@@ -455,12 +455,18 @@ page template, Storybook deploy (3G). Design Sessions 1–3 complete; Session 4 
   set; three nav links fit at 390px without collapsing (2026-06-20)
 - Phase 3A complete: Prettier (`.prettierrc` + prettier-plugin-tailwindcss installed,
   full formatting pass run), path alias `@/` → `src/` in tsconfig and vite.config (2026-06-20)
+- Chat feature code complete (Phase 4F): useChatSession hook extracted to
+  src/hooks/useChatSession.ts — deduplicates streamChat from both pages, sends
+  sessionMessageCount with every request (activates server-side session cap), surfaces
+  API error messages (rate limit, session cap) as assistant messages (2026-06-20)
 
 **Immediate next steps:**
-- Sagent brain dump in progress (parallel track, build-plan 1C)
+- **Ben's actions to go live:** Create Anthropic Workspace + API key and Upstash Redis
+  database, add all three env vars to Vercel — chat is fully wired, blocked only on these
+- Merge PR #3 (backend) and PR #4 (hook/frontend) once Vercel checks pass
 - Build About/Resume page template and 404 page template (Phase 3F)
+- Sagent brain dump in progress (parallel track, build-plan 1C)
 - Claude Design Session 4: component detail explorations (Sessions 1–3 done)
-- Phase 4F: Ben to create Anthropic Workspace + Upstash Redis, add env vars to Vercel
 
 **Decisions still open:**
 - Market Rebellion: not a standalone case study (decided); whether/where to
