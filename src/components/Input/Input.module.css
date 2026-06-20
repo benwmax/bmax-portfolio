@@ -35,7 +35,7 @@
 
 .input {
   font-family: var(--chat-font);
-  font-size: var(--text-base);
+  font-size: var(--input-font-size);
   color: var(--chat-text);
   background: var(--chat-bg);
   caret-color: var(--chat-caret);
@@ -63,8 +63,8 @@
 .input:focus-visible {
   outline: none;
   border-color: var(--chat-focus-border);
-  background: #0a1410;
-  box-shadow: 0 0 0 2px rgba(0, 224, 84, 0.20);
+  background: var(--color-bg-input-active);
+  box-shadow: var(--shadow-green-focus);
 }
 
 .input:disabled {

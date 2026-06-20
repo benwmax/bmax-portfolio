@@ -200,7 +200,7 @@
 }
 
 .btnPrimary:hover {
-  background: #0e2e14;
+  background: var(--btn-primary-hover-bg);
   color: var(--color-green-bright);
   border-color: var(--color-green-accent);
 }

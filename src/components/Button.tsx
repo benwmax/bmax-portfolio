@@ -20,7 +20,7 @@ const BASE = [
   'border rounded-md cursor-pointer no-underline whitespace-nowrap',
   'uppercase tracking-widest font-mono-display',
   'transition-colors duration-base ease-default',
-  'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--color-interactive-border)] focus-visible:ring-offset-2',
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-interactive-border)]',
   'disabled:cursor-not-allowed disabled:opacity-45',
 ].join(' ');
 
@@ -31,7 +31,7 @@ const SIZES: Record<ButtonSize, string> = {
 };
 
 const VARIANTS: Record<ButtonVariant, string> = {
-  primary:   'bg-interactive-bg text-interactive border-interactive-border hover:bg-[#0e2e14] hover:text-green-bright hover:border-green-accent',
+  primary:   'bg-interactive-bg text-interactive border-interactive-border hover:bg-[var(--btn-primary-hover-bg)] hover:text-green-bright hover:border-green-accent',
   secondary: 'bg-transparent text-text-secondary border-border-default hover:text-text-primary hover:border-border-strong',
   ghost:     'bg-transparent text-green-accent border-transparent px-2 hover:text-green-bright',
 };

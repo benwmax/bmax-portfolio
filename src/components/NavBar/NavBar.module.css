@@ -85,3 +85,9 @@
   outline-offset: 3px;
   border-radius: 2px;
 }
+
+@media (max-width: 480px) {
+  .header {
+    padding: 0 20px;
+  }
+}
