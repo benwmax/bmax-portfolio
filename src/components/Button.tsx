@@ -26,8 +26,8 @@ const BASE = [
 
 const SIZES: Record<ButtonSize, string> = {
   sm: 'text-xs py-[0.45rem] px-[0.8rem]',
-  md: 'text-sm py-[0.6rem] px-[1.1rem]',
-  lg: 'text-base py-3 px-[1.4rem]',
+  md: 'text-sm py-[0.6rem] px-[1.1rem] min-h-[44px]',
+  lg: 'text-base py-3 px-[1.4rem] min-h-[44px]',
 };
 
 const VARIANTS: Record<ButtonVariant, string> = {
