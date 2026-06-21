@@ -174,14 +174,14 @@ export function ChatInput({
               <span className={styles.sweep} aria-hidden />
             </>
           )}
-        </label>
 
-        {/* Counter lives outside the <label> so aria-live announcements aren't suppressed */}
-        {multiline && !isLoading && isMultiRow && (
-          <span className={styles.counter} aria-live="polite" aria-atomic="true">
-            {value.length} / {MAX_CHARS}
-          </span>
-        )}
+          {/* Counter inside .field so it resolves to .field's position:relative anchor */}
+          {multiline && !isLoading && isMultiRow && (
+            <span className={styles.counter} aria-live="polite" aria-atomic="true">
+              {value.length} / {MAX_CHARS}
+            </span>
+          )}
+        </label>
 
         <button
           type="submit"

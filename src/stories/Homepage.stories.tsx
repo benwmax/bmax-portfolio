@@ -1,66 +1,93 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { fn } from '@vitest/spy';
-import { HomePage } from '../pages/HomePage';
-import type { Message } from '../pages/HomePage';
+import { HomeV4Blend } from '../pages/explorations/HomeV4Blend';
+import type { Message } from '../pages/explorations/HomeV4Blend';
+
+/*
+ * Pages / Homepage
+ * The selected homepage design: Blend (04). Synthesizes elements from all three
+ * prior explorations — fast boot sequence, full-viewport scanline, scroll cue,
+ * status badge without the blinking dot, and the CaseStudyCard library component
+ * in a staggered reveal grid.
+ */
 
 const meta = {
   title: 'Pages/Homepage',
-  component: HomePage,
+  component: HomeV4Blend,
   parameters: {
     layout: 'fullscreen',
     backgrounds: { default: 'dark' },
     docs: {
       description: {
         component:
-          'Full homepage layout. Split hero (identity left, chat right), 4-column work grid, ' +
-          'stat rail, footer. When the user sends a message, the hero chat panel fades + scales ' +
-          'out and the docked 400px right rail slides in. Page wrapper acquires padding-right so ' +
-          'content stays clear of the rail.',
+          'The selected homepage design (Blend 04). Fast 3-line boot sequence (~1.5 s), ' +
+          'full-viewport green scanline, Phosphor scroll cue, Signal status badge without ' +
+          'the blinking dot, split hero with typewriter headline and chat panel, 4-column ' +
+          'staggered card reveal grid, and footer. Reload to replay the boot sequence.',
       },
     },
     ai: {
       guidance:
-        'The full homepage template — split hero, work grid, docked rail, footer. Never build a homepage layout from scratch; always pass props to this component.',
+        'The production homepage — Blend 04. This is the selected design from the explorations phase. Never build a homepage layout from scratch; use this component.',
       contentRules: [
-        'Three suggestion chips should be conversation starters about specific work: "How did Sabre win the $1B contract?", "Tell me about the USAA redesign.", "What was the Upfluent chatbot challenge?"',
-        'The identity column (left) is static — update via HomePage.tsx, not props.',
         'Work grid order is finalized: 01 Portfolio Rebuild, 02 Upfluent, 03 Sagent, 04 USAA, 05 Sabre.',
+        'The status badge reads "Available for Design Leader roles" — no blinking dot.',
+        'Suggestion chips should be conversation starters about specific work.',
       ],
       avoid: [
-        "Don't add content outside the existing hero layout — identity left, chat right.",
-        "Don't build a separate page component for the homepage.",
         "Don't change the work grid order without checking CLAUDE.md case study order.",
+        "Don't add a blinking dot to the status badge — it was intentionally removed.",
+        "Don't replace the CaseStudyCard component — use the library component directly.",
       ],
     },
   },
-} satisfies Meta<typeof HomePage>;
+} satisfies Meta<typeof HomeV4Blend>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  name: 'Default — hero idle',
+  name: 'Full boot sequence',
   parameters: {
     docs: {
       description: {
         story:
-          'Initial state. Hero chat panel visible in the right column. ' +
-          'No messages — greeting text and three suggestion chips shown. ' +
-          'Docked rail is hidden (opacity 0, translateX 105%). ' +
-          'Submit wired to a Storybook action — no API call.',
+          'Initial state with boot sequence. 3-line terminal boot (~1.5 s), then the page ' +
+          'assembles in. Hero chat panel shows greeting and suggestion chips. Reload to replay.',
       },
     },
     ai: {
       guidance:
-        'The homepage before any chat message is sent — hero panel visible in right column, greeting text and three suggestion chips shown. This is the default state.',
-      avoid: [
-        "Don't show the docked rail in this state — it's hidden until the first message.",
-      ],
+        'The homepage with the full boot sequence playing. This is how first-time visitors see the page.',
+      avoid: ["Don't skip the boot in this story — it's the intended first-load experience."],
     },
   },
   args: {
     onChatSubmit: fn(),
     initialMessages: [],
+    skipBoot: false,
+  },
+};
+
+export const Assembled: Story = {
+  name: 'Assembled (skip intro)',
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Boot skipped — shows the assembled layout immediately. Useful for reviewing ' +
+          'the hero, grid, and footer without waiting for the intro animation.',
+      },
+    },
+    ai: {
+      guidance:
+        'The homepage with the boot animation skipped — use for layout review and component inspection.',
+    },
+  },
+  args: {
+    onChatSubmit: fn(),
+    initialMessages: [],
+    skipBoot: true,
   },
 };
 
@@ -72,67 +99,23 @@ const SEED_MESSAGES: Message[] = [
   },
 ];
 
-export const ConversationStarted: Story = {
-  name: 'Conversation started — docked rail',
+export const ConversationSeeded: Story = {
+  name: 'Conversation seeded',
   parameters: {
     docs: {
       description: {
-        story:
-          'After the first exchange. Hero panel has faded and scaled down (opacity 0, ' +
-          'scale 0.985). Docked 400px rail has slid in. Page wrapper has 400px ' +
-          'padding-right applied so the work grid and footer clear the rail. ' +
-          'Seeded with one user message and one assistant response.',
+        story: 'Boot skipped, chat panel seeded with one exchange. Shows the chat log state.',
       },
     },
     ai: {
       guidance:
-        'The homepage after the first message exchange — hero panel fades out, the 400px docked rail slides in from the right. This is the persistent conversation state.',
-      contentRules: [
-        'Pass initialMessages to seed the conversation for demonstration.',
-      ],
-      avoid: [
-        "Don't try to keep the hero panel visible during a conversation — it disappears by design.",
-        "Don't show the docked rail on mobile — it's desktop-only by design.",
-      ],
+        'The homepage with a conversation already in progress. Use to review the chat log and message rendering.',
+      contentRules: ['Pass initialMessages to seed the conversation for demonstration.'],
     },
   },
   args: {
     onChatSubmit: fn(),
     initialMessages: SEED_MESSAGES,
-  },
-};
-
-export const MobileBreakpoint: Story = {
-  name: 'Mobile — 768px',
-  parameters: {
-    viewport: {
-      viewports: {
-        portfolioMobile: {
-          name: 'Portfolio mobile (768px)',
-          styles: { width: '768px', height: '900px' },
-        },
-      },
-      defaultViewport: 'portfolioMobile',
-    },
-    docs: {
-      description: {
-        story:
-          'At 768px the hero collapses to single column (chat panel stacks below identity). ' +
-          'Below 760px the docked panel is hidden entirely via CSS — hero panel is the only chat surface. ' +
-          'Work grid collapses to single column. Padding drops to 20px.',
-      },
-    },
-    ai: {
-      guidance:
-        'At 768px the hero collapses to single column and the docked panel is hidden. Below 760px, the hero chat panel is the only chat surface.',
-      avoid: [
-        "Don't add the docked rail to mobile — it's desktop-only by design.",
-        "Don't add a mobile hamburger menu — three nav links fit at 390px without collapsing.",
-      ],
-    },
-  },
-  args: {
-    onChatSubmit: fn(),
-    initialMessages: [],
+    skipBoot: true,
   },
 };

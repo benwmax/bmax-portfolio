@@ -1,0 +1,880 @@
+/*
+ * HomeV4Blend — "Blend"
+ * A synthesis of the three prior explorations. The Signal split-hero layout and
+ * CaseStudyCard components form the base. The boot sequence from V2 opens the page
+ * (3 lines, ~1.5 s). The dot grid covers the full page via .wrapper. A phosphor
+ * scanline is position: fixed + 100vw so it's truly full-viewport-width and not
+ * clipped by any scrollbar; a scroll listener hides it once the hero leaves view.
+ * The scroll cue from V3 sits at the hero bottom. No cursor spotlight. Respects
+ * reduced motion.
+ */
+
+/* ——— PAGE SHELL ——— */
+.wrapper {
+  position: relative;
+  z-index: 1; /* creates a stacking context above the dotGrid (z-index: 0) */
+  min-height: 100vh;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  color: var(--color-text-primary);
+}
+
+/* ——— DOT GRID ——— */
+/*
+ * position: fixed + width: 100vw so the grid tiles all the way to the viewport
+ * edge, including under the scrollbar gutter. The body's background-color
+ * (set in index.css) provides the dark fill behind it. z-index: -1 keeps it
+ * behind all page content.
+ */
+.dotGrid {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  pointer-events: none;
+  z-index: 0;
+  background-image: radial-gradient(circle, var(--color-bg-dot) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* ——— BOOT OVERLAY ——— */
+.boot {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--color-bg-page);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  transition: opacity 0.5s ease;
+}
+
+.bootHidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.bootInner {
+  width: 100%;
+  max-width: 480px;
+  font-family: var(--font-mono-ui);
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--color-green-accent);
+}
+
+.bootLine {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.bootCheck {
+  color: var(--color-green-bright);
+}
+
+.bootBarTrack {
+  margin-top: 18px;
+  height: 3px;
+  width: 100%;
+  background: var(--color-bg-raised);
+  border: 1px solid var(--color-border-default);
+  overflow: hidden;
+}
+
+.bootBarFill {
+  height: 100%;
+  background: var(--color-green-accent);
+  box-shadow: 0 0 10px var(--color-green-bright);
+  transition: width 0.15s linear;
+}
+
+.bootPct {
+  margin-top: 8px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--color-text-tertiary);
+}
+
+/* ——— SCANLINE ——— */
+/*
+ * position: fixed + width: 100vw guarantees edge-to-edge width regardless of
+ * scrollbar gutter. A scroll listener on heroRef sets display: none once the
+ * hero bottom leaves the viewport, so the scan never enters the work section.
+ */
+.scan {
+  position: fixed;
+  left: 0;
+  width: 100vw;
+  height: 140px;
+  pointer-events: none;
+  z-index: 3;
+  background: linear-gradient(180deg, transparent, rgba(0, 255, 94, 0.038) 50%, transparent);
+  animation: scanDrift 9s linear infinite;
+}
+
+@keyframes scanDrift {
+  0% {
+    transform: translateY(-160px);
+  }
+  100% {
+    transform: translateY(calc(100vh + 160px));
+  }
+}
+
+/* ——— ASSEMBLE TRANSITION ——— */
+.assemble {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.assembleIn {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 0.55s var(--ease-default),
+    transform 0.55s var(--ease-default);
+}
+
+.pageContent {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding-top: 72px;
+  transition: padding-right 0.55s cubic-bezier(0.7, 0.1, 0.2, 1);
+}
+
+.pageContentDocked {
+  padding-right: var(--docked-panel-width);
+}
+
+/* ——— HERO ——— */
+/*
+ * No background or overflow:hidden — the dot grid comes from .wrapper and the
+ * scan is fixed, so neither needs to be contained here.
+ */
+.hero {
+  position: relative;
+  border-bottom: 1px solid var(--color-border-subtle);
+  min-height: calc(100vh - 72px);
+  display: flex;
+  align-items: center;
+}
+
+.heroInner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: 64px;
+  align-items: center;
+  padding: 64px 80px 96px;
+  box-sizing: border-box;
+  transition:
+    grid-template-columns 0.6s cubic-bezier(0.7, 0.1, 0.2, 1),
+    gap 0.6s cubic-bezier(0.7, 0.1, 0.2, 1);
+}
+
+/* Collapses the right chat column, allowing the identity content to expand */
+.heroInnerDocked {
+  grid-template-columns: minmax(0, 1fr) 0fr;
+  gap: 0;
+}
+
+/* ——— STATUS BADGE — no blinking dot ——— */
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono-ui);
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+  margin-bottom: 28px;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-full);
+  padding: 6px 14px;
+}
+
+.heroH1 {
+  font-family: var(--font-mono-display);
+  font-weight: 700;
+  font-size: clamp(40px, 6vw, 72px);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  color: var(--color-text-primary);
+  margin: 0;
+  max-width: 14ch;
+  min-height: 1.04em;
+}
+
+.heroAmber {
+  color: var(--color-amber-accent);
+}
+
+.typeCursor {
+  display: inline-block;
+  width: 0.55ch;
+  height: 0.95em;
+  margin-left: 0.08em;
+  vertical-align: -0.08em;
+  background: var(--color-green-bright);
+  box-shadow: 0 0 10px var(--color-green-bright);
+}
+
+.heroLede {
+  font-family: var(--font-sans);
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  margin: 28px 0 0;
+  max-width: 52ch;
+  opacity: 0;
+  animation: fadeUp 0.7s var(--ease-default) 0.5s forwards;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.statRow {
+  margin-top: 36px;
+  display: flex;
+  align-items: stretch;
+  opacity: 0;
+  animation: fadeUp 0.7s var(--ease-default) 0.7s forwards;
+}
+
+.statCell {
+  padding: 0 28px;
+  border-right: 1px solid var(--color-border-subtle);
+}
+.statCell:first-child {
+  padding-left: 0;
+}
+.statCell:last-child {
+  border-right: none;
+}
+
+.statFigure {
+  font-family: var(--font-mono-display);
+  font-weight: 700;
+  font-size: 24px;
+  letter-spacing: -0.01em;
+  color: var(--color-green-accent);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.statLabel {
+  font-family: var(--font-mono-ui);
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+  margin-top: 8px;
+}
+
+/* ——— HERO CHAT PANEL ——— */
+
+/* Overflow hidden clips the panel content as the grid column shrinks to 0 */
+.chatWrap {
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* Slides the panel toward the docked rail position and fades out */
+.chatPanelHidden {
+  opacity: 0;
+  transform: translateX(80px);
+  pointer-events: none;
+}
+
+.chatPanel {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background: color-mix(in srgb, var(--color-bg-surface) 88%, transparent);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  opacity: 0;
+  animation: fadeUp 0.7s var(--ease-default) 0.4s forwards;
+  box-shadow:
+    0 0 0 1px rgba(0, 224, 84, 0.04),
+    0 24px 60px -30px rgba(0, 0, 0, 0.8);
+  transition:
+    opacity 0.45s ease,
+    transform 0.55s cubic-bezier(0.7, 0.1, 0.2, 1);
+}
+
+.chatBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.chatBarLabel {
+  font-family: var(--font-mono-display);
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.chatOnlineBadge {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-mono-ui);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--color-text-tertiary);
+}
+
+.chatOnlineDot {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-full);
+  background: var(--color-green-bright);
+}
+
+.chatLog {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 200px;
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.msgUser {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.msgUserPrompt {
+  font-family: var(--font-mono-display);
+  color: var(--color-green-accent);
+}
+
+.msgAssistant {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--color-text-secondary);
+  margin: 0;
+  border-left: 2px solid var(--color-green-border);
+  padding-left: 16px;
+}
+
+.msgCursor {
+  color: var(--color-green-bright);
+}
+
+.chatSuggestions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.chatSuggestLabel {
+  font-family: var(--font-mono-display);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+}
+
+.chatSuggestBtn {
+  font-family: var(--font-mono-ui);
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  background: transparent;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-full);
+  padding: 7px 15px;
+  align-self: flex-start;
+  cursor: pointer;
+  transition:
+    border-color var(--duration-base) var(--ease-default),
+    color var(--duration-base) var(--ease-default),
+    transform var(--duration-base) var(--ease-default);
+  text-align: left;
+}
+
+.chatSuggestBtn:hover {
+  border-color: var(--color-green-border);
+  color: var(--color-green-accent);
+  transform: translateX(3px);
+}
+
+.chatSuggestBtn:focus-visible {
+  outline: 2px solid var(--color-green-accent);
+  outline-offset: 2px;
+  border-color: var(--color-green-border);
+  color: var(--color-green-accent);
+}
+
+.chatInputWrap {
+  border-top: 1px solid var(--color-border-subtle);
+  padding: 14px 16px 16px;
+}
+
+.chatFootnote {
+  margin: 10px 0 0;
+  font-family: var(--font-mono-ui);
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+  color: var(--color-text-tertiary);
+}
+
+/* ——— SCROLL CUE (from V3 Phosphor) ——— */
+.scrollCue {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  font-family: var(--font-mono-display);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  animation: fadeUp 0.85s var(--ease-default) 1s forwards;
+}
+
+.scrollCueLine {
+  width: 1px;
+  height: 36px;
+  background: linear-gradient(180deg, var(--color-green-accent), transparent);
+  animation: cueDrop 1.8s var(--ease-default) infinite;
+}
+
+@keyframes cueDrop {
+  0% {
+    transform: scaleY(0);
+    transform-origin: top;
+    opacity: 1;
+  }
+  60% {
+    transform: scaleY(1);
+    transform-origin: top;
+    opacity: 1;
+  }
+  61% {
+    transform-origin: bottom;
+  }
+  100% {
+    transform: scaleY(0);
+    transform-origin: bottom;
+    opacity: 0;
+  }
+}
+
+/* ——— WORK SECTION ——— */
+.workSection {
+  width: 100%;
+  padding: 88px 80px 0;
+  box-sizing: border-box;
+}
+
+.workHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.workKicker {
+  font-family: var(--font-mono-display);
+  font-size: var(--text-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-green-accent);
+}
+
+.workTitle {
+  font-family: var(--font-mono-display);
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+  color: var(--color-text-primary);
+  margin: 8px 0 0;
+}
+
+.workGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+/* Reveal-on-scroll wrapper. Stagger set inline via --i. */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 0.6s var(--ease-default),
+    transform 0.6s var(--ease-default);
+  transition-delay: calc(var(--i, 0) * 90ms);
+}
+
+.revealIn {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ——— FOOTER ——— */
+.footer {
+  margin-top: 88px;
+  border-top: 1px solid var(--color-border-default);
+  background: var(--color-bg-surface);
+  padding: 56px 80px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  box-sizing: border-box;
+}
+
+.footerTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 32px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.footerHeading {
+  font-family: var(--font-mono-display);
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--color-text-primary);
+  margin: 0;
+  max-width: 20ch;
+}
+
+.footerQuestion {
+  color: var(--color-green-accent);
+}
+
+.footerLinks {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.footerLink {
+  font-family: var(--font-mono-ui);
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  padding: 9px 16px;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  transition:
+    color var(--duration-base) var(--ease-default),
+    border-color var(--duration-base) var(--ease-default);
+}
+
+.footerLink:hover {
+  color: var(--color-green-accent);
+  border-color: var(--color-green-border);
+}
+
+.footerLink:focus-visible {
+  outline: 2px solid var(--color-green-accent);
+  outline-offset: 3px;
+  color: var(--color-green-accent);
+  border-color: var(--color-green-border);
+}
+
+.footerFine {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-family: var(--font-mono-ui);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  color: var(--color-text-tertiary);
+  padding-top: 24px;
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+/* ——— RESPONSIVE ——— */
+@media (max-width: 960px) {
+  .heroInner {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding: 48px 40px 80px;
+  }
+  .hero {
+    min-height: 0;
+  }
+  .workSection {
+    padding: 56px 40px 0;
+  }
+  .workGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .heroInner {
+    padding: 40px 20px 72px;
+  }
+  .workSection {
+    padding: 48px 20px 0;
+  }
+  .workGrid {
+    grid-template-columns: 1fr;
+  }
+  .footer {
+    padding: 40px 20px 28px;
+  }
+}
+
+/* ——— DOCKED LOG (fills remaining rail height) ——— */
+.dockedLog {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ——— DOCKED PANEL (fixed right rail, desktop only) ——— */
+.dockedPanel {
+  position: fixed;
+  top: 72px;
+  right: 0;
+  bottom: 0;
+  width: var(--docked-panel-width);
+  max-width: 100vw;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-surface);
+  border-left: 1px solid var(--color-border-default);
+  overflow: hidden;
+  z-index: 30;
+  transition:
+    opacity 0.45s ease,
+    transform 0.55s cubic-bezier(0.7, 0.1, 0.2, 1);
+}
+
+.dockedPanelHidden {
+  opacity: 0;
+  transform: translateX(105%);
+  pointer-events: none;
+}
+
+/* ——— MOBILE FAB — hidden on desktop, shown on mobile when conversation has started ——— */
+.fab {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .fab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    position: fixed;
+    bottom: 24px;
+    right: 20px;
+    z-index: 40;
+    font-family: var(--font-mono-display);
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-bg-page);
+    background: var(--color-green-accent);
+    border: none;
+    border-radius: var(--radius-full);
+    padding: 0 20px;
+    height: 48px;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(0, 224, 84, 0.35);
+    transition:
+      background-color var(--duration-base) var(--ease-default),
+      box-shadow var(--duration-base) var(--ease-default),
+      transform var(--duration-base) var(--ease-default);
+  }
+
+  .fab:hover {
+    background: var(--color-green-bright);
+    box-shadow: 0 6px 28px rgba(0, 224, 84, 0.5);
+    transform: translateY(-1px);
+  }
+
+  .fab:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 12px rgba(0, 224, 84, 0.3);
+  }
+
+  .fab:focus-visible {
+    outline: 2px solid var(--color-green-bright);
+    outline-offset: 3px;
+  }
+}
+
+.fabPrompt {
+  font-size: 18px;
+  line-height: 1;
+  color: var(--color-bg-page);
+}
+
+.fabBadge {
+  background: var(--color-bg-page);
+  color: var(--color-green-accent);
+  font-family: var(--font-mono-ui);
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ——— MOBILE CHAT OVERLAY — full screen sheet ——— */
+.mobileOverlay {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .mobileOverlay {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: var(--color-bg-surface);
+    opacity: 0;
+    transform: translateY(100%);
+    transition:
+      opacity 0.35s var(--ease-default),
+      transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+    pointer-events: none;
+  }
+
+  .mobileOverlayOpen {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  /* Docked panel is suppressed on mobile — offset class has no effect */
+  .pageContentDocked {
+    padding-right: 0;
+  }
+
+  .dockedPanel {
+    display: none;
+  }
+}
+
+.mobileOverlayBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--color-border-subtle);
+  flex-shrink: 0;
+}
+
+.mobileOverlayBarRight {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.mobileOverlayClose {
+  font-family: var(--font-mono-display);
+  font-size: 16px;
+  color: var(--color-text-secondary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  line-height: 1;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--duration-base) var(--ease-default);
+}
+
+.mobileOverlayClose:hover {
+  color: var(--color-text-primary);
+}
+
+.mobileOverlayClose:focus-visible {
+  outline: 2px solid var(--color-green-accent);
+  outline-offset: 2px;
+}
+
+.mobileOverlayLog {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  padding-bottom: max(20px, env(safe-area-inset-bottom));
+}
+
+/* ——— REDUCED MOTION ——— */
+@media (prefers-reduced-motion: reduce) {
+  .heroLede,
+  .statRow,
+  .chatPanel,
+  .reveal,
+  .scrollCue {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .scrollCueLine {
+    animation: none;
+  }
+  .assemble {
+    opacity: 1;
+    transform: none;
+  }
+  .dockedPanel,
+  .mobileOverlay,
+  .pageContent {
+    transition: none;
+  }
+}
