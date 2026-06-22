@@ -191,42 +191,44 @@ export function AboutPage() {
             </div>
           </section>
         </div>
-
-        {/* ——— FOOTER ——— */}
-        <footer className={styles.footer}>
-          <div className={styles.footerTop}>
-            <p className={styles.footerHeading}>
-              Building something experts can't get wrong
-              <span className={styles.footerQuestion}>?</span>
-            </p>
-            <div className={styles.footerLinks}>
-              <a href="mailto:ben@viewbens.work" className={styles.footerLink}>
-                ben@viewbens.work
-              </a>
-              <a
-                href="https://linkedin.com/in/benwmax"
-                className={styles.footerLink}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                LinkedIn
-              </a>
-              <a
-                href="https://github.com/benwmax"
-                className={styles.footerLink}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                GitHub
-              </a>
-            </div>
-          </div>
-          <div className={styles.footerFine}>
-            <span>© 2026 Ben Maxwell · viewbens.work</span>
-            <span>Built with Claude — directed, not autopiloted.</span>
-          </div>
-        </footer>
       </main>
+
+      {/* ——— FOOTER ——— */}
+      <footer className={styles.footer}>
+        <div className={styles.footerTop}>
+          <p className={styles.footerHeading}>
+            Building something experts can't get wrong
+            <span className={styles.footerQuestion}>?</span>
+          </p>
+          <div className={styles.footerLinks}>
+            <a href="mailto:ben@viewbens.work" className={styles.footerLink}>
+              ben@viewbens.work
+            </a>
+            <a
+              href="https://linkedin.com/in/benwmax"
+              className={styles.footerLink}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              LinkedIn
+              <span className="sr-only"> (opens in new tab)</span>
+            </a>
+            <a
+              href="https://github.com/benwmax"
+              className={styles.footerLink}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              GitHub
+              <span className="sr-only"> (opens in new tab)</span>
+            </a>
+          </div>
+        </div>
+        <div className={styles.footerFine}>
+          <span>© 2026 Ben Maxwell · viewbens.work</span>
+          <span>Built with Claude — directed, not autopiloted.</span>
+        </div>
+      </footer>
     </div>
   );
 }

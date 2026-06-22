@@ -27,7 +27,7 @@ export function NavBar({ activePath, className = '' }: NavBarProps) {
 
   return (
     <header className={[styles.header, className].filter(Boolean).join(' ')}>
-      <a href="/" className={styles.wordmark}>
+      <a href="/" className={styles.wordmark} aria-label="Ben Maxwell – Home">
         BM
         <span className={styles.underscore} aria-hidden="true">
           _

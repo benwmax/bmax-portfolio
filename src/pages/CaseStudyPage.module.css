@@ -83,6 +83,12 @@
   border-left-color: var(--color-border-default);
 }
 
+.sidebarLink:focus-visible {
+  outline: 2px solid var(--color-green-accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
 .sidebarLinkActive {
   color: var(--color-green-accent);
   border-left-color: var(--color-green-accent);
@@ -191,6 +197,12 @@
 
 .endTickNext:hover {
   color: var(--color-green-bright);
+}
+
+.endTickNext:focus-visible {
+  outline: 2px solid var(--color-green-accent);
+  outline-offset: 3px;
+  border-radius: 2px;
 }
 
 /* ——— DOCKED CHAT PANEL ——— */
@@ -338,6 +350,13 @@
 
 .chatSuggestBtn:hover {
   border-color: var(--color-green-border);
+  color: var(--color-green-accent);
+}
+
+.chatSuggestBtn:focus-visible {
+  outline: 2px solid var(--color-green-accent);
+  outline-offset: 2px;
+  border-color: var(--color-green-accent);
   color: var(--color-green-accent);
 }
 

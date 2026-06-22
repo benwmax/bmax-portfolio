@@ -82,6 +82,7 @@ export function Contact() {
             >
               linkedin.com<span className={styles.addressSlash}>/</span>in
               <span className={styles.addressSlash}>/</span>benwmax
+              <span className="sr-only"> (opens in new tab)</span>
             </a>
 
             <p className={styles.cardDesc}>
@@ -91,7 +92,7 @@ export function Contact() {
 
             <div className={styles.cardActions}>
               <Button variant="primary" href="https://linkedin.com/in/benwmax">
-                OPEN PROFILE +
+                OPEN PROFILE +<span className="sr-only"> (opens in new tab)</span>
               </Button>
               <Button
                 variant="secondary"
