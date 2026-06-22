@@ -199,3 +199,34 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
 - Alternatives considered: README files per component directory (not co-located
   with Storybook, not rendered in the UI); relying on story `parameters.docs`
   descriptions alone (not surfaced prominently at the Docs tab level for all users).
+
+## 2026-06-22 — WCAG AA accessibility audit: contact, about, and case study pages
+
+- Decision: Fixed 7 accessibility issues across 6 files after a full WCAG AA audit
+  of the Contact, About, and CaseStudy page templates.
+- Changes:
+  - **Button.tsx:** focus ring color changed from `--color-green-border` (#0e4a1e,
+    ~1.9:1 contrast) to `--color-green-accent` (#00e054, ~10:1) — WCAG 1.4.11
+    Non-text Contrast. The border token is intentionally dark (for decorative use);
+    it was never correct for focus indicators.
+  - **CaseStudyPage.tsx:** added missing skip link (`#main-content`) — WCAG 2.4.1
+    Bypass Blocks. Contact and About pages already had skip links; CaseStudy was missed.
+  - **CaseStudyPage.tsx:** labeled the sidebar `<nav>` as `"Case study contents"` to
+    distinguish it from the site nav (`"Site navigation"`). Multiple unlabeled `<nav>`
+    elements confuse AT landmark navigation.
+  - **CaseStudyPage.module.css:** added `:focus-visible` rings to `.sidebarLink`,
+    `.endTickNext`, and `.chatSuggestBtn` — WCAG 2.4.7 Focus Visible. All three had
+    hover styles but no keyboard focus indicator.
+  - **AboutPage.tsx:** moved `<footer>` outside `<main>` so it carries the
+    `contentinfo` landmark role for AT navigation — WCAG 1.3.1. A `<footer>` nested
+    inside `<main>` is treated as a section footer, not a page footer, by the
+    accessibility tree.
+  - **NavBar.tsx:** added `aria-label="Ben Maxwell – Home"` to the BM_ wordmark link
+    — WCAG 2.4.4 Link Purpose. "BM" alone is opaque to screen readers.
+  - **Contact.tsx:** added `<span className="sr-only"> (opens in new tab)</span>`
+    to the LinkedIn address link and OPEN PROFILE button — WCAG 3.2.2 On Input. Both
+    use `target="_blank"` without any AT notification.
+- Reasoning: Keyboard navigation and screen reader support are part of the portfolio's
+  brand signal. A portfolio for a senior UX designer with inaccessible focus indicators
+  and missing landmarks is self-undermining. These fixes are also the baseline that the
+  Phase 5 Lighthouse audit will verify.

@@ -20,7 +20,7 @@ const BASE = [
   'border rounded-md cursor-pointer no-underline whitespace-nowrap',
   'uppercase tracking-widest font-mono-display',
   'transition-colors duration-base ease-default',
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-interactive-border)]',
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-accent',
   'disabled:cursor-not-allowed disabled:opacity-45',
 ].join(' ');
 

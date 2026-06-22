@@ -155,6 +155,9 @@ export function CaseStudyPage({
 
   return (
     <div className={styles.wrapper}>
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
       {/* ——— NAV ——— */}
       <NavBar activePath="/work" />
 
@@ -174,7 +177,7 @@ export function CaseStudyPage({
           {layout === 'sidebar' && (
             <aside className={styles.sidebar} aria-label="Contents">
               <div className={styles.sidebarLabel}>Contents</div>
-              <nav>
+              <nav aria-label="Case study contents">
                 {NAV_SECTIONS.map(({ id, label, num }) => (
                   <a
                     key={id}

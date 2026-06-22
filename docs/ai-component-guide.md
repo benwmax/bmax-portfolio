@@ -132,6 +132,10 @@ Terminal command aesthetic — Space Mono, ALL CAPS, wide tracking. The componen
 - Never use ghost as the primary CTA
 - Don't show a spinner inside the button — the ChatInput sweep animation is the loading affordance
 
+#### Accessibility
+
+Focus ring uses `ring-green-accent` (`#00e054`, ~10:1 contrast against page background). Do NOT change this to `ring-interactive-border` (`#0e4a1e`) — that border token is intentionally dark for decorative use and is near-invisible as a focus indicator (fails WCAG 1.4.11).
+
 ---
 
 ### Tag
@@ -288,6 +292,10 @@ Site header. Present on every page. Three fixed nav links. Pass `activePath` fro
 - Always wire `activePath` to the router pathname — never leave it undefined in production
 - Don't add custom nav links or a mobile hamburger — three links fit at 390px without collapsing
 - Don't add a fourth nav link without checking with Ben
+
+#### Accessibility
+
+The BM_ wordmark link carries `aria-label="Ben Maxwell – Home"`. Do not remove this — "BM" alone is opaque to screen readers (WCAG 2.4.4 Link Purpose). The trailing underscore is `aria-hidden="true"` by design.
 
 ---
 
@@ -748,6 +756,85 @@ Contact page — two channel cards (email + LinkedIn) with copy-to-clipboard act
 <CaseStudyCard index="04" title="USAA" desc="..." tag="Insurance" href="/work/usaa" ... />
 <CaseStudyCard index="05" title="Sabre" desc="..." tag="Travel" href="/work/sabre" ... />
 ```
+
+---
+
+## Accessibility Patterns
+
+These patterns are required on every page template. They were audited and fixed on 2026-06-22 — the Phase 5 Lighthouse audit will verify them.
+
+### Skip link
+
+Every page wrapper must include a skip link as its **first child**, before the NavBar:
+
+```tsx
+<div className={styles.wrapper}>
+  <a href="#main-content" className="skip-link">
+    Skip to main content
+  </a>
+  <NavBar activePath="..." />
+  <main id="main-content" ...>
+```
+
+The `.skip-link` class lives in `src/index.css` (positioned off-screen, revealed on `:focus`). Use the project class — not Tailwind's `sr-only` — so it's always available regardless of purge.
+
+### Footer landmark placement
+
+A page-level `<footer>` must be a **sibling of `<main>`**, not nested inside it:
+
+```tsx
+// Correct — footer gets the contentinfo landmark role
+<div className={styles.wrapper}>
+  <NavBar ... />
+  <main id="main-content">...</main>
+  <footer>...</footer>
+</div>
+
+// Wrong — footer inside main loses its landmark role
+<main id="main-content">
+  ...
+  <footer>...</footer>  {/* ❌ treated as section footer, not page footer */}
+</main>
+```
+
+### Labeled nav elements
+
+When a page has more than one `<nav>`, each must have a distinct `aria-label`:
+
+- Site nav (NavBar): `aria-label="Site navigation"` — already set in NavBar.tsx
+- Case study sidebar: `aria-label="Case study contents"`
+- Any additional nav: use a descriptive label that distinguishes it
+
+### External links (new tab)
+
+Any link with `target="_blank"` needs a screen-reader announcement. Add sr-only text inside the link:
+
+```tsx
+<a href="https://linkedin.com/in/benwmax" target="_blank" rel="noopener noreferrer">
+  LinkedIn
+  <span className="sr-only"> (opens in new tab)</span>
+</a>
+```
+
+This applies to both raw `<a>` tags and Button with `href` pointing to external URLs.
+
+### Focus-visible on custom interactive elements
+
+Every custom clickable element needs an explicit `:focus-visible` CSS rule. Hover styles alone are not sufficient — keyboard users get no indicator. The pattern used throughout the project:
+
+```css
+.myInteractiveElement:focus-visible {
+  outline: 2px solid var(--color-green-accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+```
+
+Use `--color-green-accent` (#00e054, ~10:1 contrast) — never `--color-green-border` (#0e4a1e, ~1.9:1 contrast) for focus indicators.
+
+### sr-only class
+
+Use `className="sr-only"` from `src/index.css` for visually hidden but AT-accessible content. Do not use Tailwind's built-in `sr-only` utility — the project class is guaranteed available without purge risk.
 
 ---
 
