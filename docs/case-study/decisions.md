@@ -230,3 +230,33 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
   brand signal. A portfolio for a senior UX designer with inaccessible focus indicators
   and missing landmarks is self-undermining. These fixes are also the baseline that the
   Phase 5 Lighthouse audit will verify.
+
+## 2026-06-22 — Routing architecture and case study content files
+
+- Decision: Implemented Phase 4A (routing) and Phase 4B (content) using React Router v6
+  BrowserRouter, a `vercel.json` SPA rewrite, and typed `CaseStudyContent` objects in
+  `src/content/`.
+- Changes:
+  - **`vercel.json`**: Single SPA rewrite rule (`/(.*) → /`) so all routes serve
+    `index.html` on Vercel — React Router handles the rest in the browser.
+  - **`src/App.tsx`**: Rewritten with `BrowserRouter` and 10 routes: `/`, `/work`,
+    `/work/portfolio`, `/work/upfluent`, `/work/sagent`, `/work/usaa`, `/work/sabre`,
+    `/about`, `/resume`, and `*` catch-all to `NotFoundPage`.
+  - **`src/content/usaa.ts`**: `CaseStudyContent` object copied verbatim from
+    `CaseStudyPage.stories.tsx` — already complete, just extracted and exported.
+  - **`src/content/upfluent.ts`**: Converted from `docs/case-studies/upfluent.md`.
+    number: '02', dateRange: '2023–24', nextCase → Sagent.
+  - **`src/content/sabre.ts`**: Converted from `docs/case-studies/sabre.md`.
+    number: '05', outcomes: $1B contract, +23% revenue, 6mo early, +$800M TTV. No nextCase.
+  - **`src/content/sagent.ts`**: Placeholder. number: '03', known data (4 designers,
+    12 business teams), all section paragraphs set to holding copy. nextCase → USAA.
+  - **`src/content/portfolio-rebuild.ts`**: Placeholder. number: '01', dateRange: '2026',
+    full write-up deferred to Phase 7 after launch. nextCase → Upfluent.
+- Reasoning: NavBar already accepts an explicit `activePath` prop from each page, so no
+  `useLocation()` hook was needed — page components remain router-agnostic and Storybook
+  stories continue to work without a Router decorator.
+- Alternatives considered: File-based routing via a Vite plugin (rejected — unnecessary
+  abstraction for a 5-page site); calling `useNavigate` in page components (rejected —
+  couples pages to the router and breaks Storybook). 
+- Open question: Sagent placeholder needs a full content pass once the Phase 1C brain dump
+  is complete. Portfolio Rebuild placeholder content is intentional until Phase 7.

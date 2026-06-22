@@ -37,7 +37,7 @@ lead case study — documenting it as it happens is as important as building it.
 | 1 | Strategy and Content | In progress | — |
 | 2 | Visual Identity | Complete (2026-06-17) | — |
 | 3 | Storybook Foundation | In progress — all Layers complete; Storybook deploy (3G) remaining | — |
-| 4 | Site Assembly | Not started | Phases 1 + 3 |
+| 4 | Site Assembly | In progress — 4A/4B/4C complete; 4D/4E/4F remaining | — |
 | 5 | QA and Pre-Launch | Not started | Phase 4 |
 | 6 | Launch | Not started | Phase 5 |
 | 7 | Meta Case Study | Not started | Phase 6 |
@@ -204,22 +204,22 @@ Each documented as a full-page Storybook story.
 *Depends on Phase 3 components and Phase 1 content*
 
 ### 4A. Page shells
-- [ ] Home
-- [ ] Case Study template
-- [ ] About
-- [ ] Resume
-- [ ] 404
+- [x] Home (2026-06-22)
+- [x] Case Study template (2026-06-22)
+- [x] About (2026-06-22)
+- [x] Resume (2026-06-22)
+- [x] 404 (2026-06-22)
 
 ### 4B. Case study content integration
-- [ ] Portfolio Rebuild (placeholder — full content in Phase 7)
-- [ ] Upfluent
-- [ ] Sagent
-- [ ] USAA
-- [ ] Sabre
+- [x] Portfolio Rebuild (placeholder — full content in Phase 7) (2026-06-22)
+- [x] Upfluent (2026-06-22)
+- [x] Sagent (placeholder — full draft blocked on Phase 1C brain dump) (2026-06-22)
+- [x] USAA (2026-06-22)
+- [x] Sabre (2026-06-22)
 
 ### 4C. Supporting pages
-- [ ] About page (leadership narrative, career arc, what you're looking for)
-- [ ] Resume page (designed — not a wall of text)
+- [x] About page (leadership narrative, career arc, what you're looking for) (2026-06-22)
+- [x] Resume page (designed — not a wall of text) (2026-06-22)
 
 ### 4D. Responsive QA (ongoing throughout Phase 4)
 *Test on real devices as you build. Mobile is not an afterthought.*
@@ -268,7 +268,7 @@ independently; only the widget's visual styling depends on those.*
 - [ ] Cross-browser testing (Chrome, Safari, Firefox, Edge)
 - [ ] Mobile device testing (real devices, not just browser resize)
 - [ ] Image optimization: WebP format, lazy loading, proper srcset
-- [ ] Accessibility audit: keyboard navigation, screen reader, color contrast
+- [x] Accessibility audit: keyboard navigation, screen reader, color contrast (2026-06-22 — 7 fixes across 6 files; see decisions.md 2026-06-22)
 - [ ] All internal links resolve correctly
 - [ ] All case study images load at correct sizes
 - [ ] No console errors
@@ -333,15 +333,13 @@ All component layers, page templates, tooling (Prettier, path aliases), and READ
 
 ---
 
-*Last updated: 2026-06-20 — About, Resume, and 404 page templates built (3F
-complete); README replaced with intentional project README (3A complete); Phase
-0 marked complete; Phase 3 status updated — only Storybook deploy (3G) remaining.
-Early career history added to About and Resume pages (Aperia Solutions, PeopleAnswers,
-AT&T — 2014–15); Resume date-column CSS fixed to prevent overflow on longer date strings.
-3 homepage exploration variants built (Signal, Boot, Phosphor) as Storybook Explorations
-stories — awaiting Ben's direction decision. docs/ai-component-guide.md created (783-line
-component reference with decision tree and out-of-scope list); parameters.ai guidance
-blocks added to all stories; 12 MDX documentation pages created for all 12 components.*
+*Last updated: 2026-06-22 — WCAG AA accessibility audit complete: 7 fixes across 6 files
+(Button focus ring, CaseStudyPage skip link + labeled nav + 3 focus rings, AboutPage footer
+landmark, NavBar aria-label, Contact new-tab announcements). ai-component-guide.md updated
+with Accessibility Patterns section. React Router installed; App.tsx rewritten with
+BrowserRouter and all 10 routes; vercel.json SPA rewrite added. src/content/ created with
+5 typed CaseStudyContent objects (usaa full, upfluent full, sabre full, sagent placeholder,
+portfolio-rebuild placeholder). Phase 4A/4B/4C marked complete.*
 *See also: decisions.md — significant choices and reasoning*
 *See also: key-insights.md — strategic insights from initial analysis*
 *See also: process-journal.md — running build log*
