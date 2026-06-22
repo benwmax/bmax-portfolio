@@ -437,11 +437,13 @@ to check off?"*
 
 ## Current Project Status
 
-**Phase:** 1 (content) + 3 (component build-out) active in parallel. Phase 2
-complete. Phase 3 all Layers and tooling complete; only Storybook deploy (3G)
-remaining before Phase 4 can start. Design Sessions 1–3 complete; Session 4 next.
+**Phase:** 1C (Sagent content), 3G (Storybook deploy), and 4 (site assembly) active
+in parallel. Phase 2 complete. Phase 4A/4B/4C complete — routing wired, all case
+study content files created, supporting pages live. 4D (responsive QA), 4E (SEO),
+and 4F (AI chat deploy) remaining. Accessibility audit done early as Phase 5 pre-work.
+Design Sessions 1–3 complete; Session 4 next.
 
-**Last updated:** 2026-06-20 (MDX component docs + parameters.ai guidance system + 3 homepage exploration variants)
+**Last updated:** 2026-06-22 (WCAG AA accessibility audit + routing + case study content files)
 
 **Completed:**
 - Domain confirmed: viewbens.work (existing site stays live until launch)
@@ -513,15 +515,32 @@ remaining before Phase 4 can start. Design Sessions 1–3 complete; Session 4 ne
 - 12 MDX documentation pages created for all 12 components — embedded canvas previews,
   do's/don'ts, ArgTable prop tables; Storybook now reads as public documentation
   (2026-06-20)
+- WCAG AA accessibility audit — 7 fixes across 6 files (2026-06-22): Button focus ring
+  corrected (#0e4a1e → #00e054, ~1.9:1 → ~10:1); CaseStudyPage skip link + labeled
+  sidebar nav + 3 focus rings (sidebarLink, endTickNext, chatSuggestBtn); AboutPage
+  footer moved outside main (contentinfo landmark); NavBar wordmark aria-label added;
+  Contact new-tab sr-only announcements on LinkedIn link and OPEN PROFILE button.
+  See decisions.md 2026-06-22.
+- docs/ai-component-guide.md updated with Accessibility Patterns section (2026-06-22)
+- React Router v6 installed; App.tsx rewritten with BrowserRouter and all 10 routes;
+  vercel.json SPA rewrite rule added — Phase 4A complete (2026-06-22)
+- src/content/ created with 5 typed CaseStudyContent objects: usaa.ts and upfluent.ts
+  and sabre.ts (full content), sagent.ts and portfolio-rebuild.ts (placeholders) —
+  Phase 4B complete (2026-06-22)
+- Phase 4C complete: About and Resume pages already built as templates, now wired via
+  routing (2026-06-22)
 
 **Immediate next steps:**
 - **Ben's actions to go live:** Create Anthropic Workspace + API key and Upstash Redis
   database, add all three env vars to Vercel — chat is fully wired, blocked only on these
-- **Phase 3G:** Deploy Storybook to separate Vercel project on system.viewbens.work
-  — last gate before Phase 4 can start
 - **Ben to choose homepage direction:** Signal / Boot / Phosphor — all three are in
   Storybook Explorations section for side-by-side comparison
-- Sagent brain dump in progress (parallel track, build-plan 1C)
+- **Phase 1C:** Sagent brain dump — strongest Director-level case study, starts from zero
+- **Phase 3G:** Deploy Storybook to separate Vercel project on system.viewbens.work
+- **Phase 4D:** Responsive QA at 1440/1280/768/390px
+- **Phase 4E:** SEO foundations (meta descriptions, OG images, sitemap.xml, robots.txt,
+  canonical tags)
+- **Phase 4F:** Deploy AI chat to Vercel and test — blocked on Ben's env var setup
 
 **Decisions still open:**
 - Market Rebellion: referenced on About page as brief career arc item (decided 2026-06-20)

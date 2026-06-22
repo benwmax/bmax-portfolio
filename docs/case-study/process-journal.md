@@ -138,3 +138,67 @@ guidance, structured the prop tables from existing story args.
 
 **Where I overrode or redirected Claude:**
 N/A.
+
+## 2026-06-22
+
+### Session 1 — WCAG AA accessibility audit
+
+**What I did:**
+Full WCAG AA audit of Contact, About, and CaseStudy pages and components. Fixed 7 issues
+across 6 files. Updated ai-component-guide.md with an Accessibility Patterns section.
+
+**What I decided:**
+Fix every issue found, no deferral. Keyboard navigation and screen reader support are
+part of the portfolio's brand signal — a senior UX designer's portfolio with inaccessible
+focus indicators or missing landmarks is self-undermining.
+
+**Why:**
+The audit caught issues that ranged from near-invisible (Button focus ring at 1.9:1 contrast
+against the dark background — visible only if you know to look for it) to structural (footer
+inside main loses its ARIA landmark role entirely). All seven were worth fixing before Phase 4
+content went in.
+
+**What I'm uncertain about:**
+None — these were clear failures with clear fixes.
+
+**What Claude contributed:**
+Identified all 7 issues, wrote the fixes across 6 files, updated ai-component-guide.md with
+the Accessibility Patterns section, and wrote the decisions.md entry. Caught the footer
+landmark issue (nested footer doesn't carry contentinfo role) without being prompted.
+
+**Where I overrode or redirected Claude:**
+N/A.
+
+---
+
+### Session 2 — Routing and case study content wiring
+
+**What I did:**
+Wired up a functioning multi-page site: installed React Router v6, rewrote App.tsx with
+BrowserRouter and 10 routes, added vercel.json SPA rewrite, and created src/content/ with
+5 typed CaseStudyContent objects.
+
+**What I decided:**
+- Keep NavBar router-agnostic (each page passes activePath explicitly) so Storybook stories
+  continue working without a Router decorator.
+- USAA content copied directly from the stories file — it was already complete and typed.
+- Upfluent and Sabre converted from their markdown docs in docs/case-studies/.
+- Sagent and Portfolio Rebuild as placeholders with known data and holding copy — full
+  content comes from Phase 1C and Phase 7 respectively.
+
+**Why:**
+The site was rendering only the homepage. Every URL other than / would 404 on Vercel.
+This was the last structural gate before the site could be navigated, shared, or tested
+as a real multi-page experience.
+
+**What I'm uncertain about:**
+Sagent placeholder needs a full content pass once the brain dump happens — it's visible
+to anyone who navigates to /work/sagent right now with holding copy showing.
+
+**What Claude contributed:**
+Installed React Router, wrote App.tsx, vercel.json, and all 5 content files. Caught the
+apostrophe-in-single-quoted-string TypeScript error on first build and fixed the quoting
+strategy (double quotes for strings with contractions, matching Prettier's own behavior).
+
+**Where I overrode or redirected Claude:**
+N/A.
