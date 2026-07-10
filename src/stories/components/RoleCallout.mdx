@@ -49,6 +49,22 @@ Rarely used alone. Shown here for prop reference.
 - **Don't list every task.** One row per ownership dimension, not one per responsibility.
 - **Don't use the "Started as / Became" pattern for stable roles.** It's specific to unexpected scope expansion.
 
+## AI guidance
+
+Explicit ownership rows for the Role section of a case study. 132px fixed label column, flowing prose content. Always use the `RoleCallouts` wrapper for multiple rows.
+
+**Content rules**
+- `label`: short ownership descriptor — `Owned`, `In the room`, `Director layer`, `Started as`, `Became`.
+- `content`: 1–2 sentences, first person, active voice.
+- Standard 3-row pattern: Owned → Director layer → In the room.
+- "Started as" → "Became" → "In the room" is specific to roles with unexpected scope expansion (Sagent pattern).
+- Always wrap rows in `RoleCallouts` — never lay out rows manually.
+
+**Avoid**
+- Don't list every task — pick the three that define the scope and level of ownership.
+- Don't use vague content: `"I was the lead designer"`. Be specific: `"I sat between the team and our Director"`.
+- Don't use the "Started as / Became" pattern for stable roles — it signals unexpected scope change.
+
 ## Props
 
 <ArgTypes of={RoleStories} />

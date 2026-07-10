@@ -5,7 +5,6 @@ const meta = {
   title: 'Components/ImageCaption',
   component: ImageCaption,
   parameters: {
-    layout: 'padded',
     docs: {
       description: {
         component:

@@ -49,6 +49,21 @@ Numbered, em dash, sentence ending in a period. Rendered in IBM Plex Mono 10px t
 - **Don't use a grey box as a placeholder.** The dot-grid treatment is intentional.
 - **Don't skip the caption.** The `figcaption` is part of the semantic structure.
 
+## AI guidance
+
+Terminal-chrome frame for all case study screenshots and artifact images. Always use this — never a plain `<img>` tag for portfolio artifacts.
+
+**Content rules**
+- `tabLabel` format: `"project · artifact-type"` — e.g., `"usaa · A/B test pipeline"`, `"sabre-red · hotel-workspace"`, `"sagent · origination-flow"`. Project codename in kebab-case, middle dot separator, artifact type in kebab-case.
+- `caption` format: `"Fig. 01 — description."` — numbered, em dash, sentence ending in a period.
+- Number captions sequentially per case study: Fig. 01, Fig. 02, etc.
+- Omit `src` while the actual screenshot is being sourced — the dot-grid placeholder is the system default.
+
+**Avoid**
+- Never use a plain `<img>` tag for case study artifacts.
+- Don't use a grey box placeholder — the dot-grid treatment is intentional.
+- Don't skip the caption — `figcaption` is part of the semantic structure.
+
 ## Props
 
 <ArgTypes of={ImageStories} />

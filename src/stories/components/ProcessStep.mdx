@@ -47,6 +47,23 @@ Method names joined with `·`: `Field observation · Analytics review`, `A/B tes
 - **Don't write "Conducted X methodology."** Describe the outcome or finding instead.
 - **Don't use ProcessSteps outside of a case study process section.**
 
+## AI guidance
+
+Numbered process step cards for case study process sections. Always use the `ProcessSteps` wrapper for multiple steps. Body reads like something that happened — not a methodology list.
+
+**Content rules**
+- `num`: 1-based integer.
+- `phase`: one-word label — `Assess`, `Align`, `Build`, `Discover`, `Define`, `Test`.
+- `title`: one-line step label.
+- `body`: 1–3 sentences describing what actually happened. First person or observational — "They kept leaving the tool mid-call for Expedia" not "Conducted field observation sessions."
+- `artifact`: method names joined with `·` — `"Field observation · Analytics review"`, `"A/B testing · Service blueprint"`.
+- Always wrap steps in `ProcessSteps` — never lay out cards manually.
+
+**Avoid**
+- Don't write body as a methodology recitation: `"Conducted X methodology"`. Write what happened.
+- Don't exceed 5 steps — the process section should be scannable.
+- Don't use `ProcessSteps` outside of a case study process section.
+
 ## Props
 
 <ArgTypes of={ProcessStories} />

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import type { RefObject } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { NavBar } from '../../components/NavBar';
 import { CaseStudyCard } from '../../components/CaseStudyCard';
 import { ChatInput } from '../../components/ChatInput';
@@ -216,6 +217,22 @@ export function HomeV4Blend({
 
   return (
     <div className={styles.wrapper}>
+      <Helmet>
+        <title>Ben Maxwell — UX Design Leader</title>
+        <meta
+          name="description"
+          content="Portfolio of Ben Maxwell — a Design Leader who builds expert-level tools for fintech, insurance, travel, and mortgage. Ask the AI assistant anything about the work."
+        />
+        <link rel="canonical" href="https://viewbens.work" />
+        <meta property="og:title" content="Ben Maxwell — UX Design Leader" />
+        <meta
+          property="og:description"
+          content="Portfolio of Ben Maxwell — a Design Leader who builds expert-level tools for fintech, insurance, travel, and mortgage."
+        />
+        <meta property="og:url" content="https://viewbens.work" />
+        <meta property="og:image" content="https://viewbens.work/og/home.png" />
+      </Helmet>
+
       {/* Boot overlay — decorative/status, outside the inert wrapper so it stays visible */}
       {!skipBoot && (
         <div

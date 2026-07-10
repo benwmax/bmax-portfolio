@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { HomePage } from './pages/HomePage';
+import { HomeV4Blend } from './pages/explorations/HomeV4Blend';
 import { CaseStudyPage } from './pages/CaseStudyPage';
 import { AboutPage } from './pages/AboutPage';
 import { ResumePage } from './pages/ResumePage';
@@ -14,8 +14,8 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/work" element={<HomePage />} />
+        <Route path="/" element={<HomeV4Blend />} />
+        <Route path="/work" element={<HomeV4Blend />} />
         <Route path="/work/portfolio" element={<CaseStudyPage {...portfolioRebuildData} />} />
         <Route path="/work/upfluent" element={<CaseStudyPage {...upfluentData} />} />
         <Route path="/work/sagent" element={<CaseStudyPage {...sagentData} />} />

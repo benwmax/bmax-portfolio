@@ -5,7 +5,6 @@ const meta = {
   title: 'Components/CaseStudyHero',
   component: CaseStudyHero,
   parameters: {
-    layout: 'padded',
     docs: {
       description: {
         component:

@@ -230,6 +230,7 @@
   gap: 32px;
   margin-bottom: 32px;
   align-items: flex-end;
+  flex-wrap: wrap;
 }
 
 .footerHeading {

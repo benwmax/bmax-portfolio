@@ -15,11 +15,15 @@ The single committed action on a surface. Phosphor green text on deep-green fill
 
 <Canvas of={ButtonStories.Primary} />
 
+_Canonical use: `ASK` (chat submit), `COMPOSE EMAIL +` and `OPEN PROFILE +` (Contact page). One primary per surface._
+
 ### Secondary
 
 Available but not the recommended next step. Always paired with a primary nearby.
 
 <Canvas of={ButtonStories.Secondary} />
+
+_Canonical labels: `COPY ADDRESS`, `COPY URL`. Always paired with a primary — never the only button on a surface._
 
 ### Ghost
 
@@ -32,6 +36,8 @@ Optional navigation-adjacent action. No fill, no border — reduced visual weigh
 The ASK button disables when the input is empty, and while a response is in-flight.
 
 <Canvas of={ButtonStories.Disabled} />
+
+_The empty-input ASK button is the only unconditional disabled use. Prefer hiding over disabling in other contexts._
 
 ## Do's
 
@@ -51,6 +57,20 @@ The ASK button disables when the input is empty, and while a response is in-flig
 `md` is the only size in production. `sm` and `lg` exist for future contexts.
 
 <Canvas of={ButtonStories.Sizes} />
+
+## AI guidance
+
+Space Mono, all-caps, wide-tracked — reads as a terminal command. Three variants cover every action context. Never invent a fourth variant; never use sentence-case labels.
+
+**Content rules**
+- All button text is ALL CAPS — the component renders text as provided; capitalize in the prop.
+- Canonical labels: `ASK` (chat submit), `VIEW CASE STUDY +`, `COMPOSE EMAIL +`, `OPEN PROFILE +` (Contact), `COPY ADDRESS`, `COPY URL` (secondary actions).
+- One primary button per surface maximum.
+
+**Avoid**
+- Don't invent a new Button variant — primary, secondary, ghost cover every case.
+- Don't use Button for navigation links — use an `<a>` tag or pass `href` to render as anchor.
+- Don't show a spinner inside the button or change the label to `Loading...` while in-flight — the ChatInput sweep animation is the loading affordance.
 
 ## Props
 

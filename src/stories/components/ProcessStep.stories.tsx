@@ -5,7 +5,6 @@ const meta = {
   title: 'Components/ProcessStep',
   component: ProcessStep,
   parameters: {
-    layout: 'padded',
     docs: {
       description: {
         component:

@@ -45,6 +45,24 @@ The canonical homepage layout: 2 columns, 296px each, 20px gap.
 - **Don't build a single-column list or masonry layout.** The 2-column grid is fixed.
 - **Don't use `forceHover` in application code.** It's a Storybook preview prop only.
 
+## AI guidance
+
+The work-grid entry point. Always a link (`href` required). Index chips reflect the finalized case study order: 01 Portfolio Rebuild, 02 Upfluent, 03 Sagent, 04 USAA, 05 Sabre.
+
+**Content rules**
+- `index`: zero-padded two digits — `"01"`, `"02"`, `"03"`, `"04"`, `"05"`.
+- `desc`: one-sentence hook, the problem angle — not the project name.
+- `tag`: industry label from the canonical five (Travel, Fintech, Mortgage, Insurance, AI Collaboration).
+- `stat` + `statLabel`: headline outcome — e.g., `stat="$1B"` `statLabel="Contract"`.
+- Case study order is finalized: 01 Portfolio Rebuild, 02 Upfluent, 03 Sagent, 04 USAA, 05 Sabre.
+
+**Avoid**
+- Don't omit `href` — the card should always navigate.
+- Don't use `title` as the hook — `desc` is the hook; `title` is the project name.
+- Don't pass empty strings for meta props — omit them entirely and the grid collapses gracefully.
+- Don't use a single-column list or masonry layout — the 2-column grid is fixed.
+- Don't reorder the case studies.
+
 ## Props
 
 <ArgTypes of={CardStories} />

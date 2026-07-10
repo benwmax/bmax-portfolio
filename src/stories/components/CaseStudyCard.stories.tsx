@@ -5,7 +5,6 @@ const meta = {
   title: 'Components/CaseStudyCard',
   component: CaseStudyCard,
   parameters: {
-    layout: 'padded',
     docs: {
       description: {
         component:
@@ -132,7 +131,6 @@ export const WithoutMeta: Story = {
 export const Grid: Story = {
   name: '2×2 grid — all five case studies',
   parameters: {
-    layout: 'padded',
     docs: {
       description: {
         story:

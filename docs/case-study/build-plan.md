@@ -204,7 +204,7 @@ Each documented as a full-page Storybook story.
 *Depends on Phase 3 components and Phase 1 content*
 
 ### 4A. Page shells
-- [x] Home (2026-06-22)
+- [x] Home — HomeV4Blend wired as production homepage per Ben's direction (2026-06-22)
 - [x] Case Study template (2026-06-22)
 - [x] About (2026-06-22)
 - [x] Resume (2026-06-22)
@@ -227,13 +227,14 @@ Each documented as a full-page Storybook story.
 - Standard desktop (1280px)
 - Tablet (768px)
 - Mobile (390px)
+CSS audit complete (2026-06-22): all pages have responsive breakpoints; fixed missing flex-wrap on AboutPage footer (was inconsistent with homepage footer). Real-device test still needed.
 
 ### 4E. SEO foundations
-- [ ] Unique meta description per page
-- [ ] OG image per case study
-- [ ] sitemap.xml
-- [ ] Canonical tags pointing to viewbens.work
-- [ ] robots.txt
+- [x] Unique meta description per page — react-helmet-async installed; Helmet added to all 8 pages (2026-06-22)
+- [ ] OG image per case study — tags wired to /og/{slug}.png; create 1200×630 PNGs in public/og/ before launch
+- [x] sitemap.xml — public/sitemap.xml created (2026-06-22)
+- [x] Canonical tags pointing to viewbens.work — set via Helmet in each page (2026-06-22)
+- [x] robots.txt — public/robots.txt created (2026-06-22)
 
 ### 4F. AI Chat Feature
 *Live AI assistant on the portfolio — see decisions.md, 2026-06-15.

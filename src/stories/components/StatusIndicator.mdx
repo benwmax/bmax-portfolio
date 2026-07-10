@@ -39,6 +39,21 @@ Warning and Error are available programmatically but not shown by default in the
 - **Don't use "offline" for loading.** A request in-flight is still "online" — loading is an active state.
 - **Don't show error state by default.** It surfaces programmatically on API failure only.
 
+## AI guidance
+
+Availability signal for the AI chat assistant. Renders below ChatInput — never inside it. Online = green-bright blinking. Offline = text-disabled, no blink. Warning and Error are reserved states.
+
+**Content rules**
+- Labels are always uppercase.
+- Standard online label: `ONLINE · assistant ready`.
+- Standard offline label: `OFFLINE · responses unavailable`.
+- `blink` defaults to `true` for `status='online'` — do not override.
+
+**Avoid**
+- Don't render StatusIndicator inside the ChatInput component — it goes below.
+- Don't use `offline` for a loading/in-flight state — loading is still `online`.
+- Don't set `blink={false}` for the online state — the blink is the readiness signal.
+
 ## Props
 
 <ArgTypes of={StatusStories} />

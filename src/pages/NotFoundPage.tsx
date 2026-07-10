@@ -1,9 +1,14 @@
+import { Helmet } from 'react-helmet-async';
 import { NavBar } from '../components/NavBar';
 import styles from './NotFoundPage.module.css';
 
 export function NotFoundPage() {
   return (
     <div className={styles.wrapper}>
+      <Helmet>
+        <title>Page not found — Ben Maxwell | viewbens.work</title>
+        <meta name="robots" content="noindex" />
+      </Helmet>
       <a href="#main-content" className="skip-link">
         Skip to main content
       </a>

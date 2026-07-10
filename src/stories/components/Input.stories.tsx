@@ -5,7 +5,6 @@ const meta = {
   title: 'Components/Input',
   component: Input,
   parameters: {
-    layout: 'padded',
     docs: {
       description: {
         component:

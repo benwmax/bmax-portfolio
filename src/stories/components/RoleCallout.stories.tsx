@@ -5,7 +5,6 @@ const meta = {
   title: 'Components/RoleCallout',
   component: RoleCallout,
   parameters: {
-    layout: 'padded',
     docs: {
       description: {
         component:

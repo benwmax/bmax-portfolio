@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { NavBar } from '../components/NavBar';
 import { ChatInput } from '../components/ChatInput';
 import { useChatSession } from '../hooks/useChatSession';
@@ -103,6 +105,7 @@ export function CaseStudyPage({
   onChatSubmit,
   initialMessages = [],
 }: CaseStudyPageProps) {
+  const { pathname } = useLocation();
   const { messages, chatStatus, handleSubmit } = useChatSession({
     onSubmit: onChatSubmit,
     initialMessages,
@@ -153,8 +156,22 @@ export function CaseStudyPage({
     window.scrollTo({ top, behavior: 'smooth' });
   };
 
+  const canonicalUrl = `https://viewbens.work${pathname}`;
+  const companySlug = pathname.split('/').pop() ?? 'work';
+  const pageDescription =
+    heroSubtitle.length > 155 ? heroSubtitle.slice(0, 152) + '...' : heroSubtitle;
+
   return (
     <div className={styles.wrapper}>
+      <Helmet>
+        <title>{`${company} · ${heroTitle.replace(/\.$/, '')} — Ben Maxwell`}</title>
+        <meta name="description" content={pageDescription} />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:title" content={`${company} — Ben Maxwell`} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:image" content={`https://viewbens.work/og/${companySlug}.png`} />
+      </Helmet>
       <a href="#main-content" className="skip-link">
         Skip to main content
       </a>

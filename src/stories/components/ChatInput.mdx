@@ -48,6 +48,22 @@ Textarea mode for the expanded case study right-rail or docked panel. Grows to 6
 - **Don't set `status='offline'` during loading.** Loading is still "online."
 - **Don't use `forceFocused` outside Storybook.** It's a preview-only prop.
 
+## AI guidance
+
+Full AI chat widget — terminal prompt, ASK button, and StatusIndicator in one component. Use for the AI assistant on both the homepage and case study pages. Not a generic form input — use the bare Input component for that.
+
+**Content rules**
+- Default placeholder: `ask about my work…` — lowercase, trailing ellipsis, no period.
+- `status='online'` is the starting state.
+- Set `showStatus={false}` when the surrounding panel already carries its own StatusIndicator.
+- `multiline={true}` for the expanded case study right-rail or docked panel. Single-line for the compact homepage hero panel.
+
+**Avoid**
+- Don't use ChatInput as a generic form input — use the bare Input component instead.
+- `forceFocused` is Storybook-only — never wire it to application state.
+- Don't clear the field while loading — the user's question stays visible.
+- Don't set `status='offline'` during loading — loading is still online.
+
 ## Props
 
 <ArgTypes of={ChatInputStories} />

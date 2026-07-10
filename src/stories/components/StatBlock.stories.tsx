@@ -5,7 +5,6 @@ const meta = {
   title: 'Components/StatBlock',
   component: StatBlock,
   parameters: {
-    layout: 'padded',
     docs: {
       description: {
         component:

@@ -5,7 +5,6 @@ const meta = {
   title: 'Components/Tag',
   component: Tag,
   parameters: {
-    layout: 'centered',
     docs: {
       description: {
         component:
@@ -162,7 +161,6 @@ export const AllIndustries: Story = {
     label: 'Fintech',
   },
   parameters: {
-    layout: 'padded',
     docs: {
       description: {
         story:

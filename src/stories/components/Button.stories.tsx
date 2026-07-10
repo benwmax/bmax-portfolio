@@ -6,7 +6,6 @@ const meta = {
   title: 'Components/Button',
   component: Button,
   parameters: {
-    layout: 'centered',
     docs: {
       description: {
         component:
@@ -168,7 +167,6 @@ export const Loading: Story = {
 export const Sizes: Story = {
   name: 'All sizes (primary)',
   parameters: {
-    layout: 'padded',
     docs: {
       description: {
         story:

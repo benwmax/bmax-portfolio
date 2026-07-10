@@ -58,6 +58,23 @@ Use `cols={3}` when there are exactly 3 headline outcome stats.
 - **Don't force a body sentence** if the value already tells the story.
 - **Don't use `cols={3}` for 2 cells.** Use the default 2-col grid.
 
+## AI guidance
+
+Outcome stat cell — phosphor green headline value, ALL CAPS label, optional context body. Always use `StatGrid` wrapper for multiple cells. Never lay out cells manually.
+
+**Content rules**
+- `value`: concrete number or short word — `"+4–6%"`, `"$1B"`, `"< 3 mo."`, `"↓ Calls"`, `"Scaled"`, `"Shipped"`, `"Adopted"`.
+- `label`: ALL CAPS descriptor — `"Conversion lift · P&C"`, `"Contract won"`, `"Mobile redesign ship"`.
+- `body`: one sentence of context — `"Homeowners up 5%."` Keep it short. Omit when the value is self-explanatory.
+- `StatGrid` default (2-col) holds 2 or 4 cells. Use `cols={3}` for exactly 3 stats.
+- Always use `StatGrid` wrapper — never lay out cells manually.
+
+**Avoid**
+- Don't use vague qualifiers as values: `"Improved"`, `"Better"`, `"Enhanced"`.
+- Don't force a body sentence if the value already tells the story.
+- Don't lay out StatBlock cells without StatGrid.
+- Don't use `cols={3}` for 2 cells — use the default 2-col grid.
+
 ## Props
 
 <ArgTypes of={StatStories} />

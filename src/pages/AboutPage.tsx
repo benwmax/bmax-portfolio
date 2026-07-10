@@ -1,3 +1,4 @@
+import { Helmet } from 'react-helmet-async';
 import { NavBar } from '../components/NavBar';
 import styles from './AboutPage.module.css';
 
@@ -61,6 +62,20 @@ const CAREER = [
 export function AboutPage() {
   return (
     <div className={styles.wrapper}>
+      <Helmet>
+        <title>About — Ben Maxwell | UX Design Leader</title>
+        <meta
+          name="description"
+          content="Senior UX designer with 12+ years building expert-level tools across fintech, travel, insurance, and mortgage. Currently seeking Design Director and UX Principal roles in Dallas, TX."
+        />
+        <link rel="canonical" href="https://viewbens.work/about" />
+        <meta property="og:title" content="About — Ben Maxwell" />
+        <meta
+          property="og:description"
+          content="Senior UX designer with 12+ years building expert-level tools across fintech, travel, insurance, and mortgage."
+        />
+        <meta property="og:url" content="https://viewbens.work/about" />
+      </Helmet>
       <a href="#main-content" className="skip-link">
         Skip to main content
       </a>

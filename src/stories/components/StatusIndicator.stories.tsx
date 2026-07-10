@@ -5,7 +5,6 @@ const meta = {
   title: 'Components/StatusIndicator',
   component: StatusIndicator,
   parameters: {
-    layout: 'centered',
     docs: {
       description: {
         component:

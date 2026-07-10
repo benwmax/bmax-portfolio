@@ -34,6 +34,21 @@ The `BM_` wordmark with blinking underscore is a terminal cursor convention — 
 - **Don't add nav links or dropdown menus.** Three links fit at 390px without collapsing.
 - **Don't add a mobile hamburger.** The nav is intentionally always visible.
 
+## AI guidance
+
+Site header — present on every page. Three fixed nav links: Work, About, Contact. Always wire `activePath` to the current router pathname.
+
+**Content rules**
+- Nav links are fixed: Work (`/work`), About (`/about`), Contact (`/contact`). Do not add custom links.
+- The `BM_` wordmark with blinking underscore is the identity mark — do not modify it.
+- Active link gets green-accent color + `aria-current="page"`. No underline, no fill.
+- Wire `activePath` to the router pathname: `'/work'` on the homepage, `'/about'` on the About page, `'/contact'` on the Contact page.
+
+**Avoid**
+- Don't add a mobile hamburger — three links fit at 390px without collapsing.
+- Don't leave `activePath` undefined in production — all links render at disabled-text when no route matches.
+- Don't add extra nav links or dropdown menus.
+
 ## Props
 
 <ArgTypes of={NavBarStories} />

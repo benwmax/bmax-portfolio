@@ -6,7 +6,6 @@ const meta = {
   title: 'Components/ChatInput',
   component: ChatInput,
   parameters: {
-    layout: 'padded',
     docs: {
       description: {
         component:

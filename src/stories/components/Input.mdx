@@ -57,6 +57,21 @@ Unlike ChatInput, the bare Input does **not** brighten its border when it has co
 
 <Canvas of={InputStories.Filled} />
 
+## AI guidance
+
+The bare terminal text field. Use for forms, not for the AI chat widget — use ChatInput for that. IBM Plex Mono body, Space Mono ALL CAPS label.
+
+**Content rules**
+- Labels are ALL CAPS — e.g., `YOUR QUESTION`, `EMAIL ADDRESS`. The component renders them as provided; capitalize in the prop.
+- Use `prompt={true}` when the field is part of a terminal-aesthetic context.
+- Hint text examples: `Max 2000 characters`, `Letters only`, `Name as it appears on ID`.
+- Error messages should be specific: `Please enter a question before submitting.` not `Invalid input.`
+
+**Avoid**
+- For chat functionality, use ChatInput — not this component.
+- Don't use generic sans-serif labels — the Space Mono ALL CAPS label is the system default.
+- Don't add `prompt={true}` to a standard form field outside the terminal context.
+
 ## Props
 
 <ArgTypes of={InputStories} />
