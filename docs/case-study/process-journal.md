@@ -238,3 +238,41 @@ identified the quoted-string bug from the log output.
 
 **Where I overrode or redirected Claude:**
 N/A.
+
+### Session 2 — Pre-launch QA pass
+
+**What I did:**
+Ran an automated pre-launch QA pass: Playwright headless Chromium against all 10 routes at
+1440/768/390px, checking for console errors, broken internal links, and horizontal overflow.
+
+**What I decided:**
+Fix everything the pass found before moving toward DNS cutover, rather than deferring — these
+were correctness bugs, not polish.
+
+**Why:**
+The pass caught two real bugs. First, every page's NavBar links to `/contact`, but that route
+was never added to App.tsx during the Phase 4A routing rewrite — clicking Contact 404'd
+site-wide. Fixed by wiring the existing (fully built) Contact component into the router.
+Second, a React console warning on every page traced back to `inert={condition ? '' : undefined}`
+across HomeV4Blend.tsx and HomePage.tsx — React now treats an empty-string `inert` value as
+`false`, meaning the boot overlay, docked chat panel, and mobile chat overlay were not actually
+becoming inert when they should have (an accessibility regression: background content stayed
+tabbable/focusable when it should have been excluded). Fixed by passing `true`/`undefined`
+directly, which is also correctly typed now that `@types/react` has `inert?: boolean`. Also
+found and fixed a horizontal-overflow bug on `/contact` at 390px — the email and LinkedIn
+addresses are one unbroken string in a bold 28px monospace font with no wrap rule, forcing the
+card past the viewport. Added `word-break: break-word`.
+
+**What I'm uncertain about:**
+Only did automated/emulated viewport testing, not real physical devices — that item in
+Phase 4D/5 is still genuinely open. Also haven't done a cross-browser pass (Safari/Firefox/Edge)
+or a Lighthouse audit yet.
+
+**What Claude contributed:**
+Wrote and ran the Playwright QA script, found both bugs from the automated pass, traced the
+`inert` warning to its root cause (React's boolean-attribute coercion) rather than just
+suppressing the console warning, and fixed all three issues with verification reruns after
+each fix.
+
+**Where I overrode or redirected Claude:**
+N/A.

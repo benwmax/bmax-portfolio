@@ -36,7 +36,7 @@ lead case study — documenting it as it happens is as important as building it.
 | 0 | Setup | Complete (2026-06-20) | — |
 | 1 | Strategy and Content | In progress | — |
 | 2 | Visual Identity | Complete (2026-06-17) | — |
-| 3 | Storybook Foundation | In progress — all Layers complete; Storybook deploy (3G) remaining | — |
+| 3 | Storybook Foundation | Complete (2026-07-16) | — |
 | 4 | Site Assembly | In progress — 4A/4B/4C complete; 4D/4E/4F remaining | — |
 | 5 | QA and Pre-Launch | Not started | Phase 4 |
 | 6 | Launch | Not started | Phase 5 |
@@ -194,9 +194,12 @@ Story descriptions explain design decisions, not just props.
 Each documented as a full-page Storybook story.
 
 ### 3G. Storybook deployment
-- [ ] Deploy to separate Vercel project
-- [ ] Configure subdomain (e.g. system.viewbens.work)
-- [ ] Verify public accessibility
+- [x] Deploy to separate Vercel project (2026-07-16) — bmax-portfolio-storybook;
+      required fixing the Build Command override (Vercel was silently running the
+      main app's `npm run build` instead of `npm run build-storybook`)
+- [x] Configure subdomain (2026-07-16) — system.viewbens.work live, verified 200 OK over HTTPS
+- [x] Verify public accessibility (2026-07-16) — 200 OK, deployment protection disabled
+      (intentionally, unlike the main site — Storybook is meant to be public per CLAUDE.md)
 
 ---
 
@@ -228,6 +231,10 @@ Each documented as a full-page Storybook story.
 - Tablet (768px)
 - Mobile (390px)
 CSS audit complete (2026-06-22): all pages have responsive breakpoints; fixed missing flex-wrap on AboutPage footer (was inconsistent with homepage footer). Real-device test still needed.
+Automated pass complete (2026-07-16): Playwright headless check across all 10 routes ×
+1440/768/390px. Found and fixed a horizontal-overflow bug on /contact at 390px (unbreakable
+email/URL strings in `.cardAddress` forcing card width past viewport — added `word-break:
+break-word`). All routes now clean at all three widths. Real physical-device test still needed.
 
 ### 4E. SEO foundations
 - [x] Unique meta description per page — react-helmet-async installed; Helmet added to all 8 pages (2026-06-22)
@@ -270,9 +277,15 @@ independently; only the widget's visual styling depends on those.*
 - [ ] Mobile device testing (real devices, not just browser resize)
 - [ ] Image optimization: WebP format, lazy loading, proper srcset
 - [x] Accessibility audit: keyboard navigation, screen reader, color contrast (2026-06-22 — 7 fixes across 6 files; see decisions.md 2026-06-22)
-- [ ] All internal links resolve correctly
+- [x] All internal links resolve correctly (2026-07-16) — found `/contact` was linked from
+      every page's NavBar but never wired into App.tsx's routes (404 on click); added the
+      missing route using the existing Contact component
 - [ ] All case study images load at correct sizes
-- [ ] No console errors
+- [x] No console errors (2026-07-16) — found and fixed a React warning on every page: `inert`
+      was being set to `''` instead of `true`/`undefined`, which (per the warning) React was
+      silently coercing to `false` — meaning boot-overlay/docked-chat/mobile-overlay content
+      meant to be inert during those states was not actually inert. Fixed in HomeV4Blend.tsx
+      (production) and HomePage.tsx (Storybook exploration)
 - [ ] Typography renders correctly across browsers
 - [ ] Dark mode works across all pages and components
 

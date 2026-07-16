@@ -260,3 +260,17 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
   couples pages to the router and breaks Storybook). 
 - Open question: Sagent placeholder needs a full content pass once the Phase 1C brain dump
   is complete. Portfolio Rebuild placeholder content is intentional until Phase 7.
+
+## 2026-07-16 — Launch before Sagent case study is written
+- Decision: Prioritize getting the site launched (viewbens.work re-pointed, live) over
+  finishing the Sagent case study first. Sagent will go live with its existing Phase 4B
+  placeholder/holding copy and get a full content pass afterward.
+- Reasoning: Ben wants the site live as soon as possible; Sagent content is a from-scratch
+  writing effort (Phase 1C brain dump has not started) that would otherwise gate launch
+  indefinitely.
+- Alternatives considered: Writing Sagent first per the original Phase 1 parallel-workstream
+  plan, which flagged Sagent as the strongest Director-level evidence and warned against it
+  becoming "the last thing written and the first thing that gets rushed." That risk still
+  applies — noting it here so it doesn't get lost after launch.
+- Open question: how long the Sagent placeholder stays live post-launch before the full
+  case study replaces it.

@@ -211,8 +211,7 @@ export function HomePage({ onChatSubmit, initialMessages = [] }: HomePageProps) 
                 .join(' ')}
               aria-label="Ask Ben — assistant"
               aria-hidden={isDocked}
-              // @ts-expect-error — inert is a standard HTML attribute not yet in React's types
-              inert={isDocked ? '' : undefined}
+              inert={isDocked ? true : undefined}
             >
               {chatBarJSX}
               {renderLog(heroLogRef, styles.chatLog)}
@@ -303,8 +302,7 @@ export function HomePage({ onChatSubmit, initialMessages = [] }: HomePageProps) 
           .join(' ')}
         aria-label="Ask Ben — assistant"
         aria-hidden={!isDocked}
-        // @ts-expect-error — inert is a standard HTML attribute not yet in React's types
-        inert={!isDocked ? '' : undefined}
+        inert={!isDocked ? true : undefined}
       >
         {chatBarJSX}
         {renderLog(dockedLogRef, styles.dockedLog)}
@@ -349,8 +347,7 @@ export function HomePage({ onChatSubmit, initialMessages = [] }: HomePageProps) 
         aria-modal="true"
         aria-label="Ask Ben — assistant"
         aria-hidden={!mobileChatOpen}
-        // @ts-expect-error — inert is a standard HTML attribute not yet in React's types
-        inert={!mobileChatOpen ? '' : undefined}
+        inert={!mobileChatOpen ? true : undefined}
       >
         <div className={styles.mobileOverlayBar}>
           <span className={styles.chatBarLabel}>Ask Ben</span>

@@ -138,6 +138,7 @@
   line-height: 1.1;
   color: var(--color-text-primary);
   text-decoration: none;
+  word-break: break-word;
   transition: color var(--duration-base) var(--ease-default);
 }
 

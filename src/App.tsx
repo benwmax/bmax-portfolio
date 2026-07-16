@@ -4,6 +4,7 @@ import { CaseStudyPage } from './pages/CaseStudyPage';
 import { AboutPage } from './pages/AboutPage';
 import { ResumePage } from './pages/ResumePage';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { Contact } from './components/Contact';
 import { portfolioRebuildData } from './content/portfolio-rebuild';
 import { upfluentData } from './content/upfluent';
 import { sagentData } from './content/sagent';
@@ -23,6 +24,7 @@ function App() {
         <Route path="/work/sabre" element={<CaseStudyPage {...sabreData} />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/resume" element={<ResumePage />} />
+        <Route path="/contact" element={<Contact />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
