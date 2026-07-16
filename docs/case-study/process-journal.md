@@ -202,3 +202,39 @@ strategy (double quotes for strings with contractions, matching Prettier's own b
 
 **Where I overrode or redirected Claude:**
 N/A.
+
+## 2026-07-16
+
+**What I did:**
+Finished the last blocked pieces of Phase 4F: created the dedicated Anthropic Workspace
+(API key, spend limit, email alert) and the Upstash Redis database, wired all three env
+vars into Vercel, redeployed, and tested the live `/api/chat` endpoint with curl.
+
+**What I decided:**
+Temporarily disabled Vercel Deployment Protection to get an unauthenticated curl request
+through to the function, since the preview deployment was returning 401s from Vercel's own
+SSO gate before ever reaching the code.
+
+**Why:**
+The first curl test hit deployment protection (401, not a code issue). The second attempt,
+after disabling protection, hit a real bug: `FUNCTION_INVOCATION_FAILED`. Pulled the actual
+error via `vercel logs` and found `UPSTASH_REDIS_REST_URL` had been pasted into Vercel's env
+var field with literal surrounding quote characters (`""https://...""`), which the Upstash
+client rejected as an invalid URL. Fixed the env var, redeployed, and the endpoint returned
+200 with a correctly streamed response — one that cited Upfluent specifically and correctly
+flagged Sagent as still being finalized, confirming the system prompt is accurate.
+
+**What I'm uncertain about:**
+Deployment protection is currently off — needs to be re-enabled now that testing is done,
+since the site isn't launched yet. CORS in `api/chat.ts` still only allows `viewbens.work`
+and `localhost`, so the chat widget UI itself can't be tested against this preview domain
+from a browser (curl bypasses CORS, so this didn't block the endpoint test).
+
+**What Claude contributed:**
+Walked through Anthropic Workspace and Upstash setup steps, built the curl test command,
+diagnosed the 401 as deployment protection rather than a code problem, authenticated the
+Vercel CLI (with my approval via browser device-auth prompt) to pull function logs, and
+identified the quoted-string bug from the log output.
+
+**Where I overrode or redirected Claude:**
+N/A.

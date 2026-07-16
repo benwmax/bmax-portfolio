@@ -246,15 +246,15 @@ independently; only the widget's visual styling depends on those.*
       Workspace with spend limit (2026-06-15)
 - [x] FAB button — mobile floating chat button for continuity between
       homepage hero and docked rail (2026-06-19)
-- [ ] Create dedicated Anthropic Workspace + API key, set spend limit and
-      email alert
-- [ ] Create Upstash Redis database, add REST credentials to Vercel env
+- [x] Create dedicated Anthropic Workspace + API key, set spend limit and
+      email alert (2026-07-16)
+- [x] Create Upstash Redis database, add REST credentials to Vercel env (2026-07-16)
 - [x] Install @upstash/ratelimit and @upstash/redis (2026-06-20)
 - [x] Commit api/chat.ts, api/lib/system-prompt.ts, api/lib/rate-limit.ts
       to repo (2026-06-20)
 - ~~Replace [CONTACT_LINK] placeholders~~ — not applicable; system-prompt.ts used real email (ben@viewbens.work) from the start
 - [x] Build frontend chat widget — UI was already built in both pages; extracted shared useChatSession hook, wired sessionMessageCount so server-side session cap actually fires, surfaced API error messages to the user (2026-06-20)
-- [ ] Deploy to Vercel, test endpoint with curl
+- [x] Deploy to Vercel, test endpoint with curl (2026-07-16) — verified 200 OK with streamed response after fixing a quoted-string bug in UPSTASH_REDIS_REST_URL
 - [ ] Tune rate limits / caps against real traffic
 - [ ] Update system-prompt.ts as Upfluent, USAA, and Sagent case studies
       are finalized (ongoing — revisit each time a case study moves to
