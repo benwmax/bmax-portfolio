@@ -28,11 +28,19 @@
       content="Portfolio of Ben Maxwell — a Design Leader who builds expert-level tools for fintech, insurance, travel, and mortgage."
     />
     <meta name="twitter:image" content="https://viewbens.work/og/home.png" />
-    <!-- Canonical -->
-    <link rel="canonical" href="https://viewbens.work" />
-    <!-- Google Fonts preconnect (speeds up the @import in index.css) -->
+    <!-- No static canonical tag here — every routed page sets its own via
+         react-helmet-async (HomeV4Blend, AboutPage, ResumePage, CaseStudyPage).
+         A static one here would duplicate/conflict with those. -->
+    <!-- Google Fonts: preconnect + stylesheet link, discovered by the HTML preload
+         scanner immediately rather than waiting on the CSS parse (was a blocking
+         @import in index.css, which delayed font loading past first paint and
+         caused layout shift on swap-in). -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <div id="root"></div>

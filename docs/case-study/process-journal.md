@@ -276,3 +276,58 @@ each fix.
 
 **Where I overrode or redirected Claude:**
 N/A.
+
+### Session 3 — Phase 5: Lighthouse, cross-browser, and root-cause performance/a11y fixes
+
+**What I did:**
+Ran a full Phase 5 pass: Lighthouse against the production build on all 9 routes, then a
+cross-browser sweep (Chromium, Firefox, WebKit) via Playwright.
+
+**What I decided:**
+Chase every score below target to its root cause rather than treating Lighthouse as a checkbox.
+
+**Why:**
+First Lighthouse run on Home: performance 84, accessibility 96, best-practices 100, SEO 100.
+The CLS component (0.201, "poor") traced back to the h1 typewriter effect — "I make expert tools
+learnable." types in char-by-char, and partway through it wraps from 1 line to 2, but
+`.heroH1`'s `min-height` only reserved space for 1 line. Every character typed after the wrap
+point pushed the lede paragraph and the entire chat panel down the page — a real reflow, not
+just an animation artifact. Fixed by reserving 2 lines of height up front, since the final
+headline always wraps to 2 lines at this max-width by design. That took CLS from 0.201 to ~0.01
+and performance to 96. (A parallel fix — moving Google Fonts from a blocking `@import` in
+index.css to a `<link>` in index.html, matching what tokens.css's own header comment already
+specified but was never actually wired up — helped FCP/LCP somewhat but wasn't the main CLS
+cause; worth doing regardless since it's the documented intent.) The accessibility gap (96) was
+a single character counter in ChatInput at 4.43:1 contrast against the input's raised background
+— one shade of the tertiary text color, not a design flaw, just a token picked without checking
+it against that specific background. Swapped it and a sibling "thinking" label to the secondary
+text color (5.23:1). Running Lighthouse on a case study page surfaced a bug Home didn't have:
+SEO dropped to 92 because index.html had a static canonical tag AND react-helmet-async was
+independently injecting a per-page canonical, so every routed page shipped two conflicting
+canonical URLs. Removed the static one — every page already sets its own via Helmet. Rerunning
+on About surfaced two more real WCAG issues Lighthouse only catches on prose-heavy pages: inline
+links in body text relied on color alone to stand out (added a permanent underline instead of
+hover-only), and the NavBar wordmark's `aria-label="Ben Maxwell – Home"` didn't contain its own
+visible text ("BM_"), which breaks voice-control activation (WCAG 2.5.3) — this aria-label had
+been added during the 2026-06-22 accessibility audit for a different reason and nobody had
+checked it against this rule. Final state, verified across all 9 routes: performance 96–98,
+accessibility 100, best-practices 100, SEO 100. Cross-browser sweep (27 checks: 9 routes × 3
+engines) came back completely clean — no console errors, no overflow, identical dark background
+everywhere.
+
+**What I'm uncertain about:**
+WebKit-the-engine isn't the same as Safari-the-browser (no extensions, no iOS quirks, no real
+device) — this doesn't replace real Safari testing. Real mobile device testing is still open.
+Image optimization and "case study images load correctly" are still blocked — there are no real
+images in any of the five case study content files yet, so those checklist items aren't really
+testable until Phase 1E (image audit) happens.
+
+**What Claude contributed:**
+Ran and iterated on the Lighthouse/cross-browser passes, and for each score gap, pulled the
+underlying data (layout-shift source rects via the Performance Observer API, not just the
+summary number) to find the actual root cause rather than the first plausible guess — the CLS
+value initially looked like it should be a font-loading/FOUT issue (and partially was), but the
+ground-truth shift-source data showed the real culprit was the typewriter reflow.
+
+**Where I overrode or redirected Claude:**
+N/A.

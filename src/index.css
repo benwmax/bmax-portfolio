@@ -1,4 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap');
+/* Font stylesheet is loaded via <link> in index.html, not @import here —
+   @import blocks on the CSS parse order and delays font discovery past
+   first paint, which was showing up as layout shift once fonts swapped in. */
 
 /* Design tokens — must load before Tailwind base so CSS vars are defined */
 @import './tokens/tokens.css';

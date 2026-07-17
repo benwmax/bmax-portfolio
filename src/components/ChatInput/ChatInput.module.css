@@ -140,7 +140,11 @@ textarea.input {
   padding-bottom: 26px;
 }
 
-/* Character counter — multiline only, bottom-right of field */
+/* Character counter — multiline only, bottom-right of field.
+   Uses --color-text-secondary, not --color-text-tertiary: tertiary only
+   reaches 4.43:1 against --color-bg-raised (the field background here),
+   just under the 4.5:1 AA threshold at this font size. Secondary clears it
+   at 5.23:1. */
 .counter {
   position: absolute;
   right: 12px;
@@ -148,11 +152,13 @@ textarea.input {
   font-family: var(--font-mono-ui);
   font-size: 10px;
   letter-spacing: 0.04em;
-  color: var(--color-text-tertiary);
+  color: var(--color-text-secondary);
   pointer-events: none;
 }
 
-/* "thinking" label — pulsing dot + text, inside field while loading */
+/* "thinking" label — pulsing dot + text, inside field while loading.
+   --color-text-secondary, not tertiary — same --color-bg-raised contrast gap
+   as .counter above. */
 .loadText {
   position: absolute;
   right: 14px;
@@ -160,7 +166,7 @@ textarea.input {
   transform: translateY(-50%);
   font-family: var(--font-mono-ui);
   font-size: var(--text-sm);
-  color: var(--color-text-tertiary);
+  color: var(--color-text-secondary);
   display: flex;
   align-items: center;
   gap: 6px;

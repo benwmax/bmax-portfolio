@@ -118,10 +118,13 @@
   max-width: 66ch;
 }
 
+/* border-bottom (not text-decoration) so it sits flush with the mono baseline.
+   Visible by default (currentColor), not just on hover — a link distinguished
+   from surrounding body text by color alone fails WCAG 1.4.1. */
 .inlineLink {
   color: var(--color-green-accent);
   text-decoration: none;
-  border-bottom: 1px solid transparent;
+  border-bottom: 1px solid currentColor;
   transition:
     color var(--duration-base) var(--ease-default),
     border-color var(--duration-base) var(--ease-default);
@@ -129,7 +132,6 @@
 
 .inlineLink:hover {
   color: var(--color-green-bright);
-  border-color: var(--color-green-border);
 }
 
 .inlineLink:focus-visible {

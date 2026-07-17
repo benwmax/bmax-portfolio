@@ -206,7 +206,11 @@
   color: var(--color-text-primary);
   margin: 0;
   max-width: 14ch;
-  min-height: 1.04em;
+  /* Reserves 2 lines up front — the full headline always wraps to "I make expert" /
+     "tools learnable." at this max-width, but the typewriter effect fills it in
+     char-by-char starting from 1 line. Without this, the line-1→2 wrap mid-typing
+     pushes the lede and chat panel down, causing a large layout shift (CLS). */
+  min-height: calc(1.04em * 2);
 }
 
 .heroAmber {

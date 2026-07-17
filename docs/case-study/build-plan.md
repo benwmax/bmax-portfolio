@@ -37,8 +37,8 @@ lead case study — documenting it as it happens is as important as building it.
 | 1 | Strategy and Content | In progress | — |
 | 2 | Visual Identity | Complete (2026-06-17) | — |
 | 3 | Storybook Foundation | Complete (2026-07-16) | — |
-| 4 | Site Assembly | In progress — 4A/4B/4C complete; 4D/4E/4F remaining | — |
-| 5 | QA and Pre-Launch | Not started | Phase 4 |
+| 4 | Site Assembly | In progress — 4A/4B/4C/4D/4F complete; 4E blocked on OG images (Ben) | — |
+| 5 | QA and Pre-Launch | In progress — Lighthouse/cross-browser/a11y/links/console/typography/dark-mode all complete; real-device testing and image checks (blocked on Phase 1E) remain | — |
 | 6 | Launch | Not started | Phase 5 |
 | 7 | Meta Case Study | Not started | Phase 6 |
 
@@ -272,22 +272,47 @@ independently; only the widget's visual styling depends on those.*
 ## Phase 5 — QA and Pre-Launch
 *Before re-pointing the domain*
 
-- [ ] Lighthouse audit — targets: 90+ performance, 100 accessibility
-- [ ] Cross-browser testing (Chrome, Safari, Firefox, Edge)
+- [x] Lighthouse audit — targets: 90+ performance, 100 accessibility (2026-07-16) — ran against
+      the production build across all 9 routes. Final: performance 96–98, accessibility 100,
+      best-practices 100, SEO 100 on every route. Three real bugs found and fixed along the way:
+      (1) CLS 0.201→~0.01 on Home — the h1 typewriter effect wrapped from 1 line to 2 lines
+      mid-typing because `.heroH1` only reserved `min-height` for one line, pushing the lede and
+      chat panel down each time; now reserves 2 lines up front. (2) Accessibility 96→100 on
+      About — inline prose links relied on color alone to stand out from surrounding text (WCAG
+      1.4.1); added a permanent underline. Also fixed the NavBar wordmark's `aria-label="Ben
+      Maxwell – Home"` not containing its visible text "BM_" (WCAG 2.5.3, breaks voice-control
+      activation) — changed to `"BM_ — Ben Maxwell, Home"`. (3) SEO 92→100 on case study pages —
+      index.html had a static canonical tag AND react-helmet-async was injecting a per-page one,
+      producing two conflicting canonical URLs; removed the static one since every page already
+      sets its own via Helmet. Also found and fixed the root font-loading setup: fonts were
+      loaded via a blocking `@import` in index.css instead of a `<link>` in index.html (as
+      tokens.css's own header comment specified but was never actually wired up) — moved to
+      index.html for earlier discovery.
+- [x] Cross-browser testing (Chrome, Safari, Firefox, Edge) (2026-07-16) — automated pass via
+      Playwright across Chromium (Chrome/Edge engine), Firefox, and WebKit (Safari engine): all
+      9 routes × 3 engines, 200 status, zero console errors, zero horizontal overflow, identical
+      dark-theme background everywhere. Visual screenshot spot-check on Home confirmed consistent
+      fonts/layout/color across engines. Not a substitute for real Safari-on-macOS/iOS testing —
+      WebKit-the-engine and Safari-the-browser can still diverge in ways this doesn't catch.
 - [ ] Mobile device testing (real devices, not just browser resize)
-- [ ] Image optimization: WebP format, lazy loading, proper srcset
+- [ ] Image optimization: WebP format, lazy loading, proper srcset — blocked: no real case study
+      images exist in content yet (all five `src/content/*.ts` files have zero image refs) —
+      this is really gated on Phase 1E (image audit), not a QA task
 - [x] Accessibility audit: keyboard navigation, screen reader, color contrast (2026-06-22 — 7 fixes across 6 files; see decisions.md 2026-06-22)
 - [x] All internal links resolve correctly (2026-07-16) — found `/contact` was linked from
       every page's NavBar but never wired into App.tsx's routes (404 on click); added the
       missing route using the existing Contact component
-- [ ] All case study images load at correct sizes
+- [ ] All case study images load at correct sizes — blocked, same reason as image optimization above
 - [x] No console errors (2026-07-16) — found and fixed a React warning on every page: `inert`
       was being set to `''` instead of `true`/`undefined`, which (per the warning) React was
       silently coercing to `false` — meaning boot-overlay/docked-chat/mobile-overlay content
       meant to be inert during those states was not actually inert. Fixed in HomeV4Blend.tsx
       (production) and HomePage.tsx (Storybook exploration)
-- [ ] Typography renders correctly across browsers
-- [ ] Dark mode works across all pages and components
+- [x] Typography renders correctly across browsers (2026-07-16) — confirmed via the
+      Chromium/Firefox/WebKit sweep above
+- [x] Dark mode works across all pages and components (2026-07-16) — background color
+      (`rgb(14,16,15)` / `#0e100f`) verified identical across all 9 routes × 3 viewports ×
+      3 browser engines
 
 ---
 
