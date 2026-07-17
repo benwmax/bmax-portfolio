@@ -92,7 +92,7 @@ export function ChatInput({
     showCaret ? styles.inputHideCaret : '',
     isLoading && !multiline ? styles.inputLoading : '',
     isLoading && multiline ? styles.inputMultiLoading : '',
-    !isLoading && multiline && isMultiRow ? styles.inputMultiCounter : '',
+    !isLoading && multiline && isMultiRow && isFilled ? styles.inputMultiCounter : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -175,8 +175,12 @@ export function ChatInput({
             </>
           )}
 
-          {/* Counter inside .field so it resolves to .field's position:relative anchor */}
-          {multiline && !isLoading && isMultiRow && (
+          {/* Counter inside .field so it resolves to .field's position:relative anchor.
+              Gated on isFilled, not just isMultiRow — an empty field can measure as
+              multi-row on first paint (autoResize runs once on mount, before webfont
+              metrics settle, and never reruns for unchanged content), which showed the
+              counter over the placeholder with no real content to count. */}
+          {multiline && !isLoading && isMultiRow && isFilled && (
             <span className={styles.counter} aria-live="polite" aria-atomic="true">
               {value.length} / {MAX_CHARS}
             </span>

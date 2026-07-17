@@ -135,7 +135,7 @@ textarea.input {
   padding-bottom: 22px;
 }
 
-/* Multiline with counter visible: pad bottom-right so text clears the counter */
+/* Multiline with counter visible: pad bottom so text clears the counter */
 .inputMultiCounter {
   padding-bottom: 26px;
 }

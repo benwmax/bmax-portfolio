@@ -139,17 +139,14 @@ export function HomeV4Blend({
 
   const isDocked = messages.length > 0;
 
-  // Keep "tools learnable" on the same line by wrapping everything from "tools " onward in nowrap.
-  const nowrapIdx = headline.indexOf('tools ');
-  const hasNowrap = nowrapIdx !== -1;
-  const beforeNowrap = hasNowrap ? headline.slice(0, nowrapIdx) : headline;
-  const nowrapContent = hasNowrap ? headline.slice(nowrapIdx) : '';
-  const learnableIdx = nowrapContent.indexOf('learnable');
+  // Highlight "learnable" in amber. No forced nowrap around "tools learnable" —
+  // that previously caused the phrase to overflow past the hero column at
+  // viewport widths where the two-column grid is still active but the column
+  // has narrowed too much for it to fit on one line. Left to wrap naturally.
+  const learnableIdx = headline.indexOf('learnable');
   const hasLearnable = learnableIdx !== -1;
-  const nowrapBefore = hasLearnable ? nowrapContent.slice(0, learnableIdx) : nowrapContent;
-  const nowrapAfterLearnable = hasLearnable
-    ? nowrapContent.slice(learnableIdx + 'learnable'.length)
-    : '';
+  const beforeLearnable = hasLearnable ? headline.slice(0, learnableIdx) : headline;
+  const afterLearnable = hasLearnable ? headline.slice(learnableIdx + 'learnable'.length) : '';
 
   // Shared panel chrome — rendered in hero panel, docked panel, and mobile overlay
   const chatBarJSX = (
@@ -288,19 +285,14 @@ export function HomeV4Blend({
                 <div className={styles.statusBadge}>Available for Design Leader roles</div>
 
                 <h1 className={styles.heroH1} aria-label="I make expert tools learnable.">
-                  <span aria-hidden>
-                    {beforeNowrap}
-                    {!hasNowrap && !done && <span className={styles.typeCursor} />}
-                    {hasNowrap && (
-                      <span style={{ whiteSpace: 'nowrap' }}>
-                        {nowrapBefore}
-                        {hasLearnable && (
-                          <span className={styles.heroAmber}>learnable</span>
-                        )}
-                        {nowrapAfterLearnable}
-                        {!done && <span className={styles.typeCursor} />}
-                      </span>
-                    )}
+                  <span className={styles.heroH1Ghost} aria-hidden>
+                    I make expert tools <span className={styles.heroAmber}>learnable</span>.
+                  </span>
+                  <span className={styles.heroH1Visible} aria-hidden>
+                    {beforeLearnable}
+                    {hasLearnable && <span className={styles.heroAmber}>learnable</span>}
+                    {afterLearnable}
+                    {!done && <span className={styles.typeCursor} />}
                   </span>
                 </h1>
 

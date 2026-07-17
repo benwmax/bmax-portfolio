@@ -231,6 +231,15 @@ Each documented as a full-page Storybook story.
 - Tablet (768px)
 - Mobile (390px)
 CSS audit complete (2026-06-22): all pages have responsive breakpoints; fixed missing flex-wrap on AboutPage footer (was inconsistent with homepage footer). Real-device test still needed.
+Mid-width bug found and fixed (2026-07-17): at viewport widths where the two-column hero grid
+is still active but has narrowed (~1000-1200px, before the 960px single-column collapse), the
+"tools learnable" span in the h1 was forced `white-space: nowrap`, so it visibly overflowed
+past the hero column and clipped behind the chat panel instead of wrapping. Removed the forced
+nowrap — text now wraps naturally at every width. Fixing that surfaced a second bug (the
+ChatInput character counter overlapping the placeholder text on an empty field) and reintroduced
+CLS at the widths where the headline now wraps to 3-4 lines instead of 2 — see decisions/journal
+for both. Re-verified: no overflow at any width 390-1440px, CLS <0.03 everywhere (was up to 0.58
+mid-fix), Lighthouse Home still 96/100/100/100 after all three fixes.
 Automated pass complete (2026-07-16): Playwright headless check across all 10 routes ×
 1440/768/390px. Found and fixed a horizontal-overflow bug on /contact at 390px (unbreakable
 email/URL strings in `.cardAddress` forcing card width past viewport — added `word-break:

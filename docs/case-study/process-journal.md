@@ -331,3 +331,50 @@ ground-truth shift-source data showed the real culprit was the typewriter reflow
 
 **Where I overrode or redirected Claude:**
 N/A.
+
+### Session 4 — Hero headline clipping at mid-width viewports
+
+**What I did:**
+Fixed a bug I reported from a screenshot: at narrower desktop widths (roughly 1000-1200px,
+before the layout collapses to single-column at 960px), the amber word "learnable" in the hero
+headline was clipping behind the "Ask Ben" chat panel instead of wrapping.
+
+**What I decided:**
+Have Claude fix it properly rather than patch around the symptom, even though that meant undoing
+part of yesterday's CLS fix and finding two more bugs along the way.
+
+**Why:**
+Root cause: the "tools learnable" phrase was forced `white-space: nowrap` (a deliberate choice
+to keep those two words on the same line), which doesn't shrink with its container — at the
+width where the hero column got too narrow for the full phrase, it just overflowed instead of
+wrapping. Removing the nowrap fixed the clipping, but broke something else: it reintroduced the
+layout-shift bug from 2026-07-16's QA pass, because the headline now wraps to a different number
+of lines depending on viewport width (2 lines at some widths, 4 at others), and the fixed
+2-line `min-height` reservation from yesterday only covered part of that range — CLS spiked to
+0.58 at 1000px width, worse than before either fix. The real fix was to stop guessing a height
+and instead reserve the box's actual final size: render the full final headline text as an
+invisible "ghost" element in normal flow (so the browser measures real wrapping at the real
+width), with the animated typewriter text absolutely positioned on top of it. That's correct at
+every width automatically, no breakpoint-by-breakpoint tuning required. Along the way, fixing
+the headline surfaced a second, unrelated pre-existing bug: the chat input's character counter
+was rendering (and colliding with the placeholder text) even on a completely empty field,
+because of a stale-measurement issue in the auto-resize logic. Fixed by only showing the counter
+once there's real content to count.
+
+**What I'm uncertain about:**
+The exact final wrap point of the headline now varies by viewport width more than it did with
+the nowrap constraint (e.g. "tools" and "learnable" land on separate lines at 1440px now, where
+before they were forced together) — a minor typographic trade-off for guaranteed no-overflow
+behavior. Worth a glance next time Ben reviews the homepage at a few widths, but not treating it
+as a bug since nothing clips or looks broken.
+
+**What Claude contributed:**
+Found the actual root cause (forced nowrap not shrinking with its grid column) rather than just
+patching the visual symptom, caught its own regression by rerunning the CLS check after the
+first fix instead of assuming it was still fine, and replaced the fragile min-height guess with
+a technique (ghost element + overlay) that's correct at every viewport width rather than tuned
+to the ones tested. Also caught and asked before fixing an unrelated bug (counter/placeholder
+collision) noticed incidentally while verifying the headline fix.
+
+**Where I overrode or redirected Claude:**
+N/A.

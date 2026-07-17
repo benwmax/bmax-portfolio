@@ -198,6 +198,7 @@
 }
 
 .heroH1 {
+  position: relative;
   font-family: var(--font-mono-display);
   font-weight: 700;
   font-size: clamp(40px, 6vw, 72px);
@@ -206,11 +207,23 @@
   color: var(--color-text-primary);
   margin: 0;
   max-width: 14ch;
-  /* Reserves 2 lines up front — the full headline always wraps to "I make expert" /
-     "tools learnable." at this max-width, but the typewriter effect fills it in
-     char-by-char starting from 1 line. Without this, the line-1→2 wrap mid-typing
-     pushes the lede and chat panel down, causing a large layout shift (CLS). */
-  min-height: calc(1.04em * 2);
+}
+
+/* Ghost — full final text, invisible, normal flow. Reserves the box's real
+   final size (however many lines it wraps to at the current viewport width)
+   so the visible typewriter text below never triggers layout shift as it
+   types in. A fixed min-height can't do this: how many lines "I make expert
+   tools learnable." wraps to varies by viewport width (2 lines at some
+   widths, 4 at others), so only measuring the real text at the real width
+   gets it right everywhere. */
+.heroH1Ghost {
+  visibility: hidden;
+}
+
+/* Visible animated text, overlaid on the ghost's reserved space */
+.heroH1Visible {
+  position: absolute;
+  inset: 0;
 }
 
 .heroAmber {
