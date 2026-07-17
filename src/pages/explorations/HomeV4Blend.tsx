@@ -280,7 +280,7 @@ export function HomeV4Blend({
                 .filter(Boolean)
                 .join(' ')}
             >
-              <div>
+              <div className={styles.heroHeaderBlock}>
                 {/* Status badge — no blinking dot */}
                 <div className={styles.statusBadge}>Available for Design Leader roles</div>
 
@@ -300,12 +300,15 @@ export function HomeV4Blend({
                   Design Leader across travel, insurance, fintech, and mortgage — building tools
                   experts actually adopt. Ask the assistant anything, or scroll to read the work.
                 </p>
+              </div>
 
-                <div className={styles.statRow} ref={statsRef}>
-                  {HERO_STATS.map((s) => (
-                    <HeroStat key={s.label} figure={s.figure} label={s.label} start={statsIn} />
-                  ))}
-                </div>
+              {/* Its own grid area (not nested in the header block) so it can be
+                  repositioned independently at the mobile breakpoint — see
+                  .heroInner's grid-template-areas. */}
+              <div className={styles.statRow} ref={statsRef}>
+                {HERO_STATS.map((s) => (
+                  <HeroStat key={s.label} figure={s.figure} label={s.label} start={statsIn} />
+                ))}
               </div>
 
               {/* Chat panel — right column. Slides right + column collapses when conversation starts. */}

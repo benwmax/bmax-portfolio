@@ -378,3 +378,42 @@ collision) noticed incidentally while verifying the headline fix.
 
 **Where I overrode or redirected Claude:**
 N/A.
+
+### Session 5 — Homepage hero: tablet layout and chat/stats reorder
+
+**What I did:**
+Two layout requests from a screenshot: on small screens, move the "Ask Ben" chat panel above
+the stat callouts (15+ yrs, $1B, etc.) instead of below them; and at tablet widths, use the full
+single-column stacked layout instead of squeezing two narrow columns side by side.
+
+**What I decided:**
+Raised the two-column breakpoint from 960px to 1100px, and pulled the stat row out to its own
+CSS grid item (`grid-template-areas`) so it can be repositioned independently of the header
+block at the mobile breakpoint, without touching desktop.
+
+**Why:**
+The stat row was nested inside the same div as the headline and lede, so it couldn't be
+reordered on its own — moving it to a sibling grid item, addressed via named grid areas, let the
+mobile breakpoint place it after chat (`header / chat / stats`) while desktop keeps its original
+two-column arrangement (`header+stats` in column 1, chat spanning column 2) via the same areas,
+independent of DOM order. Two things had to be caught before this was actually correct: dropping
+the stat row's `margin-top: 36px` in favor of the grid's own `row-gap` (having both would have
+doubled the header-to-stats spacing), and the "scroll" cue at the hero's bottom, which is
+absolutely positioned assuming `.hero` is always much taller than its content (true on desktop
+via `min-height: 100vh`, not true in the collapsed mobile/tablet layout) — with stats now the
+last, compact element in the stack, the cue's own height poked up into it. Hid the cue below the
+breakpoint instead of chasing exact padding math, since a "scroll" hint is redundant once content
+already visibly spans several screens.
+
+**What I'm uncertain about:**
+1100px as the new breakpoint was my judgment call, not a value Ben specified — worth a second
+look at actual tablet widths if it doesn't feel right in practice.
+
+**What Claude contributed:**
+Diagnosed why a simple CSS-order approach wouldn't work (stats was nested, not a sibling) and
+used grid-template-areas instead so DOM order (and desktop reading order) didn't have to change.
+Caught its own regression by rebuilding and re-screenshotting rather than assuming the reorder
+was purely additive — found and fixed the scroll-cue collision before it reached Ben.
+
+**Where I overrode or redirected Claude:**
+N/A.

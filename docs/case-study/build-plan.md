@@ -240,6 +240,12 @@ ChatInput character counter overlapping the placeholder text on an empty field) 
 CLS at the widths where the headline now wraps to 3-4 lines instead of 2 — see decisions/journal
 for both. Re-verified: no overflow at any width 390-1440px, CLS <0.03 everywhere (was up to 0.58
 mid-fix), Lighthouse Home still 96/100/100/100 after all three fixes.
+Homepage hero layout tweak per Ben's screenshot feedback (2026-07-17): two-column breakpoint
+raised 960px→1100px (was squeezing into two cramped columns at tablet widths instead of using
+the full-width single-column stack); stat row (15+ yrs, $1B, etc.) reordered to appear after
+the chat panel, not before, in the mobile/tablet single-column layout via CSS grid-template-areas
+(desktop two-column arrangement unchanged). Re-verified CLS <0.03 and Lighthouse 96/100/100/100
+still hold after this change.
 Automated pass complete (2026-07-16): Playwright headless check across all 10 routes ×
 1440/768/390px. Found and fixed a horizontal-overflow bug on /contact at 390px (unbreakable
 email/URL strings in `.cardAddress` forcing card width past viewport — added `word-break:
