@@ -214,12 +214,20 @@
 
 .msgAssistant {
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.7;
   color: var(--color-text-secondary);
   margin: 0;
   border-left: 2px solid var(--color-green-border);
   padding-left: 16px;
+}
+
+.msgAssistantPara {
+  margin: 0;
+}
+
+.msgAssistantPara + .msgAssistantPara {
+  margin-top: 12px;
 }
 
 .msgCursor {

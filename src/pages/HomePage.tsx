@@ -3,7 +3,7 @@ import type { RefObject } from 'react';
 import { NavBar } from '../components/NavBar';
 import { CaseStudyCard } from '../components/CaseStudyCard';
 import { ChatInput } from '../components/ChatInput';
-import { useChatSession } from '../hooks/useChatSession';
+import { useChatSession, splitParagraphs } from '../hooks/useChatSession';
 import type { Message } from '../hooks/useChatSession';
 import styles from './HomePage.module.css';
 
@@ -148,14 +148,24 @@ export function HomePage({ onChatSubmit, initialMessages = [] }: HomePageProps) 
                 {m.text}
               </p>
             ) : (
-              <p key={i} className={styles.msgAssistant}>
-                {m.text}
-                {i === messages.length - 1 && m.text === '' && (
-                  <span className={`${styles.msgCursor} cursor-blink`} aria-hidden>
-                    _
-                  </span>
-                )}
-              </p>
+              <div key={i} className={styles.msgAssistant}>
+                {(() => {
+                  const paras = splitParagraphs(m.text);
+                  const displayParas = paras.length > 0 ? paras : [''];
+                  return displayParas.map((para, pi) => (
+                    <p key={pi} className={styles.msgAssistantPara}>
+                      {para}
+                      {pi === displayParas.length - 1 &&
+                        i === messages.length - 1 &&
+                        m.text === '' && (
+                          <span className={`${styles.msgCursor} cursor-blink`} aria-hidden>
+                            _
+                          </span>
+                        )}
+                    </p>
+                  ));
+                })()}
+              </div>
             ),
           )
         )}

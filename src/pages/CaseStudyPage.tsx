@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { NavBar } from '../components/NavBar';
 import { ChatInput } from '../components/ChatInput';
-import { useChatSession } from '../hooks/useChatSession';
+import { useChatSession, splitParagraphs } from '../hooks/useChatSession';
 import type { Message as CsMessage } from '../hooks/useChatSession';
 import { CaseStudyHero } from '../components/CaseStudyHero';
 import { ProcessStep, ProcessSteps } from '../components/ProcessStep';
@@ -440,14 +440,27 @@ export function CaseStudyPage({
                     {m.text}
                   </p>
                 ) : (
-                  <p key={i} className={styles.msgAssistant}>
-                    {m.text}
-                    {i === messages.length - 1 && chatStatus === 'loading' && (
-                      <span className={`${styles.msgCursor} cursor-blink`} aria-hidden="true">
-                        _
-                      </span>
-                    )}
-                  </p>
+                  <div key={i} className={styles.msgAssistant}>
+                    {(() => {
+                      const paras = splitParagraphs(m.text);
+                      const displayParas = paras.length > 0 ? paras : [''];
+                      return displayParas.map((para, pi) => (
+                        <p key={pi} className={styles.msgAssistantPara}>
+                          {para}
+                          {pi === displayParas.length - 1 &&
+                            i === messages.length - 1 &&
+                            chatStatus === 'loading' && (
+                              <span
+                                className={`${styles.msgCursor} cursor-blink`}
+                                aria-hidden="true"
+                              >
+                                _
+                              </span>
+                            )}
+                        </p>
+                      ));
+                    })()}
+                  </div>
                 ),
               )
             )}

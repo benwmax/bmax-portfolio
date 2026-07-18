@@ -6,6 +6,15 @@ export interface Message {
   text: string;
 }
 
+// Assistant replies stream in as one blob; split on blank lines (and fall back
+// to single line breaks) so long answers render as multiple paragraphs instead
+// of one dense block.
+export function splitParagraphs(text: string): string[] {
+  const blocks = text.split(/\n\s*\n/).filter((p) => p.trim() !== '');
+  if (blocks.length > 1) return blocks;
+  return text.split(/\n/).filter((p) => p.trim() !== '');
+}
+
 // Returns errorText on API-level failures (rate limit, session cap, upstream error).
 // Throws only on network failures.
 async function streamChat(
