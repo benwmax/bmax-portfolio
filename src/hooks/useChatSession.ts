@@ -26,44 +26,70 @@ export function splitParagraphs(text: string): string[] {
   return text.split(/\n/).filter((p) => p.trim() !== '');
 }
 
+// How long to wait for the stream to make progress before giving up. Guards
+// against a hung Edge Function leaving the widget stuck in "thinking"
+// forever (readOnly input, no way to retry) — see ChatInput.tsx's isLoading
+// gating.
+const STREAM_TIMEOUT_MS = 30_000;
+
 // The server holds conversation history and the session message count
 // (keyed by an HttpOnly cookie) — it never trusts client-supplied history or
 // counts, so only the newest message (plus the current page context, if any)
 // is sent. See api/lib/session.ts.
 //
 // Returns errorText on API-level failures (rate limit, session cap, upstream error).
-// Throws only on network failures.
+// Throws only on network failures or the timeout above.
 async function streamChat(
   message: string,
   pageContext: string | null,
   onChunk: (text: string) => void,
 ): Promise<{ errorText?: string }> {
-  const res = await fetch('/api/chat', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message, pageContext }),
-  });
+  const controller = new AbortController();
+  // Browser setTimeout returns a number (no Node-style .refresh()), so
+  // progress resets are done by clearing and re-arming a fresh timer.
+  // Assigned synchronously by armTimeout() below before any await runs.
+  let timeoutId!: ReturnType<typeof setTimeout>;
+  const armTimeout = () => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => controller.abort(), STREAM_TIMEOUT_MS);
+  };
+  armTimeout();
 
-  if (!res.ok) {
-    try {
-      const json = (await res.json()) as { error?: string };
-      return { errorText: json.error ?? `Something went wrong (${res.status}).` };
-    } catch {
-      return { errorText: `Something went wrong (${res.status}).` };
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message, pageContext }),
+      signal: controller.signal,
+    });
+
+    if (!res.ok) {
+      try {
+        const json = (await res.json()) as { error?: string };
+        return { errorText: json.error ?? `Something went wrong (${res.status}).` };
+      } catch {
+        return { errorText: `Something went wrong (${res.status}).` };
+      }
     }
+
+    if (!res.body) return { errorText: 'No response received.' };
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    for (;;) {
+      // Re-armed on every chunk so a stream that starts fine but then
+      // stalls mid-reply still gets cut off, not just a slow initial
+      // connection.
+      const { done, value } = await reader.read();
+      if (done) break;
+      armTimeout();
+      onChunk(decoder.decode(value));
+    }
+
+    return {};
+  } finally {
+    clearTimeout(timeoutId);
   }
-
-  if (!res.body) return { errorText: 'No response received.' };
-
-  const reader = res.body.getReader();
-  const decoder = new TextDecoder();
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    onChunk(decoder.decode(value));
-  }
-
-  return {};
 }
 
 export interface UseChatSessionOptions {
@@ -93,6 +119,11 @@ export function useChatSession({
   // Refs, not state — read at submit time, shouldn't themselves trigger renders.
   const pageContextRef = useRef<string | null>(null);
   const announcedRef = useRef<Set<string>>(new Set());
+  // Synchronous submit lock: `chatStatus` is React state and updates on the
+  // next render, so a fast double-trigger (e.g. Enter then a stray click)
+  // before that render could otherwise pass the isLoading check twice and
+  // fire two requests for one interaction.
+  const submittingRef = useRef(false);
 
   const setPageContext = useCallback((context: PageContext | null) => {
     pageContextRef.current = context?.company ?? null;
@@ -131,6 +162,9 @@ export function useChatSession({
         return;
       }
 
+      if (submittingRef.current) return;
+      submittingRef.current = true;
+
       setChatStatus('loading');
       setActiveSuggestions([]);
       // Append the user turn and an empty assistant slot immediately so the
@@ -161,6 +195,7 @@ export function useChatSession({
         replaceLastAssistant("The assistant isn't available right now — try again in a moment.");
       } finally {
         setChatStatus('online');
+        submittingRef.current = false;
       }
     },
     [onSubmit],

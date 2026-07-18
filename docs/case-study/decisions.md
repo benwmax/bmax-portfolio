@@ -571,3 +571,81 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
   `src/pages/CaseStudyPage.tsx`, `src/pages/explorations/HomeV4Blend.tsx`,
   `src/components/NavBar/NavBar.tsx`, `src/components/CaseStudyCard/CaseStudyCard.tsx`,
   `src/pages/explorations/data.ts`, `src/pages/HomePage.tsx`, `api/chat.ts`.
+
+## 2026-07-18 — Security/QA hardening pass on the AI chat backend
+
+- **Decision:** Ran a full security/QA audit of the codebase and implemented fixes rather
+  than just reporting findings. Three scope calls, all Ben's:
+  1. **Redis-outage behavior for cost-relevant checks: fail closed.** If Upstash is
+     unreachable, the per-IP rate limit and the `GLOBAL_DAILY_MESSAGE_CAP` circuit breaker
+     now return a 503 ("temporarily unavailable") instead of letting requests through
+     unmetered. Chat goes down for the outage's duration; spend can never run uncapped
+     during one. (Chosen over the alternative — keep degrading gracefully like the
+     history-loading path — because these two checks exist specifically to bound Anthropic
+     spend, and undercounting during an outage was judged worse than a temporary outage.)
+  2. **Enforce CSP now**, not defer it. Switched `vercel.json` from
+     `Content-Security-Policy-Report-Only` to a real, blocking `Content-Security-Policy`.
+     Required converting the inline theme-flash-prevention script in `index.html` from
+     relying on `'unsafe-inline'` to a `sha256` hash source, since the script is static
+     (not per-request) and doesn't need a nonce.
+  3. Implement fixes directly rather than deliver a findings-only report.
+- **What was fixed:**
+  - **TOCTOU race on both spend caps** (`api/chat.ts`, `api/lib/session.ts`): the session
+    message cap and the global daily budget were checked with a plain `GET` well before the
+    corresponding write, which only happened after the full SSE stream finished seconds
+    later — concurrent requests near a cap could all pass the check before any of them
+    recorded usage. Replaced with atomic Redis `INCR`-then-check "reservations" taken before
+    the Anthropic call, `DECR`'d back on any path that doesn't end in a real reply (cap
+    exceeded, Redis error, upstream failure). `SessionRecord` no longer carries `count` —
+    it moved to its own atomically-incremented Redis key, decoupled from the history blob
+    (which stays best-effort/fail-open, since losing history only shortens context, not cost).
+  - **Single IP could consume ~96% of the daily budget** (`api/lib/rate-limit.ts`): the
+    existing 20/hour window alone let one sustained visitor hit ~480 messages/day against a
+    500 global cap. Added a second per-IP daily window (60/day) — both must pass.
+  - **Spoofable rate-limit key** (`api/chat.ts`): dropped the `x-forwarded-for` fallback
+    used when `x-real-ip` was absent — that header is client-settable and could be forged to
+    pick an arbitrary rate-limit bucket. `x-real-ip` (edge-set, not client-controllable) is
+    now the only source; the existing "missing IP → 400" path covers its absence.
+  - **Uncaught Redis exception** in `checkRateLimit` (no try/catch existed) — now caught by
+    a unified try/catch in `api/chat.ts` around all three cap-relevant Redis calls
+    (rate limit, session reserve, global reserve), returning a proper 503 with CORS headers
+    and a `logEvent` call instead of a bare, unlogged 500.
+  - Added a `Content-Length` guard (413 above 8KB) ahead of `req.json()` as defense-in-depth
+    beyond the platform's own body-size limit.
+  - **CSP enforced**: hash-based `script-src` (see `index.html` comment for the recompute
+    note if the inline theme script ever changes), `'unsafe-inline'` kept only on
+    `style-src` (needed for React's inline `style={{}}` props). Added
+    `Strict-Transport-Security` and explicit `Cache-Control` headers (long-lived immutable
+    for `/assets/*`, `must-revalidate` for everything else) to `vercel.json`.
+  - **TypeScript `strict` mode enabled** across the whole project. Found in the process that
+    `api/` wasn't covered by *either* existing `tsconfig` project reference — `npm run
+    build`'s `tsc -b` had never type-checked the backend at all, only ESLint did. Added
+    `tsconfig.api.json` (strict, Edge-runtime lib set) and referenced it from `tsconfig.json`.
+    The whole codebase — app, node config, and now api — compiled clean under strict mode
+    with zero errors once these were wired up; no source changes were needed for strict mode
+    itself.
+  - Added a client-side stream timeout (`AbortController`, re-armed per chunk, 30s) and a
+    ref-based double-submit guard to `src/hooks/useChatSession.ts`, so a hung Edge Function
+    or a fast double-trigger can't leave the widget stuck or send a message twice.
+  - Corrected two stale doc references found during the pass: this file's "Current Project
+    Status → Immediate next steps" list still had Phase 3G/4D listed as pending (both
+    complete) and Phase 4E's full item list (most of it was already done, only OG images
+    remain) — corrected against `build-plan.md`, which was accurate. Also corrected a
+    completed-work log line that described the client sending `sessionMessageCount`, a
+    contract superseded by the 2026-07-17 session-authority rewrite.
+- **Explicitly not changed:** `vercel.json`'s catch-all rewrite (`/(.*) → /`) was flagged as
+  not excluding `/api/` by pattern, but Vercel's documented routing order already serves
+  Function/filesystem routes before rewrites apply, so `/api/chat` was never actually at
+  risk — and a `(?!...)`-style exclusion pattern couldn't be verified against Vercel's
+  actual routing engine in this environment. Changing config with unverifiable syntax risked
+  breaking the site to fix a gap that doesn't exist in practice, so it was left as-is.
+- **Verification:** `npm run build` (tsc -b + vite build) and `npm run lint` both pass clean.
+  Manually traced every early-return path in the new `api/chat.ts` control flow to confirm
+  reservations are released exactly when they should be. Recomputed and confirmed the CSP
+  script hash against the actual `dist/index.html` build output, not just the source file
+  (Vite doesn't minify the inline script, so they match, but this was checked rather than
+  assumed). Full end-to-end testing against real Anthropic/Upstash traffic was not possible
+  in this environment — no credentials are configured yet (see "Ben's actions to go live").
+  `scripts/verify-chat-safeguards.mjs` is unaffected (it only calls the public `handler`
+  export) and remains the tool for that once Ben's env vars are set.
+  `src/pages/explorations/data.ts`, `src/pages/HomePage.tsx`, `api/chat.ts`.

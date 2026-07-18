@@ -43,7 +43,13 @@
     />
     <!-- Theme is applied before first paint so a saved "futuristic" preference
          never flashes the retro dark theme. Retro is the default experience;
-         the toggle lives in the NavBar (see src/hooks/useTheme.ts). -->
+         the toggle lives in the NavBar (see src/hooks/useTheme.ts).
+
+         CSP note: vercel.json's script-src allows this exact inline script
+         via a sha256 hash (no 'unsafe-inline'). If you edit the text below,
+         recompute the hash or the theme script will be silently blocked in
+         production (causing a flash of the wrong theme) — see decisions.md
+         2026-07-18 for the compute command. -->
     <script>
       try {
         var t = localStorage.getItem('viewbens-theme');
