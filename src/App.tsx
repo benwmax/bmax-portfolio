@@ -5,6 +5,7 @@ import { AboutPage } from './pages/AboutPage';
 import { ResumePage } from './pages/ResumePage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { Contact } from './components/Contact';
+import { ChatProvider } from './context/ChatContext';
 import { portfolioRebuildData } from './content/portfolio-rebuild';
 import { upfluentData } from './content/upfluent';
 import { sagentData } from './content/sagent';
@@ -14,19 +15,23 @@ import { sabreData } from './content/sabre';
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<HomeV4Blend />} />
-        <Route path="/work" element={<HomeV4Blend />} />
-        <Route path="/work/portfolio" element={<CaseStudyPage {...portfolioRebuildData} />} />
-        <Route path="/work/upfluent" element={<CaseStudyPage {...upfluentData} />} />
-        <Route path="/work/sagent" element={<CaseStudyPage {...sagentData} />} />
-        <Route path="/work/usaa" element={<CaseStudyPage {...usaaData} />} />
-        <Route path="/work/sabre" element={<CaseStudyPage {...sabreData} />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/resume" element={<ResumePage />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
+      {/* Shared above the routes so the conversation survives navigation
+          between Home and case study pages — see decisions.md 2026-07-18. */}
+      <ChatProvider>
+        <Routes>
+          <Route path="/" element={<HomeV4Blend />} />
+          <Route path="/work" element={<HomeV4Blend />} />
+          <Route path="/work/portfolio" element={<CaseStudyPage {...portfolioRebuildData} />} />
+          <Route path="/work/upfluent" element={<CaseStudyPage {...upfluentData} />} />
+          <Route path="/work/sagent" element={<CaseStudyPage {...sagentData} />} />
+          <Route path="/work/usaa" element={<CaseStudyPage {...usaaData} />} />
+          <Route path="/work/sabre" element={<CaseStudyPage {...sabreData} />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/resume" element={<ResumePage />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </ChatProvider>
     </BrowserRouter>
   );
 }

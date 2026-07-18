@@ -65,6 +65,16 @@ export const CASE_STUDIES: ExplorationCaseStudy[] = [
     year: '2018–20',
     sector: 'Insurance',
   },
+  {
+    index: '05',
+    title: 'Sabre',
+    desc: 'One command-line tool, two opposite users, and a $1B contract on the line.',
+    tag: 'Travel',
+    href: '/work/sabre',
+    role: 'UX Designer',
+    year: '2015–18',
+    sector: 'Travel',
+  },
 ];
 
 export const SUGGESTIONS = [

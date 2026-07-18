@@ -566,3 +566,48 @@ gave the lower-friction fix (`npx.cmd`) instead of defaulting to a system-wide p
 
 **Where I overrode or redirected Claude:**
 N/A.
+
+## 2026-07-18 (later)
+**What I did:**
+Reported a real bug from testing on the live site: starting a chat on the homepage and then
+clicking into a case study lost the conversation entirely. Asked Claude to fix it so the chat
+follows me around the site, while keeping the per-case-study "Reading about X" context and
+letting me scroll back to see the full history.
+
+**What I decided:**
+Answered Claude's clarifying questions before it touched any code: chat surface stays limited
+to Home + Case Study pages (not About/Resume/Contact), the context note should only appear
+once per case study per session rather than every time I revisit, the model itself should be
+told what page I'm on (not just a visual note for me), and persistence only needs to survive
+in-app navigation — not a hard refresh or new tab.
+
+**Why:**
+The scoped answers kept this from turning into a much bigger rebuild (a chat rail on every
+page, or a server-rehydration mechanism) when what I actually needed was narrower. "Also tell
+the model" was worth the small backend change since half the point of remembering context is
+so I don't have to keep re-explaining which case study I'm asking about.
+
+**What I'm uncertain about:**
+Nothing about the fix itself — verified with a real Playwright run clicking through the actual
+site. Worth knowing for later: Claude found and fixed two unrelated pre-existing bugs along the
+way (see below) rather than just working around them, which is the right call, but it's a
+reminder that "add persistence" touched more of the app than the ask implied.
+
+**What Claude contributed:**
+Built the shared chat context, the once-per-session context note, and the model-awareness
+field (validated server-side against an allowlist of real case study names, not trusted as free
+text — deliberately, since this codebase just went through a prompt-injection hardening pass
+and an unvalidated field would have reopened that). While testing with Playwright, found that
+NavBar/CaseStudyCard/the "Next case" link were plain `<a href>` tags doing full page reloads —
+which would have silently broken the persistence feature regardless of where the chat state
+lived, since a hard reload wipes all in-memory state. Fixed by converting them to React
+Router's `Link`, safe now because Storybook's preview already wraps every story in a
+`MemoryRouter` (added after the original decision to keep NavBar router-agnostic — that
+decision had gone stale without anyone revisiting it). Separately found that Sabre — case
+study 5 — was missing from the homepage work grid entirely in two places, meaning it was
+unreachable from primary navigation despite being fully built; added the missing card. Also
+caught and fixed a React Strict Mode–only bug (double-invoked effect was wiping out suggestion
+chips on first visit) rather than leaving a subtly broken interaction.
+
+**Where I overrode or redirected Claude:**
+N/A.

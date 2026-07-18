@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { NavBar } from '../components/NavBar';
 import { ChatInput } from '../components/ChatInput';
-import { useChatSession, splitParagraphs } from '../hooks/useChatSession';
+import { splitParagraphs } from '../hooks/useChatSession';
 import type { Message as CsMessage } from '../hooks/useChatSession';
+import { useChat } from '../context/useChat';
 import { CaseStudyHero } from '../components/CaseStudyHero';
 import { ProcessStep, ProcessSteps } from '../components/ProcessStep';
 import { StatBlock, StatGrid } from '../components/StatBlock';
@@ -106,7 +107,7 @@ export function CaseStudyPage({
   initialMessages = [],
 }: CaseStudyPageProps) {
   const { pathname } = useLocation();
-  const { messages, chatStatus, handleSubmit } = useChatSession({
+  const { messages, chatStatus, handleSubmit, activeSuggestions, setPageContext } = useChat({
     onSubmit: onChatSubmit,
     initialMessages,
   });
@@ -148,6 +149,25 @@ export function CaseStudyPage({
       chatLogRef.current.scrollTop = chatLogRef.current.scrollHeight;
     }
   }, [messages]);
+
+  // Tell the shared chat session what case study is now in view. The first
+  // time this company is seen this session, a context note is appended to
+  // the (persistent, cross-page) transcript; revisits stay silent but still
+  // keep the assistant informed for the next message. No cleanup needed —
+  // Home + CaseStudyPage are the only two chat-enabled surfaces (a
+  // deliberate scope call, see decisions.md 2026-07-18), and Home already
+  // clears context on its own mount, so nothing here would leave a stale
+  // case study behind on Contact/About/Resume. A cleanup that re-called
+  // setPageContext(null) on unmount was tried and removed — it raced with
+  // Strict Mode's mount→cleanup→mount cycle and intermittently suppressed
+  // the suggestion chips on first visit.
+  useEffect(() => {
+    setPageContext({
+      company,
+      note: `Reading about ${company} — ask anything about this project, or jump to another case study.`,
+      suggestions: chatSuggestions,
+    });
+  }, [company, chatSuggestions, setPageContext]);
 
   const scrollToSection = (id: string) => {
     const el = document.getElementById(`sec-${id}`);
@@ -373,9 +393,9 @@ export function CaseStudyPage({
               <span className={styles.endTickLabel}>End of case study</span>
               <span className={styles.endTickLine} aria-hidden="true" />
               {nextCase && (
-                <a href={nextCase.href} className={styles.endTickNext}>
+                <Link to={nextCase.href} className={styles.endTickNext}>
                   Next: {nextCase.title} →
-                </a>
+                </Link>
               )}
             </div>
           </main>
@@ -405,64 +425,49 @@ export function CaseStudyPage({
             aria-live="polite"
             aria-label="Chat messages"
           >
-            {messages.length === 0 ? (
-              <>
-                <p className={styles.msgAssistant}>
-                  Reading about {company} — ask anything about this project, or jump to another case
-                  study.
-                  <span className={`${styles.msgCursor} cursor-blink`} aria-hidden="true">
-                    _
+            {messages.map((m, i) =>
+              m.role === 'user' ? (
+                <p key={i} className={styles.msgUser}>
+                  <span className={styles.msgUserPrompt} aria-hidden="true">
+                    ›{' '}
                   </span>
+                  {m.text}
                 </p>
-                {chatSuggestions.length > 0 && (
-                  <div className={styles.chatSuggestions}>
-                    <span className={styles.chatSuggestLabel}>Try asking</span>
-                    {chatSuggestions.map((s) => (
-                      <button
-                        key={s}
-                        type="button"
-                        className={styles.chatSuggestBtn}
-                        onClick={() => handleSubmit(s)}
-                      >
-                        {s}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </>
-            ) : (
-              messages.map((m, i) =>
-                m.role === 'user' ? (
-                  <p key={i} className={styles.msgUser}>
-                    <span className={styles.msgUserPrompt} aria-hidden="true">
-                      ›{' '}
-                    </span>
-                    {m.text}
-                  </p>
-                ) : (
-                  <div key={i} className={styles.msgAssistant}>
-                    {(() => {
-                      const paras = splitParagraphs(m.text);
-                      const displayParas = paras.length > 0 ? paras : [''];
-                      return displayParas.map((para, pi) => (
-                        <p key={pi} className={styles.msgAssistantPara}>
-                          {para}
-                          {pi === displayParas.length - 1 &&
-                            i === messages.length - 1 &&
-                            chatStatus === 'loading' && (
-                              <span
-                                className={`${styles.msgCursor} cursor-blink`}
-                                aria-hidden="true"
-                              >
-                                _
-                              </span>
-                            )}
-                        </p>
-                      ));
-                    })()}
-                  </div>
-                ),
-              )
+              ) : (
+                <div key={i} className={styles.msgAssistant}>
+                  {(() => {
+                    const paras = splitParagraphs(m.text);
+                    const displayParas = paras.length > 0 ? paras : [''];
+                    return displayParas.map((para, pi) => (
+                      <p key={pi} className={styles.msgAssistantPara}>
+                        {para}
+                        {pi === displayParas.length - 1 &&
+                          i === messages.length - 1 &&
+                          chatStatus === 'loading' && (
+                            <span className={`${styles.msgCursor} cursor-blink`} aria-hidden="true">
+                              _
+                            </span>
+                          )}
+                      </p>
+                    ));
+                  })()}
+                </div>
+              ),
+            )}
+            {activeSuggestions.length > 0 && (
+              <div className={styles.chatSuggestions}>
+                <span className={styles.chatSuggestLabel}>Try asking</span>
+                {activeSuggestions.map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    className={styles.chatSuggestBtn}
+                    onClick={() => handleSubmit(s)}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
             )}
           </div>
 

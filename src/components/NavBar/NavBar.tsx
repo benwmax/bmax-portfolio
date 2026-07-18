@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { ThemeToggle } from '../ThemeToggle';
 import styles from './NavBar.module.css';
 
@@ -28,12 +29,12 @@ export function NavBar({ activePath, className = '' }: NavBarProps) {
 
   return (
     <header className={[styles.header, className].filter(Boolean).join(' ')}>
-      <a href="/" className={styles.wordmark} aria-label="BM_ — Ben Maxwell, Home">
+      <Link to="/" className={styles.wordmark} aria-label="BM_ — Ben Maxwell, Home">
         BM
         <span className={styles.underscore} aria-hidden="true">
           _
         </span>
-      </a>
+      </Link>
       <div className={styles.right}>
         <nav aria-label="Site navigation">
           <ul className={styles.links} role="list">
@@ -41,15 +42,15 @@ export function NavBar({ activePath, className = '' }: NavBarProps) {
               const isActive = pathname === href;
               return (
                 <li key={href}>
-                  <a
-                    href={href}
+                  <Link
+                    to={href}
                     className={[styles.link, isActive ? styles.linkActive : '']
                       .filter(Boolean)
                       .join(' ')}
                     aria-current={isActive ? 'page' : undefined}
                   >
                     {label}
-                  </a>
+                  </Link>
                 </li>
               );
             })}

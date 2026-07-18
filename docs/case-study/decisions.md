@@ -496,3 +496,78 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
 - Alternatives considered: continuing to debug `vercel dev` locally (abandoned — the direct
   handler-import approach in the verify script sidesteps `vercel dev`'s port/env/CORS quirks
   entirely and is simpler to rerun after future `api/chat.ts` changes).
+
+## 2026-07-18 — Chat conversation now persists across Home ⇄ Case Study navigation
+- Decision: Ben reported that starting a chat on the homepage and then navigating to a case
+  study lost the conversation. Fixed by lifting chat state into a `ChatProvider` (new
+  `src/context/`) rendered once above the router in `App.tsx`, shared by `HomeV4Blend` and
+  `CaseStudyPage` — the two pages that have a chat surface (deliberately not extended to
+  About/Resume/Contact, which have none). Both pages now call `useChat()` instead of
+  `useChatSession()` directly; Storybook stories are unaffected since `useChat()` falls back to
+  a standalone `useChatSession()` when rendered outside a `ChatProvider`.
+- Behavior on landing on a case study: the existing "Reading about X — ask anything about this
+  project..." message and its suggestion chips are now appended into the persistent transcript
+  instead of replacing it, and only the first time that company is seen this session — revisiting
+  a case study already chatted about doesn't repeat the note or chips, but does still keep the
+  assistant informed (see below). Scrolling up on any page now shows the full conversation from
+  every page visited this session.
+- Model awareness: a `pageContext` field (the company name) rides along with every message sent
+  while on a case study page and gets folded into the system prompt server-side as an ephemeral,
+  per-call addendum — never written to session history, so it can't drift or accumulate. Validated
+  against a hardcoded allowlist of the five real case study names in `api/chat.ts`
+  (`ALLOWED_PAGE_CONTEXTS`) rather than trusted as free text, since it's client-supplied and this
+  is the same codebase that just went through a prompt-injection hardening pass (2026-07-17) —
+  an unvalidated client string concatenated into the system prompt would have reopened exactly
+  the kind of injection surface that pass closed. Invalid/tampered values are silently ignored
+  rather than rejecting the request, since this field only affects answer quality, not security.
+- Scope explicitly excluded (per Ben's choice when asked): the chat rail is not being built out on
+  About/Resume/Contact, and the conversation does not survive a hard page refresh or new tab —
+  only in-app (client-side) navigation. Both are reasonable follow-ups if ever wanted, not
+  currently planned.
+- Two real, separate bugs found and fixed while implementing and testing this:
+  1. **Navigation was never actually client-side.** `NavBar`, `CaseStudyCard`, and
+     `CaseStudyPage`'s "Next case" link all rendered plain `<a href>` tags instead of React
+     Router's `Link` — every click was a full browser page reload. This would have silently
+     defeated the entire persistence feature regardless of where the chat state lived, since a
+     hard reload destroys all in-memory React state no matter what. Caught by testing with
+     Playwright using real `page.goto()` calls (which behave like hard reloads) versus real
+     `.click()` calls on the actual links — the former showed persistence completely failing,
+     which led to finding the root cause. Converted all three to `Link`. This directly revisits
+     the 2026-06-22 decision ("NavBar remains router-agnostic... Storybook stories continue to
+     work without a Router decorator") — that constraint is now stale: a global `MemoryRouter`
+     decorator was added to `.storybook/preview.tsx` at some point after that decision (needed
+     for `CaseStudyPage`'s `useLocation()` call), so every story already runs inside a Router and
+     converting these components to `Link` is safe. `NavBar` keeps its `activePath` prop pattern
+     unchanged (still doesn't call `useLocation()` itself) — only the rendered element changed
+     from `<a>` to `Link`.
+  2. **Sabre was missing from the homepage work grid entirely**, in both
+     `src/pages/explorations/data.ts` (used by all four Home exploration variants including the
+     live `HomeV4Blend`) and the separate canonical array in `src/pages/HomePage.tsx`. The route
+     (`/work/sabre`) and full content (`src/content/sabre.ts`) both existed and worked fine if
+     visited directly — there was simply no card linking to it from Home, meaning Sabre (case
+     study 5, called out in CLAUDE.md as "the anchor close") was unreachable from primary
+     navigation. Unrelated to the chat-persistence work, found only because testing the new
+     feature required clicking through every case study from the homepage grid. Added the missing
+     card entry to both files, using copy/metadata pulled from `src/content/sabre.ts` for accuracy
+     (role: "UX Designer", year: "2015–18", sector/tag: "Travel", matching the ascending-seniority
+     pattern of the other four cards).
+- A third, cosmetic-only issue found and deliberately not fixed: React Strict Mode
+  double-invokes effects in development, which exposed a real bug in the new
+  `setPageContext` logic — the "already announced this session" branch was clearing
+  `activeSuggestions`, so Strict Mode's synthetic second call (with no real navigation in
+  between) wiped out the suggestion chips that the first call had just set, on every first
+  visit. Fixed by having that branch leave `activeSuggestions` untouched rather than clearing
+  it — revisits still correctly show no suggestions, because reaching a second case study
+  always passes through a page (Home) that explicitly clears `activeSuggestions` via
+  `setPageContext(null)` first. See `src/hooks/useChatSession.ts` for the reasoning inline.
+- Verification: Playwright script driving real `.click()`-based navigation against a mocked
+  `/api/chat` (no live credentials needed) — start a conversation on Home, navigate to Sabre
+  (prior message still visible, context note appears once, suggestions shown), navigate to USAA
+  (Sabre's note still visible higher up, new note appears), revisit Sabre (no duplicate note or
+  chips), detour through About, return to Home (original conversation intact, docked view active
+  immediately rather than the empty hero prompt). All checks passed.
+- Files touched: `src/context/ChatContext.tsx`, `src/context/chatContextInstance.ts`,
+  `src/context/useChat.ts` (new); `src/App.tsx`, `src/hooks/useChatSession.ts`,
+  `src/pages/CaseStudyPage.tsx`, `src/pages/explorations/HomeV4Blend.tsx`,
+  `src/components/NavBar/NavBar.tsx`, `src/components/CaseStudyCard/CaseStudyCard.tsx`,
+  `src/pages/explorations/data.ts`, `src/pages/HomePage.tsx`, `api/chat.ts`.

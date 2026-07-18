@@ -28,6 +28,14 @@ const GLOBAL_DAILY_MESSAGE_CAP = 500;
 
 const ALLOWED_ORIGINS = ['https://viewbens.work', 'http://localhost:5173', 'http://localhost:4173'];
 
+// The only values the client-supplied `pageContext` field may take — must
+// match the `company` field in each src/content/*.ts file. Anything else is
+// silently ignored rather than rejecting the request, since this only
+// affects answer quality, not security. Deliberately not string-interpolated
+// from arbitrary client input into the system prompt — see the allowlist
+// check below.
+const ALLOWED_PAGE_CONTEXTS = new Set(['Portfolio Rebuild', 'Upfluent', 'Sagent', 'USAA', 'Sabre']);
+
 function corsHeaders(origin: string | null): Record<string, string> {
   const allowed = origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
   return {
@@ -91,7 +99,7 @@ export default async function handler(req: Request): Promise<Response> {
     );
   }
 
-  let body: { message?: unknown };
+  let body: { message?: unknown; pageContext?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -111,6 +119,15 @@ export default async function handler(req: Request): Promise<Response> {
     });
   }
   const userMessage: StoredMessage = { role: 'user', content: rawMessage.slice(0, MAX_MESSAGE_LENGTH) };
+
+  // Which case study page the visitor is currently on, if any — allowlisted
+  // rather than trusted as free text, since it's client-supplied and gets
+  // folded into the system prompt below. Invalid/tampered values are
+  // silently dropped, not rejected: this only affects answer quality.
+  const pageContext =
+    typeof body.pageContext === 'string' && ALLOWED_PAGE_CONTEXTS.has(body.pageContext)
+      ? body.pageContext
+      : null;
 
   // Session identity — server-side authority for history and the message
   // cap. The client never supplies conversation history or a message count;
@@ -152,6 +169,12 @@ export default async function handler(req: Request): Promise<Response> {
   // Trim history to keep context window costs predictable
   const trimmed = [...session.history, userMessage].slice(-MAX_HISTORY_MESSAGES);
 
+  // Ephemeral, per-call addendum — never written to session history, so it
+  // can't accumulate or drift from whatever page the visitor is on right now.
+  const systemPrompt = pageContext
+    ? `${SYSTEM_PROMPT}\n\n---\n\nCURRENT PAGE CONTEXT\n\nThe visitor is currently viewing the ${pageContext} case study page. If their question is ambiguous or refers to "this," "this project," or similar without naming a case study, assume they mean ${pageContext} unless they clearly indicate otherwise.`
+    : SYSTEM_PROMPT;
+
   const requestStart = Date.now();
 
   // Call Anthropic API directly — the SDK uses node:fs/node:path which the
@@ -166,7 +189,7 @@ export default async function handler(req: Request): Promise<Response> {
     body: JSON.stringify({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: MAX_OUTPUT_TOKENS,
-      system: SYSTEM_PROMPT,
+      system: systemPrompt,
       messages: trimmed,
       stream: true,
     }),
@@ -239,6 +262,7 @@ export default async function handler(req: Request): Promise<Response> {
         latencyMs: Date.now() - requestStart,
         outputLength: fullText.length,
         stopReason,
+        pageContext,
       });
     },
   });

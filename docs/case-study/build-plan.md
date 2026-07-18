@@ -334,6 +334,12 @@ independently; only the widget's visual styling depends on those.*
       boundary tests intentionally skipped (would cost ~50 real model calls) — the
       underlying Redis session mechanism they'd exercise is already proven working
       by the other checks.
+- [x] Chat conversation persists across Home ⇄ Case Study navigation (2026-07-18) —
+      shared ChatProvider context, once-per-session context note on landing on a case
+      study, model informed of current page via a server-allowlisted pageContext field.
+      Found and fixed two unrelated bugs along the way: NavBar/CaseStudyCard/"Next case"
+      were plain `<a>` tags causing hard reloads (now React Router `Link`); Sabre was
+      missing from the homepage work grid entirely. See decisions.md, 2026-07-18.
 - [ ] Retune GLOBAL_DAILY_MESSAGE_CAP once the real Anthropic Workspace spend cap is known
 - [ ] Move inline theme script to a nonce/hash and switch CSP from report-only to enforcing
 - [ ] Tune rate limits / caps against real traffic

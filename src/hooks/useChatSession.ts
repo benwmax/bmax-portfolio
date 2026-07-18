@@ -1,9 +1,20 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import type { ChatWidgetStatus } from '../components/ChatInput';
 
 export interface Message {
   role: 'user' | 'assistant';
   text: string;
+}
+
+// Set by a page when the visitor lands on a case study, so the assistant can
+// be told what they're looking at without the client re-sending history.
+// `company` must match one of api/chat.ts's ALLOWED_PAGE_CONTEXTS or the
+// server silently ignores it.
+export interface PageContext {
+  company: string;
+  /** Shown once per company per session as a client-only transcript note — never sent to the model. */
+  note: string;
+  suggestions?: string[];
 }
 
 // Assistant replies stream in as one blob; split on blank lines (and fall back
@@ -17,15 +28,20 @@ export function splitParagraphs(text: string): string[] {
 
 // The server holds conversation history and the session message count
 // (keyed by an HttpOnly cookie) — it never trusts client-supplied history or
-// counts, so only the newest message is sent. See api/lib/session.ts.
+// counts, so only the newest message (plus the current page context, if any)
+// is sent. See api/lib/session.ts.
 //
 // Returns errorText on API-level failures (rate limit, session cap, upstream error).
 // Throws only on network failures.
-async function streamChat(message: string, onChunk: (text: string) => void): Promise<{ errorText?: string }> {
+async function streamChat(
+  message: string,
+  pageContext: string | null,
+  onChunk: (text: string) => void,
+): Promise<{ errorText?: string }> {
   const res = await fetch('/api/chat', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message }),
+    body: JSON.stringify({ message, pageContext }),
   });
 
   if (!res.ok) {
@@ -60,6 +76,10 @@ export interface UseChatSession {
   messages: Message[];
   chatStatus: ChatWidgetStatus;
   handleSubmit: (text: string) => Promise<void>;
+  /** Suggestion chips for the case study just landed on — cleared once the visitor sends a message or the context changes. */
+  activeSuggestions: string[];
+  /** Call on mount to tell the assistant what page the visitor is on; pass `null` from pages with no case-study context of their own (e.g. Home) so it doesn't linger from whatever was viewed previously. */
+  setPageContext: (context: PageContext | null) => void;
 }
 
 export function useChatSession({
@@ -68,6 +88,41 @@ export function useChatSession({
 }: UseChatSessionOptions = {}): UseChatSession {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [chatStatus, setChatStatus] = useState<ChatWidgetStatus>('online');
+  const [activeSuggestions, setActiveSuggestions] = useState<string[]>([]);
+
+  // Refs, not state — read at submit time, shouldn't themselves trigger renders.
+  const pageContextRef = useRef<string | null>(null);
+  const announcedRef = useRef<Set<string>>(new Set());
+
+  const setPageContext = useCallback((context: PageContext | null) => {
+    pageContextRef.current = context?.company ?? null;
+
+    if (!context) {
+      setActiveSuggestions([]);
+      return;
+    }
+
+    // First visit to this company this session: drop a context note into the
+    // transcript (scrolls with everything else) and surface its suggestions.
+    // Revisits stay silent — the note already exists, higher up in the log —
+    // but still update pageContextRef so the model stays informed.
+    //
+    // Deliberately NOT clearing activeSuggestions in the "already announced"
+    // branch: React Strict Mode double-invokes this effect call in
+    // development, so a genuine first visit can call setPageContext(sabre)
+    // twice back-to-back with no real navigation in between — clearing here
+    // would wipe out what the first call just set. Revisits stay correct
+    // regardless, because getting to a second case study always passes
+    // through a page that calls setPageContext(null) first (see
+    // src/pages/explorations/HomeV4Blend.tsx), which already clears
+    // activeSuggestions before the revisit's "already announced" branch is
+    // ever reached.
+    if (!announcedRef.current.has(context.company)) {
+      announcedRef.current.add(context.company);
+      setMessages((prev) => [...prev, { role: 'assistant', text: context.note }]);
+      setActiveSuggestions(context.suggestions ?? []);
+    }
+  }, []);
 
   const handleSubmit = useCallback(
     async (text: string) => {
@@ -77,6 +132,7 @@ export function useChatSession({
       }
 
       setChatStatus('loading');
+      setActiveSuggestions([]);
       // Append the user turn and an empty assistant slot immediately so the
       // cursor appears right away.
       setMessages((prev) => [...prev, { role: 'user', text }, { role: 'assistant', text: '' }]);
@@ -89,7 +145,7 @@ export function useChatSession({
         });
 
       try {
-        const { errorText } = await streamChat(text, (chunk) => {
+        const { errorText } = await streamChat(text, pageContextRef.current, (chunk) => {
           setMessages((prev) => {
             const next = [...prev];
             next[next.length - 1] = {
@@ -110,5 +166,5 @@ export function useChatSession({
     [onSubmit],
   );
 
-  return { messages, chatStatus, handleSubmit };
+  return { messages, chatStatus, handleSubmit, activeSuggestions, setPageContext };
 }

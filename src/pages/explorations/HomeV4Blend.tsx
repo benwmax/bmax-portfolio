@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import { NavBar } from '../../components/NavBar';
 import { CaseStudyCard } from '../../components/CaseStudyCard';
 import { ChatInput } from '../../components/ChatInput';
-import { useChatSession } from '../../hooks/useChatSession';
+import { useChat } from '../../context/useChat';
 import type { Message } from '../../hooks/useChatSession';
 import { CASE_STUDIES, SUGGESTIONS, HERO_STATS, SOCIAL_LINKS } from './data';
 import { useTypewriter, useInView, useCountUp, usePrefersReducedMotion } from './hooks';
@@ -94,7 +94,7 @@ export function HomeV4Blend({
   initialMessages = [],
   skipBoot = false,
 }: HomeV4BlendProps) {
-  const { messages, chatStatus, handleSubmit } = useChatSession({
+  const { messages, chatStatus, handleSubmit, setPageContext } = useChat({
     onSubmit: onChatSubmit,
     initialMessages,
   });
@@ -123,6 +123,13 @@ export function HomeV4Blend({
   useEffect(() => {
     if (!mobileChatOpen && fabRef.current) fabRef.current.focus();
   }, [mobileChatOpen]);
+
+  // Clear any case-study context left over from a previous page — Home has
+  // no case-study framing of its own, and the chat session is shared across
+  // navigation (see src/context/ChatContext.tsx).
+  useEffect(() => {
+    setPageContext(null);
+  }, [setPageContext]);
 
   // Hide the fixed scan once the hero has fully scrolled out of the viewport
   useEffect(() => {

@@ -1,4 +1,5 @@
 import type { HTMLAttributes, ReactNode } from 'react';
+import { Link } from 'react-router-dom';
 import { Tag } from '../Tag';
 import styles from './CaseStudyCard.module.css';
 
@@ -51,7 +52,6 @@ export function CaseStudyCard({
   className,
   ...rest
 }: CaseStudyCardProps) {
-  const Comp = (href ? 'a' : 'div') as React.ElementType;
   const text = desc ?? outcome;
   const sectorTag = tag ?? (Array.isArray(tags) ? tags[0] : undefined);
   const showMeta = role || year || stat || sector;
@@ -60,8 +60,8 @@ export function CaseStudyCard({
     .filter(Boolean)
     .join(' ');
 
-  return (
-    <Comp className={cardCls} href={href} {...rest}>
+  const content = (
+    <>
       <div className={styles.media}>
         {image && <img src={image} alt="" />}
         {index != null && (
@@ -109,6 +109,25 @@ export function CaseStudyCard({
           </div>
         )}
       </div>
+    </>
+  );
+
+  // Internal links use React Router's Link for a client-side transition —
+  // a full page reload would reset the shared chat session (see
+  // src/context/ChatContext.tsx). External/absent href falls back to a
+  // plain anchor or a non-interactive div.
+  if (href?.startsWith('/')) {
+    return (
+      <Link to={href} className={cardCls} {...rest}>
+        {content}
+      </Link>
+    );
+  }
+
+  const Comp = (href ? 'a' : 'div') as React.ElementType;
+  return (
+    <Comp className={cardCls} href={href} {...rest}>
+      {content}
     </Comp>
   );
 }
