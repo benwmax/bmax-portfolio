@@ -17,7 +17,7 @@ const SEED_MESSAGES: Message[] = [
   { role: 'user', text: 'What are you looking for next?' },
   {
     role: 'assistant',
-    text: "A Design Leader or Principal role where the hard problems are real — regulated domains, expert users, AI in the product. Somewhere the bar is high and the work matters.",
+    text: 'A Design Leader or Principal role where the hard problems are real — regulated domains, expert users, AI in the product. Somewhere the bar is high and the work matters.',
   },
 ];
 

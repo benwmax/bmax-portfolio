@@ -19,7 +19,7 @@ const meta = {
         'Use prompt={true} when the field is part of a terminal-aesthetic context.',
       ],
       avoid: [
-        "For chat functionality, use ChatInput — not this component.",
+        'For chat functionality, use ChatInput — not this component.',
         "Don't use generic sans-serif labels — the Space Mono ALL CAPS label is the system default.",
       ],
     },
@@ -80,9 +80,7 @@ export const Prompt: Story = {
     ai: {
       guidance:
         'Use prompt={true} when the input is part of a terminal-aesthetic context — the › indicator and green caret reinforce the theme.',
-      avoid: [
-        "Don't add a prompt to a standard form field outside the terminal context.",
-      ],
+      avoid: ["Don't add a prompt to a standard form field outside the terminal context."],
     },
   },
   args: {
@@ -193,8 +191,7 @@ export const Multiline: Story = {
       },
     },
     ai: {
-      guidance:
-        'Use multiline={true} for long-form text: questions, descriptions, message bodies.',
+      guidance: 'Use multiline={true} for long-form text: questions, descriptions, message bodies.',
     },
   },
   args: {
@@ -204,4 +201,31 @@ export const Multiline: Story = {
     placeholder: 'ask about my work…',
     rows: 4,
   } as Story['args'],
+};
+
+export const Futuristic: Story = {
+  name: 'Futuristic V2',
+  parameters: {
+    theme: 'futuristic',
+    docs: {
+      description: {
+        story:
+          'Field states under the Futuristic theme — white surface, hairline border, azure ' +
+          'focus ring, Space Grotesk label. The › prompt stays in both themes (a chevron ' +
+          'reads equally well in clean sci-fi chrome); only its color shifts to azure.',
+      },
+    },
+    ai: {
+      guidance:
+        'Key states under the futuristic theme — token-driven, no component changes. Click a field to see the azure focus treatment.',
+      avoid: ["Don't restyle the prompt glyph per theme — color comes from tokens."],
+    },
+  },
+  render: () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '340px' }}>
+      <Input label="YOUR QUESTION" prompt placeholder="ask about my work…" />
+      <Input label="EMAIL ADDRESS" placeholder="you@example.com" hint="Never shared." />
+      <Input label="SUBJECT" error="Required field." placeholder="" />
+    </div>
+  ),
 };

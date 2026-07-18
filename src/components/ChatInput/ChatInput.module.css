@@ -85,6 +85,29 @@
   transform: none;
 }
 
+/* Futuristic: the chunky terminal block caret becomes a thin insertion bar
+   with a soft pulse — same element, clean-UI reading */
+:global([data-theme='futuristic']) .caret {
+  width: 2px;
+  border-radius: 1px;
+  animation-name: soft-pulse;
+  animation-duration: 1.6s;
+  animation-timing-function: ease-in-out;
+}
+
+/* V2: the active field gets a crisp 3px azure edge accent (inset shadow, so
+   no layout shift on focus) plus the softer azure glow — a HUD input rail. */
+:global([data-theme='futuristic']) .active {
+  box-shadow:
+    inset 3px 0 0 0 var(--color-green-accent),
+    var(--shadow-green-glow);
+}
+
+/* V2: the › prompt reads as a solid command marker, not a soft chevron */
+:global([data-theme='futuristic']) .prompt {
+  font-weight: 700;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .caret {
     animation: none;
@@ -223,7 +246,9 @@ textarea.input {
   }
 }
 
-/* ASK button */
+/* ASK button — reads the shared --btn-primary-* tokens (same family as the
+   Button component's primary variant) so the futuristic theme's solid-fill
+   contrast fix applies here too, not just on <Button>. */
 .btn {
   position: relative;
   overflow: hidden;
@@ -231,9 +256,9 @@ textarea.input {
   font-size: 12px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--color-green-accent);
-  background: var(--color-green-deep);
-  border: 1px solid var(--color-green-border);
+  color: var(--btn-primary-text);
+  background: var(--btn-primary-bg);
+  border: 1px solid var(--btn-primary-border);
   border-radius: var(--radius-md);
   padding: 0 22px;
   min-height: 44px;
@@ -249,20 +274,20 @@ textarea.input {
 
 .btn:hover:not(:disabled) {
   background: var(--btn-primary-hover-bg);
-  color: var(--color-green-bright);
-  border-color: var(--color-green-accent);
-  box-shadow: inset 0 1px 0 rgba(0, 255, 94, 0.18);
+  color: var(--btn-primary-hover-text);
+  border-color: var(--btn-primary-hover-border);
+  box-shadow: var(--btn-hover-inset);
 }
 
 .btn:active:not(:disabled) {
-  background: var(--color-green-deep);
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+  background: var(--btn-primary-bg);
+  box-shadow: var(--btn-active-inset);
 }
 
 .btn:focus-visible {
   outline: none;
   border-color: var(--color-green-accent);
-  box-shadow: 0 0 0 2px rgba(0, 224, 84, 0.25);
+  box-shadow: var(--btn-focus-ring);
 }
 
 .btn:disabled {

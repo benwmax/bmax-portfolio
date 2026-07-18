@@ -124,9 +124,52 @@ export const FieldResearch: Story = {
     ai: {
       guidance:
         'Reference for how to write the body — it reads as an observation, not a methodology. "They kept leaving the tool mid-call for Expedia" not "Conducted field observation sessions".',
-      contentRules: [
-        'One sharp observation beats a bullet list of frameworks.',
-      ],
+      contentRules: ['One sharp observation beats a bullet list of frameworks.'],
     },
   },
+};
+
+export const Futuristic: Story = {
+  name: 'Futuristic V2',
+  parameters: {
+    theme: 'futuristic',
+    docs: {
+      description: {
+        story:
+          'Step cards under the Futuristic theme — azure number chips, gold artifact tags, ' +
+          'white card surfaces with hairline seams. Token-driven; no overrides.',
+      },
+    },
+    ai: {
+      guidance:
+        'Process list under the futuristic theme — token-driven. Same content rules as the retro stories.',
+    },
+  },
+  args: {
+    num: 1,
+    phase: 'Discover',
+    title: 'Baseline before redesign',
+    body: 'Placeholder.',
+    artifact: 'Funnel analysis',
+  },
+  render: () => (
+    <div style={{ width: '560px' }}>
+      <ProcessSteps>
+        <ProcessStep
+          num={1}
+          phase="Discover"
+          title="Baseline before redesign"
+          body="Instrumented the existing funnel so every later change had a number to beat."
+          artifact="Funnel analysis"
+        />
+        <ProcessStep
+          num={2}
+          phase="Align"
+          title="Sprint to surface KPIs"
+          body="A one-week sprint with actuarial and claims to agree on what 'better' meant."
+          artifact="Design sprint"
+        />
+      </ProcessSteps>
+    </div>
+  ),
 };

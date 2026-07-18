@@ -106,9 +106,7 @@ export const TwoMetaCells: Story = {
     ai: {
       guidance:
         'Use when outcome data is not yet available. The meta grid flexes to two wider cells — pass only role and method.',
-      avoid: [
-        "Don't pass empty or placeholder outcome stats — omit those cells entirely.",
-      ],
+      avoid: ["Don't pass empty or placeholder outcome stats — omit those cells entirely."],
     },
   },
   args: {
@@ -156,6 +154,36 @@ export const Sagent: Story = {
     meta: [
       { label: 'My role', value: 'Principal UX Designer' },
       { label: 'Method', value: 'Service design · Stakeholder alignment' },
+    ],
+  },
+};
+
+export const Futuristic: Story = {
+  name: 'Futuristic V2',
+  parameters: {
+    theme: 'futuristic',
+    docs: {
+      description: {
+        story:
+          'The hero under the Futuristic theme — azure crumb and headline stats, Space Grotesk ' +
+          'title, hairline meta grid on the light surface. Token-driven; no overrides.',
+      },
+    },
+    ai: {
+      guidance:
+        'Hero under the futuristic theme — token-driven. Same content rules as the retro stories.',
+    },
+  },
+  args: {
+    number: '04',
+    dateRange: '2018–2020',
+    title: 'Modernizing P&C insurance without losing the members who trusted it.',
+    subtitle:
+      'USAA’s property & casualty flows were built for a generation of members who called on the phone. The redesign had to serve digital-first members without breaking trust with the ones who never asked for change.',
+    meta: [
+      { label: 'Role', value: 'Lead UX Designer' },
+      { label: 'Method', value: 'Field research + A/B pipeline' },
+      { label: 'Conversion', value: '+4–6%', accent: true },
     ],
   },
 };

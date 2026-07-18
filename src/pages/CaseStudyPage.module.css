@@ -317,6 +317,19 @@
   color: var(--color-green-bright);
 }
 
+/* Futuristic: blinking "_" becomes a soft pulsing dot — see tokens.css
+   for the theme-level .cursor-blink animation swap */
+:global([data-theme='futuristic']) .msgCursor {
+  font-size: 0;
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-full);
+  background: var(--color-green-bright);
+  margin-left: 5px;
+  vertical-align: middle;
+}
+
 .chatSuggestions {
   display: flex;
   flex-direction: column;
@@ -395,4 +408,33 @@
   .progressBar {
     transition: none;
   }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   FUTURISTIC V2 — case study HUD refinements
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Active TOC entry → thicker azure rail so the reading position reads as a
+   selected instrument channel */
+:global([data-theme='futuristic']) .sidebarLinkActive {
+  border-left-width: 3px;
+  padding-left: 12px;
+}
+
+/* Section kicker → leading azure tick, matching the homepage work kicker */
+:global([data-theme='futuristic']) .sectionKicker {
+  display: inline-flex;
+  align-items: center;
+}
+:global([data-theme='futuristic']) .sectionKicker::before {
+  content: '';
+  width: 16px;
+  height: 1px;
+  margin-right: 9px;
+  background: var(--color-green-accent);
+}
+
+/* Docked chat rail → azure accent edge */
+:global([data-theme='futuristic']) .chatPanel {
+  border-left: 2px solid var(--color-green-accent);
 }

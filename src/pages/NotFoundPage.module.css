@@ -31,6 +31,12 @@
   overflow: hidden;
 }
 
+/* Futuristic V2: crisp azure top rail on the shell window, matching the
+   card/panel HUD treatment used across the site */
+:global([data-theme='futuristic']) .terminal {
+  border-top: 2px solid var(--color-green-accent);
+}
+
 .terminalBar {
   display: flex;
   align-items: center;
@@ -91,6 +97,18 @@
 .termCursor {
   color: var(--color-green-bright);
   font-weight: 700;
+}
+
+/* Futuristic: the 404 terminal's blinking "_" becomes a soft pulsing dot */
+:global([data-theme='futuristic']) .termCursor {
+  font-size: 0;
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-full);
+  background: var(--color-green-bright);
+  margin-left: 5px;
+  vertical-align: middle;
 }
 
 /* ——— CTA ——— */

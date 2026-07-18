@@ -42,8 +42,7 @@ export const Default: Story = {
   name: 'With context body',
   parameters: {
     ai: {
-      guidance:
-        'The standard stat cell: headline value + ALL CAPS label + one-line context body.',
+      guidance: 'The standard stat cell: headline value + ALL CAPS label + one-line context body.',
     },
   },
   args: {
@@ -113,9 +112,7 @@ export const TwoColumn: Story = {
     ai: {
       guidance:
         'Use StatGrid (default 2-col) for 2 or 4 outcome cells. The 1px hairline is the background color showing through — never replicate this manually.',
-      contentRules: [
-        '2-col grid (default) holds 2 or 4 cells.',
-      ],
+      contentRules: ['2-col grid (default) holds 2 or 4 cells.'],
     },
   },
   render: () => (
@@ -153,11 +150,8 @@ export const ThreeColumn: Story = {
       },
     },
     ai: {
-      guidance:
-        'Use StatGrid cols={3} when there are exactly 3 headline outcome stats.',
-      avoid: [
-        "Don't force 3 cells when you only have 2 — use the default 2-col grid.",
-      ],
+      guidance: 'Use StatGrid cols={3} when there are exactly 3 headline outcome stats.',
+      avoid: ["Don't force 3 cells when you only have 2 — use the default 2-col grid."],
     },
   },
   render: () => (
@@ -170,5 +164,35 @@ export const ThreeColumn: Story = {
         body="Total Transaction Volume up 8.7%."
       />
     </StatGrid>
+  ),
+};
+
+export const Futuristic: Story = {
+  name: 'Futuristic V2',
+  parameters: {
+    theme: 'futuristic',
+    docs: {
+      description: {
+        story:
+          'Outcome stats under the Futuristic theme — azure headline figures in Space Grotesk ' +
+          'on white cells with hairline grid seams. Token-driven; no overrides.',
+      },
+    },
+    ai: {
+      guidance:
+        'Stat grid under the futuristic theme — token-driven. Same content rules as the retro stories.',
+    },
+  },
+  args: {
+    value: '$1B',
+    label: 'CONTRACT RENEWED',
+  },
+  render: () => (
+    <div style={{ width: '480px' }}>
+      <StatGrid>
+        <StatBlock value="$1B" label="CONTRACT RENEWED" body="The redesign anchored the renewal." />
+        <StatBlock value="+23%" label="REVENUE LIFT" body="Hotel attach rate after rollout." />
+      </StatGrid>
+    </div>
   ),
 };

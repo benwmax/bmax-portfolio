@@ -16,7 +16,7 @@ const meta = {
       guidance:
         'Button is Space Mono, all-caps, wide-tracked — it reads as a terminal command. Three variants cover every action context in the system. Never invent a fourth variant; never use sentence-case labels.',
       contentRules: [
-        "All button text is ALL CAPS — the component renders text as provided; capitalize in the prop.",
+        'All button text is ALL CAPS — the component renders text as provided; capitalize in the prop.',
         "Short commands only: 'ASK', 'VIEW CASE STUDY +', 'COMPOSE EMAIL +', 'COPY ADDRESS', 'COPY URL'.",
         'One primary button per surface maximum.',
       ],
@@ -50,9 +50,7 @@ export const Primary: Story = {
         "Canonical chat submit label is 'ASK'.",
         "Contact page labels: 'COMPOSE EMAIL +' and 'OPEN PROFILE +'.",
       ],
-      avoid: [
-        "Don't place two primary buttons side by side.",
-      ],
+      avoid: ["Don't place two primary buttons side by side."],
     },
   },
   args: {
@@ -75,7 +73,7 @@ export const Secondary: Story = {
         'Use when an action is available but not the recommended next step — always paired with a primary nearby.',
       contentRules: [
         "Canonical secondary labels on Contact page: 'COPY ADDRESS', 'COPY URL'.",
-        "Secondary label should describe the action differently from the primary — never echo it.",
+        'Secondary label should describe the action differently from the primary — never echo it.',
       ],
       avoid: [
         "Don't use secondary as the only button on a surface — it needs a primary to defer to.",
@@ -100,12 +98,8 @@ export const Ghost: Story = {
     ai: {
       guidance:
         'Use for optional navigation-adjacent actions (Back, More, View) that should not compete visually with a nearby primary.',
-      contentRules: [
-        'Keep ghost labels to 1–2 words.',
-      ],
-      avoid: [
-        "Don't pair ghost with primary in the same row — visual noise.",
-      ],
+      contentRules: ['Keep ghost labels to 1–2 words.'],
+      avoid: ["Don't pair ghost with primary in the same row — visual noise."],
     },
   },
   args: {
@@ -179,9 +173,7 @@ export const Sizes: Story = {
       contentRules: [
         'md is the only size in production — sm and lg are available but not yet deployed.',
       ],
-      avoid: [
-        "Don't deviate from md without documenting the reason.",
-      ],
+      avoid: ["Don't deviate from md without documenting the reason."],
     },
   },
   render: (args) => (
@@ -201,4 +193,39 @@ export const Sizes: Story = {
     variant: 'primary',
     children: 'ASK',
   },
+};
+
+export const Futuristic: Story = {
+  name: 'Futuristic V2',
+  parameters: {
+    theme: 'futuristic',
+    docs: {
+      description: {
+        story:
+          'All three variants under the Futuristic theme — the user-selectable light sci-fi ' +
+          'alternative (NavBar toggle). Azure replaces phosphor green, Space Grotesk replaces ' +
+          'Space Mono for the label, and the hover inset becomes a soft white highlight. ' +
+          'Same component, no prop changes — the theme is entirely token-driven.',
+      },
+    },
+    ai: {
+      guidance:
+        'Key states under the futuristic theme. Never write futuristic-specific component code — theming is token-driven via [data-theme="futuristic"]. In Storybook, set parameters.theme = "futuristic" on a story to preview it.',
+      avoid: [
+        "Don't fork Button per theme — one component serves both.",
+        "Don't hardcode azure/gold hex values — the green-*/amber-* tokens carry them in this theme.",
+      ],
+    },
+  },
+  args: { children: 'ASK' },
+  render: () => (
+    <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+      <Button variant="primary">ASK</Button>
+      <Button variant="secondary">VIEW CASE STUDY +</Button>
+      <Button variant="ghost">COPY URL</Button>
+      <Button variant="primary" disabled>
+        ASK
+      </Button>
+    </div>
+  ),
 };

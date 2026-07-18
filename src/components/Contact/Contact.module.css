@@ -289,3 +289,19 @@
     transition: none;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   FUTURISTIC V2 — contact HUD refinements
+   Crisp azure top rail + solid chamfered index chip, matching the
+   CaseStudyCard treatment so channels read as instrument panels.
+   ═══════════════════════════════════════════════════════════════════ */
+:global([data-theme='futuristic']) .card {
+  border-top: 2px solid var(--color-green-accent);
+}
+
+:global([data-theme='futuristic']) .cardNum {
+  background: var(--color-green-accent);
+  color: #ffffff;
+  border-color: var(--color-green-accent);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+}

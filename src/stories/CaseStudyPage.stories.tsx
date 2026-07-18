@@ -30,7 +30,7 @@ const meta = {
         'meta array: role and method cells are plain values; outcome cells use accent: true for hard numbers only.',
       ],
       avoid: [
-        "Never build a case study page layout from scratch — always use this template.",
+        'Never build a case study page layout from scratch — always use this template.',
         "Don't change the 8-section order.",
         "Don't use accent: true for role, method, or non-numeric meta values.",
         "Don't write heroTitle as a project description — it must be a problem statement.",
@@ -247,5 +247,30 @@ export const WithConversation: Story = {
         'chatSuggestions on the case study become the initial prompt chips.',
       ],
     },
+  },
+};
+
+export const Futuristic: Story = {
+  name: 'USAA — Futuristic V2',
+  parameters: {
+    theme: 'futuristic',
+    docs: {
+      description: {
+        story:
+          'The canonical case study layout under the Futuristic theme — light surfaces, azure ' +
+          'sidebar states and stats, gold tags, Space Grotesk headings. Token-driven; the chat ' +
+          'message cursor becomes a pulsing dot via a scoped CSS override.',
+      },
+    },
+    ai: {
+      guidance:
+        'Case study page under the futuristic theme — token-driven. Same structure rules as the retro stories.',
+    },
+  },
+  args: {
+    ...USAA,
+    layout: 'sidebar',
+    showChat: true,
+    onChatSubmit: fn(),
   },
 };

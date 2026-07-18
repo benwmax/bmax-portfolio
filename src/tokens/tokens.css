@@ -248,6 +248,22 @@
   /* Single-layer focus ring for form inputs */
   --shadow-green-focus: 0 0 0 2px rgba(0, 224, 84, 0.2);
 
+  /* Effect tokens — previously hardcoded rgba values in module CSS.
+     Tokenized so the futuristic theme can swap the phosphor glows for
+     soft neutral/cyan elevation without touching component files. */
+  --shadow-panel: 0 0 0 1px rgba(0, 224, 84, 0.04), 0 24px 60px -30px rgba(0, 0, 0, 0.8);
+  --shadow-fab: 0 4px 20px rgba(0, 224, 84, 0.35);
+  --shadow-fab-hover: 0 6px 28px rgba(0, 224, 84, 0.5);
+  --shadow-fab-active: 0 2px 12px rgba(0, 224, 84, 0.3);
+  --btn-hover-inset: inset 0 1px 0 rgba(0, 255, 94, 0.18);
+  --btn-active-inset: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+  --btn-focus-ring: 0 0 0 2px rgba(0, 224, 84, 0.25);
+  --glow-bright: 0 0 10px var(--color-green-bright);
+  /* Drifting hero scanline tint (HomeV4Blend) */
+  --scan-tint: rgba(0, 255, 94, 0.038);
+  /* Card-thumbnail scanline overlay color (CaseStudyCard hover) */
+  --scanline-overlay: rgba(0, 224, 84, 0.04);
+
   /* ----------------------------------------------------------
      LAYOUT WIDTHS
      Docked panel dimensions shared between CSS and JS.
@@ -280,6 +296,7 @@
   --btn-primary-text: var(--color-green-accent);
   --btn-primary-hover-bg: #0e2e14;
   --btn-primary-hover-text: var(--color-green-bright);
+  --btn-primary-hover-border: var(--color-green-accent);
   --btn-primary-font: var(--font-mono-display);
   --btn-primary-tracking: var(--tracking-widest);
 
@@ -322,22 +339,126 @@
 }
 
 /* ============================================================
-   LIGHT MODE OVERRIDE
-   The portfolio is dark-mode default. Light mode exists for
-   accessibility — it is not the primary experience.
-   Only define if/when you decide to ship a light mode variant.
+   FUTURISTIC THEME — [data-theme='futuristic']
+   User-selectable alternative to the retro terminal default
+   (toggle in the NavBar, persisted to localStorage — see
+   src/hooks/useTheme.ts). Clean, light sci-fi: cool pale
+   surfaces, high-contrast slate text, azure primary accent,
+   deep gold secondary. Space Grotesk replaces Space Mono for
+   display/chrome; IBM Plex Mono stays for data and metadata so
+   the two themes share a technical thread.
+
+   Naming note: the green-* and amber-* scales are hue-shifted
+   here (green → azure, amber → gold-on-light). The scale names
+   are kept so every component wired to them re-themes without
+   edits — read them as "primary accent" and "secondary accent"
+   rather than literal colors. Decided 2026-07-17; see
+   decisions.md.
+
+   This block also supersedes the old "light mode is an
+   accessibility fallback" placeholder — futuristic IS the
+   light experience, retro remains the default.
    ============================================================ */
 
-/*
-@media (prefers-color-scheme: light) {
-  :root {
-    --color-bg-page:      #f5f5f0;
-    --color-bg-surface:   #ffffff;
-    --color-text-primary: #1a1c18;
-    ... (define if/when light mode is added)
-  }
+[data-theme='futuristic'] {
+  /* Backgrounds — cool pale blue-gray, near-white surfaces */
+  --color-bg-page: #f2f5f8;
+  --color-bg-surface: #fbfdfe;
+  --color-bg-raised: #e9eef3;
+  --color-bg-dot: rgba(23, 34, 44, 0.05); /* fine line-grid — 5% slate, barely-there (see --dot-grid) */
+  --color-bg-overlay: #f2f5f8cc;
+  --color-bg-input-active: #eef6fc; /* azure-tinted focus background */
+
+  /* Borders — hairline cool grays */
+  --color-border-subtle: #e2e8ee;
+  --color-border-default: #c9d3dc;
+  --color-border-strong: #a3b1bd;
+
+  /* Text — cool dark slate. Primary ≈ 15:1 on page bg. */
+  --color-text-primary: #17222c;
+  --color-text-secondary: #43535f; /* ≈ 8:1 */
+  --color-text-tertiary: #566677; /* ≈ 6:1 — passes AA at all sizes */
+  --color-text-muted: #8494a3; /* placeholders/disabled only */
+  --color-text-disabled: #aab7c2;
+
+  /* Primary accent — azure (replaces phosphor green).
+     Accent = #0467b3: 5.4:1 on page bg, text-safe at any size.
+     "bright" and "light" both flip meaning on a light background: in retro,
+     bright/light tiers are the palest, most luminous greens because emphasis
+     on a dark bg means MORE light. Here emphasis means the opposite — bright
+     (#044e99) is darker and more saturated than accent itself (~6.7:1 on
+     page bg), and light (#0b5aa0, ~6.1:1 on the deepest tint) is a legible
+     text color, not a pale tint. Verified against Tag's green variant
+     (text-green-light on bg-green-deepest) and every green-bright text/dot
+     usage — all clear 4.5:1+ (text) or 3:1+ (graphical) after this flip. */
+  --color-green-deepest: #e4f1fa;
+  --color-green-deep: #d3e9f8;
+  --color-green-border: #5b9fd1;
+  --color-green-mid: #1f7ec2;
+  --color-green-accent: #0467b3;
+  --color-green-bright: #044e99; /* dots, carets, hover text — max emphasis */
+  --color-green-light: #0b5aa0; /* Tag "green" variant text on green-deepest bg */
+
+  /* Secondary accent — deep gold (amber recalibrated for light bg).
+     "bright" flips meaning here: emphasis on light = darker/richer. */
+  --color-amber-deepest: #faf3e3;
+  --color-amber-deep: #e6d3a8;
+  --color-amber-mid: #a97a14;
+  --color-amber-accent: #8f6400; /* 5.4:1 on white — tag-text safe */
+  --color-amber-bright: #6f4d00;
+
+  --color-status-error: #b3352f;
+
+  /* Typography — geometric sans for display/chrome, mono stays for data */
+  --font-mono-display: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
+
+  /* Surface texture — fine line grid instead of the terminal dot grid.
+     V2: airier 32px cells, grid color dropped to 5% (see --color-bg-dot). */
+  --dot-grid: linear-gradient(var(--color-bg-dot) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-bg-dot) 1px, transparent 1px);
+  --dot-grid-size: 32px 32px;
+
+  /* ── V2 sci-fi push (2026-07-17) ────────────────────────────────────
+     Sharper geometry and crisp azure hairline accents replace the softer
+     first pass. Corners go near-square (technical precision reads as
+     "instrument," not "app"); a reusable accent-line token draws the thin
+     azure rules and corner ticks used across cards, panels, and labels.
+     The pill radius (--radius-full) is untouched, so the ThemeToggle and
+     status pills stay round against the squared chrome. */
+  --radius-sm: 0;
+  --radius-md: 1px;
+  --radius-lg: 2px;
+  --accent-line: linear-gradient(90deg, transparent, var(--color-green-accent), transparent);
+  --accent-line-strong: linear-gradient(90deg, var(--color-green-accent), transparent);
+  --color-border-default: #c4d0da; /* slightly stronger for crisp definition on white */
+
+  /* Focus + elevation — phosphor glows become soft azure/neutral lifts */
+  --shadow-green-glow: inset 0 0 0 1px rgba(4, 103, 179, 0.08), 0 0 0 3px rgba(4, 103, 179, 0.07);
+  --shadow-green-focus: 0 0 0 2px rgba(4, 103, 179, 0.25);
+  --shadow-panel: 0 1px 2px rgba(23, 34, 44, 0.05), 0 24px 48px -24px rgba(23, 34, 44, 0.16);
+  --shadow-fab: 0 4px 20px rgba(4, 103, 179, 0.3);
+  --shadow-fab-hover: 0 6px 28px rgba(4, 103, 179, 0.4);
+  --shadow-fab-active: 0 2px 12px rgba(4, 103, 179, 0.25);
+  --btn-hover-inset: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  --btn-active-inset: inset 0 1px 2px rgba(23, 34, 44, 0.12);
+  --btn-focus-ring: 0 0 0 2px rgba(4, 103, 179, 0.3);
+  --glow-bright: 0 0 8px rgba(4, 78, 153, 0.5);
+  --scan-tint: rgba(10, 143, 232, 0.03);
+  --scanline-overlay: rgba(4, 103, 179, 0.035);
+
+  /* Component-token deltas.
+     Primary button flips from retro's dark-fill-plus-bright-text (high
+     contrast on a dark page) to a solid azure fill with white text — the
+     light-theme equivalent. A pale-tint fill with azure text (mirroring
+     retro's structure literally) measured under 4.5:1 here, since the tint
+     and the page are both already light; solid fill sidesteps that. */
+  --btn-primary-bg: var(--color-green-accent);
+  --btn-primary-text: #ffffff;
+  --btn-primary-border: var(--color-green-accent);
+  --btn-primary-hover-bg: var(--color-green-mid);
+  --btn-primary-hover-text: #ffffff;
+  --btn-primary-hover-border: var(--color-green-mid);
 }
-*/
 
 /* ============================================================
    UTILITY CLASSES
@@ -438,6 +559,22 @@
 
 .cursor-blink {
   animation: cursor-blink 1s step-end infinite;
+}
+
+/* Futuristic theme: the hard step-end terminal blink reads as retro.
+   Same elements instead breathe — a slow eased opacity pulse. */
+@keyframes soft-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+[data-theme='futuristic'] .cursor-blink {
+  animation: soft-pulse 1.8s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {

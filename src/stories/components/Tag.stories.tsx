@@ -43,9 +43,7 @@ export const Default: Story = {
     ai: {
       guidance:
         'Use for industry labels on CaseStudyCard thumbnails. This is the default — reach for it first.',
-      avoid: [
-        "Never use green or solid variant for industry labels.",
-      ],
+      avoid: ['Never use green or solid variant for industry labels.'],
     },
   },
   args: {
@@ -70,9 +68,7 @@ export const Green: Story = {
       contentRules: [
         "Example labels: 'AI Collaboration', 'Design Sprint', 'Research', 'Field Study'.",
       ],
-      avoid: [
-        "Don't use green tags for industry categories.",
-      ],
+      avoid: ["Don't use green tags for industry categories."],
     },
   },
   args: {
@@ -94,9 +90,7 @@ export const Solid: Story = {
     ai: {
       guidance:
         'Reserved for high-emphasis callout contexts where a hollow border tag would get lost. Not used in v1 card layouts.',
-      avoid: [
-        "Don't default to solid — it's the loudest variant.",
-      ],
+      avoid: ["Don't default to solid — it's the loudest variant."],
     },
   },
   args: {
@@ -118,9 +112,7 @@ export const LargeHero: Story = {
     ai: {
       guidance:
         'Use in case-study hero meta blocks and ProcessStep callouts where the tag must hold its own against 14–16px type.',
-      avoid: [
-        "Don't use lg in CaseStudyCard thumbnails — sm is the card-scale size.",
-      ],
+      avoid: ["Don't use lg in CaseStudyCard thumbnails — sm is the card-scale size."],
     },
   },
   args: {
@@ -142,9 +134,7 @@ export const WithDot: Story = {
     ai: {
       guidance:
         "Use when a visual bullet reinforces the tag's categorical role — timeline entries, process lists.",
-      avoid: [
-        "Don't add a dot just for decoration — it implies list membership.",
-      ],
+      avoid: ["Don't add a dot just for decoration — it implies list membership."],
     },
   },
   args: {
@@ -177,6 +167,35 @@ export const AllIndustries: Story = {
       {['Travel', 'Fintech', 'Mortgage', 'Insurance', 'AI Collaboration'].map((label) => (
         <Tag key={label} label={label} />
       ))}
+    </div>
+  ),
+};
+
+export const Futuristic: Story = {
+  name: 'Futuristic V2',
+  parameters: {
+    theme: 'futuristic',
+    docs: {
+      description: {
+        story:
+          'Tag variants under the Futuristic theme. Amber recalibrates to deep gold for the ' +
+          'light background (emphasis flips: darker = stronger); the green variant becomes ' +
+          'azure. Same amber-for-context / green-for-process semantics in both themes.',
+      },
+    },
+    ai: {
+      guidance:
+        'Key states under the futuristic theme — token-driven, no component changes. Gold still means context/industry; azure still means process.',
+      avoid: ["Don't invent theme-specific tag variants — the same three serve both themes."],
+    },
+  },
+  args: { label: 'Fintech' },
+  render: () => (
+    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+      <Tag label="Fintech" />
+      <Tag label="AI Collaboration" variant="green" />
+      <Tag label="Insurance" variant="solid" />
+      <Tag label="Mortgage" dot />
     </div>
   ),
 };

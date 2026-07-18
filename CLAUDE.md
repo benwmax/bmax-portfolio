@@ -437,13 +437,20 @@ to check off?"*
 
 ## Current Project Status
 
-**Phase:** 1C (Sagent content), 3G (Storybook deploy), and 4 (site assembly) active
-in parallel. Phase 2 complete. Phase 4A/4B/4C complete — routing wired, all case
-study content files created, supporting pages live. 4D (responsive QA), 4E (SEO),
-and 4F (AI chat deploy) remaining. Accessibility audit done early as Phase 5 pre-work.
-Design Sessions 1–3 complete; Session 4 next.
+**Phase:** Per build-plan.md's Phase Status table (the authoritative live tracker —
+this prose summary had drifted out of sync with it as of 2026-07-17 and was
+resynced below): Phase 0 and 2 complete; Phase 3 (Storybook Foundation) complete
+as of 2026-07-16, including deployment to system.viewbens.work; Phase 4 (Site
+Assembly) in progress — 4A/4B/4C/4D/4F complete, 4E blocked on OG images (Ben);
+Phase 5 (QA and Pre-Launch) in progress; Phase 1 (Sagent content, 1C) still not
+started; Phases 6–7 not started. Per decisions.md 2026-07-16, launch is being
+prioritized ahead of the Sagent case study — Sagent ships with placeholder copy
+and gets a full pass post-launch.
 
-**Last updated:** 2026-06-22 (WCAG AA accessibility audit + routing + case study content files)
+**Last updated:** 2026-07-17 (Futuristic theme added; Phase line resynced against
+build-plan.md's Phase Status table, which had moved on without this section since
+2026-06-22 — worth a closer full reconciliation pass when there's time, since this
+resync only pulled the phase-level status, not every sub-item)
 
 **Completed:**
 - Domain confirmed: viewbens.work (existing site stays live until launch)
@@ -529,6 +536,20 @@ Design Sessions 1–3 complete; Session 4 next.
   Phase 4B complete (2026-06-22)
 - Phase 4C complete: About and Resume pages already built as templates, now wired via
   routing (2026-06-22)
+- Futuristic theme added — a second, user-selectable light sci-fi theme alongside the
+  existing Retro (terminal) default, toggled via a Retro/Futuristic control in the NavBar
+  and persisted to localStorage (2026-07-17). Token-driven — `[data-theme='futuristic']`
+  override block in tokens.css (azure/gold palette, Space Grotesk display type, fine
+  line-grid texture), no component logic changes beyond a few scoped CSS effect swaps
+  (cursor blink → soft pulse, block caret → insertion bar). Every component and
+  page-level Storybook story got a "Futuristic" story. See decisions.md 2026-07-17,
+  including a mid-build contrast fix on the primary button and cursor/dot colors.
+- Futuristic theme V2 push (2026-07-17) — cleaner, more overtly sci-fi second pass:
+  grid background dropped to ~5% opacity, sharper near-square geometry, a consistent
+  azure hairline HUD accent language (top rails, tick marks, docked-rail edges, solid
+  chamfered index chips), and a `data-variant` hook on Button. All scoped to
+  `[data-theme='futuristic']` — retro is unchanged. Enhanced Storybook stories relabeled
+  "Futuristic V2". See decisions.md 2026-07-17 (second entry).
 
 **Immediate next steps:**
 - **Ben's actions to go live:** Create Anthropic Workspace + API key and Upstash Redis

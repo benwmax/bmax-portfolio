@@ -16,7 +16,7 @@ const meta = {
         'Always use CSS custom properties (--color-*) or Tailwind token classes — never raw hex values.',
       ],
       avoid: [
-        "Never hardcode hex values in component or story files.",
+        'Never hardcode hex values in component or story files.',
         "Don't invent a new color outside the token system.",
         "Don't use amber for interactive elements.",
         "Don't use green for industry/category tags.",
@@ -274,7 +274,7 @@ export const Reference: Story = {
         'Red (#e05050, --color-status-error): actual errors only.',
       ],
       avoid: [
-        "Never hardcode hex values in component or story code.",
+        'Never hardcode hex values in component or story code.',
         "Don't use raw hex in Tailwind class values — use the mapped token names.",
       ],
     },

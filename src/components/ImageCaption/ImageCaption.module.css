@@ -46,7 +46,9 @@
   position: relative;
   aspect-ratio: 16 / 9;
   background-color: var(--color-bg-raised);
-  background-image: radial-gradient(circle, var(--color-bg-dot) 1px, transparent 1px);
+  /* var(--dot-grid) not a literal radial-gradient: the futuristic theme swaps
+     the token to a fine line grid, and this placeholder should follow it */
+  background-image: var(--dot-grid);
   background-size: 18px 18px;
   display: flex;
   align-items: center;

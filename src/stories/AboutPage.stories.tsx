@@ -19,7 +19,7 @@ const meta = {
       guidance:
         'The About page is a static content page — four sections in a fixed order. All content lives in AboutPage.tsx directly. No props to pass.',
       contentRules: [
-        'Four sections in order: approach, leadership, career arc, what I\'m looking for.',
+        "Four sections in order: approach, leadership, career arc, what I'm looking for.",
         'Career arc runs from 2014 (Aperia Solutions) to present — nine roles listed chronologically.',
         'Market Rebellion is included as a brief career arc mention only — not a standalone case study.',
         'Location: Dallas, Texas. Not remote-only.',
@@ -48,6 +48,24 @@ export const Default: Story = {
       avoid: [
         "Don't generate placeholder or lorem ipsum copy for the About page — all sections have real content.",
       ],
+    },
+  },
+};
+
+export const Futuristic: Story = {
+  name: 'Futuristic V2',
+  parameters: {
+    theme: 'futuristic',
+    docs: {
+      description: {
+        story:
+          'The About page under the Futuristic theme — token-driven light sci-fi treatment, ' +
+          'no page-specific overrides.',
+      },
+    },
+    ai: {
+      guidance:
+        'About page under the futuristic theme. If something looks wrong here, fix tokens.css — the page has no theme-specific code.',
     },
   },
 };

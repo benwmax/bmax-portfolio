@@ -82,9 +82,7 @@ export const Hover: Story = {
     ai: {
       guidance:
         'Reference to preview the hover state — corner brackets, VIEW chip, scanlines, green glow. In production this triggers on :hover.',
-      avoid: [
-        "forceHover is Storybook-only — don't use it in application code.",
-      ],
+      avoid: ["forceHover is Storybook-only — don't use it in application code."],
     },
   },
   args: {
@@ -114,9 +112,7 @@ export const WithoutMeta: Story = {
     ai: {
       guidance:
         'Use when outcome data is unavailable or not applicable — omit role/year/stat/sector props entirely and the meta grid collapses.',
-      avoid: [
-        "Don't pass empty strings for meta props — omit them entirely.",
-      ],
+      avoid: ["Don't pass empty strings for meta props — omit them entirely."],
     },
   },
   args: {
@@ -209,6 +205,55 @@ export const Grid: Story = {
         stat="$1B"
         statLabel="Contract"
         sector="Travel Tech"
+      />
+    </div>
+  ),
+};
+
+export const Futuristic: Story = {
+  name: 'Futuristic V2',
+  parameters: {
+    theme: 'futuristic',
+    docs: {
+      description: {
+        story:
+          'The card under the Futuristic theme — white surface, hairline borders, azure index ' +
+          'chip and corner brackets, gold sector tag, fine line-grid thumbnail placeholder. ' +
+          'The hover scanline overlay survives as a near-invisible azure sheen. Corner ' +
+          'brackets stay in both themes: they read as terminal chrome in retro and as ' +
+          'targeting-reticle chrome in futuristic.',
+      },
+    },
+    ai: {
+      guidance:
+        'Card under the futuristic theme — token-driven. forceHover shows the azure bracket treatment.',
+      avoid: ["Don't remove the corner brackets in either theme — they're a shared signature."],
+    },
+  },
+  render: () => (
+    <div style={{ display: 'grid', gridTemplateColumns: '280px 280px', gap: '20px' }}>
+      <CaseStudyCard
+        index="05"
+        title="Sabre GetThere"
+        desc="Making a command-line booking tool learnable without slowing the veterans."
+        tag="Travel"
+        role="Lead Designer"
+        year="2014–17"
+        stat="$1B"
+        sector="Travel"
+        href="/work/sabre"
+      />
+      <CaseStudyCard
+        index="02"
+        title="Upfluent"
+        desc="A chatbot that lets retail traders think like professionals."
+        tag="Fintech"
+        role="Principal"
+        year="2024–25"
+        stat="+23%"
+        sector="Fintech"
+        href="/work/upfluent"
+        forceHover
       />
     </div>
   ),

@@ -41,12 +41,8 @@ export const Online: Story = {
     ai: {
       guidance:
         'Place below the ChatInput when the AI assistant is reachable. This is the default starting state.',
-      contentRules: [
-        "blink defaults to true when status='online' — do not override.",
-      ],
-      avoid: [
-        "Don't set blink={false} for online state — the blink is the readiness signal.",
-      ],
+      contentRules: ["blink defaults to true when status='online' — do not override."],
+      avoid: ["Don't set blink={false} for online state — the blink is the readiness signal."],
     },
   },
   args: {
@@ -64,8 +60,7 @@ export const Offline: Story = {
       },
     },
     ai: {
-      guidance:
-        'Use when the API endpoint is unreachable or the backend is down.',
+      guidance: 'Use when the API endpoint is unreachable or the backend is down.',
     },
   },
   args: {
@@ -110,16 +105,41 @@ export const ErrorState: Story = {
     ai: {
       guidance:
         'Reserved for actual failures: API unreachable, auth error. Surfaces programmatically, never by default.',
-      contentRules: [
-        "Label: 'ERROR · assistant unavailable' or similar.",
-      ],
-      avoid: [
-        "Don't use error state for degraded performance — that's 'warning'.",
-      ],
+      contentRules: ["Label: 'ERROR · assistant unavailable' or similar."],
+      avoid: ["Don't use error state for degraded performance — that's 'warning'."],
     },
   },
   args: {
     status: 'error',
     label: 'Error · assistant unavailable',
   },
+};
+
+export const Futuristic: Story = {
+  name: 'Futuristic V2',
+  parameters: {
+    theme: 'futuristic',
+    docs: {
+      description: {
+        story:
+          'All four states under the Futuristic theme. The online dot is azure-bright and the ' +
+          'hard terminal step-blink becomes a slow eased pulse (soft-pulse keyframe, swapped ' +
+          'at the theme level in tokens.css).',
+      },
+    },
+    ai: {
+      guidance:
+        'Key states under the futuristic theme — token-driven. The blink-to-pulse swap is global CSS in tokens.css, not a component change.',
+      avoid: ["Don't add theme-conditional logic to StatusIndicator — the theme handles it."],
+    },
+  },
+  args: { label: 'ONLINE · assistant ready', status: 'online' },
+  render: () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      <StatusIndicator label="ONLINE · assistant ready" status="online" />
+      <StatusIndicator label="OFFLINE · responses unavailable" status="offline" />
+      <StatusIndicator label="DEGRADED · slow responses" status="warning" />
+      <StatusIndicator label="ERROR · service unavailable" status="error" />
+    </div>
+  ),
 };

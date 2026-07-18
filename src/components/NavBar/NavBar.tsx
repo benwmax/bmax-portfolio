@@ -1,3 +1,4 @@
+import { ThemeToggle } from '../ThemeToggle';
 import styles from './NavBar.module.css';
 
 const NAV_LINKS = [
@@ -33,26 +34,29 @@ export function NavBar({ activePath, className = '' }: NavBarProps) {
           _
         </span>
       </a>
-      <nav aria-label="Site navigation">
-        <ul className={styles.links} role="list">
-          {NAV_LINKS.map(({ label, href }) => {
-            const isActive = pathname === href;
-            return (
-              <li key={href}>
-                <a
-                  href={href}
-                  className={[styles.link, isActive ? styles.linkActive : '']
-                    .filter(Boolean)
-                    .join(' ')}
-                  aria-current={isActive ? 'page' : undefined}
-                >
-                  {label}
-                </a>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
+      <div className={styles.right}>
+        <nav aria-label="Site navigation">
+          <ul className={styles.links} role="list">
+            {NAV_LINKS.map(({ label, href }) => {
+              const isActive = pathname === href;
+              return (
+                <li key={href}>
+                  <a
+                    href={href}
+                    className={[styles.link, isActive ? styles.linkActive : '']
+                      .filter(Boolean)
+                      .join(' ')}
+                    aria-current={isActive ? 'page' : undefined}
+                  >
+                    {label}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+        <ThemeToggle />
+      </div>
     </header>
   );
 }

@@ -33,6 +33,20 @@ body {
   top: 16px;
 }
 
+/* ── Futuristic V2 button refinements ──
+   Targeted via data-variant (see Button.tsx). Focus rings live on the Tailwind
+   utility layer and are intentionally untouched here. */
+[data-theme='futuristic'] [data-variant='primary'] {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+[data-theme='futuristic'] [data-variant='secondary'] {
+  border-color: var(--color-border-default);
+}
+[data-theme='futuristic'] [data-variant='secondary']:hover {
+  border-color: var(--color-green-border);
+  color: var(--color-green-accent);
+}
+
 /* Visually hidden — screen reader accessible, not visible */
 .sr-only {
   position: absolute;

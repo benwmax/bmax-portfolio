@@ -417,3 +417,113 @@ was purely additive — found and fixed the scroll-cue collision before it reach
 
 **Where I overrode or redirected Claude:**
 N/A.
+
+## 2026-07-17
+**What I did:**
+Added a second, user-selectable theme — "Futuristic" — as an alternative to the existing
+terminal/phosphor look (now called "Retro"). Retro stays the default; a Retro/Futuristic
+segmented toggle sits in the NavBar top right on every page and persists the choice to
+localStorage. Same layout, same components, same content in both themes — only the token
+layer and a few scoped CSS effects (cursor blink, caret shape) change. Also added one
+"Futuristic" story per component and per page-level story in Storybook, and verified both
+themes with a production build, a Storybook build, and full-page screenshots across every
+page at desktop and 390px mobile.
+
+**What I decided:**
+Implemented the theme as a `[data-theme='futuristic']` override block layered on top of the
+existing `:root` tokens in tokens.css, toggled via an attribute on `<html>` (inline script in
+index.html applies a saved preference before first paint, so it never flashes the wrong
+theme). Palette: cool pale surfaces, near-black slate text, azure primary accent, deep gold
+secondary accent, Space Grotesk for display/chrome type with IBM Plex Mono unchanged for
+data/metadata. Kept the green-*/amber-* token names even though the hues are now azure/gold —
+documented the remap inline rather than renaming, since renaming would have meant touching
+every component that reads them.
+
+**Why:**
+Ben wants a second full aesthetic as an additional demonstration of range for the meta case
+study — the token architecture from Phase 2 turned out flexible enough to support it without
+touching component logic, which is itself worth documenting.
+
+**What I'm uncertain about:**
+Whether Futuristic needs its own OG image / meta description before launch, given Retro is
+the default first-impression theme visitors actually see. Logged as an open question in
+decisions.md rather than deciding it myself.
+
+**What Claude contributed:**
+Caught a real accessibility bug mid-build rather than after: the first pass at the futuristic
+primary button reused retro's structure literally (accent-colored text on a pale
+accent-tinted fill), which measured under 4.5:1 once actually checked — a light background
+makes that pattern fail even when every individual color looks fine in isolation. Also caught
+that "brightest" flips meaning on a light background (darker/more saturated reads as more
+emphasized, not paler) and applied that consistently to the cursor/dot colors and the Tag
+"green" variant, which would otherwise have been nearly invisible. Found both by rendering
+real screenshots of both themes rather than eyeballing token values in isolation.
+
+**Where I overrode or redirected Claude:**
+N/A — Claude asked clarifying questions up front (typography approach, accent palette,
+Storybook coverage, whether brand motifs like the BM_ wordmark and terminal cursor should
+survive the theme switch) before writing any code, so there wasn't drift to correct after
+the fact.
+
+## 2026-07-17 (later)
+**What I did:**
+Pushed the Futuristic theme further after the first pass — Ben wanted it cleaner and more
+overtly sci-fi, and OK'd changing components/elements rather than just recoloring tokens.
+Dropped the grid background to ~5% opacity (his explicit ask), sharpened the geometry
+theme-wide (near-square corners, pill radius kept only for the toggle so it contrasts against
+the squared panels), and introduced a consistent HUD accent language: crisp azure hairlines
+(NavBar underline, 2px top rails on cards/panels/the 404 shell/contact channels, an accent
+edge on the docked chat rail, an inset azure edge on the active chat field), leading azure
+ticks on section kickers, solid azure index chips with a chamfered corner, and a squared
+status badge with a solid marker square. Relabeled all 18 Futuristic Storybook stories to
+"Futuristic V2".
+
+**What I decided:**
+Kept every change scoped under `[data-theme='futuristic']` plus one new `data-variant` hook on
+the Button (inert in retro), so retro is byte-for-byte unchanged. Chose not to spin up a
+separate `futuristic-v2` theme keeping V1 live — the product only needs one futuristic theme,
+git preserves V1, and a permanent second theme is maintenance cost with no user payoff. "V2"
+is just the Storybook iteration label.
+
+**Why:**
+The first pass proved the token system could carry a second theme; this pass is the payoff Ben
+asked for. Doing it as scoped overrides rather than a fork keeps the blast radius at zero for
+the default experience.
+
+**What I'm uncertain about:**
+Nothing blocking. The V1→V2 progression isn't preserved as a live comparison — if Ben wants a
+side-by-side later it'd need the separate-theme route I decided against here.
+
+**What Claude contributed:**
+Caught an accessibility trap before shipping it: chamfered (clip-path) buttons would have looked
+more HUD-like but clip-path also clips the focus-ring box-shadow — so the chamfer is used only on
+decorative index chips, never on focusable elements, and button focus rings stayed on the utility
+layer where no theme CSS can touch them. Also verified the push by re-screenshotting every page in
+both themes rather than assuming scoped overrides were safe.
+
+**Where I overrode or redirected Claude:**
+N/A.
+
+## 2026-07-17 (sign-off)
+**What I did:**
+Got sign-off from Ben on the Futuristic V2 push: "v2 looks perfect." No revisions requested.
+
+**What I decided:**
+Logged the approval in decisions.md rather than letting it pass silently — the scoping approach
+(theme overrides instead of a component fork, chamfer kept off focusable elements) is now a
+validated pattern for this project, not just a shipped one, and that's worth being able to point
+back to next time a similar variant/theme request comes up.
+
+**Why:**
+Confirmations are easy to lose track of once a task feels "done" — but knowing an approach was
+explicitly validated (not just unchallenged) is useful signal for how to make similar calls later.
+
+**What I'm uncertain about:**
+Nothing. The remaining open item (whether Futuristic needs its own OG image / meta description)
+predates this sign-off and is unrelated to it.
+
+**What Claude contributed:**
+N/A — documentation only, no implementation work in this entry.
+
+**Where I overrode or redirected Claude:**
+N/A.

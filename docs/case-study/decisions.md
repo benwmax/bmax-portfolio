@@ -274,3 +274,106 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
   applies — noting it here so it doesn't get lost after launch.
 - Open question: how long the Sagent placeholder stays live post-launch before the full
   case study replaces it.
+
+## 2026-07-17 — Add a user-selectable Futuristic theme alongside Retro
+- Decision: Built a second, user-toggleable theme — "Futuristic" — as an alternative to the
+  existing terminal/phosphor aesthetic, now called "Retro" for contrast. Retro stays the
+  default for every visitor; Futuristic is opt-in via a segmented Retro/Futuristic control
+  in the NavBar (top right, present on every page), persisted to localStorage. No layout
+  changes — same components, same page structure, same content — only the token layer and
+  a handful of scoped CSS overrides change per theme.
+- Reasoning: Ben requested a second visual mode inspired by clean, light sci-fi interfaces
+  (referencing UI screenshots from *Destiny*) as an additional demonstration of range and
+  systems thinking for the meta case study — a token system flexible enough to support a
+  second full aesthetic without a rewrite is itself a Principal-level signal.
+- Implementation approach: `[data-theme='futuristic']` attribute on `<html>`, set by an
+  inline script in `index.html` before first paint (so a saved preference never flashes the
+  wrong theme) and by `src/hooks/useTheme.ts` afterward. All theme-specific values live in
+  `src/tokens/tokens.css` as a `[data-theme='futuristic']` override block layered on top of
+  the existing `:root` (retro) tokens — component code is untouched except for a few
+  animation/shape swaps that couldn't be expressed as a color token (the blinking terminal
+  cursor becoming a soft pulse or a static dot; the ChatInput block caret thinning to an
+  insertion bar). `src/components/ThemeToggle/` is the new switch component, added to
+  `NavBar`.
+- Palette: cool pale surfaces (`#f2f5f8` page / `#fbfdfe` card), near-black slate text
+  (`#17222c`, ~15:1), azure primary accent (`#0467b3`) replacing phosphor green, deep gold
+  secondary accent (`#8f6400`) replacing amber. Space Grotesk replaces Space Mono for
+  display/chrome type; IBM Plex Mono is unchanged in both themes so data/metadata keeps a
+  technical throughline. The dot-grid texture becomes a fine line grid.
+- Contrast fix mid-build: the first pass reused retro's structure literally — accent-colored
+  text on a pale accent-tinted button fill (mirroring retro's dark-fill-plus-bright-text
+  button) — which measured under 4.5:1 on a light background, since both the tint and the
+  page are already light. Fixed by giving the futuristic primary button (`Button` primary
+  variant and `ChatInput`'s ASK button, now sharing the same `--btn-primary-*` token family)
+  a solid azure fill with white text instead. Also darkened `--color-green-bright` and
+  `--color-green-light` for the futuristic theme specifically — on a dark background,
+  "brightest" correctly means "palest/most luminous," but on a light background it has to
+  mean the opposite (darker, more saturated) to stay legible. Caught by contrast math during
+  build, not by a11y tooling — worth remembering that "swap the palette" isn't a safe
+  find-and-replace even when every individual color was chosen carefully.
+- Storybook: each component and page-level story gets one additional "Futuristic" story
+  (not tied to Storybook's own light/dark theme switcher, per Ben's explicit instruction) —
+  `parameters.theme = 'futuristic'` on the story, read by a decorator in
+  `.storybook/preview.tsx` that sets the same `[data-theme]` attribute the live toggle uses.
+- Alternatives considered: A Storybook-only theme switcher addon (rejected — Ben wants both
+  themes as directly linkable, permanent artifacts in the sidebar, not an ephemeral toolbar
+  state); reusing the green/amber token names for genuinely different hues without a comment
+  explaining the remap (rejected — would read as a bug to a future editor; documented inline
+  in tokens.css instead).
+- Open question: whether Futuristic should get its own OG image / meta description pass
+  before launch, or whether that's out of scope since Retro is the default first-impression
+  theme.
+
+## 2026-07-17 — Push the Futuristic theme further (V2)
+- Decision: Took a second pass on the Futuristic theme to make it read as more overtly, cleanly
+  sci-fi rather than "the light version of Retro." This went beyond the first pass's token-only
+  recolor — it changed component and element treatments. The enhanced Storybook stories are
+  labeled "Futuristic V2" (per Ben's instruction to label the pushed variants V2). The product
+  toggle is unchanged (still Retro/Futuristic); "V2" is the iteration label in Storybook, not a
+  third theme.
+- What changed:
+  - **Grid background dropped to ~5% opacity** (per Ben's explicit request): the futuristic line
+    grid's color became `rgba(23,34,44,0.05)` — barely-there, so it reads as a technical
+    substrate rather than graph paper. Cells also widened 28px → 32px.
+  - **Sharper geometry theme-wide**: futuristic radii dropped to 0–2px (`--radius-sm:0`,
+    `--radius-md:1px`, `--radius-lg:2px`) so chrome reads as instrument, not app. The pill radius
+    is untouched, so the ThemeToggle and status pills stay round against squared panels for
+    deliberate contrast.
+  - **Crisp azure hairline accents as a consistent HUD motif**, replacing the softer first pass:
+    a gradient underline on the NavBar, a 2px azure top rail on cards / chat panels / the 404
+    shell / contact channels, an azure accent edge on the docked chat rail, an inset azure edge on
+    the active chat field (inset shadow, so no focus layout shift), and a reusable `--accent-line`
+    token. Section kickers and the work kicker gained a leading azure tick (HUD label convention).
+  - **Solid HUD chips**: the case-study index chip and contact channel numbers became solid azure
+    blocks with white numerals and a chamfered corner (`clip-path`, decorative only — never on
+    focusable elements); the hero status badge became a squared chip with a solid azure marker
+    square instead of a round dot.
+  - **Button hook**: added a stable `data-variant` attribute to Button so the theme can add
+    per-variant refinements (a white top-inset on primary, azure hover on secondary) in index.css.
+    Focus rings were deliberately left on the Tailwind utility layer so no theme CSS can clip them.
+- Reasoning: the first pass proved the token architecture could carry a second theme; Ben wanted
+  the payoff pushed — cleaner, more distinctly sci-fi, more polished — and explicitly OK'd changing
+  components/elements (not just colors) to get there. Keeping every change scoped under
+  `[data-theme='futuristic']` (plus the `data-variant` hook, which is inert in retro) means retro
+  is byte-for-byte unaffected.
+- Alternatives considered: (1) A separate `[data-theme='futuristic-v2']` theme keeping V1 live for
+  A/B in the product — rejected; the product only needs one futuristic theme, and a permanent
+  second one is maintenance cost with no user benefit. V1 vs V2 is a Storybook-history concern, and
+  the git history already preserves V1. (2) Chamfered (clip-path) buttons for a stronger HUD look —
+  rejected because `clip-path` also clips the focus-ring box-shadow, an accessibility regression;
+  the chamfer is used only on decorative index chips instead.
+- Open question: none new. The V1-vs-V2 comparison isn't preserved as a live toggle — if Ben wants
+  a side-by-side later, it'd need the separate-theme approach above.
+
+## 2026-07-17 — Futuristic V2 approved as-is
+- Decision: Ben reviewed the Futuristic V2 push and signed off with no revision requests
+  ("v2 looks perfect"). The theme is considered done — HUD accent language, ~5% grid opacity,
+  sharpened geometry, solid chamfered index chips, and the `data-variant` Button hook all stand
+  as shipped.
+- Reasoning: n/a — this is a confirmation, not a new judgment call. Logged because it closes out
+  the open work from the two prior 2026-07-17 entries and confirms the approach (scoped
+  `[data-theme='futuristic']` overrides rather than a component fork, chamfer reserved for
+  non-focusable elements only) is validated, not just shipped — worth keeping as precedent for
+  how future theme/variant work in this project should be scoped and reviewed.
+- Open question: the OG image / meta description question from the first Futuristic entry
+  (2026-07-17, first entry) is still open and unrelated to this sign-off.

@@ -46,3 +46,21 @@ export const Default: Story = {
     },
   },
 };
+
+export const Futuristic: Story = {
+  name: 'Futuristic V2',
+  parameters: {
+    theme: 'futuristic',
+    docs: {
+      description: {
+        story:
+          'The resume under the Futuristic theme — token-driven light sci-fi treatment, no ' +
+          'page-specific overrides.',
+      },
+    },
+    ai: {
+      guidance:
+        'Resume page under the futuristic theme. If something looks wrong here, fix tokens.css — the page has no theme-specific code.',
+    },
+  },
+};

@@ -132,6 +132,49 @@ Per case study, document:
 - [x] Document all tokens in reference sheet before writing any code (2026-06-17)
 - [x] Log key identity decisions in decisions.md (2026-06-17)
 
+### 2A. Futuristic theme (post-completion addition, 2026-07-17)
+*Second user-selectable theme, added after Phase 2 shipped. See decisions.md
+2026-07-17 for full reasoning and palette.*
+
+- [x] Research clean, light sci-fi UI references (2026-07-17)
+- [x] Define `[data-theme='futuristic']` token override block in tokens.css —
+      azure/gold palette, Space Grotesk display type, fine line-grid texture (2026-07-17)
+- [x] Fix light-theme contrast: primary buttons (Button + ChatInput ASK) moved
+      to a solid azure fill; darkened green-bright/green-light so cursor dots,
+      hover text, and the Tag "green" variant clear 4.5:1 / 3:1 (2026-07-17)
+- [x] Build `useTheme` hook + `ThemeToggle` component; wired into NavBar top
+      right on every page, default Retro, persisted to localStorage, applied
+      pre-paint via an inline script in index.html (2026-07-17)
+- [x] Restyle every component and page for the futuristic theme — token-driven,
+      plus scoped CSS for the handful of effects that aren't colors (cursor
+      blink → soft pulse or static dot, block caret → insertion bar) (2026-07-17)
+- [x] Add one "Futuristic" story per component and per page-level story in
+      Storybook, named explicitly rather than tied to the Storybook theme
+      switcher (2026-07-17)
+- [x] Verify: production build, Storybook build, and full-page screenshots of
+      both themes across Home/Case Study/About/Contact/404 at desktop and
+      390px mobile (2026-07-17)
+
+#### 2A.1 — Futuristic V2 push (2026-07-17)
+*Second pass to make the theme read as cleaner/more overtly sci-fi, changing
+component/element treatments (not just tokens). Enhanced Storybook stories
+labeled "Futuristic V2". See decisions.md 2026-07-17 (second entry).*
+
+- [x] Drop the futuristic grid background to ~5% opacity (`--color-bg-dot` →
+      `rgba(23,34,44,0.05)`, cells 28→32px) (2026-07-17)
+- [x] Sharpen futuristic geometry theme-wide (radii → 0–2px; pill radius kept
+      for the toggle/status pills) (2026-07-17)
+- [x] Add crisp azure hairline HUD accents: NavBar underline gradient, 2px
+      azure top rail on cards/chat panels/404 shell/contact channels, docked-rail
+      accent edge, inset azure edge on the active chat field, leading azure ticks
+      on section/work kickers (2026-07-17)
+- [x] Solid HUD chips: azure index/channel numbers with chamfered corner; squared
+      status badge with a solid azure marker square (2026-07-17)
+- [x] Add `data-variant` hook to Button for per-variant theme refinement; focus
+      rings kept on the utility layer so theme CSS never clips them (2026-07-17)
+- [x] Relabel every Futuristic Storybook story to "Futuristic V2" (18 stories);
+      verify site build + Storybook build + re-screenshot both themes (2026-07-17)
+
 ---
 
 ## Phase 3 — Storybook Foundation

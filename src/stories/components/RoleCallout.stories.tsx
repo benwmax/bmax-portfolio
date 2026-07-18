@@ -134,3 +134,39 @@ export const LeadershipStory: Story = {
     </RoleCallouts>
   ),
 };
+
+export const Futuristic: Story = {
+  name: 'Futuristic V2',
+  parameters: {
+    theme: 'futuristic',
+    docs: {
+      description: {
+        story:
+          'Ownership rows under the Futuristic theme — hairline rules and slate text on the ' +
+          'light surface. Token-driven; no overrides.',
+      },
+    },
+    ai: {
+      guidance:
+        'Role callouts under the futuristic theme — token-driven. Same content rules as the retro stories.',
+    },
+  },
+  args: {
+    label: 'Owned',
+    content: 'Placeholder.',
+  },
+  render: () => (
+    <div style={{ width: '560px' }}>
+      <RoleCallouts>
+        <RoleCallout
+          label="Owned"
+          content="End-to-end design of the Hotel booking redesign — research through rollout."
+        />
+        <RoleCallout
+          label="In the room"
+          content="Contract renewal conversations where the redesign became the differentiator."
+        />
+      </RoleCallouts>
+    </div>
+  ),
+};

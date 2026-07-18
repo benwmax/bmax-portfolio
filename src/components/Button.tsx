@@ -31,8 +31,12 @@ const SIZES: Record<ButtonSize, string> = {
 };
 
 const VARIANTS: Record<ButtonVariant, string> = {
+  // Reads its colors from the --btn-primary-* tokens (not --color-interactive-*)
+  // so the futuristic theme's solid-fill treatment — needed for contrast on a
+  // light background — swaps in without touching this component. See
+  // tokens.css "Button — primary" component tokens.
   primary:
-    'bg-interactive-bg text-interactive border-interactive-border hover:bg-[var(--btn-primary-hover-bg)] hover:text-green-bright hover:border-green-accent',
+    'bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] border-[var(--btn-primary-border)] hover:bg-[var(--btn-primary-hover-bg)] hover:text-[var(--btn-primary-hover-text)] hover:border-[var(--btn-primary-hover-border)]',
   secondary:
     'bg-transparent text-text-secondary border-border-default hover:text-text-primary hover:border-border-strong',
   ghost: 'bg-transparent text-green-accent border-transparent px-2 hover:text-green-bright',
@@ -59,11 +63,16 @@ export function Button({
     .filter(Boolean)
     .join(' ');
 
+  // data-variant is a stable hook (the visible classes are Tailwind utilities,
+  // which aren't targetable per-variant). The futuristic theme uses it to add
+  // per-variant HUD refinements — see index.css. Focus rings stay on the utility
+  // layer so theme CSS never clips them.
   if (href && !disabled) {
     const isExternal = href.startsWith('http');
     return (
       <a
         className={cls}
+        data-variant={variant}
         href={href}
         onClick={onClick}
         target={isExternal ? '_blank' : undefined}
@@ -77,6 +86,7 @@ export function Button({
   return (
     <button
       type={type}
+      data-variant={variant}
       onClick={onClick}
       disabled={disabled}
       aria-disabled={disabled || undefined}

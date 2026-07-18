@@ -320,3 +320,19 @@
     gap: 8px;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   FUTURISTIC V2 — about HUD refinements
+   Section kickers get the leading azure tick used site-wide.
+   ═══════════════════════════════════════════════════════════════════ */
+:global([data-theme='futuristic']) .sectionKicker {
+  display: inline-flex;
+  align-items: center;
+}
+:global([data-theme='futuristic']) .sectionKicker::before {
+  content: '';
+  width: 16px;
+  height: 1px;
+  margin-right: 9px;
+  background: var(--color-green-accent);
+}

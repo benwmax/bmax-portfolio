@@ -27,7 +27,7 @@ const meta = {
         'Omit src while the actual screenshot is being sourced — the dot-grid placeholder is intentional.',
       ],
       avoid: [
-        "Never use a plain <img> tag for case study artifacts.",
+        'Never use a plain <img> tag for case study artifacts.',
         "Don't use a grey box placeholder — the dot-grid treatment is the system default.",
         "Don't skip the caption — figcaption is part of the semantic structure.",
       ],
@@ -56,8 +56,7 @@ export const SabrePlaceholder: Story = {
   name: 'Sabre — hotel workspace placeholder',
   parameters: {
     ai: {
-      guidance:
-        'Reference for the correct tab-label format in the Sabre case study.',
+      guidance: 'Reference for the correct tab-label format in the Sabre case study.',
       contentRules: [
         'Tab label uses the project codename in kebab-case: "sabre-red · hotel-workspace".',
       ],
@@ -67,5 +66,28 @@ export const SabrePlaceholder: Story = {
     tabLabel: 'sabre-red · hotel-workspace',
     caption:
       'Fig. 01 — Graphical Hotel mode with the command interface intact; agents move between the two freely.',
+  },
+};
+
+export const Futuristic: Story = {
+  name: 'Futuristic V2',
+  parameters: {
+    theme: 'futuristic',
+    docs: {
+      description: {
+        story:
+          'The figure chrome under the Futuristic theme — the window chrome lightens to a ' +
+          'clean panel, the live dot goes azure, and the placeholder background becomes the ' +
+          'fine line grid (the dot-grid token swaps per theme).',
+      },
+    },
+    ai: {
+      guidance:
+        'Figure chrome under the futuristic theme — token-driven, including the placeholder grid texture.',
+    },
+  },
+  args: {
+    tabLabel: 'usaa · A/B test pipeline',
+    caption: 'Fig 01 — The A/B pipeline that carried research insights into production.',
   },
 };

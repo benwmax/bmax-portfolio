@@ -119,3 +119,32 @@ export const ConversationSeeded: Story = {
     skipBoot: true,
   },
 };
+
+export const Futuristic: Story = {
+  name: 'Futuristic V2',
+  parameters: {
+    theme: 'futuristic',
+    docs: {
+      description: {
+        story:
+          'The homepage under the Futuristic theme, V2 — the pushed, more overtly sci-fi pass. ' +
+          'The user-selectable light theme (NavBar toggle, retro remains the default). Cool pale ' +
+          'page with the line grid dropped to ~5% opacity, squared HUD chrome, crisp azure ' +
+          'hairline accents (header underline, chat-panel top rail, docked-rail edge), a solid ' +
+          'azure status marker, leading azure ticks on section kickers, azure gold headline ' +
+          'highlight, and Space Grotesk display type. The typewriter cursor thins to an insertion ' +
+          'bar; the scanline is a near-invisible azure sheen. Boot skipped for layout review.',
+      },
+    },
+    ai: {
+      guidance:
+        'The full homepage under the futuristic theme. Entirely token-driven plus small scoped CSS overrides — never fork the page per theme.',
+      avoid: ["Don't build futuristic-specific page variants — one component, two token sets."],
+    },
+  },
+  args: {
+    onChatSubmit: fn(),
+    initialMessages: [],
+    skipBoot: true,
+  },
+};

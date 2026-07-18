@@ -33,7 +33,8 @@
   width: 100vw;
   pointer-events: none;
   z-index: 0;
-  background-image: radial-gradient(circle, var(--color-bg-dot) 1px, transparent 1px);
+  /* Token, not a literal gradient — futuristic swaps this to a fine line grid */
+  background-image: var(--dot-grid);
   background-size: 24px 24px;
 }
 
@@ -85,7 +86,7 @@
 .bootBarFill {
   height: 100%;
   background: var(--color-green-accent);
-  box-shadow: 0 0 10px var(--color-green-bright);
+  box-shadow: var(--glow-bright);
   transition: width 0.15s linear;
 }
 
@@ -109,7 +110,7 @@
   height: 140px;
   pointer-events: none;
   z-index: 3;
-  background: linear-gradient(180deg, transparent, rgba(0, 255, 94, 0.038) 50%, transparent);
+  background: linear-gradient(180deg, transparent, var(--scan-tint) 50%, transparent);
   animation: scanDrift 9s linear infinite;
 }
 
@@ -248,7 +249,13 @@
   margin-left: 0.08em;
   vertical-align: -0.08em;
   background: var(--color-green-bright);
-  box-shadow: 0 0 10px var(--color-green-bright);
+  box-shadow: var(--glow-bright);
+}
+
+/* Futuristic: typewriter block cursor thins to an insertion bar */
+:global([data-theme='futuristic']) .typeCursor {
+  width: 3px;
+  border-radius: 2px;
 }
 
 .heroLede {
@@ -338,9 +345,7 @@
   overflow: hidden;
   opacity: 0;
   animation: fadeUp 0.7s var(--ease-default) 0.4s forwards;
-  box-shadow:
-    0 0 0 1px rgba(0, 224, 84, 0.04),
-    0 24px 60px -30px rgba(0, 0, 0, 0.8);
+  box-shadow: var(--shadow-panel);
   transition:
     opacity 0.45s ease,
     transform 0.55s cubic-bezier(0.7, 0.1, 0.2, 1);
@@ -414,6 +419,20 @@
 
 .msgCursor {
   color: var(--color-green-bright);
+}
+
+/* Futuristic: the blinking "_" in chat messages becomes a soft pulsing dot.
+   font-size: 0 suppresses the underscore glyph; the box is reshaped in CSS
+   so no markup changes between themes. */
+:global([data-theme='futuristic']) .msgCursor {
+  font-size: 0;
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-full);
+  background: var(--color-green-bright);
+  margin-left: 5px;
+  vertical-align: middle;
 }
 
 .chatSuggestions {
@@ -767,7 +786,7 @@
     padding: 0 20px;
     height: 48px;
     cursor: pointer;
-    box-shadow: 0 4px 20px rgba(0, 224, 84, 0.35);
+    box-shadow: var(--shadow-fab);
     transition:
       background-color var(--duration-base) var(--ease-default),
       box-shadow var(--duration-base) var(--ease-default),
@@ -776,13 +795,13 @@
 
   .fab:hover {
     background: var(--color-green-bright);
-    box-shadow: 0 6px 28px rgba(0, 224, 84, 0.5);
+    box-shadow: var(--shadow-fab-hover);
     transform: translateY(-1px);
   }
 
   .fab:active {
     transform: translateY(0);
-    box-shadow: 0 2px 12px rgba(0, 224, 84, 0.3);
+    box-shadow: var(--shadow-fab-active);
   }
 
   .fab:focus-visible {
@@ -926,4 +945,78 @@
   .pageContent {
     transition: none;
   }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   FUTURISTIC V2 — homepage HUD refinements
+   Squared chrome, crisp azure hairline accents, and a solid-square status
+   marker replace the softer first pass. Applied on top of the token-level
+   theme, so retro is unaffected.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Status badge → squared HUD chip with a solid azure marker square */
+:global([data-theme='futuristic']) .statusBadge {
+  border-radius: 0;
+  letter-spacing: 0.18em;
+  position: relative;
+  padding-left: 28px;
+}
+:global([data-theme='futuristic']) .statusBadge::before {
+  content: '';
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  background: var(--color-green-bright);
+}
+
+/* Hero chat panel → solid white, squared, crisp azure top rail (no glass blur) */
+:global([data-theme='futuristic']) .chatPanel {
+  background: var(--color-bg-surface);
+  backdrop-filter: none;
+  border-top: 2px solid var(--color-green-accent);
+}
+
+/* Docked rail → azure accent edge instead of a plain hairline */
+:global([data-theme='futuristic']) .dockedPanel {
+  border-left: 2px solid var(--color-green-accent);
+}
+
+/* Chat bar header underline → azure hairline */
+:global([data-theme='futuristic']) .chatBar {
+  border-bottom-color: transparent;
+  background-image: linear-gradient(90deg, rgba(4, 103, 179, 0.4), transparent);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 60% 1px;
+}
+
+/* Work-section kicker → leading azure tick, HUD label convention */
+:global([data-theme='futuristic']) .workKicker {
+  display: inline-flex;
+  align-items: center;
+}
+:global([data-theme='futuristic']) .workKicker::before {
+  content: '';
+  width: 16px;
+  height: 1px;
+  margin-right: 9px;
+  background: var(--color-green-accent);
+}
+
+/* Suggestion chips → squared, technical, not soft pills */
+:global([data-theme='futuristic']) .chatSuggestBtn {
+  border-radius: 0;
+}
+:global([data-theme='futuristic']) .chatSuggestBtn:hover {
+  transform: none;
+  border-left-width: 3px;
+  padding-left: 13px;
+}
+
+/* Scroll cue → wider HUD tracking */
+:global([data-theme='futuristic']) .scrollCue {
+  letter-spacing: 0.3em;
 }

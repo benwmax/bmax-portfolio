@@ -25,11 +25,11 @@ const meta = {
       contentRules: [
         "Default placeholder: 'ask about my work…' — lowercase, trailing ellipsis, no period.",
         "status='online' is the starting state.",
-        "Set showStatus={false} when the surrounding panel already carries its own StatusIndicator.",
+        'Set showStatus={false} when the surrounding panel already carries its own StatusIndicator.',
       ],
       avoid: [
         "Don't use ChatInput as a generic form input — use the bare Input component instead.",
-        "forceFocused is Storybook-only — never wire it to application state.",
+        'forceFocused is Storybook-only — never wire it to application state.',
         "Don't use multiline for the compact homepage hero panel — single-line only there.",
       ],
     },
@@ -154,9 +154,7 @@ export const Offline: Story = {
     ai: {
       guidance:
         "Apply status='offline' when the API endpoint is unreachable. ASK disables; the field stays interactive for drafting.",
-      contentRules: [
-        'The field stays interactive so the user can draft a question while waiting.',
-      ],
+      contentRules: ['The field stays interactive so the user can draft a question while waiting.'],
     },
   },
   args: {
@@ -217,4 +215,30 @@ export const MultilineLoading: Story = {
     initialValue:
       "Walk me through how the hybrid command-line + graphical workspace was actually rolled out at Flightcentre — what did the first 90 days look like for the veteran agents, and how did you measure that productivity didn't dip during the transition?",
   },
+};
+
+export const Futuristic: Story = {
+  name: 'Futuristic V2',
+  parameters: {
+    theme: 'futuristic',
+    docs: {
+      description: {
+        story:
+          'The chat widget under the Futuristic theme. The phosphor glow becomes a soft azure ' +
+          'ring, the block caret thins to a 2px insertion bar with an eased pulse, and the ASK ' +
+          'label sets in Space Grotesk. Focus or fill the field to see the active treatment.',
+      },
+    },
+    ai: {
+      guidance:
+        'The full widget under the futuristic theme — token-driven plus a scoped caret override in ChatInput.module.css. No prop or logic changes between themes.',
+      avoid: ["Don't add theme props to ChatInput — [data-theme] CSS handles both looks."],
+    },
+  },
+  render: () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', width: '420px' }}>
+      <ChatInput onSubmit={() => {}} />
+      <ChatInput onSubmit={() => {}} multiline initialValue="How did Sabre win the $1B contract?" />
+    </div>
+  ),
 };

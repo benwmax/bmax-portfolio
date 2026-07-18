@@ -17,9 +17,7 @@ const meta = {
     ai: {
       guidance:
         'Terminal-themed 404 page. Fully self-contained — no props. Shows a fake shell session where the page request fails, then links home.',
-      contentRules: [
-        'The only CTA is a link back to the homepage.',
-      ],
+      contentRules: ['The only CTA is a link back to the homepage.'],
       avoid: [
         "Don't add a search bar or site map to the 404 page — link back home only.",
         "Don't replace the terminal-themed visual with a generic error illustration.",
@@ -38,6 +36,28 @@ export const Default: Story = {
         'The complete 404 page. No props needed. Reference this story to confirm the terminal aesthetic is intact after any token or style changes.',
       avoid: [
         "Don't alter the fake shell session copy — it's intentionally styled as a terminal command failure.",
+      ],
+    },
+  },
+};
+
+export const Futuristic: Story = {
+  name: 'Futuristic V2',
+  parameters: {
+    theme: 'futuristic',
+    docs: {
+      description: {
+        story:
+          'The 404 under the Futuristic theme. The fake shell session keeps its copy — a ' +
+          'command failure reads fine in a clean console — but the surfaces lighten, the ' +
+          'prompt goes azure, and the blinking underscore becomes a pulsing dot.',
+      },
+    },
+    ai: {
+      guidance:
+        '404 page under the futuristic theme — token-driven plus the termCursor dot override in NotFoundPage.module.css.',
+      avoid: [
+        "Don't rewrite the shell-session copy for the futuristic theme — content is theme-independent.",
       ],
     },
   },

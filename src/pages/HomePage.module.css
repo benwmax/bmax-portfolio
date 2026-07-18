@@ -26,7 +26,7 @@
 .hero {
   position: relative;
   background-color: var(--color-bg-page);
-  background-image: radial-gradient(circle, var(--color-bg-dot) 1px, transparent 1px);
+  background-image: var(--dot-grid);
   background-size: 24px 24px;
   border-bottom: 1px solid var(--color-border-subtle);
   min-height: calc(100vh - 72px - 220px);
@@ -224,6 +224,19 @@
 
 .msgCursor {
   color: var(--color-green-bright);
+}
+
+/* Futuristic: blinking "_" becomes a soft pulsing dot — see tokens.css
+   for the theme-level .cursor-blink animation swap */
+:global([data-theme='futuristic']) .msgCursor {
+  font-size: 0;
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-full);
+  background: var(--color-green-bright);
+  margin-left: 5px;
+  vertical-align: middle;
 }
 
 .chatSuggestions {
@@ -529,7 +542,7 @@
     padding: 0 20px;
     height: 48px;
     cursor: pointer;
-    box-shadow: 0 4px 20px rgba(0, 224, 84, 0.35);
+    box-shadow: var(--shadow-fab);
     transition:
       background-color var(--duration-base) var(--ease-default),
       box-shadow var(--duration-base) var(--ease-default),
@@ -538,13 +551,13 @@
 
   .fab:hover {
     background: var(--color-green-bright);
-    box-shadow: 0 6px 28px rgba(0, 224, 84, 0.5);
+    box-shadow: var(--shadow-fab-hover);
     transform: translateY(-1px);
   }
 
   .fab:active {
     transform: translateY(0);
-    box-shadow: 0 2px 12px rgba(0, 224, 84, 0.3);
+    box-shadow: var(--shadow-fab-active);
   }
 
   .fab:focus-visible {

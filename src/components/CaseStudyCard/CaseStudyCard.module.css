@@ -70,7 +70,7 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: repeating-linear-gradient(0deg, transparent 0 2px, rgba(0, 224, 84, 0.04) 2px 3px);
+  background: repeating-linear-gradient(0deg, transparent 0 2px, var(--scanline-overlay) 2px 3px);
   opacity: 0;
   transition: opacity 200ms ease;
 }
@@ -178,4 +178,40 @@
   color: var(--color-green-accent);
   font-family: var(--font-mono-display);
   font-weight: 700;
+}
+
+/* ——— FUTURISTIC V2 ———
+   Squared card with a crisp azure top-edge accent that lights on hover, a
+   solid azure index chip with a chamfered corner (HUD tag), and brighter
+   corner reticle brackets. Reads as an instrument readout, not a soft app
+   card. */
+:global([data-theme='futuristic']) .card {
+  border-top: 2px solid var(--color-border-default);
+  transition:
+    border-color var(--duration-base) var(--ease-default),
+    box-shadow var(--duration-base) var(--ease-default);
+}
+
+:global([data-theme='futuristic']) .card:hover,
+:global([data-theme='futuristic']) .hover {
+  border-color: var(--color-border-default);
+  border-top-color: var(--color-green-accent);
+  box-shadow: 0 -1px 0 0 var(--color-green-accent);
+}
+
+/* Solid azure block, white number, corner chamfered off the bottom-left */
+:global([data-theme='futuristic']) .chip {
+  background: var(--color-green-accent);
+  color: #ffffff;
+  border-color: var(--color-green-accent);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 7px 100%, 0 calc(100% - 7px));
+  letter-spacing: 0.14em;
+}
+
+/* Brackets: brighter (accent, not the muted border tint) even at rest */
+:global([data-theme='futuristic']) .card::before,
+:global([data-theme='futuristic']) .card::after {
+  border-color: var(--color-green-border);
+  width: 11px;
+  height: 11px;
 }

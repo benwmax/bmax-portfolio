@@ -60,9 +60,25 @@ export const Default: Story = {
       contentRules: [
         'Copy buttons show "COPIED ✓" confirmation for 1.8s — this is the expected behavior.',
       ],
-      avoid: [
-        "Don't remove the receipt strip — it's a key design element.",
-      ],
+      avoid: ["Don't remove the receipt strip — it's a key design element."],
+    },
+  },
+};
+
+export const Futuristic: Story = {
+  name: 'Futuristic V2',
+  parameters: {
+    theme: 'futuristic',
+    docs: {
+      description: {
+        story:
+          'The Contact page under the Futuristic theme — light surfaces, azure actions, gold ' +
+          'accents, Space Grotesk chrome. Fully token-driven; no Contact-specific overrides.',
+      },
+    },
+    ai: {
+      guidance:
+        'Contact page under the futuristic theme. Entirely token-driven — if something looks wrong here, fix tokens.css, not Contact.',
     },
   },
 };

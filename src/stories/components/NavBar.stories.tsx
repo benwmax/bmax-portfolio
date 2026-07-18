@@ -93,11 +93,36 @@ export const AboutActive: Story = {
       },
     },
     ai: {
-      guidance:
-        "About page state. Pass activePath='/about'.",
+      guidance: "About page state. Pass activePath='/about'.",
     },
   },
   args: {
     activePath: '/about',
   },
+};
+
+export const Futuristic: Story = {
+  name: 'Futuristic V2',
+  parameters: {
+    theme: 'futuristic',
+    docs: {
+      description: {
+        story:
+          'The header under the Futuristic theme. The blinking terminal underscore becomes a ' +
+          'static azure diamond (BM◆ — same markup, reshaped in CSS), the wordmark bolds in ' +
+          'Space Grotesk, and the solid bar becomes a translucent frosted panel. The ' +
+          'Retro/Futuristic toggle at the right edge is live in every story — it drives the ' +
+          'same [data-theme] attribute the site uses.',
+      },
+    },
+    ai: {
+      guidance:
+        'Header under the futuristic theme. The wordmark cursor swap is CSS-only (NavBar.module.css) — the BM_ markup and aria-label are identical in both themes.',
+      avoid: [
+        "Don't change the wordmark markup per theme — the underscore span is restyled, never replaced.",
+        "Don't move the ThemeToggle out of the NavBar — top right is its fixed home.",
+      ],
+    },
+  },
+  args: { activePath: '/work' },
 };
