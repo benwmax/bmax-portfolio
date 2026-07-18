@@ -172,6 +172,9 @@ process.exit(failures === 0 ? 0 : 1);
   const result = spawnSync('npx', ['tsx', probePath], {
     encoding: 'utf8',
     cwd: root,
+    // npx resolves to npx.cmd on Windows, which spawnSync can't exec directly
+    // without a shell — without this, the subprocess never starts at all.
+    shell: true,
     env: {
       ...process.env,
       // Port 1 on localhost: nothing listens there, so this fails fast
@@ -180,6 +183,7 @@ process.exit(failures === 0 ? 0 : 1);
       UPSTASH_REDIS_REST_TOKEN: 'invalid-token-for-fail-closed-test',
     },
   });
+  if (result.error) console.error('  failed to spawn probe subprocess:', result.error);
   if (result.stdout) console.log(result.stdout.trim());
   if (result.status !== 0 && result.stderr) console.error(result.stderr);
   record(check('all fail-closed probes passed (see ✓/✗ above)', result.status === 0));

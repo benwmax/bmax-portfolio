@@ -611,3 +611,43 @@ chips on first visit) rather than leaving a subtly broken interaction.
 
 **Where I overrode or redirected Claude:**
 N/A.
+
+## 2026-07-18 (verification run)
+**What I did:**
+Had Claude run `docs/testing/hardening-verification.md` step by step against real Anthropic
+and Upstash credentials and report pass/fail on each step.
+
+**What I decided:**
+Approved both fixes Claude flagged from the run: add `shell: true` to the `spawnSync('npx', ...)`
+call in `scripts/verify-cap-atomicity.mjs`, and add `storybook-static` to the ESLint
+`globalIgnores` list. Also asked for this entry.
+
+**Why:**
+Both were bugs in the verification tooling itself, not the hardening pass it was checking —
+worth fixing so the runbook gives a trustworthy signal on this (Windows) machine instead of
+false alarms that'd need re-diagnosing every time it's run.
+
+**What I'm uncertain about:**
+Nothing about the hardening pass itself — steps 1–6 (build/lint, CSP hash, Redis atomicity,
+fail-closed behavior, full-stack smoke test, IP-spoofing fix, request-size guard) all passed
+against real infrastructure once the tooling bugs were fixed. Steps 7 (browser checks) and 8
+(production headers) are still unverified — 7 needs a real browser session, 8 needs an actual
+deploy, neither of which happened in this run.
+
+**What Claude contributed:**
+Ran the full runbook and found two real bugs in the verification scripts, not the product code:
+(1) Step 2's raw-byte CSP hash comparison spuriously fails on this machine because
+`core.autocrlf=true` converts the repo's LF line endings to CRLF in the local working tree,
+which changes the SHA-256 of the built inline script — confirmed harmless by re-hashing with
+line endings normalized back to LF, which matched `vercel.json` exactly (git stores the file as
+LF, and Vercel's Linux build servers won't reintroduce CRLF, so production was never at risk).
+(2) `scripts/verify-cap-atomicity.mjs`'s fail-closed subprocess check called
+`spawnSync('npx', ...)` without `shell: true`, which throws `ENOENT` on Windows before the
+subprocess even starts (npx resolves to `npx.cmd`) — the script swallowed `result.error` and
+just reported a bare failure. Manually reproduced the same three probes to confirm the
+fail-closed behavior itself was correct before touching the script, then fixed the spawn call
+and re-ran to confirm: lint now reports the expected 15 pre-existing problems, and the
+atomicity script now prints `All checks passed.` end to end.
+
+**Where I overrode or redirected Claude:**
+N/A.
