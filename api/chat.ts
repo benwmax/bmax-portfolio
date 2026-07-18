@@ -1,11 +1,13 @@
 import { checkRateLimit } from './lib/rate-limit';
 import { SYSTEM_PROMPT } from './lib/system-prompt';
 import {
-  getGlobalUsageToday,
   getSessionId,
   loadSession,
   newSessionId,
-  recordGlobalUsage,
+  releaseGlobalMessage,
+  releaseSessionMessage,
+  reserveGlobalMessage,
+  reserveSessionMessage,
   saveSession,
   sessionCookieHeader,
   type StoredMessage,
@@ -25,6 +27,9 @@ const MAX_MESSAGE_LENGTH = 500;
 // degrades gracefully instead of the workspace hard-cutting the key.
 // Re-tune if the Workspace spend cap changes — see decisions.md.
 const GLOBAL_DAILY_MESSAGE_CAP = 500;
+// Defense-in-depth beyond the platform's own body-size limit — a real
+// request body here is a few hundred bytes at most.
+const MAX_REQUEST_BYTES = 8 * 1024;
 
 const ALLOWED_ORIGINS = ['https://viewbens.work', 'http://localhost:5173', 'http://localhost:4173'];
 
@@ -53,6 +58,17 @@ function logEvent(event: Record<string, unknown>): void {
   console.log(JSON.stringify({ ts: new Date().toISOString(), ...event }));
 }
 
+function jsonResponse(status: number, body: Record<string, unknown>, cors: Record<string, string>): Response {
+  return new Response(JSON.stringify(body), { status, headers: { ...cors, 'Content-Type': 'application/json' } });
+}
+
+// Used whenever a Redis-backed check (rate limit or either cap reservation)
+// throws. Fails closed: chat goes down for the outage's duration rather
+// than letting rate limiting or the spend breaker run unenforced.
+function unavailableResponse(cors: Record<string, string>): Response {
+  return jsonResponse(503, { error: 'Chat is temporarily unavailable — please try again shortly.' }, cors);
+}
+
 export default async function handler(req: Request): Promise<Response> {
   const origin = req.headers.get('origin');
   const cors = corsHeaders(origin);
@@ -71,32 +87,41 @@ export default async function handler(req: Request): Promise<Response> {
   // visitor's browser to call this endpoint.
   if (origin && !ALLOWED_ORIGINS.includes(origin)) {
     logEvent({ event: 'blocked', reason: 'origin', origin });
-    return new Response(JSON.stringify({ error: 'Origin not allowed.' }), {
-      status: 403,
-      headers: { ...cors, 'Content-Type': 'application/json' },
-    });
+    return jsonResponse(403, { error: 'Origin not allowed.' }, cors);
   }
 
-  // Rate limiting — x-real-ip is Vercel's single-value client IP (set at the
-  // edge, not client-controllable); x-forwarded-for is a fallback only.
-  const ip = req.headers.get('x-real-ip') ?? req.headers.get('x-forwarded-for')?.split(',')[0].trim();
+  const contentLength = req.headers.get('content-length');
+  if (contentLength && Number(contentLength) > MAX_REQUEST_BYTES) {
+    logEvent({ event: 'blocked', reason: 'payload-too-large' });
+    return jsonResponse(413, { error: 'Request too large.' }, cors);
+  }
+
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    logEvent({ event: 'error', reason: 'no-api-key' });
+    return jsonResponse(503, { error: 'Service unavailable.' }, cors);
+  }
+
+  // IP identity for rate limiting — x-real-ip is Vercel's single-value
+  // client IP, set at the edge and not client-controllable. Deliberately no
+  // fallback to x-forwarded-for: that header can be freely prefixed by the
+  // caller, which would let a client pick its own rate-limit bucket.
+  const ip = req.headers.get('x-real-ip');
   if (!ip) {
     logEvent({ event: 'blocked', reason: 'no-ip' });
-    return new Response(JSON.stringify({ error: 'Unable to identify request.' }), {
-      status: 400,
-      headers: { ...cors, 'Content-Type': 'application/json' },
-    });
+    return jsonResponse(400, { error: 'Unable to identify request.' }, cors);
   }
 
-  const { success } = await checkRateLimit(ip);
-  if (!success) {
+  let rateLimitOk: boolean;
+  try {
+    ({ success: rateLimitOk } = await checkRateLimit(ip));
+  } catch {
+    logEvent({ event: 'error', reason: 'redis-unavailable', stage: 'rate-limit' });
+    return unavailableResponse(cors);
+  }
+  if (!rateLimitOk) {
     logEvent({ event: 'blocked', reason: 'rate-limit', ip });
-    return new Response(
-      JSON.stringify({
-        error: `Rate limit reached. Maximum ${MAX_MESSAGES_PER_HOUR} messages per hour.`,
-      }),
-      { status: 429, headers: { ...cors, 'Content-Type': 'application/json' } },
-    );
+    return jsonResponse(429, { error: `Rate limit reached. Maximum ${MAX_MESSAGES_PER_HOUR} messages per hour.` }, cors);
   }
 
   let body: { message?: unknown; pageContext?: unknown };
@@ -104,19 +129,13 @@ export default async function handler(req: Request): Promise<Response> {
     body = await req.json();
   } catch {
     logEvent({ event: 'blocked', reason: 'invalid-json', ip });
-    return new Response(JSON.stringify({ error: 'Invalid JSON.' }), {
-      status: 400,
-      headers: { ...cors, 'Content-Type': 'application/json' },
-    });
+    return jsonResponse(400, { error: 'Invalid JSON.' }, cors);
   }
 
   const rawMessage = body.message;
   if (typeof rawMessage !== 'string' || rawMessage.trim() === '') {
     logEvent({ event: 'blocked', reason: 'invalid-message', ip });
-    return new Response(JSON.stringify({ error: 'message must be a non-empty string.' }), {
-      status: 400,
-      headers: { ...cors, 'Content-Type': 'application/json' },
-    });
+    return jsonResponse(400, { error: 'message must be a non-empty string.' }, cors);
   }
   const userMessage: StoredMessage = { role: 'user', content: rawMessage.slice(0, MAX_MESSAGE_LENGTH) };
 
@@ -136,35 +155,48 @@ export default async function handler(req: Request): Promise<Response> {
   const isNewSession = !sid;
   if (!sid) sid = newSessionId();
 
-  const session = await loadSession(sid);
-
-  if (session.count >= SESSION_MESSAGE_CAP) {
+  // Both caps are reserved atomically (Redis INCR) before the model is ever
+  // called, and released (DECR'd) on any path that doesn't end in a real
+  // reply. This closes a check-then-act race: a plain GET-then-later-write
+  // would let concurrent requests near a cap all pass the check before any
+  // of them recorded usage. A Redis error here propagates and fails closed
+  // (unavailableResponse) rather than silently letting a cap go unenforced.
+  let sessionCount: number;
+  try {
+    sessionCount = await reserveSessionMessage(sid);
+  } catch {
+    logEvent({ event: 'error', reason: 'redis-unavailable', stage: 'session-reserve' });
+    return unavailableResponse(cors);
+  }
+  if (sessionCount > SESSION_MESSAGE_CAP) {
+    await releaseSessionMessage(sid);
     logEvent({ event: 'blocked', reason: 'session-cap', ip });
-    return new Response(
-      JSON.stringify({
-        error: `Session limit reached (${SESSION_MESSAGE_CAP} messages). Refresh the page to start a new session.`,
-      }),
-      { status: 429, headers: { ...cors, 'Content-Type': 'application/json' } },
+    return jsonResponse(
+      429,
+      { error: `Session limit reached (${SESSION_MESSAGE_CAP} messages). Refresh the page to start a new session.` },
+      cors,
     );
   }
 
-  const globalUsage = await getGlobalUsageToday();
-  if (globalUsage >= GLOBAL_DAILY_MESSAGE_CAP) {
-    logEvent({ event: 'blocked', reason: 'global-budget', globalUsage });
-    return new Response(
-      JSON.stringify({ error: 'Chat is temporarily at capacity — please check back later.' }),
-      { status: 503, headers: { ...cors, 'Content-Type': 'application/json' } },
-    );
+  let globalCount: number;
+  try {
+    globalCount = await reserveGlobalMessage();
+  } catch {
+    await releaseSessionMessage(sid);
+    logEvent({ event: 'error', reason: 'redis-unavailable', stage: 'global-reserve' });
+    return unavailableResponse(cors);
+  }
+  if (globalCount > GLOBAL_DAILY_MESSAGE_CAP) {
+    await releaseSessionMessage(sid);
+    await releaseGlobalMessage();
+    logEvent({ event: 'blocked', reason: 'global-budget', globalUsage: globalCount });
+    return jsonResponse(503, { error: 'Chat is temporarily at capacity — please check back later.' }, cors);
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    logEvent({ event: 'error', reason: 'no-api-key' });
-    return new Response(JSON.stringify({ error: 'Service unavailable.' }), {
-      status: 503,
-      headers: { ...cors, 'Content-Type': 'application/json' },
-    });
-  }
+  // History load is best-effort/fail-open (see session.ts) — it only
+  // affects answer context, not either cap, both of which are already
+  // reserved above.
+  const session = await loadSession(sid);
 
   // Trim history to keep context window costs predictable
   const trimmed = [...session.history, userMessage].slice(-MAX_HISTORY_MESSAGES);
@@ -196,11 +228,13 @@ export default async function handler(req: Request): Promise<Response> {
   });
 
   if (!anthropicRes.ok || !anthropicRes.body) {
+    // The reservations above were for a message that never got a real
+    // reply — release both so a failed attempt doesn't count against
+    // either cap.
+    await releaseSessionMessage(sid);
+    await releaseGlobalMessage();
     logEvent({ event: 'error', reason: 'upstream', status: anthropicRes.status });
-    return new Response(JSON.stringify({ error: 'Upstream error.' }), {
-      status: 502,
-      headers: { ...cors, 'Content-Type': 'application/json' },
-    });
+    return jsonResponse(502, { error: 'Upstream error.' }, cors);
   }
 
   // Parse Anthropic's SSE stream, forward text delta chunks to the client,
@@ -253,8 +287,7 @@ export default async function handler(req: Request): Promise<Response> {
       const newHistory: StoredMessage[] = [...session.history, userMessage, assistantMessage].slice(
         -MAX_HISTORY_MESSAGES,
       );
-      await saveSession(sidForClosure, { history: newHistory, count: session.count + 1 });
-      await recordGlobalUsage();
+      await saveSession(sidForClosure, { history: newHistory });
 
       logEvent({
         event: 'reply',

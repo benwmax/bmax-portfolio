@@ -466,10 +466,10 @@ started; Phases 6–7 not started. Per decisions.md 2026-07-16, launch is being
 prioritized ahead of the Sagent case study — Sagent ships with placeholder copy
 and gets a full pass post-launch.
 
-**Last updated:** 2026-07-17 (Futuristic theme added; Phase line resynced against
-build-plan.md's Phase Status table, which had moved on without this section since
-2026-06-22 — worth a closer full reconciliation pass when there's time, since this
-resync only pulled the phase-level status, not every sub-item)
+**Last updated:** 2026-07-18 (Security/QA hardening pass on the AI chat backend —
+see decisions.md 2026-07-18; "Immediate next steps" corrected against
+build-plan.md, which had moved further ahead of this section's prose than the
+2026-07-17 resync caught — Phase 3G, 4D, and most of 4E were already done)
 
 **Completed:**
 - Domain confirmed: viewbens.work (existing site stays live until launch)
@@ -517,9 +517,13 @@ resync only pulled the phase-level status, not every sub-item)
 - Phase 3A complete: Prettier (`.prettierrc` + prettier-plugin-tailwindcss installed,
   full formatting pass run), path alias `@/` → `src/` in tsconfig and vite.config (2026-06-20)
 - Chat feature code complete (Phase 4F): useChatSession hook extracted to
-  src/hooks/useChatSession.ts — deduplicates streamChat from both pages, sends
-  sessionMessageCount with every request (activates server-side session cap), surfaces
-  API error messages (rate limit, session cap) as assistant messages (2026-06-20)
+  src/hooks/useChatSession.ts — deduplicates streamChat from both pages, surfaces
+  API error messages (rate limit, session cap) as assistant messages (2026-06-20).
+  Note: this entry originally said the client sends `sessionMessageCount` to
+  "activate" the cap — superseded by the 2026-07-17 session-authority rewrite
+  (client sends only `{message, pageContext}`; the cap is derived server-side
+  from the `bmax_chat_sid` cookie, see api/lib/session.ts). Corrected 2026-07-18
+  so this doesn't read as the current contract.
 - About, Resume, and 404 page templates built with full Storybook stories (2026-06-20) —
   Phase 3F complete. Market Rebellion included as a brief mention in About career arc
   (decided 2026-06-20). Location confirmed as Dallas, Texas.
@@ -569,18 +573,36 @@ resync only pulled the phase-level status, not every sub-item)
   chamfered index chips), and a `data-variant` hook on Button. All scoped to
   `[data-theme='futuristic']` — retro is unchanged. Enhanced Storybook stories relabeled
   "Futuristic V2". See decisions.md 2026-07-17 (second entry).
+- Security/QA hardening pass on the AI chat backend (2026-07-18): closed a check-then-act
+  race on both spend-relevant caps (session cap, global daily budget) by switching to
+  atomic Redis INCR/DECR reservations in api/lib/session.ts; added a per-IP daily rate
+  limit alongside the existing hourly one (api/lib/rate-limit.ts) so one visitor can't
+  alone consume most of the shared daily budget; Redis failures on rate-limit/cap checks
+  now fail closed (503) instead of an uncaught exception or silent fail-open; dropped the
+  spoofable `x-forwarded-for` IP fallback; added a request-size guard. Enforced CSP
+  (Content-Security-Policy, hash-based script-src) replacing the prior Report-Only header;
+  added HSTS and asset cache-control headers to vercel.json. Enabled TypeScript `strict`
+  mode across the whole project (tsconfig.app.json, tsconfig.node.json) and added a new
+  tsconfig.api.json so api/ is actually type-checked by `npm run build` — it previously
+  wasn't covered by either project reference. Added a client-side stream timeout and a
+  double-submit guard to the chat widget (src/hooks/useChatSession.ts). See decisions.md
+  2026-07-18 for the fail-closed and CSP-enforcement calls.
 
 **Immediate next steps:**
+(Corrected 2026-07-18 — this list had drifted from build-plan.md and from this
+file's own Phase Status line above: Phase 3G shipped 2026-07-16, Phase 4D is
+complete, and 4E's meta descriptions/sitemap.xml/robots.txt/canonical tags were
+already done, leaving only OG images. build-plan.md's 4D/4E checkboxes are the
+source of truth if this drifts again.)
 - **Ben's actions to go live:** Create Anthropic Workspace + API key and Upstash Redis
-  database, add all three env vars to Vercel — chat is fully wired, blocked only on these
+  database, add all three env vars to Vercel — chat code is complete (Phase 4F),
+  blocked only on these
 - **Ben to choose homepage direction:** Signal / Boot / Phosphor — all three are in
   Storybook Explorations section for side-by-side comparison
 - **Phase 1C:** Sagent brain dump — strongest Director-level case study, starts from zero
-- **Phase 3G:** Deploy Storybook to separate Vercel project on system.viewbens.work
-- **Phase 4D:** Responsive QA at 1440/1280/768/390px
-- **Phase 4E:** SEO foundations (meta descriptions, OG images, sitemap.xml, robots.txt,
-  canonical tags)
-- **Phase 4F:** Deploy AI chat to Vercel and test — blocked on Ben's env var setup
+- **Phase 4E:** OG images only — create 1200×630 PNGs in public/og/ before launch
+  (meta descriptions, sitemap.xml, robots.txt, and canonical tags are already done;
+  see build-plan.md 4E)
 
 **Decisions still open:**
 - Market Rebellion: referenced on About page as brief career arc item (decided 2026-06-20)
