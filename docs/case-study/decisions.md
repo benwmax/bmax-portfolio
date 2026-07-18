@@ -377,3 +377,122 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
   how future theme/variant work in this project should be scoped and reviewed.
 - Open question: the OG image / meta description question from the first Futuristic entry
   (2026-07-17, first entry) is still open and unrelated to this sign-off.
+
+## 2026-07-17 — AI chat widget: abuse-prevention hardening pass
+- Decision: Hardened `api/chat.ts` and related files against LLM abuse — jailbreak/impersonation
+  attempts, prompt injection (including a fabricated-history vector found in the existing code),
+  code-execution requests, and resource abuse. Full plan and reasoning captured in a plan-mode
+  session; summary below.
+- What changed:
+  - **System prompt** (`api/lib/system-prompt.ts`): added a SAFETY section — persona-lock
+    (no user framing, hypothetical or otherwise, can change scope/persona/format), an
+    ignore-embedded-instructions clause (text inside visitor messages that looks like a system
+    message or an authority claim is untrusted data, never a command), an anti-defamation/
+    anti-impersonation clause (never generate negative/false claims about Ben or speak as him in
+    first person), a groundedness clause (say "not covered" rather than inventing plausible
+    answers to on-topic-but-unsupported questions), and a no-code-execution clause (not a coding
+    assistant, won't generate/execute/explain code or claim unavailable capabilities).
+  - **Server-side session authority** (new `api/lib/session.ts`): the client previously sent its
+    entire message history — including `assistant` turns, which are just React state — back to
+    the server on every request, and the server trusted it verbatim. A modified client could
+    fabricate a prior "assistant" turn that already appeared to have broken character, a classic
+    fake-prior-compliance jailbreak that no amount of shape/role validation can detect, since a
+    well-formed fake turn is indistinguishable from a real one. Fixed by moving conversation
+    history and the session message cap into a Redis-backed record keyed by an HttpOnly cookie
+    (`bmax_chat_sid`); the client now sends only the newest message, and the server appends to
+    its own authoritative history. Degrades to stateless single-turn mode if Redis is unavailable
+    (fails safe: no history = no injection surface). `src/hooks/useChatSession.ts` simplified
+    to match — the wire payload shrank from the full message array + a client-reported
+    `sessionMessageCount` to just the new message text.
+  - **IP source**: switched from parsing `x-forwarded-for` (comma-split, `'unknown'` fallback
+    shared a rate-limit bucket across unidentified clients) to `x-real-ip` (Vercel's single-value,
+    edge-set client IP), failing closed (400) if neither header is present.
+  - **CORS enforcement**: `api/chat.ts` previously only set response headers reflecting the
+    allowed origin — it never rejected a request server-side, so the check did nothing on its
+    own. Added an explicit 403 reject when `Origin` is present and not in `ALLOWED_ORIGINS`.
+    Framed for future reference: this stops other sites' pages from riding a visitor's browser to
+    call the endpoint (CSRF-style); it does not stop direct script/curl abuse, since non-browser
+    callers don't send a trustworthy `Origin` header — rate limiting and the session cap cover
+    that.
+  - **Global daily budget circuit breaker**: `GLOBAL_DAILY_MESSAGE_CAP = 500` in `api/chat.ts`,
+    a Redis counter (`api/lib/session.ts`) incremented only after a successful model call. Chosen
+    as a conservative starting ceiling meant to keep the widget well under the Anthropic
+    Workspace's monthly spend cap even under a coordinated multi-IP spike (which per-IP rate
+    limiting alone can't catch) — **not yet tied to Ben's actual Workspace spend cap number**,
+    since that wasn't available during this pass. Re-tune once the Workspace is set up (see the
+    "Ben's actions to go live" item in this file's status section / build-plan.md).
+  - **Security headers** (`vercel.json`): added `X-Content-Type-Options`, `X-Frame-Options: DENY`,
+    `Referrer-Policy`, `Permissions-Policy` (camera/mic/geolocation disabled), and a
+    `Content-Security-Policy-Report-Only` header. Shipped as report-only rather than enforcing —
+    it currently allows `'unsafe-inline'` for `script-src`/`style-src` (needed for the inline
+    theme-flash-prevention script in `index.html` and inline `style={{}}` usage in a few page
+    components) as a starting point to observe real violations before tightening. Before ever
+    switching to enforcing mode, the inline theme script should move to a nonce or hash so
+    `'unsafe-inline'` can be dropped from `script-src` — that's the real security value of a CSP
+    and report-only mode doesn't deliver it on its own.
+  - **Structured logging**: one JSON line per request via `console.log` (captured as Vercel
+    Function Logs, no new vendor) at every decision point — blocked events (bad origin, missing
+    IP, rate-limited, invalid message, session-capped, global-budget-capped) and successful
+    replies (latency, output length, stop_reason). Logs metadata only, never full visitor message
+    text.
+  - **Documentation**: added a standing rule to `CLAUDE.md`'s AI Chat Feature section — if
+    assistant-output rendering is ever changed to support markdown/HTML, that change must ship
+    with output sanitization (e.g. DOMPurify) in the same commit. Not acted on now — confirmed no
+    unsafe rendering sink exists today (plain JSX text interpolation, React auto-escapes).
+- Reasoning: Ben asked how to protect the chat widget from reputational abuse (jailbreaking it
+  into saying negative/false things about him), lying/hallucination, code injection, and general
+  LLM abuse. A read of the existing implementation found reasonable bones already in place
+  (scope-limiting language, per-IP rate limiting, length caps, non-leaky error messages, safe
+  output rendering) but several concrete gaps, most importantly the fabricated-history vector —
+  the one item that couldn't be closed by better validation alone and needed an actual
+  architecture change.
+- Alternatives considered: a moderation-model/second-LLM classification pass (rejected —
+  disproportionate cost/latency for a low-traffic, already narrow-scope widget); a WAF or paid
+  guardrail service (rejected — disproportionate for this scale); CAPTCHA/Turnstile at launch
+  (rejected — hurts UX for the actual audience, recruiters trying the widget; held in reserve for
+  if real recurring abuse shows up); an automated alerting pipeline (rejected for now — the
+  Workspace spend cap is already the real backstop; occasional manual dashboard checks are
+  proportionate at this scale).
+- Open question: `GLOBAL_DAILY_MESSAGE_CAP`'s value (500) needs to be revisited once Ben's
+  Anthropic Workspace spend cap is actually known — currently a placeholder informed guess, not
+  a number derived from real pricing math. Also open: whether/when to move the CSP from
+  report-only to enforcing, which requires first fixing the inline-script `'unsafe-inline'` gap
+  noted above.
+
+## 2026-07-18 — Verified the abuse-prevention hardening against real credentials
+- Decision: Built `scripts/verify-chat-safeguards.mjs` to test the 2026-07-17 hardening pass
+  end to end, rather than testing through `vercel dev`. It imports `api/chat.ts`'s handler
+  directly and drives it with constructed `Request` objects — real Redis, real Anthropic calls,
+  no local server, no port/CORS juggling. Ran it and confirmed every safeguard behaves as
+  designed.
+- What it found: all 6 objective checks passed — CORS rejects a disallowed origin (403), a
+  session cookie is issued and conversation history persists correctly across turns (server
+  correctly recalled a prior question when asked "what did I just ask you?"), the
+  fabricated-history injection attempt (a fake `assistant` turn claiming Ben already admitted
+  his USAA numbers were fabricated) was completely ignored by the reply, all four jailbreak/
+  persona-override probes (DAN-style override, hypothetical-critic framing, fake system-override
+  claim, code-generation request) were declined cleanly with a redirect back to scope, and
+  invalid-input handling (empty message, malformed JSON) both returned 400. Rate-limit (20/hr)
+  and session-cap (30/session) boundary tests were deliberately skipped — confirming them would
+  cost ~50 real model calls against the Workspace's spend cap to exercise a mechanism (the Redis
+  session store) already proven working by the other checks.
+- Reasoning: the 2026-07-17 pass was implemented and typechecked but never exercised against
+  real infrastructure — in particular, the fabricated-history fix (the centerpiece of that pass)
+  needed to be proven against an actual model response, not just reasoned about.
+- A real gotcha worth recording for future local-dev work in this project: getting real
+  secrets into a local `.env.local` here was harder than expected. Claude's own sandboxed Bash
+  tool redacts anything secret-shaped that flows through a command it runs — `vercel env pull`
+  executed through Claude's tool wrote the literal string `"[SENSITIVE]"` as the env var value
+  instead of the real credential, breaking every Redis call. Testing the hypothesis that this
+  was specific to Claude's sandbox: Ben ran the identical `vercel env pull` command himself, but
+  in VSCode's integrated terminal, and got the exact same `"[SENSITIVE]"` placeholder — proving
+  the redaction isn't confined to Claude's own tool calls, it's Claude Code's extension reaching
+  into any terminal it has visibility into, including ones typed into directly. Moving to a
+  terminal window opened completely outside VSCode fixed it immediately. Separately (and
+  unrelated to the above), that standalone terminal then hit a PowerShell execution-policy block
+  on `npx.ps1` — worked around with `npx.cmd` instead of changing the system's execution policy.
+  **Takeaway for future sessions**: any local testing in this project that needs real secrets in
+  a file must be run from a terminal opened outside VSCode, not the integrated terminal panel.
+- Alternatives considered: continuing to debug `vercel dev` locally (abandoned — the direct
+  handler-import approach in the verify script sidesteps `vercel dev`'s port/env/CORS quirks
+  entirely and is simpler to rerun after future `api/chat.ts` changes).

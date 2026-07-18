@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import type { ChatWidgetStatus } from '../components/ChatInput';
 
 export interface Message {
@@ -15,20 +15,17 @@ export function splitParagraphs(text: string): string[] {
   return text.split(/\n/).filter((p) => p.trim() !== '');
 }
 
+// The server holds conversation history and the session message count
+// (keyed by an HttpOnly cookie) — it never trusts client-supplied history or
+// counts, so only the newest message is sent. See api/lib/session.ts.
+//
 // Returns errorText on API-level failures (rate limit, session cap, upstream error).
 // Throws only on network failures.
-async function streamChat(
-  messages: Message[],
-  sessionMessageCount: number,
-  onChunk: (text: string) => void,
-): Promise<{ errorText?: string }> {
+async function streamChat(message: string, onChunk: (text: string) => void): Promise<{ errorText?: string }> {
   const res = await fetch('/api/chat', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      messages: messages.map((m) => ({ role: m.role, content: m.text })),
-      sessionMessageCount,
-    }),
+    body: JSON.stringify({ message }),
   });
 
   if (!res.ok) {
@@ -72,14 +69,6 @@ export function useChatSession({
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [chatStatus, setChatStatus] = useState<ChatWidgetStatus>('online');
 
-  // Refs so callbacks always see latest values without stale closures
-  const messagesRef = useRef(messages);
-  const sessionCountRef = useRef(0);
-
-  useEffect(() => {
-    messagesRef.current = messages;
-  }, [messages]);
-
   const handleSubmit = useCallback(
     async (text: string) => {
       if (onSubmit) {
@@ -87,13 +76,10 @@ export function useChatSession({
         return;
       }
 
-      const withUser: Message[] = [...messagesRef.current, { role: 'user', text }];
-      setMessages(withUser);
       setChatStatus('loading');
-      sessionCountRef.current += 1;
-
-      // Append empty assistant slot immediately so the cursor appears
-      setMessages((prev) => [...prev, { role: 'assistant', text: '' }]);
+      // Append the user turn and an empty assistant slot immediately so the
+      // cursor appears right away.
+      setMessages((prev) => [...prev, { role: 'user', text }, { role: 'assistant', text: '' }]);
 
       const replaceLastAssistant = (t: string) =>
         setMessages((prev) => {
@@ -103,7 +89,7 @@ export function useChatSession({
         });
 
       try {
-        const { errorText } = await streamChat(withUser, sessionCountRef.current, (chunk) => {
+        const { errorText } = await streamChat(text, (chunk) => {
           setMessages((prev) => {
             const next = [...prev];
             next[next.length - 1] = {

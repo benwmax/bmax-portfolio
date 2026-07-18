@@ -527,3 +527,42 @@ N/A — documentation only, no implementation work in this entry.
 
 **Where I overrode or redirected Claude:**
 N/A.
+
+## 2026-07-18
+**What I did:**
+Tested the chat abuse-prevention hardening from 2026-07-17 against real Anthropic/Upstash
+credentials — asked Claude to set up local testing, then actually ran the verification myself.
+
+**What I decided:**
+Ran the verification from a standalone terminal opened outside VSCode, not the integrated one,
+after the integrated terminal produced a broken `.env.local` (every secret value silently
+replaced with the literal string "[SENSITIVE]"). Used `npx.cmd` instead of `npx` to get past a
+separate PowerShell execution-policy block, rather than changing the system's execution policy.
+
+**Why:**
+Claude's own sandboxed tool couldn't hold real secrets on disk either — anything secret-shaped
+that touched a file it wrote came back redacted, so it couldn't finish the verification itself.
+When I tried running `vercel env pull` myself, but still inside VSCode's built-in terminal, I
+got the exact same "[SENSITIVE]" placeholder — which showed the redaction isn't specific to
+Claude's tool calls, it's Claude Code's extension reaching into any terminal it has visibility
+into, including ones I type into directly. A terminal window opened completely outside VSCode
+fixed it immediately.
+
+**What I'm uncertain about:**
+Nothing about the results — all 6 objective checks passed, and reading the actual model replies
+myself, the fabricated-history injection attempt was ignored and all four jailbreak/persona-
+override probes declined cleanly. Left the rate-limit (20/hr) and session-cap (30/session)
+boundary tests unrun since confirming them would cost ~50 real model calls against my capped
+Workspace to exercise a mechanism already proven working by the other checks.
+
+**What Claude contributed:**
+Built `scripts/verify-chat-safeguards.mjs` — drives `api/chat.ts`'s handler directly with
+constructed Request objects instead of fighting `vercel dev`'s local Edge Function emulation, so
+it's runnable with two commands and no port/CORS setup. Diagnosed the terminal-redaction issue
+by testing its own hypothesis rather than guessing — tried the same command in its own sandbox
+first, saw the identical failure, then asked which terminal I'd used to isolate whether it was
+sandbox-specific or something broader. Also caught the PowerShell execution-policy error and
+gave the lower-friction fix (`npx.cmd`) instead of defaulting to a system-wide policy change.
+
+**Where I overrode or redirected Claude:**
+N/A.

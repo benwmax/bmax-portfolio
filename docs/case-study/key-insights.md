@@ -99,6 +99,8 @@ Per project — what can be shown publicly, what needs a password gate, what nee
 Why it matters for the case study:
 Shows awareness of professional responsibility in design — a Director-level concern that junior designers often miss.
 
-Last updated: Start of project
+Resolved: Confirmed NDA-clear across all five case studies — no password gates or anonymization needed for Sabre, USAA, Upfluent, Sagent, or Market Rebellion. See CLAUDE.md ("NDA and Confidentiality Constraints") and decisions.md. The open question above is kept as-is for the case study record — it's the actual sequence of catching the gap and then resolving it — rather than rewritten after the fact.
+
+Last updated: 2026-07-18 — added resolution note to item 10
 Next: decisions.md — significant choices and reasoning
 See also: process-journal.md — running build log

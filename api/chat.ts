@@ -1,5 +1,15 @@
 import { checkRateLimit } from './lib/rate-limit';
 import { SYSTEM_PROMPT } from './lib/system-prompt';
+import {
+  getGlobalUsageToday,
+  getSessionId,
+  loadSession,
+  newSessionId,
+  recordGlobalUsage,
+  saveSession,
+  sessionCookieHeader,
+  type StoredMessage,
+} from './lib/session';
 
 export const config = { runtime: 'edge' };
 
@@ -10,6 +20,11 @@ const SESSION_MESSAGE_CAP = 30;
 const MAX_OUTPUT_TOKENS = 400;
 const MAX_HISTORY_MESSAGES = 20;
 const MAX_MESSAGE_LENGTH = 500;
+// Global circuit breaker across all visitors, sized well under the
+// Anthropic Workspace's monthly spend cap (see .env.example) so the widget
+// degrades gracefully instead of the workspace hard-cutting the key.
+// Re-tune if the Workspace spend cap changes — see decisions.md.
+const GLOBAL_DAILY_MESSAGE_CAP = 500;
 
 const ALLOWED_ORIGINS = ['https://viewbens.work', 'http://localhost:5173', 'http://localhost:4173'];
 
@@ -19,10 +34,16 @@ function corsHeaders(origin: string | null): Record<string, string> {
     'Access-Control-Allow-Origin': allowed,
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Credentials': 'true',
   };
 }
 
-type MessageParam = { role: 'user' | 'assistant'; content: string };
+// Structured, single-line JSON logs — Vercel captures stdout as Function
+// Logs, so this needs no new logging vendor. Metadata only by default
+// (lengths, outcomes, reason codes), never full visitor message content.
+function logEvent(event: Record<string, unknown>): void {
+  console.log(JSON.stringify({ ts: new Date().toISOString(), ...event }));
+}
 
 export default async function handler(req: Request): Promise<Response> {
   const origin = req.headers.get('origin');
@@ -36,10 +57,32 @@ export default async function handler(req: Request): Promise<Response> {
     return new Response('Method not allowed', { status: 405, headers: cors });
   }
 
-  // Rate limiting — IP from Vercel's forwarded header
-  const ip = req.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? 'unknown';
+  // Reject cross-origin browser requests outright. This doesn't stop
+  // non-browser callers (curl, scripts) — they don't send a trustworthy
+  // Origin header — but it does stop other sites' pages from riding a
+  // visitor's browser to call this endpoint.
+  if (origin && !ALLOWED_ORIGINS.includes(origin)) {
+    logEvent({ event: 'blocked', reason: 'origin', origin });
+    return new Response(JSON.stringify({ error: 'Origin not allowed.' }), {
+      status: 403,
+      headers: { ...cors, 'Content-Type': 'application/json' },
+    });
+  }
+
+  // Rate limiting — x-real-ip is Vercel's single-value client IP (set at the
+  // edge, not client-controllable); x-forwarded-for is a fallback only.
+  const ip = req.headers.get('x-real-ip') ?? req.headers.get('x-forwarded-for')?.split(',')[0].trim();
+  if (!ip) {
+    logEvent({ event: 'blocked', reason: 'no-ip' });
+    return new Response(JSON.stringify({ error: 'Unable to identify request.' }), {
+      status: 400,
+      headers: { ...cors, 'Content-Type': 'application/json' },
+    });
+  }
+
   const { success } = await checkRateLimit(ip);
   if (!success) {
+    logEvent({ event: 'blocked', reason: 'rate-limit', ip });
     return new Response(
       JSON.stringify({
         error: `Rate limit reached. Maximum ${MAX_MESSAGES_PER_HOUR} messages per hour.`,
@@ -48,20 +91,38 @@ export default async function handler(req: Request): Promise<Response> {
     );
   }
 
-  let body: { messages?: unknown; sessionMessageCount?: unknown };
+  let body: { message?: unknown };
   try {
     body = await req.json();
   } catch {
+    logEvent({ event: 'blocked', reason: 'invalid-json', ip });
     return new Response(JSON.stringify({ error: 'Invalid JSON.' }), {
       status: 400,
       headers: { ...cors, 'Content-Type': 'application/json' },
     });
   }
 
-  const { messages, sessionMessageCount } = body;
+  const rawMessage = body.message;
+  if (typeof rawMessage !== 'string' || rawMessage.trim() === '') {
+    logEvent({ event: 'blocked', reason: 'invalid-message', ip });
+    return new Response(JSON.stringify({ error: 'message must be a non-empty string.' }), {
+      status: 400,
+      headers: { ...cors, 'Content-Type': 'application/json' },
+    });
+  }
+  const userMessage: StoredMessage = { role: 'user', content: rawMessage.slice(0, MAX_MESSAGE_LENGTH) };
 
-  // Session cap — the client tracks how many messages have been sent
-  if (typeof sessionMessageCount === 'number' && sessionMessageCount >= SESSION_MESSAGE_CAP) {
+  // Session identity — server-side authority for history and the message
+  // cap. The client never supplies conversation history or a message count;
+  // both are read from Redis, keyed by this cookie. See api/lib/session.ts.
+  let sid = getSessionId(req);
+  const isNewSession = !sid;
+  if (!sid) sid = newSessionId();
+
+  const session = await loadSession(sid);
+
+  if (session.count >= SESSION_MESSAGE_CAP) {
+    logEvent({ event: 'blocked', reason: 'session-cap', ip });
     return new Response(
       JSON.stringify({
         error: `Session limit reached (${SESSION_MESSAGE_CAP} messages). Refresh the page to start a new session.`,
@@ -70,46 +131,28 @@ export default async function handler(req: Request): Promise<Response> {
     );
   }
 
-  if (!Array.isArray(messages) || messages.length === 0) {
-    return new Response(JSON.stringify({ error: 'messages must be a non-empty array.' }), {
-      status: 400,
-      headers: { ...cors, 'Content-Type': 'application/json' },
-    });
+  const globalUsage = await getGlobalUsageToday();
+  if (globalUsage >= GLOBAL_DAILY_MESSAGE_CAP) {
+    logEvent({ event: 'blocked', reason: 'global-budget', globalUsage });
+    return new Response(
+      JSON.stringify({ error: 'Chat is temporarily at capacity — please check back later.' }),
+      { status: 503, headers: { ...cors, 'Content-Type': 'application/json' } },
+    );
   }
-
-  // Validate shape and enforce per-message length cap
-  const validRoles = new Set(['user', 'assistant']);
-  const sanitized: MessageParam[] = [];
-
-  for (const msg of messages) {
-    if (
-      typeof msg !== 'object' ||
-      msg === null ||
-      !validRoles.has((msg as Record<string, unknown>).role as string) ||
-      typeof (msg as Record<string, unknown>).content !== 'string'
-    ) {
-      return new Response(JSON.stringify({ error: 'Invalid message format.' }), {
-        status: 400,
-        headers: { ...cors, 'Content-Type': 'application/json' },
-      });
-    }
-    const content = ((msg as Record<string, unknown>).content as string).slice(0, MAX_MESSAGE_LENGTH);
-    sanitized.push({
-      role: (msg as Record<string, unknown>).role as 'user' | 'assistant',
-      content,
-    });
-  }
-
-  // Trim history to keep context window costs predictable
-  const trimmed = sanitized.slice(-MAX_HISTORY_MESSAGES);
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
+    logEvent({ event: 'error', reason: 'no-api-key' });
     return new Response(JSON.stringify({ error: 'Service unavailable.' }), {
       status: 503,
       headers: { ...cors, 'Content-Type': 'application/json' },
     });
   }
+
+  // Trim history to keep context window costs predictable
+  const trimmed = [...session.history, userMessage].slice(-MAX_HISTORY_MESSAGES);
+
+  const requestStart = Date.now();
 
   // Call Anthropic API directly — the SDK uses node:fs/node:path which the
   // Edge runtime doesn't support. fetch is available everywhere.
@@ -130,19 +173,25 @@ export default async function handler(req: Request): Promise<Response> {
   });
 
   if (!anthropicRes.ok || !anthropicRes.body) {
+    logEvent({ event: 'error', reason: 'upstream', status: anthropicRes.status });
     return new Response(JSON.stringify({ error: 'Upstream error.' }), {
       status: 502,
       headers: { ...cors, 'Content-Type': 'application/json' },
     });
   }
 
-  // Parse Anthropic's SSE stream and forward only the text delta chunks
+  // Parse Anthropic's SSE stream, forward text delta chunks to the client,
+  // and accumulate the full reply so it can be persisted as session history
+  // once the stream completes.
+  const sidForClosure = sid;
   const readable = new ReadableStream({
     async start(controller) {
       const reader = anthropicRes.body!.getReader();
       const decoder = new TextDecoder();
       const encoder = new TextEncoder();
       let buffer = '';
+      let fullText = '';
+      let stopReason: string | null = null;
 
       while (true) {
         const { done, value } = await reader.read();
@@ -160,10 +209,14 @@ export default async function handler(req: Request): Promise<Response> {
           try {
             const event = JSON.parse(data) as {
               type: string;
-              delta?: { type: string; text: string };
+              delta?: { type: string; text?: string; stop_reason?: string };
             };
             if (event.type === 'content_block_delta' && event.delta?.type === 'text_delta') {
-              controller.enqueue(encoder.encode(event.delta.text));
+              const text = event.delta.text ?? '';
+              fullText += text;
+              controller.enqueue(encoder.encode(text));
+            } else if (event.type === 'message_delta' && event.delta?.stop_reason) {
+              stopReason = event.delta.stop_reason;
             }
           } catch {
             // ignore malformed SSE lines
@@ -172,15 +225,33 @@ export default async function handler(req: Request): Promise<Response> {
       }
 
       controller.close();
+
+      const assistantMessage: StoredMessage = { role: 'assistant', content: fullText };
+      const newHistory: StoredMessage[] = [...session.history, userMessage, assistantMessage].slice(
+        -MAX_HISTORY_MESSAGES,
+      );
+      await saveSession(sidForClosure, { history: newHistory, count: session.count + 1 });
+      await recordGlobalUsage();
+
+      logEvent({
+        event: 'reply',
+        ip,
+        latencyMs: Date.now() - requestStart,
+        outputLength: fullText.length,
+        stopReason,
+      });
     },
   });
 
-  return new Response(readable, {
-    headers: {
-      ...cors,
-      'Content-Type': 'text/plain; charset=utf-8',
-      'Cache-Control': 'no-cache',
-      'X-Accel-Buffering': 'no',
-    },
-  });
+  const responseHeaders: Record<string, string> = {
+    ...cors,
+    'Content-Type': 'text/plain; charset=utf-8',
+    'Cache-Control': 'no-cache',
+    'X-Accel-Buffering': 'no',
+  };
+  if (isNewSession) {
+    responseHeaders['Set-Cookie'] = sessionCookieHeader(sid);
+  }
+
+  return new Response(readable, { headers: responseHeaders });
 }

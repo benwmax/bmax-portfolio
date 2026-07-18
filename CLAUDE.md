@@ -392,25 +392,44 @@ decisions.md (2026-06-15) for the full reasoning and build-plan.md Phase 4F
 for the build checklist.
 
 **Files:**
-- `api/chat.ts` — endpoint: validation, rate limiting, history truncation,
-  session cap, streamed response
+- `api/chat.ts` — endpoint: origin/IP checks, rate limiting, validation,
+  global budget breaker, streamed response, request logging
 - `api/lib/system-prompt.ts` — the assistant's brief (positioning, case study
-  summaries, tone, scope)
+  summaries, tone, scope, safety/anti-jailbreak instructions)
 - `api/lib/rate-limit.ts` — per-IP rate limiting via Upstash Redis
+- `api/lib/session.ts` — server-side session authority: conversation history
+  and the session message cap live here (Redis, keyed by an HttpOnly
+  cookie), never trusted from the client. See decisions.md (2026-07-17).
 - `.env.example` — required environment variables
 
 **Key constraints:**
 - The Anthropic API key lives in a dedicated Workspace with its own monthly
   spend limit and email alert — never reuse a key from another workspace for
-  this feature. This is the hard ceiling on cost.
+  this feature. This is the hard ceiling on cost; `GLOBAL_DAILY_MESSAGE_CAP`
+  in `api/chat.ts` is the software-side circuit breaker meant to degrade
+  gracefully well before that hard cap would ever bite — re-tune it if the
+  Workspace spend cap changes.
 - `api/lib/system-prompt.ts` is the assistant's brief and needs upkeep —
   update it whenever a case study moves from "in progress" to "published" so
   the assistant doesn't undersell or misstate finished work. As of
   2026-06-15, Upfluent, USAA, and Sabre have all been rewritten and the
   system prompt's "still being finalized" language for those is now stale.
+  It also carries safety/anti-jailbreak instructions (persona-lock,
+  anti-defamation, ignore-embedded-instructions, groundedness, no code
+  execution) added 2026-07-17 — keep these when editing the case study
+  content around them.
+- Conversation history and the session message cap are server-side
+  authoritative (`api/lib/session.ts`), not client-supplied — the client only
+  ever sends the newest message. Do not revert to trusting a client-supplied
+  message array or session count; that was a real fabricated-history
+  jailbreak vector, fixed 2026-07-17 (see decisions.md).
 - Safeguard values (rate limits, session message cap, output token cap,
-  history length, message length cap) live as named constants at the top of
-  `api/chat.ts` — tune there, not inline.
+  history length, message length cap, global daily message cap) live as
+  named constants at the top of `api/chat.ts` — tune there, not inline.
+- If assistant-output rendering is ever changed to support markdown/HTML
+  (currently it's plain JSX text interpolation, which React auto-escapes —
+  no sanitization needed today), that change must ship together with output
+  sanitization (e.g. DOMPurify) in the same commit, not as a follow-up.
 - The widget's visual styling depends on Phase 2/3 tokens; the backend does
   not and can proceed independently.
 

@@ -320,6 +320,22 @@ independently; only the widget's visual styling depends on those.*
 - ~~Replace [CONTACT_LINK] placeholders~~ — not applicable; system-prompt.ts used real email (ben@viewbens.work) from the start
 - [x] Build frontend chat widget — UI was already built in both pages; extracted shared useChatSession hook, wired sessionMessageCount so server-side session cap actually fires, surfaced API error messages to the user (2026-06-20)
 - [x] Deploy to Vercel, test endpoint with curl (2026-07-16) — verified 200 OK with streamed response after fixing a quoted-string bug in UPSTASH_REDIS_REST_URL
+- [x] Abuse-prevention hardening pass (2026-07-17) — system-prompt safety clauses,
+      server-side session authority (closes a fabricated-history jailbreak vector),
+      real CORS enforcement, x-real-ip fix, global daily budget circuit breaker,
+      security headers + CSP (report-only) in vercel.json, structured request
+      logging. See decisions.md, 2026-07-17.
+- [x] Verified the hardening pass against real Redis/Anthropic (2026-07-17) — added
+      `scripts/verify-chat-safeguards.mjs` (drives api/chat.ts's handler directly with
+      real credentials, no vercel dev needed). All checks passed: CORS rejection,
+      session-cookie issuance, cross-turn history via server-side session, the
+      fabricated-history injection attempt correctly ignored, all 4 jailbreak/persona
+      probes declined cleanly, invalid-input handling. Rate-limit and session-cap
+      boundary tests intentionally skipped (would cost ~50 real model calls) — the
+      underlying Redis session mechanism they'd exercise is already proven working
+      by the other checks.
+- [ ] Retune GLOBAL_DAILY_MESSAGE_CAP once the real Anthropic Workspace spend cap is known
+- [ ] Move inline theme script to a nonce/hash and switch CSP from report-only to enforcing
 - [ ] Tune rate limits / caps against real traffic
 - [ ] Update system-prompt.ts as Upfluent, USAA, and Sagent case studies
       are finalized (ongoing — revisit each time a case study moves to
