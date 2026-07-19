@@ -648,4 +648,21 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
   in this environment — no credentials are configured yet (see "Ben's actions to go live").
   `scripts/verify-chat-safeguards.mjs` is unaffected (it only calls the public `handler`
   export) and remains the tool for that once Ben's env vars are set.
+
+## 2026-07-19 — Temporarily allowlist the .vercel.app origin for pre-launch chat testing
+- Decision: Add `https://bmax-portfolio.vercel.app` to `ALLOWED_ORIGINS` in `api/chat.ts`,
+  alongside the existing `https://viewbens.work` and localhost dev entries.
+- Reasoning: Ben hit "Origin not allowed" testing the chat widget on the live Vercel
+  deployment (`https://bmax-portfolio.vercel.app`). `viewbens.work` still points at the old
+  site (see build-plan.md), so the `.vercel.app` alias is currently the only public URL for
+  this project — but it was never in the origin allowlist, since that list was written
+  assuming `viewbens.work` would already be live. Added it back so the chat widget is
+  testable pre-cutover without weakening the control's actual intent (still a fixed
+  allowlist, not a wildcard).
+- **This is a temporary, pre-launch-only change.** Remove the `.vercel.app` entry from
+  `ALLOWED_ORIGINS` once `viewbens.work` is cut over to this Vercel project — see the
+  `TEMPORARY` comment left directly above the array in `api/chat.ts`.
+- Alternatives considered: testing exclusively via `npm run dev` (localhost is already
+  allowlisted) — this remains valid and requires no code change, but Ben specifically wanted
+  the deployed site itself to work.
   `src/pages/explorations/data.ts`, `src/pages/HomePage.tsx`, `api/chat.ts`.

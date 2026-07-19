@@ -31,7 +31,15 @@ const GLOBAL_DAILY_MESSAGE_CAP = 500;
 // request body here is a few hundred bytes at most.
 const MAX_REQUEST_BYTES = 8 * 1024;
 
-const ALLOWED_ORIGINS = ['https://viewbens.work', 'http://localhost:5173', 'http://localhost:4173'];
+// TEMPORARY (added 2026-07-19, see decisions.md): the .vercel.app entry is
+// pre-launch-only, for testing the deployed site before viewbens.work is cut
+// over to this project. Remove it once the domain cutover happens.
+const ALLOWED_ORIGINS = [
+  'https://viewbens.work',
+  'https://bmax-portfolio.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:4173',
+];
 
 // The only values the client-supplied `pageContext` field may take — must
 // match the `company` field in each src/content/*.ts file. Anything else is
