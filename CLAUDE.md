@@ -432,6 +432,16 @@ for the build checklist.
   sanitization (e.g. DOMPurify) in the same commit, not as a follow-up.
 - The widget's visual styling depends on Phase 2/3 tokens; the backend does
   not and can proceed independently.
+- `ALLOWED_ORIGINS` in `api/chat.ts` temporarily includes `https://bmax-portfolio.vercel.app`
+  (added 2026-07-19, marked `TEMPORARY` in a code comment) so the widget is testable
+  pre-launch. Remove it once `viewbens.work` is cut over — see "Current Project Status" →
+  Immediate next steps.
+- The assistant's replies are rendered by `splitParagraphs()` (`src/hooks/useChatSession.ts`)
+  into separate `<p>` blocks, and the system prompt's formatting section enforces short,
+  frequent paragraph breaks as a hard rule (not a suggestion — Haiku doesn't reliably follow
+  soft formatting guidance). Any page that renders assistant messages must call
+  `splitParagraphs()` on the text, not render it as one block — `HomeV4Blend.tsx` shipped
+  without this for weeks before being caught 2026-07-19; see decisions.md 2026-07-19.
 
 ---
 
@@ -466,10 +476,12 @@ started; Phases 6–7 not started. Per decisions.md 2026-07-16, launch is being
 prioritized ahead of the Sagent case study — Sagent ships with placeholder copy
 and gets a full pass post-launch.
 
-**Last updated:** 2026-07-18 (Security/QA hardening pass on the AI chat backend —
-see decisions.md 2026-07-18; "Immediate next steps" corrected against
-build-plan.md, which had moved further ahead of this section's prose than the
-2026-07-17 resync caught — Phase 3G, 4D, and most of 4E were already done)
+**Last updated:** 2026-07-19 (hardening pass verified against real infra; temporary
+`.vercel.app` origin allowlist added for pre-launch chat testing; chat widget readability
+fix — see decisions.md 2026-07-19 entries and process-journal.md. Also resynced this
+section against build-plan.md: removed a stale "choose homepage direction" next-step that
+was actually decided 2026-06-22, and documented that `HomeV4Blend.tsx` — despite living
+under `src/pages/explorations/` — is the real production homepage, not a draft)
 
 **Completed:**
 - Domain confirmed: viewbens.work (existing site stays live until launch)
@@ -536,7 +548,12 @@ build-plan.md, which had moved further ahead of this section's prose than the
   (2026-06-20) — Phase 3A complete
 - 3 homepage exploration variants built (Signal, Boot, Phosphor) as full React pages
   with shared animation hooks/data modules and Storybook stories in
-  src/stories/explorations/ — awaiting Ben's direction decision (2026-06-20)
+  src/stories/explorations/ (2026-06-20). Direction decided 2026-06-20→22: HomeV4Blend
+  (`src/pages/explorations/HomeV4Blend.tsx`) wired into `App.tsx` as the live production
+  homepage (`/` and `/work`) — see build-plan.md Phase 4A. Despite the "explorations"
+  path, this file is not a draft — it's the actual production homepage; edit it directly
+  for any live-homepage change. `src/pages/HomePage.tsx` is retired (Storybook-only,
+  the "Original" exploration story) and does not reflect production.
 - docs/ai-component-guide.md created — 783-line authoritative component reference
   with decision tree, prop cheat sheets, composition patterns, and explicit
   out-of-scope list (2026-06-20)
@@ -587,22 +604,46 @@ build-plan.md, which had moved further ahead of this section's prose than the
   wasn't covered by either project reference. Added a client-side stream timeout and a
   double-submit guard to the chat widget (src/hooks/useChatSession.ts). See decisions.md
   2026-07-18 for the fail-closed and CSP-enforcement calls.
+- Hardening pass verified against real Anthropic + Upstash traffic (2026-07-19) per
+  `docs/testing/hardening-verification.md` — all runnable steps passed. Found and fixed two
+  bugs in the verification tooling itself (not the product code): `scripts/verify-cap-
+  atomicity.mjs` used `spawnSync('npx', ...)` without `shell: true`, which fails silently on
+  Windows; `eslint.config.js` didn't ignore the gitignored `storybook-static/` build output,
+  inflating local lint results. See decisions.md 2026-07-18 (second entry, dated the day
+  after the hardening pass itself) and process-journal.md 2026-07-18.
+- **TEMPORARY:** `https://bmax-portfolio.vercel.app` added to `ALLOWED_ORIGINS` in
+  `api/chat.ts` (2026-07-19) so the chat widget works pre-launch on the `.vercel.app`
+  deployment, since `viewbens.work` still serves the old site. **Remove this entry once
+  viewbens.work is cut over to this Vercel project** — flagged in both a code comment above
+  the array and decisions.md 2026-07-19.
+- Chat widget readability fix (2026-07-19): assistant replies were rendering as one dense,
+  small-font block on the live homepage. Root cause was `HomeV4Blend.tsx` never having
+  adopted the `splitParagraphs()` paragraph-rendering helper that `HomePage.tsx` (retired)
+  and `CaseStudyPage.tsx` already used — fixed by wiring it in there too. Also bumped
+  `.msgAssistant` font-size to 18px (from 14px/15px) on both `HomeV4Blend.module.css` and
+  `CaseStudyPage.module.css`, and rewrote `api/lib/system-prompt.ts`'s formatting guidance
+  from a soft suggestion to a hard rule (default 2–4 sentences; never more than 3 sentences
+  without a paragraph break), plus lowered `MAX_OUTPUT_TOKENS` (400 → 220) in `api/chat.ts`
+  as a backstop. Verified against the real model by replaying the exact reported question.
+  See decisions.md 2026-07-19.
 
 **Immediate next steps:**
-(Corrected 2026-07-18 — this list had drifted from build-plan.md and from this
-file's own Phase Status line above: Phase 3G shipped 2026-07-16, Phase 4D is
-complete, and 4E's meta descriptions/sitemap.xml/robots.txt/canonical tags were
-already done, leaving only OG images. build-plan.md's 4D/4E checkboxes are the
-source of truth if this drifts again.)
-- **Ben's actions to go live:** Create Anthropic Workspace + API key and Upstash Redis
-  database, add all three env vars to Vercel — chat code is complete (Phase 4F),
-  blocked only on these
-- **Ben to choose homepage direction:** Signal / Boot / Phosphor — all three are in
-  Storybook Explorations section for side-by-side comparison
+(Resynced 2026-07-19 — removed a stale "Ben to choose homepage direction" item: that was
+decided 2026-06-22, HomeV4Blend wired as production per build-plan.md Phase 4A, but this
+list was never updated when the decision was made. Also removed a stale "Ben's actions to
+go live" item: build-plan.md Phase 4F shows the Anthropic Workspace and Upstash Redis were
+both created 2026-07-16, and this session ran multiple verification scripts against real
+`.env.local` credentials — that blocker was resolved days ago and never cleared here. Added
+a new item below for removing the temporary `.vercel.app` origin allowlist entry at
+cutover, added 2026-07-19. build-plan.md's checkboxes are the source of truth if this
+drifts again.)
 - **Phase 1C:** Sagent brain dump — strongest Director-level case study, starts from zero
 - **Phase 4E:** OG images only — create 1200×630 PNGs in public/og/ before launch
   (meta descriptions, sitemap.xml, robots.txt, and canonical tags are already done;
   see build-plan.md 4E)
+- **At the viewbens.work domain cutover:** remove the temporary `https://bmax-portfolio.vercel.app`
+  entry from `ALLOWED_ORIGINS` in `api/chat.ts` (added 2026-07-19 for pre-launch testing —
+  see the `TEMPORARY` code comment and decisions.md 2026-07-19)
 
 **Decisions still open:**
 - Market Rebellion: referenced on About page as brief career arc item (decided 2026-06-20)

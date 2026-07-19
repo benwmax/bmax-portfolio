@@ -340,8 +340,12 @@ independently; only the widget's visual styling depends on those.*
       Found and fixed two unrelated bugs along the way: NavBar/CaseStudyCard/"Next case"
       were plain `<a>` tags causing hard reloads (now React Router `Link`); Sabre was
       missing from the homepage work grid entirely. See decisions.md, 2026-07-18.
+- [x] Move inline theme script to a nonce/hash and switch CSP from report-only to enforcing
+      (2026-07-18) — done via a precomputed sha256 hash on the inline script rather than a
+      nonce (Vercel's static headers can't inject a per-request nonce); see decisions.md
+      2026-07-18 and `docs/testing/hardening-verification.md` Step 2 for the verification
+      method (recompute the hash from `dist/index.html` and diff against `vercel.json`).
 - [ ] Retune GLOBAL_DAILY_MESSAGE_CAP once the real Anthropic Workspace spend cap is known
-- [ ] Move inline theme script to a nonce/hash and switch CSP from report-only to enforcing
 - [ ] Tune rate limits / caps against real traffic
 - [ ] Update system-prompt.ts as Upfluent, USAA, and Sagent case studies
       are finalized (ongoing — revisit each time a case study moves to
