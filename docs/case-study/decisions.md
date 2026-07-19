@@ -665,4 +665,40 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
 - Alternatives considered: testing exclusively via `npm run dev` (localhost is already
   allowlisted) — this remains valid and requires no code change, but Ben specifically wanted
   the deployed site itself to work.
+
+## 2026-07-19 — Chat widget: larger text, real paragraph breaks, shorter answers
+- Decision: Bump assistant-message font size, fix paragraph rendering on the live homepage,
+  and tighten the system prompt's length/formatting rules from soft guidance to hard rules.
+- Reasoning: Ben reported the chat output on the live site as a dense, hard-to-read wall of
+  text (see screenshot, "What are you looking for next?"). Root cause was two-layered:
+  1. **Rendering bug:** the actual production homepage is `HomeV4Blend.tsx` (wired into
+     `App.tsx` routing 2026-06-22 per build-plan.md), not `HomePage.tsx`. `HomePage.tsx` and
+     `CaseStudyPage.tsx` both already used a `splitParagraphs()` helper to render assistant
+     replies as separate `<p>` blocks, but `HomeV4Blend.tsx` — an exploration variant that
+     predates that helper — never got the same treatment when it was promoted to production.
+     It rendered the entire reply as one `<p>`, so even a reply the model formatted with blank
+     lines would have shown as one block. Fixed by wiring in `splitParagraphs()` there too,
+     matching `CaseStudyPage.tsx`'s pattern exactly.
+  2. **Prompt compliance:** even where paragraph splitting worked, the system prompt's
+     formatting instruction ("whenever an answer covers more than one idea...") was soft
+     enough that Haiku sometimes ignored it and returned one dense paragraph regardless —
+     confirmed by reproducing the exact screenshot question against the live handler.
+     Rewrote the instruction as a mechanical rule (default 2–4 sentences; never more than 3
+     sentences in a row without a blank-line break) rather than a judgment call, and lowered
+     `MAX_OUTPUT_TOKENS` (400 → 220) as a backstop. Re-tested the same question afterward —
+     now returns two short paragraphs instead of one seven-sentence block.
+- Also bumped `.msgAssistant` font-size from 14px (HomeV4Blend) / 15px (CaseStudyPage) to
+  18px on both, per Ben's ask for larger chat text. Left `.msgUser` (the visitor's own
+  question) untouched — not what was reported as hard to read.
+- **Flagged, not changed:** CLAUDE.md's "Immediate next steps" section still lists the
+  homepage direction (Signal/Boot/Phosphor) as an open decision, but build-plan.md
+  (2026-06-22) and `App.tsx` both confirm `HomeV4Blend` has been live in production for
+  weeks. CLAUDE.md's prose section has drifted from build-plan.md before (see the
+  2026-07-18 and 2026-07-17 correction notes above) — worth a resync next time CLAUDE.md is
+  touched.
+- Verification: `npm run build` and `npm run lint` both clean. Re-ran the exact screenshot
+  question (`"What are you looking for next?"`) and a second, more complex question directly
+  against `api/chat.ts`'s handler with real Anthropic credentials — both now return
+  multi-paragraph replies with no paragraph exceeding 3 sentences. No browser test performed
+  (no browser tooling in this environment) — worth a visual check on the deployed site.
   `src/pages/explorations/data.ts`, `src/pages/HomePage.tsx`, `api/chat.ts`.

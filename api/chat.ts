@@ -19,7 +19,7 @@ export const config = { runtime: 'edge' };
 // MAX_MESSAGES_PER_HOUR must match the value in api/lib/rate-limit.ts.
 const MAX_MESSAGES_PER_HOUR = 20;
 const SESSION_MESSAGE_CAP = 30;
-const MAX_OUTPUT_TOKENS = 400;
+const MAX_OUTPUT_TOKENS = 220;
 const MAX_HISTORY_MESSAGES = 20;
 const MAX_MESSAGE_LENGTH = 500;
 // Global circuit breaker across all visitors, sized well under the

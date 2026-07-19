@@ -5,6 +5,7 @@ import { NavBar } from '../../components/NavBar';
 import { CaseStudyCard } from '../../components/CaseStudyCard';
 import { ChatInput } from '../../components/ChatInput';
 import { useChat } from '../../context/useChat';
+import { splitParagraphs } from '../../hooks/useChatSession';
 import type { Message } from '../../hooks/useChatSession';
 import { CASE_STUDIES, SUGGESTIONS, HERO_STATS, SOCIAL_LINKS } from './data';
 import { useTypewriter, useInView, useCountUp, usePrefersReducedMotion } from './hooks';
@@ -202,14 +203,24 @@ export function HomeV4Blend({
                 {m.text}
               </p>
             ) : (
-              <p key={i} className={styles.msgAssistant}>
-                {m.text}
-                {i === messages.length - 1 && m.text === '' && (
-                  <span className={`${styles.msgCursor} cursor-blink`} aria-hidden>
-                    _
-                  </span>
-                )}
-              </p>
+              <div key={i} className={styles.msgAssistant}>
+                {(() => {
+                  const paras = splitParagraphs(m.text);
+                  const displayParas = paras.length > 0 ? paras : [''];
+                  return displayParas.map((para, pi) => (
+                    <p key={pi} className={styles.msgAssistantPara}>
+                      {para}
+                      {pi === displayParas.length - 1 &&
+                        i === messages.length - 1 &&
+                        m.text === '' && (
+                          <span className={`${styles.msgCursor} cursor-blink`} aria-hidden>
+                            _
+                          </span>
+                        )}
+                    </p>
+                  ));
+                })()}
+              </div>
             ),
           )
         )}

@@ -651,3 +651,41 @@ atomicity script now prints `All checks passed.` end to end.
 
 **Where I overrode or redirected Claude:**
 N/A.
+
+## 2026-07-19 (later)
+**What I did:**
+Reported the chat widget's answers were hard to read on the live site — small text, one
+dense wall of text with no paragraph breaks — and asked for larger text, real paragraph
+breaks, and more succinct answers in general. Included a screenshot.
+
+**What I decided:**
+Approved Claude's fix as scoped: font-size bump, a real rendering bug fix on the live
+homepage, and a hard rewrite of the system prompt's formatting rule.
+
+**Why:**
+N/A — straightforward bug report and fix.
+
+**What I'm uncertain about:**
+Nothing about the diagnosis — Claude reproduced the exact screenshot question against the
+live model and showed the before/after. Still want to eyeball it in an actual browser once
+deployed, since no browser tool was available in this session to confirm the visual result
+directly.
+
+**What Claude contributed:**
+Found that the actual production homepage is `HomeV4Blend.tsx` (wired into `App.tsx`
+2026-06-22), not `HomePage.tsx` — and that `HomeV4Blend.tsx` never got the `splitParagraphs()`
+paragraph-rendering helper that `HomePage.tsx` and `CaseStudyPage.tsx` already had, so it was
+rendering every reply as one undivided block regardless of how the model formatted it. Fixed
+the rendering gap, bumped `.msgAssistant` font-size to 18px on both live surfaces (homepage
+and case study pages), and rewrote the system prompt's formatting guidance from a soft
+suggestion to a hard rule (default 2–4 sentences, never more than 3 sentences without a
+paragraph break), plus lowered the output token cap (400 → 220) as a backstop. Verified by
+replaying the exact question from the screenshot against the real handler before and after —
+confirmed it now returns two short paragraphs instead of one seven-sentence block. Also
+flagged that CLAUDE.md's "Immediate next steps" list still describes the homepage direction
+as an open decision (Signal/Boot/Phosphor), even though build-plan.md has documented
+`HomeV4Blend` as the live production homepage since 2026-06-22 — a resync candidate next time
+CLAUDE.md is touched.
+
+**Where I overrode or redirected Claude:**
+N/A.
