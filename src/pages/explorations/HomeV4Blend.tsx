@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import { NavBar } from '../../components/NavBar';
 import { CaseStudyCard } from '../../components/CaseStudyCard';
 import { ChatInput } from '../../components/ChatInput';
+import { MobileChatSurface } from '../../components/MobileChatSurface';
 import { useChat } from '../../context/useChat';
 import { splitParagraphs } from '../../hooks/useChatSession';
 import type { Message } from '../../hooks/useChatSession';
@@ -95,7 +96,7 @@ export function HomeV4Blend({
   initialMessages = [],
   skipBoot = false,
 }: HomeV4BlendProps) {
-  const { messages, chatStatus, handleSubmit, setPageContext } = useChat({
+  const { messages, chatStatus, handleSubmit, setPageContext, fabRevealed } = useChat({
     onSubmit: onChatSubmit,
     initialMessages,
   });
@@ -106,24 +107,17 @@ export function HomeV4Blend({
   const scanRef = useRef<HTMLDivElement | null>(null);
   const heroLogRef = useRef<HTMLDivElement | null>(null);
   const dockedLogRef = useRef<HTMLDivElement | null>(null);
-  const mobileLogRef = useRef<HTMLDivElement | null>(null);
-  const fabRef = useRef<HTMLButtonElement | null>(null);
 
   const { out: headline, done } = useTypewriter('I make expert tools learnable.', booted);
   const [statsRef, statsIn] = useInView<HTMLDivElement>();
   const [gridRef, gridIn] = useInView<HTMLDivElement>();
 
-  // Scroll all visible logs to bottom when messages change
+  // Scroll the hero + docked logs to bottom when messages change. The mobile
+  // overlay's own log is scrolled by MobileChatSurface.
   useEffect(() => {
     if (heroLogRef.current) heroLogRef.current.scrollTop = heroLogRef.current.scrollHeight;
     if (dockedLogRef.current) dockedLogRef.current.scrollTop = dockedLogRef.current.scrollHeight;
-    if (mobileLogRef.current) mobileLogRef.current.scrollTop = mobileLogRef.current.scrollHeight;
   }, [messages]);
-
-  // Return focus to FAB when mobile overlay closes
-  useEffect(() => {
-    if (!mobileChatOpen && fabRef.current) fabRef.current.focus();
-  }, [mobileChatOpen]);
 
   // Clear any case-study context left over from a previous page — Home has
   // no case-study framing of its own, and the chat session is shared across
@@ -156,6 +150,17 @@ export function HomeV4Blend({
   const beforeLearnable = hasLearnable ? headline.slice(0, learnableIdx) : headline;
   const afterLearnable = hasLearnable ? headline.slice(learnableIdx + 'learnable'.length) : '';
 
+  // Submitting from the inline hero panel (its input or a suggestion chip) hands
+  // off to the full-screen overlay so the reply streams somewhere the visitor can
+  // read and keep typing — the inline panel collapses once a conversation starts.
+  // On desktop the overlay is display:none, so opening it is a harmless no-op and
+  // the reply flows into the docked rail as before. Only the hero uses this; the
+  // docked input and the overlay's own input call handleSubmit directly.
+  const handleHeroSubmit = (text: string) => {
+    setMobileChatOpen(true);
+    handleSubmit(text);
+  };
+
   // Shared panel chrome — rendered in hero panel, docked panel, and mobile overlay
   const chatBarJSX = (
     <div className={styles.chatBar}>
@@ -186,7 +191,7 @@ export function HomeV4Blend({
                   key={s}
                   type="button"
                   className={styles.chatSuggestBtn}
-                  onClick={() => handleSubmit(s)}
+                  onClick={() => handleHeroSubmit(s)}
                 >
                   {s}
                 </button>
@@ -267,10 +272,7 @@ export function HomeV4Blend({
        * aria-hidden + inert during boot prevents keyboard users from tabbing
        * through invisible content behind the boot overlay (WCAG 1.3.1, 4.1.2).
        */}
-      <div
-        aria-hidden={bootActive ? true : undefined}
-        inert={bootActive ? true : undefined}
-      >
+      <div aria-hidden={bootActive ? true : undefined} inert={bootActive ? true : undefined}>
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>
@@ -343,7 +345,7 @@ export function HomeV4Blend({
                   {renderLog(heroLogRef, styles.chatLog)}
                   <div className={styles.chatInputWrap}>
                     <ChatInput
-                      onSubmit={handleSubmit}
+                      onSubmit={handleHeroSubmit}
                       status={chatStatus}
                       placeholder="ask about my work…"
                       multiline
@@ -401,9 +403,7 @@ export function HomeV4Blend({
                         key={l.label}
                         href={l.href}
                         className={styles.footerLink}
-                        {...(isExternal
-                          ? { target: '_blank', rel: 'noopener noreferrer' }
-                          : {})}
+                        {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                       >
                         {l.label}
                         {/* Informs AT users the link opens in a new tab */}
@@ -445,68 +445,20 @@ export function HomeV4Blend({
           </div>
         </aside>
 
-        {/* ——— MOBILE FAB — visible on mobile only when conversation has started ——— */}
-        {isDocked && (
-          <button
-            ref={fabRef}
-            type="button"
-            className={styles.fab}
-            onClick={() => setMobileChatOpen(true)}
-            aria-label={`Open chat — ${messages.length} message${messages.length !== 1 ? 's' : ''}`}
-          >
-            <span className={styles.fabPrompt} aria-hidden>
-              ›
-            </span>
-            Ask Ben
-            {messages.length > 0 && (
-              <span className={styles.fabBadge} aria-hidden>
-                {messages.length}
-              </span>
-            )}
-          </button>
-        )}
-
-        {/* ——— MOBILE CHAT OVERLAY — full screen sheet ——— */}
-        <div
-          className={[styles.mobileOverlay, mobileChatOpen ? styles.mobileOverlayOpen : '']
-            .filter(Boolean)
-            .join(' ')}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Ask Ben — assistant"
-          aria-hidden={!mobileChatOpen}
-          inert={!mobileChatOpen ? true : undefined}
-        >
-          <div className={styles.mobileOverlayBar}>
-            <span className={styles.chatBarLabel}>Ask Ben</span>
-            <div className={styles.mobileOverlayBarRight}>
-              <span className={styles.chatOnlineBadge}>
-                <span className={`${styles.chatOnlineDot} cursor-blink`} aria-hidden />
-                ONLINE
-              </span>
-              <button
-                type="button"
-                className={styles.mobileOverlayClose}
-                onClick={() => setMobileChatOpen(false)}
-                aria-label="Close chat"
-              >
-                ✕
-              </button>
-            </div>
-          </div>
-          {renderLog(mobileLogRef, styles.mobileOverlayLog)}
-          <div className={styles.chatInputWrap}>
-            <ChatInput
-              onSubmit={(text) => {
-                handleSubmit(text);
-              }}
-              status={chatStatus}
-              placeholder="ask about my work…"
-              multiline
-              showStatus={false}
-            />
-          </div>
-        </div>
+        {/* ——— MOBILE FAB + CHAT OVERLAY ———
+            The FAB appears once a conversation has started (isDocked) or the
+            entry point was unlocked on a case study page (fabRevealed, which
+            persists back to Home per the shared session). Hidden before either,
+            per the mobile flow decided 2026-07-19. */}
+        <MobileChatSurface
+          visible={isDocked || fabRevealed}
+          open={mobileChatOpen}
+          onOpenChange={setMobileChatOpen}
+          messageCount={messages.length}
+          chatStatus={chatStatus}
+          onSubmit={handleSubmit}
+          renderLog={renderLog}
+        />
       </div>
       {/* end interactive content wrapper */}
     </div>

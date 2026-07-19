@@ -106,6 +106,22 @@ export interface UseChatSession {
   activeSuggestions: string[];
   /** Call on mount to tell the assistant what page the visitor is on; pass `null` from pages with no case-study context of their own (e.g. Home) so it doesn't linger from whatever was viewed previously. */
   setPageContext: (context: PageContext | null) => void;
+  /**
+   * Whether the mobile "Ask Ben" FAB entry point has been unlocked this
+   * session. Starts false so the FAB is hidden until the visitor either starts
+   * a chat or lands on a case study page. Once true it stays true — the shared
+   * session lives above the router (ChatProvider), so it persists across
+   * navigation (e.g. case study → back to Home without chatting). Session-only,
+   * in memory: a reload resets it, matching the conversation itself. Consumed
+   * by MobileChatSurface.
+   */
+  fabRevealed: boolean;
+  /**
+   * Unlock the mobile FAB. Called on case study mount so those pages always
+   * offer a chat entry point on mobile (they have no inline/docked chat below
+   * 1100px). Idempotent.
+   */
+  revealFab: () => void;
 }
 
 export function useChatSession({
@@ -115,6 +131,8 @@ export function useChatSession({
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [chatStatus, setChatStatus] = useState<ChatWidgetStatus>('online');
   const [activeSuggestions, setActiveSuggestions] = useState<string[]>([]);
+  const [fabRevealed, setFabRevealed] = useState(false);
+  const revealFab = useCallback(() => setFabRevealed(true), []);
 
   // Refs, not state — read at submit time, shouldn't themselves trigger renders.
   const pageContextRef = useRef<string | null>(null);
@@ -201,5 +219,13 @@ export function useChatSession({
     [onSubmit],
   );
 
-  return { messages, chatStatus, handleSubmit, activeSuggestions, setPageContext };
+  return {
+    messages,
+    chatStatus,
+    handleSubmit,
+    activeSuggestions,
+    setPageContext,
+    fabRevealed,
+    revealFab,
+  };
 }

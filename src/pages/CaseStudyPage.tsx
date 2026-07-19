@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
+import type { RefObject } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { NavBar } from '../components/NavBar';
 import { ChatInput } from '../components/ChatInput';
+import { MobileChatSurface } from '../components/MobileChatSurface';
 import { splitParagraphs } from '../hooks/useChatSession';
 import type { Message as CsMessage } from '../hooks/useChatSession';
 import { useChat } from '../context/useChat';
@@ -83,7 +85,6 @@ const NAV_SECTIONS = [
   { id: 'reflection', label: "What I'd do differently", num: '08' },
 ] as const;
 
-
 export function CaseStudyPage({
   number,
   dateRange,
@@ -107,11 +108,13 @@ export function CaseStudyPage({
   initialMessages = [],
 }: CaseStudyPageProps) {
   const { pathname } = useLocation();
-  const { messages, chatStatus, handleSubmit, activeSuggestions, setPageContext } = useChat({
-    onSubmit: onChatSubmit,
-    initialMessages,
-  });
+  const { messages, chatStatus, handleSubmit, activeSuggestions, setPageContext, revealFab } =
+    useChat({
+      onSubmit: onChatSubmit,
+      initialMessages,
+    });
   const [activeSection, setActiveSection] = useState('problem');
+  const [mobileChatOpen, setMobileChatOpen] = useState(false);
   const chatLogRef = useRef<HTMLDivElement>(null);
   const progressBarRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number>(0);
@@ -169,12 +172,72 @@ export function CaseStudyPage({
     });
   }, [company, chatSuggestions, setPageContext]);
 
+  // Unlock the mobile "Ask Ben" FAB on landing here — mobile has no inline or
+  // docked chat on case study pages (the docked panel is display:none below
+  // 1100px), so the FAB is the only chat entry point. Stays unlocked back on
+  // Home via the shared session. Skipped when the chat is disabled entirely.
+  useEffect(() => {
+    if (showChat) revealFab();
+  }, [showChat, revealFab]);
+
   const scrollToSection = (id: string) => {
     const el = document.getElementById(`sec-${id}`);
     if (!el) return;
     const top = el.getBoundingClientRect().top + window.scrollY - 90;
     window.scrollTo({ top, behavior: 'smooth' });
   };
+
+  // The message log, rendered into both the desktop docked panel and the mobile
+  // overlay (via MobileChatSurface). Same messages, same context-suggestion
+  // chips; only the container ref and className differ.
+  const renderChatLog = (ref: RefObject<HTMLDivElement | null>, className: string) => (
+    <div className={className} ref={ref} aria-live="polite" aria-label="Chat messages">
+      {messages.map((m, i) =>
+        m.role === 'user' ? (
+          <p key={i} className={styles.msgUser}>
+            <span className={styles.msgUserPrompt} aria-hidden="true">
+              ›{' '}
+            </span>
+            {m.text}
+          </p>
+        ) : (
+          <div key={i} className={styles.msgAssistant}>
+            {(() => {
+              const paras = splitParagraphs(m.text);
+              const displayParas = paras.length > 0 ? paras : [''];
+              return displayParas.map((para, pi) => (
+                <p key={pi} className={styles.msgAssistantPara}>
+                  {para}
+                  {pi === displayParas.length - 1 &&
+                    i === messages.length - 1 &&
+                    chatStatus === 'loading' && (
+                      <span className={`${styles.msgCursor} cursor-blink`} aria-hidden="true">
+                        _
+                      </span>
+                    )}
+                </p>
+              ));
+            })()}
+          </div>
+        ),
+      )}
+      {activeSuggestions.length > 0 && (
+        <div className={styles.chatSuggestions}>
+          <span className={styles.chatSuggestLabel}>Try asking</span>
+          {activeSuggestions.map((s) => (
+            <button
+              key={s}
+              type="button"
+              className={styles.chatSuggestBtn}
+              onClick={() => handleSubmit(s)}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 
   const canonicalUrl = `https://viewbens.work${pathname}`;
   const companySlug = pathname.split('/').pop() ?? 'work';
@@ -419,62 +482,28 @@ export function CaseStudyPage({
             <span className={styles.chatContextValue}>{company}</span>
           </div>
 
-          <div
-            className={styles.chatLog}
-            ref={chatLogRef}
-            aria-live="polite"
-            aria-label="Chat messages"
-          >
-            {messages.map((m, i) =>
-              m.role === 'user' ? (
-                <p key={i} className={styles.msgUser}>
-                  <span className={styles.msgUserPrompt} aria-hidden="true">
-                    ›{' '}
-                  </span>
-                  {m.text}
-                </p>
-              ) : (
-                <div key={i} className={styles.msgAssistant}>
-                  {(() => {
-                    const paras = splitParagraphs(m.text);
-                    const displayParas = paras.length > 0 ? paras : [''];
-                    return displayParas.map((para, pi) => (
-                      <p key={pi} className={styles.msgAssistantPara}>
-                        {para}
-                        {pi === displayParas.length - 1 &&
-                          i === messages.length - 1 &&
-                          chatStatus === 'loading' && (
-                            <span className={`${styles.msgCursor} cursor-blink`} aria-hidden="true">
-                              _
-                            </span>
-                          )}
-                      </p>
-                    ));
-                  })()}
-                </div>
-              ),
-            )}
-            {activeSuggestions.length > 0 && (
-              <div className={styles.chatSuggestions}>
-                <span className={styles.chatSuggestLabel}>Try asking</span>
-                {activeSuggestions.map((s) => (
-                  <button
-                    key={s}
-                    type="button"
-                    className={styles.chatSuggestBtn}
-                    onClick={() => handleSubmit(s)}
-                  >
-                    {s}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          {renderChatLog(chatLogRef, styles.chatLog)}
 
           <div className={styles.chatInputWrap}>
             <ChatInput onSubmit={handleSubmit} status={chatStatus} showStatus={false} />
           </div>
         </aside>
+      )}
+
+      {/* ——— MOBILE FAB + CHAT OVERLAY ———
+          Below 1100px the docked panel above is hidden, so on mobile this is the
+          only way to reach the assistant. visible is unconditional here: landing
+          on a case study is itself the trigger to surface the FAB. */}
+      {showChat && (
+        <MobileChatSurface
+          visible
+          open={mobileChatOpen}
+          onOpenChange={setMobileChatOpen}
+          messageCount={messages.length}
+          chatStatus={chatStatus}
+          onSubmit={handleSubmit}
+          renderLog={renderChatLog}
+        />
       )}
     </div>
   );

@@ -400,6 +400,10 @@ for the build checklist.
 - `api/lib/session.ts` — server-side session authority: conversation history
   and the session message cap live here (Redis, keyed by an HttpOnly
   cookie), never trusted from the client. See decisions.md (2026-07-17).
+- `src/components/MobileChatSurface.tsx` — the mobile-only "Ask Ben" entry
+  point (floating action button + full-screen overlay), shared by the homepage
+  and case study pages so the mobile chat behaves identically on both. See
+  decisions.md (2026-07-19).
 - `.env.example` — required environment variables
 
 **Key constraints:**
@@ -442,6 +446,17 @@ for the build checklist.
   soft formatting guidance). Any page that renders assistant messages must call
   `splitParagraphs()` on the text, not render it as one block — `HomeV4Blend.tsx` shipped
   without this for weeks before being caught 2026-07-19; see decisions.md 2026-07-19.
+- On mobile (<=760px) the chat is a floating "Ask Ben" button that opens a full-screen
+  overlay, both in `src/components/MobileChatSurface.tsx` and shared by the homepage and
+  case study pages. Two behaviors are load-bearing and easy to regress: (1) starting a chat
+  from the homepage's inline container must OPEN the overlay (via `handleHeroSubmit` in
+  `HomeV4Blend.tsx`) — the inline panel collapses to a dead, non-interactive surface once a
+  conversation starts, so the reply has to hand off somewhere interactive; (2) the FAB's
+  visibility is `fabRevealed || messages.length > 0`, where `fabRevealed` is a session-only
+  flag in the shared session (`src/hooks/useChatSession.ts`) that case study pages set on
+  mount and that persists across navigation. Chat stays scoped to Home + case study pages
+  only (per decisions.md 2026-07-18); do not render `MobileChatSurface` on About/Resume/
+  Contact/404. See decisions.md 2026-07-19.
 
 ---
 

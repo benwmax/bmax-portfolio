@@ -702,3 +702,47 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
   multi-paragraph replies with no paragraph exceeding 3 sentences. No browser test performed
   (no browser tooling in this environment) — worth a visual check on the deployed site.
   `src/pages/explorations/data.ts`, `src/pages/HomePage.tsx`, `api/chat.ts`.
+
+## 2026-07-19 — Mobile chat: hand off to a full-screen overlay, and a persistent FAB
+- Decision: Fix the broken mobile chat flow by (1) opening the full-screen "Ask Ben"
+  overlay the moment a visitor starts a chat from the homepage's inline container, and
+  (2) making the mobile FAB entry point appear on case study pages and persist across
+  navigation. Extracted the FAB + overlay into a single shared component,
+  `src/components/MobileChatSurface.tsx`, used by both the homepage and case study pages.
+- Reasoning: Ben reported (with a screenshot) that on mobile, sending a message from the
+  homepage's inline chat container left the reply streaming into a surface he couldn't
+  interact with, while a redundant "Ask Ben" FAB floated over the top. Root cause: the
+  homepage's inline hero panel is built to collapse into the desktop docked rail once a
+  conversation starts (`isDocked`), setting `opacity:0` + `pointer-events:none`. On mobile
+  there is no docked rail (`display:none`), and nothing opened the full-screen overlay — so
+  the reply went to a hidden, dead panel and the FAB was the only live control. Separately,
+  case study pages had **no** mobile chat entry at all (their docked panel is `display:none`
+  below 1100px). Handing off to the overlay on first submit puts the reply somewhere
+  interactive; giving case study pages the same FAB/overlay closes the coverage gap.
+- Two calls Ben made when asked:
+  - **FAB scope: Home + case study pages only.** Consistent with the 2026-07-18 decision to
+    keep chat scoped to those two surfaces (not About/Resume/Contact/404). The FAB does not
+    follow the visitor onto non-chat pages.
+  - **Persistence: session-only, in memory.** The `fabRevealed` flag lives in the shared
+    session (`ChatProvider`, above the router), so it survives navigation — e.g. visit a
+    case study, then return to Home without chatting, and the FAB stays. A full reload
+    resets it, matching the conversation itself. No localStorage.
+- How it works: added `fabRevealed` + `revealFab()` to `src/hooks/useChatSession.ts`. FAB
+  visibility is `fabRevealed || messages.length > 0`. The homepage's inline submit now calls
+  a `handleHeroSubmit` wrapper that opens the overlay before submitting (a no-op on desktop,
+  where the overlay is `display:none` and the reply flows into the docked rail as before).
+  Case study pages call `revealFab()` on mount. The FAB is now hidden while the overlay is
+  open (`visible && !open`), fixing the overlap in the screenshot. All mobile-only behavior
+  is still gated to <=760px by CSS; desktop is unchanged.
+- Alternatives considered: (a) duplicating the overlay JSX/CSS into `CaseStudyPage.tsx` —
+  rejected as it would fork two copies of the mobile chat that could drift; the shared
+  component keeps them identical. (b) Rendering one overlay at the app root — rejected
+  because it would put chat on About/Resume/Contact/404, contradicting the 2026-07-18 scope.
+- Verification: `npm run build` (tsc -b + vite build) and Prettier both clean; ESLint clean
+  on all touched files (the pre-existing 15 problems are in untouched Storybook/config
+  files). No live mobile-browser test — plain `vite dev` doesn't serve the `/api/chat` Edge
+  Function, so end-to-end streaming isn't reproducible locally; the overlay-open and FAB
+  logic run independently of the backend. Worth a visual check at 390px on the deployed site.
+  Files: `src/components/MobileChatSurface.tsx` (new), `src/components/MobileChatSurface.module.css`
+  (new), `src/hooks/useChatSession.ts`, `src/pages/explorations/HomeV4Blend.tsx` (+ `.module.css`),
+  `src/pages/CaseStudyPage.tsx`.

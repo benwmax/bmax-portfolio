@@ -689,3 +689,43 @@ CLAUDE.md is touched.
 
 **Where I overrode or redirected Claude:**
 N/A.
+
+## 2026-07-19 (later still — mobile chat)
+**What I did:**
+Reported (with a screenshot) that on mobile, sending a message from the homepage's chat
+container left the reply coming back into a field I couldn't interact with, while the "Ask
+Ben" floating button sat on top of it. Specified the flow I wanted: no FAB before a chat
+starts; starting a chat on the homepage should open the Ask Ben interface and load the reply
+there; visiting a case study page should add the FAB; and returning to the homepage without
+having chatted should keep the FAB. Asked Claude for questions first.
+
+**What I decided:**
+Answered Claude's two questions — the FAB stays scoped to Home + case study pages only (not
+About/Resume/Contact), and its revealed state is session-only (in memory, resets on reload),
+not persisted to localStorage. Approved the shared-component approach.
+
+**Why:**
+Both answers keep this consistent with the 2026-07-18 decision to scope chat to just Home and
+case study pages, and with the conversation itself being session-only. Didn't want chat
+bleeding onto pages it was deliberately kept off of.
+
+**What I'm uncertain about:**
+Only the visual result on a real device — no browser tool was available this session, and
+plain `vite dev` doesn't serve the `/api/chat` Edge Function, so the end-to-end streaming
+flow wasn't reproducible locally. Want to eyeball the overlay handoff and FAB behavior at a
+390px viewport on the deployed site.
+
+**What Claude contributed:**
+Diagnosed the root cause: the homepage's inline hero panel is built to collapse into the
+desktop docked rail once a conversation starts (`opacity:0` + `pointer-events:none`), but on
+mobile there's no docked rail and nothing opened the full-screen overlay — so the reply
+streamed into a hidden, dead panel and the FAB was the only live control. Also flagged that
+case study pages had no mobile chat entry at all (docked panel is `display:none` below
+1100px). Extracted the FAB + overlay into a shared `MobileChatSurface` component used by both
+pages; added a session-only `fabRevealed` flag to the shared chat session so the FAB persists
+across navigation; wired the homepage's inline submit to open the overlay on send; and hid
+the FAB while the overlay is open (fixing the overlap in the screenshot). Build, lint, and
+Prettier all clean.
+
+**Where I overrode or redirected Claude:**
+N/A — Claude asked before building and I picked the two options it recommended.

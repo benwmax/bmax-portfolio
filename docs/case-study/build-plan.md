@@ -378,7 +378,14 @@ independently; only the widget's visual styling depends on those.*
       dark-theme background everywhere. Visual screenshot spot-check on Home confirmed consistent
       fonts/layout/color across engines. Not a substitute for real Safari-on-macOS/iOS testing —
       WebKit-the-engine and Safari-the-browser can still diverge in ways this doesn't catch.
-- [ ] Mobile device testing (real devices, not just browser resize)
+- [ ] Mobile device testing (real devices, not just browser resize) — still open, but one
+      real-device mobile bug was caught and fixed 2026-07-19: sending a message from the
+      homepage's inline chat container on mobile left the reply streaming into a hidden,
+      non-interactive panel while the "Ask Ben" FAB overlapped it. Fixed by handing off to
+      the full-screen overlay on first submit and sharing the FAB/overlay across Home + case
+      study pages via `src/components/MobileChatSurface.tsx` (case study pages had no mobile
+      chat entry before this). See decisions.md 2026-07-19. Systematic real-device testing
+      across the whole site is still needed.
 - [ ] Image optimization: WebP format, lazy loading, proper srcset — blocked: no real case study
       images exist in content yet (all five `src/content/*.ts` files have zero image refs) —
       this is really gated on Phase 1E (image audit), not a QA task
