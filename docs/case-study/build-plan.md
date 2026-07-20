@@ -350,6 +350,18 @@ independently; only the widget's visual styling depends on those.*
 - [ ] Update system-prompt.ts as Upfluent, USAA, and Sagent case studies
       are finalized (ongoing — revisit each time a case study moves to
       "published")
+- [x] In-chat "get in touch" contact flow (2026-07-20) — `api/contact.ts` (new Edge
+      Function, mirrors chat.ts's origin/rate-limit/fail-closed pattern), `api/lib/
+      contact-limit.ts` (own per-IP + global-daily Redis budget), `api/lib/cors.ts`
+      (origin allowlist extracted so chat.ts and contact.ts share one list). Client
+      side: `ContactCard` component (Name/Email/Message, honeypot + fill-time anti-bot
+      signals), wired into `useChatSession`'s client-side `detectContactIntent` check
+      (runs against both the visitor's message and the assistant's reply) and rendered
+      inline in the chat log on Home + case study pages. Sends via Resend. See
+      decisions.md, 2026-07-20.
+- [ ] **Ben:** create a Resend account, verify the viewbens.work sending domain, add
+      `RESEND_API_KEY` to Vercel env vars (see .env.example) — the contact form can't
+      actually send email until this is done
 
 ---
 

@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import { NavBar } from '../../components/NavBar';
 import { CaseStudyCard } from '../../components/CaseStudyCard';
 import { ChatInput } from '../../components/ChatInput';
+import { ContactCard } from '../../components/ContactCard';
 import { MobileChatSurface } from '../../components/MobileChatSurface';
 import { useChat } from '../../context/useChat';
 import { splitParagraphs } from '../../hooks/useChatSession';
@@ -96,7 +97,18 @@ export function HomeV4Blend({
   initialMessages = [],
   skipBoot = false,
 }: HomeV4BlendProps) {
-  const { messages, chatStatus, handleSubmit, setPageContext, fabRevealed } = useChat({
+  const {
+    messages,
+    chatStatus,
+    handleSubmit,
+    setPageContext,
+    fabRevealed,
+    showContactCard,
+    contactFormStatus,
+    contactErrorText,
+    submitContactForm,
+    dismissContactCard,
+  } = useChat({
     onSubmit: onChatSubmit,
     initialMessages,
   });
@@ -228,6 +240,14 @@ export function HomeV4Blend({
               </div>
             ),
           )
+        )}
+        {showContactCard && (
+          <ContactCard
+            status={contactFormStatus}
+            errorText={contactErrorText}
+            onSubmit={submitContactForm}
+            onDismiss={dismissContactCard}
+          />
         )}
       </div>
     );

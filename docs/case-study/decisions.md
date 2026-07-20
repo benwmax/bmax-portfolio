@@ -746,3 +746,71 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
   Files: `src/components/MobileChatSurface.tsx` (new), `src/components/MobileChatSurface.module.css`
   (new), `src/hooks/useChatSession.ts`, `src/pages/explorations/HomeV4Blend.tsx` (+ `.module.css`),
   `src/pages/CaseStudyPage.tsx`.
+
+## 2026-07-20 — In-chat "get in touch" contact flow, via Resend
+- Decision: The AI chat widget now recognizes when a visitor wants to reach Ben and offers
+  an inline "SEND BEN A MESSAGE" form (Name optional, Email + Message required) right in the
+  chat log, which emails him directly at ben@viewbens.work through Resend. New endpoint
+  `api/contact.ts` (Vercel Edge Function), new component `src/components/ContactCard/`, and
+  `useChatSession.ts` grew a client-side `detectContactIntent()` check that drives it.
+- Reasoning: Ben asked for a seamless way for chat visitors to reach him without leaving the
+  widget, with spam prevention baked in. The chat backend already had a mature
+  abuse-prevention stack (origin allowlist, Upstash rate limits, atomic Redis reservations,
+  fail-closed on Redis errors) — the contact flow mirrors that shape rather than inventing a
+  new one, but on its own budget: an email send is a different resource (real cost, lands in
+  Ben's inbox) than an LLM token, so it gets its own rate limits and daily circuit breaker
+  (`api/lib/contact-limit.ts`), not a share of `/api/chat`'s.
+- Structured form over conversational collection: chose a Name/Email/Message form (built
+  from the existing `Input`/`Button` primitives) over having the assistant collect the same
+  fields turn-by-turn in chat. A form is reliable to validate and guarantees Ben gets a
+  usable reply-to address; free-text collection would need to parse an email out of prose
+  and is easy for a visitor to get wrong turn-by-turn.
+- Client-side intent detection over model tool-use: the Anthropic call in `api/chat.ts`
+  doesn't use tool-use at all today, and wiring it up (a second model round-trip to decide
+  "should I offer the form") felt disproportionate for what's fundamentally a keyword match.
+  Instead, `detectContactIntent()` — a regex over phrases like "get in touch," "reach out,"
+  "hire you," "email you" — runs client-side against both the visitor's own message *and*
+  the assistant's finished reply (so an out-of-scope redirect that mentions reaching out
+  still surfaces the form, even if the visitor's original message didn't itself read as a
+  contact request). A false positive just shows a dismissible card — low cost — so a
+  broad-but-plausible phrase list was an acceptable trade against the complexity of real
+  tool-use. `system-prompt.ts`'s SCOPE section was updated so the assistant's own wording
+  about "reach out" now points at the same in-chat form instead of a bare `mailto:` mention,
+  and its SAFETY section grew one narrow, explicit exception to "don't claim actions you
+  can't perform" — the assistant can say the form is available, but still can't send anything
+  itself.
+- Spam prevention stack (no CAPTCHA/Turnstile — see the 2026-07-18 hardening entry's reasoning
+  for deferring that at this scale, which still applies here): origin allowlist (shared with
+  `/api/chat` via new `api/lib/cors.ts`, extracted so the temporary `.vercel.app` allowlist
+  entry only needs removing in one place at cutover), per-IP hourly + daily Redis rate limits
+  tighter than chat's, a global daily circuit breaker independent of chat's budget, a hidden
+  honeypot field (fully removed from the accessibility tree, not just visually hidden, so it
+  can't snag a legitimate screen-reader user), a minimum-fill-time check (rejects submissions
+  faster than a human could plausibly type one), request-size and field-length caps, and
+  fail-closed (503) on any Redis error. Honeypot/fill-time rejections return the same success
+  response a real send would, so an automated caller can't learn which check tripped.
+- Bug found and fixed during verification: the ContactCard's email field used native HTML
+  `type="email"`/`required` validation *and* custom JS validation with a styled error state.
+  The browser's own unstyled constraint-validation tooltip fired first and pre-empted the
+  custom error UI entirely — confirmed via a real browser test (typing an invalid email
+  produced Chrome's native "Please include an '@'..." tooltip instead of the intended red
+  error text). Fixed by adding `noValidate` to the form so validation and its display are
+  handled entirely by component state, as intended.
+- Open item — Ben: the form can't actually send email until a Resend account is created and
+  the `viewbens.work` sending domain is verified there (DNS records), with `RESEND_API_KEY`
+  added to Vercel env vars. See `.env.example` and `build-plan.md` Phase 4F.
+- Verification: `npm run build` and `npm run lint` clean on all touched files. Full browser
+  verification via Playwright against a real `vite dev` server (no `/api` Edge runtime
+  available locally, so `/api/chat` and `/api/contact` both 404 as expected) and against
+  Storybook: confirmed the card appears on both the homepage hero/docked chat and a case
+  study page's docked rail when a contact-intent message is sent, dismiss hides it, sending
+  another contact-intent message re-triggers it, client-side validation now shows correctly
+  post-fix, and a submit against the (unavailable-in-dev) endpoint shows the error state with
+  the visitor's fields preserved rather than cleared. No console errors beyond the expected
+  404/connection-reset noise from the missing local API routes. Live email delivery is
+  untested pending Ben's Resend setup above.
+  Files: `api/contact.ts` (new), `api/lib/contact-limit.ts` (new), `api/lib/cors.ts` (new,
+  extracted from `api/chat.ts`), `src/components/ContactCard/` (new), `api/chat.ts`,
+  `api/lib/system-prompt.ts`, `src/hooks/useChatSession.ts`,
+  `src/pages/explorations/HomeV4Blend.tsx`, `src/pages/CaseStudyPage.tsx`, `.env.example`,
+  `docs/ai-component-guide.md`, `docs/case-study/build-plan.md`.

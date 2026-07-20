@@ -4,6 +4,7 @@ import { useLocation, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { NavBar } from '../components/NavBar';
 import { ChatInput } from '../components/ChatInput';
+import { ContactCard } from '../components/ContactCard';
 import { MobileChatSurface } from '../components/MobileChatSurface';
 import { splitParagraphs } from '../hooks/useChatSession';
 import type { Message as CsMessage } from '../hooks/useChatSession';
@@ -108,11 +109,22 @@ export function CaseStudyPage({
   initialMessages = [],
 }: CaseStudyPageProps) {
   const { pathname } = useLocation();
-  const { messages, chatStatus, handleSubmit, activeSuggestions, setPageContext, revealFab } =
-    useChat({
-      onSubmit: onChatSubmit,
-      initialMessages,
-    });
+  const {
+    messages,
+    chatStatus,
+    handleSubmit,
+    activeSuggestions,
+    setPageContext,
+    revealFab,
+    showContactCard,
+    contactFormStatus,
+    contactErrorText,
+    submitContactForm,
+    dismissContactCard,
+  } = useChat({
+    onSubmit: onChatSubmit,
+    initialMessages,
+  });
   const [activeSection, setActiveSection] = useState('problem');
   const [mobileChatOpen, setMobileChatOpen] = useState(false);
   const chatLogRef = useRef<HTMLDivElement>(null);
@@ -235,6 +247,14 @@ export function CaseStudyPage({
             </button>
           ))}
         </div>
+      )}
+      {showContactCard && (
+        <ContactCard
+          status={contactFormStatus}
+          errorText={contactErrorText}
+          onSubmit={submitContactForm}
+          onDismiss={dismissContactCard}
+        />
       )}
     </div>
   );

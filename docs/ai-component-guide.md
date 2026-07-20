@@ -35,6 +35,7 @@ value has a CSS custom property. They are documented in `Foundations/Colors` and
 | AI assistant availability signal | `StatusIndicator` |
 | Full AI chat widget (prompt + button + status) | `ChatInput` |
 | Generic form text field | `Input` |
+| Inline "send Ben a message" form in the chat log | `ContactCard` |
 | Site header / navigation | `NavBar` |
 | Work grid thumbnail + link | `CaseStudyCard` |
 | Case study page hero (title, meta grid) | `CaseStudyHero` |
@@ -271,6 +272,37 @@ Bare terminal text field. Use for forms — not for the AI chat widget (use `Cha
 - For AI chat functionality, use `ChatInput` — not this component
 - Don't add a `prompt` to a standard form field outside the terminal context
 - Don't use red for any state other than actual errors
+
+---
+
+### ContactCard
+
+**File:** `src/components/ContactCard/ContactCard.tsx`
+**Storybook:** `Components/ContactCard`
+
+Structured Name/Email/Message form (built from `Input` + `Button`) that renders inline in the chat message log — Home and case study pages only, never the standalone `Contact` page. Appears when `useChatSession`'s client-side `detectContactIntent` check matches either the visitor's message or the assistant's reply; submits to `/api/contact`, which emails Ben via Resend.
+
+#### Props
+
+| Prop | Type | Notes |
+|---|---|---|
+| `status` | `'idle' \| 'sending' \| 'sent' \| 'error'` | Owned by `useChatSession` (`contactFormStatus`), not local state |
+| `errorText` | `string` | Server error message, passed through verbatim — don't rewrite it |
+| `onSubmit` | `(fields: ContactSubmission) => void` | Wire to `useChatSession`'s `submitContactForm` |
+| `onDismiss` | `() => void` | Wire to `useChatSession`'s `dismissContactCard` |
+
+#### Content rules
+
+- Header label: `SEND BEN A MESSAGE`
+- Send button: `SEND` idle, `SENDING…` in flight — no spinner icon
+- Confirmation copy: `Sent — Ben typically replies within 48 hours.`
+
+#### Pitfalls
+
+- Don't render on the `Contact` page — that page is intentionally form-free (see its section below)
+- Don't strip the hidden honeypot field or the `elapsedMs` timing signal — both are load-bearing for `/api/contact`'s spam prevention
+- Don't drop the "Not now" dismiss — the intent detection is a heuristic and can false-positive
+- Don't clear the fields on an error response — the visitor's draft should survive a retry
 
 ---
 
@@ -684,8 +716,9 @@ Contact page — two channel cards (email + LinkedIn) with copy-to-clipboard act
 **Update content:** edit `Contact.tsx` directly. No props.
 
 **Pitfalls:**
-- No contact form — two channel cards are the contact method
+- No contact form on this page — two channel cards are the contact method here
 - Don't change email address or timezone without checking with Ben
+- Don't confuse this with `ContactCard` — that's a separate, chat-only form that appears inline in the AI assistant on Home/case study pages, not on this page. See `ContactCard`'s section above.
 
 ---
 
@@ -713,6 +746,19 @@ Contact page — two channel cards (email + LinkedIn) with copy-to-clipboard act
   onSubmit={handleSubmit}
 />
 <StatusIndicator status={chatStatus} label="ONLINE · assistant ready" />
+```
+
+Both surfaces also render `ContactCard` at the end of the message log (not inside `ChatInput`) whenever `useChatSession`'s `showContactCard` is true:
+
+```tsx
+{showContactCard && (
+  <ContactCard
+    status={contactFormStatus}
+    errorText={contactErrorText}
+    onSubmit={submitContactForm}
+    onDismiss={dismissContactCard}
+  />
+)}
 ```
 
 ### Case Study Process Section
