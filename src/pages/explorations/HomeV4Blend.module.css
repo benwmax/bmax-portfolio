@@ -669,6 +669,18 @@
   border-color: var(--color-green-border);
 }
 
+/* The one explicit action under the footer's rhetorical-question heading —
+   distinguished from the plain social links so the CTA isn't just implied. */
+.footerLinkPrimary {
+  color: var(--color-green-accent);
+  border-color: var(--color-green-border);
+}
+
+.footerLinkPrimary:hover {
+  color: var(--color-bg-page);
+  background: var(--color-green-accent);
+}
+
 .footerFine {
   display: flex;
   justify-content: space-between;

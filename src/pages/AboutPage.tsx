@@ -7,19 +7,31 @@ const CAREER = [
     company: 'Aperia Solutions',
     role: 'UX Designer',
     sector: 'Fintech / compliance',
-    outcomes: ['Established UX department', 'PCI compliance software overhaul', 'B2B tools for millions of merchants'],
+    outcomes: [
+      'Established UX department',
+      'PCI compliance software overhaul',
+      'B2B tools for millions of merchants',
+    ],
   },
   {
     company: 'PeopleAnswers',
     role: 'UX/UI Designer',
     sector: 'HR technology',
-    outcomes: ['Founded UX practice', 'HR hiring & management tools', 'Internationalization across 6 countries'],
+    outcomes: [
+      'Founded UX practice',
+      'HR hiring & management tools',
+      'Internationalization across 6 countries',
+    ],
   },
   {
     company: 'AT&T',
     role: 'UX Designer',
     sector: 'Telecom enterprise',
-    outcomes: ['B2B signup & servicing redesign', 'End-to-end registration architecture', 'Cross-functional product collaboration'],
+    outcomes: [
+      'B2B signup & servicing redesign',
+      'End-to-end registration architecture',
+      'Cross-functional product collaboration',
+    ],
   },
   {
     company: 'Sabre',
@@ -43,7 +55,11 @@ const CAREER = [
     company: 'Sagent',
     role: 'Principal UX Designer · Co-lead',
     sector: 'Mortgage technology',
-    outcomes: ['Led 4-person design team', 'Coordinated 12 business teams', 'Stepped up when director departed'],
+    outcomes: [
+      'Led 4-person design team',
+      'Coordinated 12 business teams',
+      'Stepped up when director departed',
+    ],
   },
   {
     company: 'Upfluent',
@@ -66,13 +82,13 @@ export function AboutPage() {
         <title>About — Ben Maxwell | UX Design Leader</title>
         <meta
           name="description"
-          content="Senior UX designer with 12+ years building expert-level tools across fintech, travel, insurance, and mortgage. Currently seeking Design Director and UX Principal roles in Dallas, TX."
+          content="Senior UX designer with 15+ years building expert-level tools across fintech, travel, insurance, and mortgage. Currently seeking Design Director and UX Principal roles in Dallas, TX."
         />
         <link rel="canonical" href="https://viewbens.work/about" />
         <meta property="og:title" content="About — Ben Maxwell" />
         <meta
           property="og:description"
-          content="Senior UX designer with 12+ years building expert-level tools across fintech, travel, insurance, and mortgage."
+          content="Senior UX designer with 15+ years building expert-level tools across fintech, travel, insurance, and mortgage."
         />
         <meta property="og:url" content="https://viewbens.work/about" />
       </Helmet>
@@ -87,14 +103,13 @@ export function AboutPage() {
           <div className={styles.introInner}>
             <span className={styles.kicker}>About</span>
             <h1 className={styles.heading}>
-              I make expert tools{' '}
-              <span className={styles.headingAccent}>learnable</span>.
+              I make expert tools <span className={styles.headingAccent}>learnable</span>.
             </h1>
             <p className={styles.lede}>
-              Fifteen years across travel, insurance, fintech, and mortgage — building tools
-              that experts actually adopt. The work is in the details: the decision that made
-              onboarding six months faster, the research that redesigned how an industry works,
-              the chatbot that let retail traders think like professionals.
+              Fifteen years across travel, insurance, fintech, and mortgage — building tools that
+              experts actually adopt. The work is in the details: the decision that made onboarding
+              six months faster, the research that redesigned how an industry works, the chatbot
+              that let retail traders think like professionals.
             </p>
           </div>
         </header>
@@ -113,13 +128,13 @@ export function AboutPage() {
                 The users I design for are professionals who've spent years getting good at
                 something hard — claims adjusters, mortgage servicers, options traders, travel
                 agents. They don't need things simplified. They need things organized. The
-                distinction matters: simplifying expert tools usually breaks them. Organizing
-                them is what makes them adoptable.
+                distinction matters: simplifying expert tools usually breaks them. Organizing them
+                is what makes them adoptable.
               </p>
               <p>
-                I find that most adoption failures in enterprise tools aren't feature gaps —
-                they're legibility gaps. The system works. The user can't tell what it's trying
-                to say. My job is to close that gap without removing the depth the expert needs.
+                I find that most adoption failures in enterprise tools aren't feature gaps — they're
+                legibility gaps. The system works. The user can't tell what it's trying to say. My
+                job is to close that gap without removing the depth the expert needs.
               </p>
             </div>
           </section>
@@ -135,15 +150,15 @@ export function AboutPage() {
             <div className={styles.prose}>
               <p>
                 At Sagent I co-led a four-person design team across twelve business teams
-                simultaneously — no design director, unexpected leadership departure, and a
-                mortgage platform mid-rebuild. I stepped up, ran strategic planning, mentored
-                junior designers, and kept the program coherent. That's when I learned the
-                difference between leading design and managing designers: the first one means
-                protecting the work from scope sprawl and organizational churn.
+                simultaneously — no design director, unexpected leadership departure, and a mortgage
+                platform mid-rebuild. I stepped up, ran strategic planning, mentored junior
+                designers, and kept the program coherent. That's when I learned the difference
+                between leading design and managing designers: the first one means protecting the
+                work from scope sprawl and organizational churn.
               </p>
               <p>
-                I'm a working lead. I'm in the details and in the decisions. I believe the
-                best design leaders know what good looks like because they're still making it.
+                I'm a working lead. I'm in the details and in the decisions. I believe the best
+                design leaders know what good looks like because they're still making it.
               </p>
             </div>
           </section>
@@ -186,11 +201,10 @@ export function AboutPage() {
             </div>
             <div className={styles.prose}>
               <p>
-                I'm looking for a senior IC or people-lead role at a company where design
-                has real authority over product decisions — not a seat at the table in theory.
-                Fintech, regulated industries, and companies with meaningful AI investment are
-                the strongest fits. If the users are experts and the problem is hard, I want
-                to talk.
+                I'm looking for a senior IC or people-lead role at a company where design has real
+                authority over product decisions — not a seat at the table in theory. Fintech,
+                regulated industries, and companies with meaningful AI investment are the strongest
+                fits. If the users are experts and the problem is hard, I want to talk.
               </p>
               <p>
                 I'm based in Dallas, Texas and open to remote or hybrid. Portfolio is at{' '}

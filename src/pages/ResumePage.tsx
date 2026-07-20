@@ -7,7 +7,7 @@ const EXPERIENCE = [
     role: 'Principal UX Designer',
     company: 'Self-directed — Portfolio Rebuild',
     dates: '2026',
-    sector: 'Meta',
+    sector: 'AI Collaboration',
     outcomes: [
       'Directed a full portfolio rebuild using Claude as AI collaborator — the build process is the lead case study.',
       'Designed and built the component system, page templates, and AI chat feature using React, Tailwind, and Storybook 8.',
@@ -95,10 +95,49 @@ const EXPERIENCE = [
 ] as const;
 
 const SKILLS = [
-  { category: 'Methods', items: ['Heuristic review', 'Design sprints', 'User research', 'Usability testing', 'Journey mapping', 'Systems thinking'] },
-  { category: 'Design', items: ['Figma', 'Storybook', 'Design systems', 'Component architecture', 'Interaction design', 'Accessibility (WCAG)'] },
-  { category: 'Engineering', items: ['React', 'TypeScript', 'Tailwind CSS', 'Vite', 'CSS Modules', 'Vercel / Edge Functions'] },
-  { category: 'Leadership', items: ['Team lead', 'Cross-functional facilitation', 'Strategic planning', 'Mentorship', 'Stakeholder alignment'] },
+  {
+    category: 'Methods',
+    items: [
+      'Heuristic review',
+      'Design sprints',
+      'User research',
+      'Usability testing',
+      'Journey mapping',
+      'Systems thinking',
+    ],
+  },
+  {
+    category: 'Design',
+    items: [
+      'Figma',
+      'Storybook',
+      'Design systems',
+      'Component architecture',
+      'Interaction design',
+      'Accessibility (WCAG)',
+    ],
+  },
+  {
+    category: 'Engineering',
+    items: [
+      'React',
+      'TypeScript',
+      'Tailwind CSS',
+      'Vite',
+      'CSS Modules',
+      'Vercel / Edge Functions',
+    ],
+  },
+  {
+    category: 'Leadership',
+    items: [
+      'Team lead',
+      'Cross-functional facilitation',
+      'Strategic planning',
+      'Mentorship',
+      'Stakeholder alignment',
+    ],
+  },
 ] as const;
 
 export function ResumePage() {
@@ -108,13 +147,13 @@ export function ResumePage() {
         <title>Resume — Ben Maxwell | UX Design Leader</title>
         <meta
           name="description"
-          content="Résumé for Ben Maxwell — UX Design Leader with 12+ years building expert tools in regulated industries including fintech, travel, insurance, and mortgage."
+          content="Résumé for Ben Maxwell — UX Design Leader with 15+ years building expert tools in regulated industries including fintech, travel, insurance, and mortgage."
         />
         <link rel="canonical" href="https://viewbens.work/resume" />
         <meta property="og:title" content="Resume — Ben Maxwell" />
         <meta
           property="og:description"
-          content="Résumé for Ben Maxwell — UX Design Leader with 12+ years experience in fintech, travel, insurance, and mortgage."
+          content="Résumé for Ben Maxwell — UX Design Leader with 15+ years experience in fintech, travel, insurance, and mortgage."
         />
         <meta property="og:url" content="https://viewbens.work/resume" />
       </Helmet>

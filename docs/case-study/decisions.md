@@ -746,3 +746,77 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
   Files: `src/components/MobileChatSurface.tsx` (new), `src/components/MobileChatSurface.module.css`
   (new), `src/hooks/useChatSession.ts`, `src/pages/explorations/HomeV4Blend.tsx` (+ `.module.css`),
   `src/pages/CaseStudyPage.tsx`.
+
+## 2026-07-20 — Canonical contact email set to ben@viewbens.work sitewide
+
+- Decision: `ben@viewbens.work` is the one canonical email shown across the whole site.
+- Reasoning: A read-through of the site for job-hunt usability found the homepage footer
+  (both the production `HomeV4Blend.tsx` and its `data.ts`/`HomePage.tsx`/`HomeV3Phosphor.tsx`
+  siblings) linking `ben@benjaminwmaxwell.com`, while the Contact page, About page, Resume
+  page, and the chatbot's system prompt all already used `ben@viewbens.work`. Asked Ben directly
+  which was canonical; he confirmed `viewbens.work`, matching every other surface and the
+  portfolio's own domain.
+- Alternatives considered: `ben@benjaminwmaxwell.com` — the address tied to Ben's actual
+  inbox, but would have required changing four other surfaces instead of one.
+- Files: `src/pages/explorations/data.ts` (`SOCIAL_LINKS`), `src/pages/explorations/HomeV3Phosphor.tsx`,
+  `src/pages/HomePage.tsx` (retired/Storybook-only mirror).
+
+## 2026-07-20 — Years-of-experience copy: keep "15+ years," fix the meta tags to match
+
+- Decision: On-page body copy ("Fifteen years" / "15+ years" on About, Resume, and the
+  chatbot's positioning brief) stays as-is. The meta descriptions on About and Resume pages,
+  which said "12+ years," were wrong and are corrected to "15+ years" to match.
+- Reasoning: This resolves the open question CLAUDE.md flagged on 2026-07-19 — career arc
+  starts May 2014 (~12 years to 2026), so the two copy points disagreed with each other and,
+  loosely, with the dated resume. Asked Ben directly; he chose to keep the body copy's
+  "Fifteen years" framing rather than switch to "twelve years" or "over a decade."
+- Alternatives considered: "Twelve years" / "12+ years" (matches the dated resume exactly);
+  "Over a decade" (ages gracefully, avoids a number a recruiter could nitpick). Ben chose to
+  keep the existing framing instead.
+- Files: `src/pages/AboutPage.tsx`, `src/pages/ResumePage.tsx` (meta description + og:description
+  tags only — body copy was already correct and untouched).
+
+## 2026-07-20 — Upfluent case study: leave the non-launch detail undisclosed
+
+- Decision: The live Upfluent case study (`src/content/upfluent.ts`) keeps its current
+  outcomes framing. The detail in the source draft (`docs/case-studies/upfluent.md`) that the
+  product never launched due to unrelated funding issues will not be added to the live copy.
+- Reasoning: Flagged during the usability audit because the live copy ("picked up by
+  engineering," a 12-month delivery) could read as if the product shipped, while the draft
+  states plainly that it didn't. Asked Ben directly whether to disclose; he chose to leave the
+  live copy as-is.
+- Open question: none — this was a direct decision, not left ambiguous. Revisit only if the
+  case study content is substantially reworked later.
+
+## 2026-07-20 — Homepage & Storybook copy/data consistency fixes (usability audit)
+
+- Decision: Alongside the three decisions above, fixed four smaller inconsistencies found in
+  the same read-through, none requiring a content judgment call:
+  1. Portfolio Rebuild's industry tag corrected from `'Meta'` to the canonical `'AI
+     Collaboration'` label (CLAUDE.md's Component Usage section already named this as one of
+     the five canonical labels; the shipped data just hadn't been updated to match).
+  2. Homepage H2 corrected from "Four tools, four regulated industries" to "Five projects,
+     four regulated industries" — the work grid renders 5 cards, one of which (Portfolio
+     Rebuild) isn't a regulated-industry client tool, so the old copy undercounted what's
+     actually shown. Asked Ben for a direction that didn't lead with the AI-build angle (his
+     first-draft feedback); he chose the plain count fix.
+  3. Chat error copy no longer surfaces a raw HTTP status code (`Something went wrong (500).`)
+     to visitors — unified with the existing friendlier network-failure fallback already in
+     `useChatSession.ts`.
+  4. Contact page's email-card copy ("reply within two business days") reworded to "within 48
+     hours" to match the "≤48h" framing already used in that page's kicker, receipt strip, and
+     footer.
+  5. Homepage footer CTA ("Building something experts can't get wrong?") given an explicit
+     "Get in touch →" link to `/contact`, since the only actionable items nearby were the
+     unrelated social links.
+- Reasoning: These were drift between what the code said/showed and what was actually true or
+  intended, not new positioning calls — low-risk to fix directly.
+- Two related items were flagged but *not* implemented, since they're larger in scope or
+  conflict with a prior decision: a downloadable PDF resume (none exists) and `/resume` route
+  discoverability (adding it to the primary nav would break the 2026-06-20 "three links fit at
+  390px" decision). Both logged under CLAUDE.md → Current Project Status → Decisions still
+  open.
+- Files: `src/pages/explorations/data.ts`, `src/pages/explorations/HomeV4Blend.tsx` (+
+  `.module.css`), `src/pages/explorations/HomeV1Signal.tsx`, `src/pages/explorations/HomeV2Terminal.tsx`,
+  `src/pages/explorations/HomeV3Phosphor.tsx`, `src/pages/HomePage.tsx`, `src/pages/ResumePage.tsx`,
+  `src/hooks/useChatSession.ts`, `src/components/Contact/Contact.tsx`.

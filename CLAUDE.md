@@ -491,7 +491,10 @@ started; Phases 6–7 not started. Per decisions.md 2026-07-16, launch is being
 prioritized ahead of the Sagent case study — Sagent ships with placeholder copy
 and gets a full pass post-launch.
 
-**Last updated:** 2026-07-19 (hardening pass verified against real infra; temporary
+**Last updated:** 2026-07-20 (usability & comprehension audit — six mechanical copy/data
+fixes across the site, plus flagged two larger recommendations, PDF resume and `/resume`
+nav placement, as open decisions below. See decisions.md 2026-07-20 and process-journal.md.
+Prior update, 2026-07-19: hardening pass verified against real infra; temporary
 `.vercel.app` origin allowlist added for pre-launch chat testing; chat widget readability
 fix — see decisions.md 2026-07-19 entries and process-journal.md. Also resynced this
 section against build-plan.md: removed a stale "choose homepage direction" next-step that
@@ -641,6 +644,20 @@ under `src/pages/explorations/` — is the real production homepage, not a draft
   without a paragraph break), plus lowered `MAX_OUTPUT_TOKENS` (400 → 220) in `api/chat.ts`
   as a backstop. Verified against the real model by replaying the exact reported question.
   See decisions.md 2026-07-19.
+- Usability & comprehension audit (2026-07-20) — read the site the way a hiring manager
+  would across homepage, all five case studies, and About/Resume/Contact/404. Fixed six
+  mechanical inconsistencies: canonical email unified to `ben@viewbens.work` (was split
+  between that and `ben@benjaminwmaxwell.com` across the footer and other pages); "12+
+  years" meta-description copy on About/Resume corrected to match the "15+ years" body
+  copy, resolving the open question below; the Portfolio Rebuild card's industry tag
+  corrected from `'Meta'` to the canonical `'AI Collaboration'` label (data.ts, the
+  retired HomePage.tsx mirror, and ResumePage.tsx); homepage H2 corrected from "Four
+  tools, four regulated industries" to "Five projects, four regulated industries" (the
+  grid renders 5 cards, not 4); chat error copy no longer leaks a raw HTTP status code to
+  visitors; Contact page's "two business days" reply-time copy aligned to the "≤48h"
+  framing used everywhere else on that page; footer CTA ("Building something experts
+  can't get wrong?") given an explicit "Get in touch →" link instead of relying on the
+  reader to infer one from the adjacent social links. See decisions.md 2026-07-20.
 
 **Immediate next steps:**
 (Resynced 2026-07-19 — removed a stale "Ben to choose homepage direction" item: that was
@@ -663,9 +680,15 @@ drifts again.)
 **Decisions still open:**
 - Market Rebellion: referenced on About page as brief career arc item (decided 2026-06-20)
 - Sagent case study content (to be built from scratch)
-- "Fifteen years" / "15+ years" copy on About and Resume: career arc now starts May 2014,
-  which is ~12 years to 2026 — decide whether to update copy to "twelve years", "over a
-  decade", or leave it as a loose approximation
+- **Downloadable PDF resume:** no such file or export exists in the repo. Flagged 2026-07-20
+  as a real gap against hiring-manager expectations, but producing one is a content/design
+  deliverable representing Ben professionally — needs Ben to supply a PDF or approve a
+  print-friendly export built from the Resume page content.
+- **`/resume` route discoverability:** the route works but has no nav entry anywhere.
+  Adding it to the primary NavBar would break the finalized 2026-06-20 decision that three
+  nav links (Work/About/Contact) fit at 390px without collapsing — flagged 2026-07-20.
+  Recommend linking from the About page's "What I'm looking for" section or the footer
+  instead of the primary nav; where it lives is Ben's call.
 
 ---
 

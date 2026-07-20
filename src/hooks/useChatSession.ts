@@ -66,9 +66,12 @@ async function streamChat(
     if (!res.ok) {
       try {
         const json = (await res.json()) as { error?: string };
-        return { errorText: json.error ?? `Something went wrong (${res.status}).` };
+        return {
+          errorText:
+            json.error ?? "The assistant isn't available right now — try again in a moment.",
+        };
       } catch {
-        return { errorText: `Something went wrong (${res.status}).` };
+        return { errorText: "The assistant isn't available right now — try again in a moment." };
       }
     }
 

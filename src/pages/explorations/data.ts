@@ -29,7 +29,7 @@ export const CASE_STUDIES: ExplorationCaseStudy[] = [
     index: '01',
     title: 'Portfolio Rebuild with Claude',
     desc: 'Directing an AI to build a portfolio — and making the process the case study.',
-    tag: 'Meta',
+    tag: 'AI Collaboration',
     href: '/work/portfolio',
     role: 'Principal UX Designer',
     year: '2026',
@@ -99,7 +99,7 @@ export const TELEMETRY = [
 ] as const;
 
 export const SOCIAL_LINKS = [
-  { label: 'ben@benjaminwmaxwell.com', href: 'mailto:ben@benjaminwmaxwell.com' },
+  { label: 'ben@viewbens.work', href: 'mailto:ben@viewbens.work' },
   { label: 'LinkedIn', href: 'https://linkedin.com/in/benwmax' },
   { label: 'GitHub', href: 'https://github.com/benwmax' },
 ] as const;

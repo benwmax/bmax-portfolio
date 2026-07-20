@@ -404,6 +404,12 @@ independently; only the widget's visual styling depends on those.*
 - [x] Dark mode works across all pages and components (2026-07-16) — background color
       (`rgb(14,16,15)` / `#0e100f`) verified identical across all 9 routes × 3 viewports ×
       3 browser engines
+- [x] Usability & comprehension audit for job-hunt readiness (2026-07-20) — read every page
+      as a hiring manager would; fixed 6 copy/data inconsistencies (canonical email, years-
+      of-experience meta tags, stale `'Meta'` industry tag, homepage H2 count, chat error
+      copy, Contact reply-time phrasing) plus added an explicit footer CTA link; flagged a
+      downloadable PDF resume and `/resume` nav placement as open decisions for Ben. See
+      decisions.md and process-journal.md 2026-07-20.
 
 ---
 

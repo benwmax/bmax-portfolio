@@ -47,8 +47,8 @@ export function Contact() {
             </a>
 
             <p className={styles.cardDesc}>
-              Briefs, role conversations, attachments. Land in my inbox and I'll reply within two
-              business days — usually the same one.
+              Briefs, role conversations, attachments. Land in my inbox and I'll reply within 48
+              hours — usually the same day.
             </p>
 
             <div className={styles.cardActions}>

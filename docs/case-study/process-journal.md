@@ -729,3 +729,45 @@ Prettier all clean.
 
 **Where I overrode or redirected Claude:**
 N/A — Claude asked before building and I picked the two options it recommended.
+
+## 2026-07-20 — Usability & comprehension audit for the job hunt
+
+**What I did:**
+Asked Claude to read the whole site — homepage, all five case studies, About, Resume,
+Contact, 404 — and propose usability/comprehension improvements as if I'm actively job
+hunting, since that's exactly the state I'm in.
+
+**What I decided:**
+Answered four questions Claude raised: canonical email is `ben@viewbens.work` (not the
+`benjaminwmaxwell.com` address the footer had drifted to); keep "Fifteen years"/"15+ years"
+as the on-page copy and fix the meta tags to match, not the reverse; leave the Upfluent
+non-launch detail out of the live case study; leave Sagent's placeholder sections fully
+untouched until the real Phase 1C brain-dump. Also redirected Claude's first pass at the
+homepage H2 rewrite — it leaned on the AI-build angle to explain the 4-vs-5-card mismatch,
+which read oddly to me — and picked a plain count fix instead ("Five projects, four
+regulated industries") from options it gave me.
+
+**Why:**
+The email and years-of-experience splits were pure drift — different pages saying different
+things — and not worth defending either way once pointed out. Upfluent and Sagent I want left
+alone: Upfluent's story doesn't need a caveat that undercuts it, and Sagent needs real
+content, not a patch. The H2 rewrite mattered more than it looks — I don't want the site's
+copy leaning on "look, AI" reflexively when a simpler, more confident fix was sitting right
+there.
+
+**What I'm uncertain about:**
+Whether the downloadable PDF resume and `/resume` nav placement (both flagged, not built)
+are worth doing before or after launch.
+
+**What Claude contributed:**
+Three parallel research passes across the codebase, then a triage into what was safe to fix
+immediately (six copy/data inconsistencies — email, meta-tag years, a stale `'Meta'` industry
+tag, the H2 count, raw error text leaking to visitors, mismatched reply-time copy on Contact)
+versus what needed my call first. Caught two things I hadn't noticed: the chatbot's error
+copy exposing a raw HTTP status code, and the homepage footer CTA being a question with no
+actual button under it (fixed with an explicit "Get in touch →" link). Ran a full build,
+grepped for stragglers, and confirmed nothing was missed.
+
+**Where I overrode or redirected Claude:**
+The homepage H2 rewrite — see above. Everything else in the approved plan shipped as
+proposed.

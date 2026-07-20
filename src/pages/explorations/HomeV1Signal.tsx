@@ -189,7 +189,7 @@ export function HomeV1Signal({ onChatSubmit, initialMessages = [] }: HomeV1Signa
             <div className={styles.workHead}>
               <div>
                 <div className={styles.workKicker}>Selected work · 2014–2026</div>
-                <h2 className={styles.workTitle}>Four tools, four regulated industries</h2>
+                <h2 className={styles.workTitle}>Five projects, four regulated industries</h2>
               </div>
             </div>
 

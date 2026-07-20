@@ -25,7 +25,15 @@ const BOOT_LINES = [
 ] as const;
 
 /** A line of text that decodes from glyph-scramble once `start` is true. */
-function Scramble({ text, start, className }: { text: string; start: boolean; className?: string }) {
+function Scramble({
+  text,
+  start,
+  className,
+}: {
+  text: string;
+  start: boolean;
+  className?: string;
+}) {
   const out = useScramble(text, start);
   return (
     <span className={className} aria-label={text}>
@@ -253,7 +261,7 @@ export function HomeV2Terminal({
           <section className={styles.workSection} aria-label="Selected work">
             <div className={styles.workHead}>
               <div className={styles.workKicker}>Selected work · 2014–2026</div>
-              <h2 className={styles.workTitle}>Four tools, four regulated industries</h2>
+              <h2 className={styles.workTitle}>Five projects, four regulated industries</h2>
             </div>
 
             <div className={styles.recordList} ref={recordsRef}>

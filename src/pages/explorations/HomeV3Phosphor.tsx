@@ -16,13 +16,7 @@ export interface HomeV3PhosphorProps {
 }
 
 /** A case study card that tilts in 3D toward the cursor and lights a sheen. */
-function TiltCard({
-  cs,
-  reduced,
-}: {
-  cs: (typeof CASE_STUDIES)[number];
-  reduced: boolean;
-}) {
+function TiltCard({ cs, reduced }: { cs: (typeof CASE_STUDIES)[number]; reduced: boolean }) {
   const ref = useRef<HTMLAnchorElement | null>(null);
 
   const onMove = useCallback(
@@ -111,7 +105,7 @@ function MagneticCTA({ reduced }: { reduced: boolean }) {
     <span className={styles.magnetWrap}>
       <a
         ref={ref}
-        href="mailto:ben@benjaminwmaxwell.com"
+        href="mailto:ben@viewbens.work"
         className={styles.magnet}
         onPointerMove={onMove}
         onPointerLeave={onLeave}
@@ -230,7 +224,7 @@ export function HomeV3Phosphor({ onChatSubmit, initialMessages = [] }: HomeV3Pho
           <section className={styles.workSection} aria-label="Selected work">
             <div className={styles.workHead}>
               <div className={styles.workKicker}>Selected work · 2014–2026</div>
-              <h2 className={styles.workTitle}>Four tools, four regulated industries</h2>
+              <h2 className={styles.workTitle}>Five projects, four regulated industries</h2>
             </div>
 
             <div className={styles.workGrid}>

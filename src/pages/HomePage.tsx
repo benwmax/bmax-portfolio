@@ -17,7 +17,6 @@ export interface HomePageProps {
   initialMessages?: Message[];
 }
 
-
 const SUGGESTIONS = [
   'How did Sabre win the $1B contract?',
   'What did you do at Upfluent?',
@@ -29,7 +28,7 @@ const CASE_STUDIES = [
     index: '01',
     title: 'Portfolio Rebuild with Claude',
     desc: 'Directing an AI to build a portfolio — and making the process the case study.',
-    tag: 'Meta',
+    tag: 'AI Collaboration',
     href: '/work/portfolio',
     role: 'Principal UX Designer',
     year: '2026',
@@ -255,7 +254,7 @@ export function HomePage({ onChatSubmit, initialMessages = [] }: HomePageProps) 
             <div className={styles.workHead}>
               <div>
                 <div className={styles.workKicker}>Selected work · 2014–2026</div>
-                <h2 className={styles.workTitle}>Four tools, four regulated industries</h2>
+                <h2 className={styles.workTitle}>Five projects, four regulated industries</h2>
               </div>
             </div>
             <div className={styles.workGrid}>
@@ -283,8 +282,8 @@ export function HomePage({ onChatSubmit, initialMessages = [] }: HomePageProps) 
                 <span className={styles.footerQuestion}>?</span>
               </p>
               <div className={styles.footerLinks}>
-                <a href="mailto:ben@benjaminwmaxwell.com" className={styles.footerLink}>
-                  ben@benjaminwmaxwell.com
+                <a href="mailto:ben@viewbens.work" className={styles.footerLink}>
+                  ben@viewbens.work
                 </a>
                 <a
                   href="https://linkedin.com/in/benwmax"

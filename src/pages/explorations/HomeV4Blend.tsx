@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import type { RefObject } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { Link } from 'react-router-dom';
 import { NavBar } from '../../components/NavBar';
 import { CaseStudyCard } from '../../components/CaseStudyCard';
 import { ChatInput } from '../../components/ChatInput';
@@ -370,7 +371,7 @@ export function HomeV4Blend({
               <div className={styles.workHead}>
                 <div>
                   <div className={styles.workKicker}>Selected work · 2014–2026</div>
-                  <h2 className={styles.workTitle}>Four tools, four regulated industries</h2>
+                  <h2 className={styles.workTitle}>Five projects, four regulated industries</h2>
                 </div>
               </div>
 
@@ -396,6 +397,12 @@ export function HomeV4Blend({
                   <span className={styles.footerQuestion}>?</span>
                 </h2>
                 <div className={styles.footerLinks}>
+                  <Link
+                    to="/contact"
+                    className={`${styles.footerLink} ${styles.footerLinkPrimary}`}
+                  >
+                    Get in touch →
+                  </Link>
                   {SOCIAL_LINKS.map((l) => {
                     const isExternal = l.href.startsWith('http');
                     return (
