@@ -385,7 +385,20 @@ independently; only the widget's visual styling depends on those.*
       the full-screen overlay on first submit and sharing the FAB/overlay across Home + case
       study pages via `src/components/MobileChatSurface.tsx` (case study pages had no mobile
       chat entry before this). See decisions.md 2026-07-19. Systematic real-device testing
-      across the whole site is still needed.
+      across the whole site is still needed. Scoped 2026-07-20 (step-by-step runbook:
+      `docs/testing/mobile-safari-qa.md`; scope summary also in CLAUDE.md "Immediate next
+      steps" — devices, target environment, and risk-area checklist): real
+      iPhone Safari + desktop Safari as primary targets (Android/Chrome lower priority, since
+      Chromium via Playwright already proxies it reasonably well), tested against the live
+      `.vercel.app` preview rather than local dev so the real backend, enforced CSP, and
+      Vercel's actual headers are all in play, across the same 9 routes as the automated
+      sweep above. Focused risk areas rather than a generic click-through: mobile chat
+      FAB/overlay handoff, iOS Safari's auto-zoom-on-focus for the chat input, theme
+      (Retro/Futuristic) persistence under Safari's localStorage/ITP behavior, zero CSP
+      console violations now that it's enforced (not just reporting), chat response stream
+      rendering, safe-area insets on the full-screen mobile chat overlay, and orientation
+      changes. Ben's task to run — Claude has no physical device access. Check this box and
+      log results in process-journal.md once done.
 - [ ] Image optimization: WebP format, lazy loading, proper srcset — blocked: no real case study
       images exist in content yet (all five `src/content/*.ts` files have zero image refs) —
       this is really gated on Phase 1E (image audit), not a QA task

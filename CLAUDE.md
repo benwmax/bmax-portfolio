@@ -491,12 +491,16 @@ started; Phases 6–7 not started. Per decisions.md 2026-07-16, launch is being
 prioritized ahead of the Sagent case study — Sagent ships with placeholder copy
 and gets a full pass post-launch.
 
-**Last updated:** 2026-07-19 (hardening pass verified against real infra; temporary
-`.vercel.app` origin allowlist added for pre-launch chat testing; chat widget readability
-fix — see decisions.md 2026-07-19 entries and process-journal.md. Also resynced this
-section against build-plan.md: removed a stale "choose homepage direction" next-step that
-was actually decided 2026-06-22, and documented that `HomeV4Blend.tsx` — despite living
-under `src/pages/explorations/` — is the real production homepage, not a draft)
+**Last updated:** 2026-07-20 (scoped the real-device Safari/mobile QA pass and added it to
+Immediate next steps below — it was previously only a bare, unchecked build-plan.md line
+with no detail on devices, target environment, or what to actually look for. Not started
+yet; it's Ben's task to run since Claude has no physical device access. Prior entry,
+2026-07-19: hardening pass verified against real infra; temporary `.vercel.app` origin
+allowlist added for pre-launch chat testing; chat widget readability fix — see decisions.md
+2026-07-19 entries and process-journal.md. Also resynced this section against build-plan.md:
+removed a stale "choose homepage direction" next-step that was actually decided 2026-06-22,
+and documented that `HomeV4Blend.tsx` — despite living under `src/pages/explorations/` — is
+the real production homepage, not a draft)
 
 **Completed:**
 - Domain confirmed: viewbens.work (existing site stays live until launch)
@@ -659,6 +663,40 @@ drifts again.)
 - **At the viewbens.work domain cutover:** remove the temporary `https://bmax-portfolio.vercel.app`
   entry from `ALLOWED_ORIGINS` in `api/chat.ts` (added 2026-07-19 for pre-launch testing —
   see the `TEMPORARY` code comment and decisions.md 2026-07-19)
+- **Real-device Safari/mobile QA pass** (scoped 2026-07-20, not yet started — this is the
+  detail behind build-plan.md Phase 5's unchecked "Mobile device testing" item; the
+  step-by-step runbook is `docs/testing/mobile-safari-qa.md` — read that when you're ready
+  to actually run this, the summary below is just the scope). The
+  2026-07-16 automated cross-browser sweep covered Chromium/Firefox/WebKit via Playwright,
+  but WebKit-the-engine isn't Safari-the-browser (no extensions, no iOS quirks, no real
+  device) — and the one real-device bug already found incidentally (2026-07-19 mobile chat
+  handoff) suggests more may be lurking. **This is Ben's task to run — Claude has no
+  physical device access.**
+  - **Devices:** a real iPhone (Safari — primary target, likely the largest single mobile
+    segment for this audience) and a real Mac (desktop Safari). Android/Chrome on a real
+    device is lower priority — Chromium via Playwright is a much closer proxy for it than
+    WebKit is for Safari.
+  - **Target:** the live `.vercel.app` preview deployment, not local dev — chat needs the
+    temporary origin allowlist above, and this is the only way to test the real backend,
+    enforced CSP, and Vercel's actual headers together.
+  - **Pages:** the same 9 routes as the automated sweep (Home, all 5 case studies, About,
+    Resume, Contact, 404).
+  - **Specific risk areas to focus on, not just a general click-through:**
+    - Mobile chat FAB/overlay handoff (`MobileChatSurface.tsx`) — start a chat from Home's
+      inline hero and confirm it hands off to the full-screen overlay; navigate Home →
+      case study → back and confirm the FAB stays revealed and history persists.
+    - iOS Safari's auto-zoom-on-focus for the chat input (there's an existing 16px
+      font-size fix for this specifically — confirm it still holds; see decisions.md).
+    - Theme toggle persistence (Retro/Futuristic) — Safari's localStorage/ITP behavior can
+      differ from Chromium, especially in private browsing.
+    - Enforced CSP (hash-based `script-src`, shipped 2026-07-18) — confirm zero console
+      violations on real Safari now that it's blocking, not just reporting.
+    - Chat response streaming renders smoothly, not buffered oddly.
+    - Safe-area insets (notch/home indicator) on the full-screen mobile chat overlay.
+    - Orientation change (portrait/landscape) doesn't break layout.
+  - **Output:** check off "Mobile device testing" in build-plan.md if clean, and log
+    findings in process-journal.md either way — useful case study material regardless of
+    outcome.
 
 **Decisions still open:**
 - Market Rebellion: referenced on About page as brief career arc item (decided 2026-06-20)
