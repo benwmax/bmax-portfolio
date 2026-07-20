@@ -385,8 +385,9 @@ independently; only the widget's visual styling depends on those.*
       the full-screen overlay on first submit and sharing the FAB/overlay across Home + case
       study pages via `src/components/MobileChatSurface.tsx` (case study pages had no mobile
       chat entry before this). See decisions.md 2026-07-19. Systematic real-device testing
-      across the whole site is still needed. Scoped 2026-07-20 (full test plan in CLAUDE.md
-      "Immediate next steps" — devices, target environment, and risk-area checklist): real
+      across the whole site is still needed. Scoped 2026-07-20 (step-by-step runbook:
+      `docs/testing/mobile-safari-qa.md`; scope summary also in CLAUDE.md "Immediate next
+      steps" — devices, target environment, and risk-area checklist): real
       iPhone Safari + desktop Safari as primary targets (Android/Chrome lower priority, since
       Chromium via Playwright already proxies it reasonably well), tested against the live
       `.vercel.app` preview rather than local dev so the real backend, enforced CSP, and

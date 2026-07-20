@@ -664,7 +664,9 @@ drifts again.)
   entry from `ALLOWED_ORIGINS` in `api/chat.ts` (added 2026-07-19 for pre-launch testing —
   see the `TEMPORARY` code comment and decisions.md 2026-07-19)
 - **Real-device Safari/mobile QA pass** (scoped 2026-07-20, not yet started — this is the
-  detail behind build-plan.md Phase 5's unchecked "Mobile device testing" item). The
+  detail behind build-plan.md Phase 5's unchecked "Mobile device testing" item; the
+  step-by-step runbook is `docs/testing/mobile-safari-qa.md` — read that when you're ready
+  to actually run this, the summary below is just the scope). The
   2026-07-16 automated cross-browser sweep covered Chromium/Firefox/WebKit via Playwright,
   but WebKit-the-engine isn't Safari-the-browser (no extensions, no iOS quirks, no real
   device) — and the one real-device bug already found incidentally (2026-07-19 mobile chat
