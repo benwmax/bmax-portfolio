@@ -1,3 +1,4 @@
+import { corsHeaders, isOriginAllowed } from './lib/cors';
 import { checkRateLimit } from './lib/rate-limit';
 import { SYSTEM_PROMPT } from './lib/system-prompt';
 import {
@@ -31,16 +32,6 @@ const GLOBAL_DAILY_MESSAGE_CAP = 500;
 // request body here is a few hundred bytes at most.
 const MAX_REQUEST_BYTES = 8 * 1024;
 
-// TEMPORARY (added 2026-07-19, see decisions.md): the .vercel.app entry is
-// pre-launch-only, for testing the deployed site before viewbens.work is cut
-// over to this project. Remove it once the domain cutover happens.
-const ALLOWED_ORIGINS = [
-  'https://viewbens.work',
-  'https://bmax-portfolio.vercel.app',
-  'http://localhost:5173',
-  'http://localhost:4173',
-];
-
 // The only values the client-supplied `pageContext` field may take — must
 // match the `company` field in each src/content/*.ts file. Anything else is
 // silently ignored rather than rejecting the request, since this only
@@ -48,16 +39,6 @@ const ALLOWED_ORIGINS = [
 // from arbitrary client input into the system prompt — see the allowlist
 // check below.
 const ALLOWED_PAGE_CONTEXTS = new Set(['Portfolio Rebuild', 'Upfluent', 'Sagent', 'USAA', 'Sabre']);
-
-function corsHeaders(origin: string | null): Record<string, string> {
-  const allowed = origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
-  return {
-    'Access-Control-Allow-Origin': allowed,
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Credentials': 'true',
-  };
-}
 
 // Structured, single-line JSON logs — Vercel captures stdout as Function
 // Logs, so this needs no new logging vendor. Metadata only by default
@@ -93,7 +74,7 @@ export default async function handler(req: Request): Promise<Response> {
   // non-browser callers (curl, scripts) — they don't send a trustworthy
   // Origin header — but it does stop other sites' pages from riding a
   // visitor's browser to call this endpoint.
-  if (origin && !ALLOWED_ORIGINS.includes(origin)) {
+  if (!isOriginAllowed(origin)) {
     logEvent({ event: 'blocked', reason: 'origin', origin });
     return jsonResponse(403, { error: 'Origin not allowed.' }, cors);
   }

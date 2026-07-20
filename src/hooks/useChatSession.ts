@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
 import type { ChatWidgetStatus } from '../components/ChatInput';
+import type { ContactFormStatus, ContactSubmission } from '../components/ContactCard';
 
 export interface Message {
   role: 'user' | 'assistant';
@@ -24,6 +25,42 @@ export function splitParagraphs(text: string): string[] {
   const blocks = text.split(/\n\s*\n/).filter((p) => p.trim() !== '');
   if (blocks.length > 1) return blocks;
   return text.split(/\n/).filter((p) => p.trim() !== '');
+}
+
+// Client-side, deterministic trigger for the inline contact form — runs
+// against the visitor's own submitted text rather than depending on the
+// model to decide when to offer it (the Anthropic call in api/chat.ts
+// doesn't use tool-use at all). A false positive just surfaces a dismissible
+// card, so a broad-but-plausible phrase list is an acceptable trade for not
+// needing a second model round-trip.
+const CONTACT_INTENT_PATTERN =
+  /\b(get in touch|reach out|reach (you|ben|him)|contact (you|ben|him)|email (you|ben|him)|hire (you|ben|him)|work with (you|ben|him)|talk to (you|ben|him)|speak (with|to) (you|ben|him)|send (you|ben|him) a message|message (you|ben|him))\b/i;
+
+export function detectContactIntent(text: string): boolean {
+  return CONTACT_INTENT_PATTERN.test(text);
+}
+
+// Mirrors streamChat's error-handling shape below, but for the single-shot
+// (non-streaming) /api/contact endpoint.
+async function postContact(fields: ContactSubmission): Promise<{ ok: boolean; errorText?: string }> {
+  try {
+    const res = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(fields),
+    });
+
+    if (res.ok) return { ok: true };
+
+    try {
+      const json = (await res.json()) as { error?: string };
+      return { ok: false, errorText: json.error ?? `Something went wrong (${res.status}).` };
+    } catch {
+      return { ok: false, errorText: `Something went wrong (${res.status}).` };
+    }
+  } catch {
+    return { ok: false, errorText: "Couldn't send your message — check your connection and try again." };
+  }
 }
 
 // How long to wait for the stream to make progress before giving up. Guards
@@ -122,6 +159,15 @@ export interface UseChatSession {
    * 1100px). Idempotent.
    */
   revealFab: () => void;
+  /** Whether the inline ContactCard should render at the end of the message log. */
+  showContactCard: boolean;
+  contactFormStatus: ContactFormStatus;
+  /** Server-side error message from the last failed /api/contact attempt, if any. */
+  contactErrorText?: string;
+  /** Submit the contact form fields to /api/contact. */
+  submitContactForm: (fields: ContactSubmission) => Promise<void>;
+  /** Hide the ContactCard without submitting — the visitor declined. */
+  dismissContactCard: () => void;
 }
 
 export function useChatSession({
@@ -133,6 +179,23 @@ export function useChatSession({
   const [activeSuggestions, setActiveSuggestions] = useState<string[]>([]);
   const [fabRevealed, setFabRevealed] = useState(false);
   const revealFab = useCallback(() => setFabRevealed(true), []);
+  const [showContactCard, setShowContactCard] = useState(false);
+  const [contactFormStatus, setContactFormStatus] = useState<ContactFormStatus>('idle');
+  const [contactErrorText, setContactErrorText] = useState<string | undefined>(undefined);
+
+  const dismissContactCard = useCallback(() => setShowContactCard(false), []);
+
+  const submitContactForm = useCallback(async (fields: ContactSubmission) => {
+    setContactFormStatus('sending');
+    setContactErrorText(undefined);
+    const { ok, errorText } = await postContact(fields);
+    if (ok) {
+      setContactFormStatus('sent');
+    } else {
+      setContactFormStatus('error');
+      setContactErrorText(errorText);
+    }
+  }, []);
 
   // Refs, not state — read at submit time, shouldn't themselves trigger renders.
   const pageContextRef = useRef<string | null>(null);
@@ -183,6 +246,15 @@ export function useChatSession({
       if (submittingRef.current) return;
       submittingRef.current = true;
 
+      // Surface the contact card immediately, alongside the streaming reply
+      // rather than waiting on it — the trigger is independent of what the
+      // assistant ends up saying. Skipped once a message has already been
+      // sent successfully this session, so a later unrelated "thanks, I'll
+      // reach out" doesn't reopen a form that already did its job.
+      if (contactFormStatus !== 'sent' && detectContactIntent(text)) {
+        setShowContactCard(true);
+      }
+
       setChatStatus('loading');
       setActiveSuggestions([]);
       // Append the user turn and an empty assistant slot immediately so the
@@ -196,8 +268,18 @@ export function useChatSession({
           return next;
         });
 
+      // Tracked alongside the streamed state updates so intent detection
+      // below can run against the assistant's finished reply without
+      // re-reading React state (which wouldn't be current inside this same
+      // async function). Covers the case where the visitor's own message
+      // didn't read as a contact request but the assistant's reply pointed
+      // them to get in touch anyway (e.g. an out-of-scope question redirected
+      // per the SCOPE section of the system prompt) — see system-prompt.ts.
+      let assistantText = '';
+
       try {
         const { errorText } = await streamChat(text, pageContextRef.current, (chunk) => {
+          assistantText += chunk;
           setMessages((prev) => {
             const next = [...prev];
             next[next.length - 1] = {
@@ -208,7 +290,11 @@ export function useChatSession({
           });
         });
 
-        if (errorText) replaceLastAssistant(errorText);
+        if (errorText) {
+          replaceLastAssistant(errorText);
+        } else if (contactFormStatus !== 'sent' && detectContactIntent(assistantText)) {
+          setShowContactCard(true);
+        }
       } catch {
         replaceLastAssistant("The assistant isn't available right now — try again in a moment.");
       } finally {
@@ -216,7 +302,7 @@ export function useChatSession({
         submittingRef.current = false;
       }
     },
-    [onSubmit],
+    [onSubmit, contactFormStatus],
   );
 
   return {
@@ -227,5 +313,10 @@ export function useChatSession({
     setPageContext,
     fabRevealed,
     revealFab,
+    showContactCard,
+    contactFormStatus,
+    contactErrorText,
+    submitContactForm,
+    dismissContactCard,
   };
 }
