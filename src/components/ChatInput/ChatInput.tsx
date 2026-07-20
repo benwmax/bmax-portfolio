@@ -76,11 +76,21 @@ export function ChatInput({
     setValue('');
   }
 
+  // Enter submits; Shift+Enter inserts a newline. This is the chat convention
+  // visitors already have muscle memory for — the field reads as a chat prompt,
+  // so making the common action (send) the unmodified key and the rare one
+  // (multi-line question) the modified one matches what they expect. Cmd/Ctrl+Enter
+  // still submits too, since it falls through the same path.
+  // Single-line mode needs no handling — a bare <input> submits its form on Enter natively.
   function handleKeyDown(e: KeyboardEvent) {
-    if (multiline && e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-      e.preventDefault();
-      handleSubmit(e as unknown as FormEvent);
-    }
+    if (!multiline || e.key !== 'Enter') return;
+    // Mid-IME-composition Enter commits the candidate word — it is not a send.
+    // Without this, anyone using a Japanese/Chinese/Korean input method fires off
+    // a half-typed message every time they accept a suggestion.
+    if (e.nativeEvent.isComposing) return;
+    if (e.shiftKey) return;
+    e.preventDefault();
+    handleSubmit(e as unknown as FormEvent);
   }
 
   const fieldCls = [styles.field, isActive ? styles.active : '', multiline ? styles.multiline : '']

@@ -216,7 +216,7 @@ The full AI chat widget — terminal `›` prompt indicator, input field, ASK bu
 | Prop | Type | Default | Notes |
 |---|---|---|---|
 | `status` | `"online" \| "loading" \| "offline"` | `"online"` | Controls field interactivity and loading animation |
-| `multiline` | `boolean` | `false` | Grows to 6 lines then scrolls. Cmd/Ctrl+Enter submits |
+| `multiline` | `boolean` | `false` | Grows to 6 lines then scrolls. Enter submits, Shift+Enter inserts a newline |
 | `showStatus` | `boolean` | `true` | Set false when the surrounding panel already has a StatusIndicator |
 | `placeholder` | `string` | `"ask about my work…"` | Lowercase, no period — matches the system default |
 | `forceFocused` | `boolean` | — | **Storybook-only.** Do not use in application code |
