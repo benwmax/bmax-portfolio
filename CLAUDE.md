@@ -400,6 +400,17 @@ for the build checklist.
 - `api/lib/session.ts` — server-side session authority: conversation history
   and the session message cap live here (Redis, keyed by an HttpOnly
   cookie), never trusted from the client. See decisions.md (2026-07-17).
+- `api/lib/cors.ts` — the shared origin allowlist (`ALLOWED_ORIGINS`) and CORS
+  headers for *every* `/api/*` endpoint. Extracted from `api/chat.ts`
+  2026-07-20 so chat and contact can't drift and the temporary pre-launch
+  entry only needs removing once.
+- `api/contact.ts` — the in-chat "get in touch" endpoint: emails a visitor's
+  Name/Email/Message to Ben via Resend. Mirrors `api/chat.ts`'s abuse-prevention
+  shape but on its own budget. See decisions.md (2026-07-20).
+- `api/lib/contact-limit.ts` — per-IP hourly/daily rate limits and the global
+  daily cap for `api/contact.ts`, deliberately separate from chat's budget.
+- `src/components/ContactCard/` — the inline contact form rendered in the chat
+  log, including the honeypot field and minimum-fill-time anti-bot signals.
 - `src/components/MobileChatSurface.tsx` — the mobile-only "Ask Ben" entry
   point (floating action button + full-screen overlay), shared by the homepage
   and case study pages so the mobile chat behaves identically on both. See
@@ -436,10 +447,18 @@ for the build checklist.
   sanitization (e.g. DOMPurify) in the same commit, not as a follow-up.
 - The widget's visual styling depends on Phase 2/3 tokens; the backend does
   not and can proceed independently.
-- `ALLOWED_ORIGINS` in `api/chat.ts` temporarily includes `https://bmax-portfolio.vercel.app`
-  (added 2026-07-19, marked `TEMPORARY` in a code comment) so the widget is testable
-  pre-launch. Remove it once `viewbens.work` is cut over — see "Current Project Status" →
-  Immediate next steps.
+- `ALLOWED_ORIGINS` lives in `api/lib/cors.ts` (moved out of `api/chat.ts` 2026-07-20) and
+  is shared by every `/api/*` endpoint. It temporarily includes
+  `https://bmax-portfolio.vercel.app` (added 2026-07-19, marked `TEMPORARY` in a code
+  comment) so the widget is testable pre-launch. Remove it once `viewbens.work` is cut
+  over — one edit, one file. See "Current Project Status" → Immediate next steps.
+- The contact flow's intent detection (`detectContactIntent()` in
+  `src/hooks/useChatSession.ts`) is a client-side regex, not model tool-use — it runs
+  against both the visitor's message and the assistant's finished reply. If the system
+  prompt's wording about how visitors reach Ben changes, check that the phrase list still
+  matches; the two are coupled by convention, not by code. See decisions.md (2026-07-20).
+- `api/contact.ts` has its own rate limits and daily cap, separate from chat's, because an
+  email send is a different resource than an LLM token. Don't merge the two budgets.
 - The assistant's replies are rendered by `splitParagraphs()` (`src/hooks/useChatSession.ts`)
   into separate `<p>` blocks, and the system prompt's formatting section enforces short,
   frequent paragraph breaks as a hard rule (not a suggestion — Haiku doesn't reliably follow
@@ -491,7 +510,12 @@ started; Phases 6–7 not started. Per decisions.md 2026-07-16, launch is being
 prioritized ahead of the Sagent case study — Sagent ships with placeholder copy
 and gets a full pass post-launch.
 
-**Last updated:** 2026-07-19 (hardening pass verified against real infra; temporary
+**Last updated:** 2026-07-20 (in-chat "get in touch" contact flow shipped via Resend —
+`api/contact.ts`, `api/lib/contact-limit.ts`, `api/lib/cors.ts`, `src/components/ContactCard/`;
+`ALLOWED_ORIGINS` moved to the shared `api/lib/cors.ts`. New Ben-blocked item: Resend account
++ `viewbens.work` sending-domain verification. See decisions.md 2026-07-20.)
+
+**Previously updated:** 2026-07-19 (hardening pass verified against real infra; temporary
 `.vercel.app` origin allowlist added for pre-launch chat testing; chat widget readability
 fix — see decisions.md 2026-07-19 entries and process-journal.md. Also resynced this
 section against build-plan.md: removed a stale "choose homepage direction" next-step that
@@ -641,6 +665,18 @@ under `src/pages/explorations/` — is the real production homepage, not a draft
   without a paragraph break), plus lowered `MAX_OUTPUT_TOKENS` (400 → 220) in `api/chat.ts`
   as a backstop. Verified against the real model by replaying the exact reported question.
   See decisions.md 2026-07-19.
+- In-chat "get in touch" contact flow (2026-07-20): the assistant now surfaces an inline
+  "SEND BEN A MESSAGE" form (Name optional, Email + Message required) in the chat log when
+  `detectContactIntent()` — a client-side regex over both the visitor's message and the
+  assistant's reply — matches. Submits to a new `api/contact.ts` Edge Function that emails
+  ben@viewbens.work via Resend. Mirrors chat's abuse-prevention shape (origin allowlist,
+  Redis rate limits, fail-closed 503) but on its own budget (`api/lib/contact-limit.ts`),
+  plus a honeypot field removed from the accessibility tree and a minimum-fill-time check;
+  both bot rejections return the same response a real send does, so a caller can't learn
+  which check tripped. Origin allowlist extracted to the shared `api/lib/cors.ts`. Chose a
+  structured form over conversational field collection, and a client-side regex over model
+  tool-use — see decisions.md 2026-07-20 for both trade-offs. Verified in a real browser via
+  Playwright; **live email delivery is still untested** pending Ben's Resend setup below.
 
 **Immediate next steps:**
 (Resynced 2026-07-19 — removed a stale "Ben to choose homepage direction" item: that was
@@ -652,13 +688,23 @@ both created 2026-07-16, and this session ran multiple verification scripts agai
 a new item below for removing the temporary `.vercel.app` origin allowlist entry at
 cutover, added 2026-07-19. build-plan.md's checkboxes are the source of truth if this
 drifts again.)
+- **Ben — Resend setup (blocks the contact flow):** create a Resend account, verify the
+  `viewbens.work` sending domain (add the DNS records Resend provides), and add
+  `RESEND_API_KEY` to Vercel env vars. The contact form ships but **cannot send email until
+  this is done**, and live delivery has never been tested. See `.env.example` and
+  build-plan.md Phase 4F.
 - **Phase 1C:** Sagent brain dump — strongest Director-level case study, starts from zero
 - **Phase 4E:** OG images only — create 1200×630 PNGs in public/og/ before launch
   (meta descriptions, sitemap.xml, robots.txt, and canonical tags are already done;
   see build-plan.md 4E)
+- **Real-device mobile testing:** the mobile chat overlay handoff, FAB behavior at 390px, and
+  the ContactCard inside the mobile overlay have all only been verified via browser resize
+  and Playwright — never on an actual device. Flagged in three consecutive journal entries
+  (2026-07-19, 2026-07-19 later, 2026-07-20); still open in build-plan.md Phase 5.
 - **At the viewbens.work domain cutover:** remove the temporary `https://bmax-portfolio.vercel.app`
-  entry from `ALLOWED_ORIGINS` in `api/chat.ts` (added 2026-07-19 for pre-launch testing —
-  see the `TEMPORARY` code comment and decisions.md 2026-07-19)
+  entry from `ALLOWED_ORIGINS` in `api/lib/cors.ts` (added 2026-07-19 for pre-launch testing,
+  moved out of `api/chat.ts` 2026-07-20 — see the `TEMPORARY` code comment and decisions.md
+  2026-07-19)
 
 **Decisions still open:**
 - Market Rebellion: referenced on About page as brief career arc item (decided 2026-06-20)

@@ -729,3 +729,60 @@ Prettier all clean.
 
 **Where I overrode or redirected Claude:**
 N/A — Claude asked before building and I picked the two options it recommended.
+
+## 2026-07-20 — in-chat "get in touch" contact flow
+*Reconstructed after the fact (2026-07-20) from decisions.md, build-plan.md, and commit
+`2fb5983` / PR #13 — this session's work was done in a separate Claude Code session and no
+journal entry was written at the time. Treat the "what I decided / uncertain about" notes
+here as less reliable than the in-the-moment entries above; the code and decision record are
+the trustworthy parts.*
+
+**What I did:**
+Asked for a seamless way for chat visitors to reach me without leaving the widget, with spam
+prevention built in.
+
+**What I decided:**
+A structured Name/Email/Message form rendered inline in the chat log, emailing me directly,
+rather than having the assistant collect the fields conversationally. Approved a client-side
+keyword check to decide when to show it instead of wiring up model tool-use. Approved giving
+the contact endpoint its own rate limits and daily cap rather than sharing chat's budget.
+
+**Why:**
+A form is reliable to validate and guarantees a usable reply-to address — free-text
+collection means parsing an email out of prose and is easy for a visitor to fumble
+turn-by-turn. On intent detection: `/api/chat` doesn't use tool-use at all today, and adding
+a second model round-trip just to decide "should I offer a form" is disproportionate for what
+is fundamentally a keyword match — and a false positive only costs a dismissible card. On the
+separate budget: an email send is a different kind of resource than an LLM token. It costs
+real money and it lands in my inbox, so it deserves its own ceiling.
+
+**What I'm uncertain about:**
+Whether the email actually arrives — the whole flow is untestable end to end until I create
+the Resend account and verify `viewbens.work` as a sending domain. Everything else was
+verified in a real browser; delivery is a complete unknown. Also unsure whether the
+`detectContactIntent()` phrase list is too broad or too narrow — that's a tune-against-real-
+traffic problem, not something I can reason my way to. And I still haven't seen the
+ContactCard on an actual phone, only at a resized viewport — same open item as the last two
+entries.
+
+**What Claude contributed:**
+Built the endpoint (`api/contact.ts`), its own budget module (`api/lib/contact-limit.ts`),
+the `ContactCard` component with Storybook story and MDX, and the `detectContactIntent()`
+wiring in `useChatSession`. Noticed on its own that the origin allowlist was about to exist
+in two endpoints and extracted it to `api/lib/cors.ts` first — which also means the temporary
+`.vercel.app` pre-launch entry now only has to be removed in one place at cutover, instead of
+being a thing to remember twice. Layered the spam prevention: honeypot field (removed from
+the accessibility tree, not just visually hidden, so it can't trap a screen-reader user),
+minimum-fill-time check, per-IP and global caps, fail-closed on Redis errors — and made both
+bot rejections return the same response a successful send does, so an automated caller can't
+learn which check tripped it.
+
+Found one real bug during its own browser verification: the email field had native HTML
+`type="email"` + `required` validation *and* custom JS validation with a styled error state.
+The browser's unstyled constraint tooltip fired first and pre-empted the custom error UI
+entirely — so the designed error state was dead code that would never have been seen. Fixed
+by adding `noValidate` and letting component state own validation end to end. Worth noting
+this was caught by actually driving the form in a browser, not by reading the code.
+
+**Where I overrode or redirected Claude:**
+N/A.

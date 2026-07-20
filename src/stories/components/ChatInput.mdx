@@ -29,7 +29,7 @@ ASK disables. Field stays interactive so the user can draft a question while wai
 
 ### Multiline
 
-Textarea mode for the expanded case study right-rail or docked panel. Grows to 6 lines then scrolls. Submit with Cmd/Ctrl+Enter.
+Textarea mode for the expanded case study right-rail or docked panel. Grows to 6 lines then scrolls. Enter submits; Shift+Enter inserts a newline — the chat convention, since sending is the common action and a multi-line question is the rare one.
 
 <Canvas of={ChatInputStories.Multiline} />
 
@@ -53,12 +53,14 @@ Textarea mode for the expanded case study right-rail or docked panel. Grows to 6
 Full AI chat widget — terminal prompt, ASK button, and StatusIndicator in one component. Use for the AI assistant on both the homepage and case study pages. Not a generic form input — use the bare Input component for that.
 
 **Content rules**
+
 - Default placeholder: `ask about my work…` — lowercase, trailing ellipsis, no period.
 - `status='online'` is the starting state.
 - Set `showStatus={false}` when the surrounding panel already carries its own StatusIndicator.
 - `multiline={true}` for the expanded case study right-rail or docked panel. Single-line for the compact homepage hero panel.
 
 **Avoid**
+
 - Don't use ChatInput as a generic form input — use the bare Input component instead.
 - `forceFocused` is Storybook-only — never wire it to application state.
 - Don't clear the field while loading — the user's question stays visible.
