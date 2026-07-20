@@ -120,6 +120,36 @@ export const ConversationSeeded: Story = {
   },
 };
 
+export const ContactCardVisible: Story = {
+  name: 'Contact card visible',
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Shows the inline ContactCard composed into the homepage\'s message log. In ' +
+          'production this only appears once detectContactIntent matches a real message or ' +
+          'reply (see useChatSession.ts) — there\'s no prop to trigger that from outside a live ' +
+          'chat exchange, so this story sets a Storybook-only forceShowContactCard flag instead ' +
+          'of seeding a fake trigger phrase. See ContactCard\'s own story ' +
+          '(Components/ContactCard) for its full isolated state matrix (idle/sending/sent/error).',
+      },
+    },
+    ai: {
+      guidance:
+        'Reference for how ContactCard sits inside the assembled homepage chat log — forceShowContactCard is Storybook-only, never wire it to application state. Consult Components/ContactCard for the component\'s own states.',
+      avoid: [
+        'forceShowContactCard is Storybook-only — never use it in application code. showContactCard from useChat() is the real production signal.',
+      ],
+    },
+  },
+  args: {
+    onChatSubmit: fn(),
+    initialMessages: SEED_MESSAGES,
+    skipBoot: true,
+    forceShowContactCard: true,
+  },
+};
+
 export const Futuristic: Story = {
   name: 'Futuristic V2',
   parameters: {

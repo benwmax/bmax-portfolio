@@ -21,6 +21,13 @@ export interface HomeV4BlendProps {
   initialMessages?: Message[];
   /** Storybook only — skip the boot animation. */
   skipBoot?: boolean;
+  /**
+   * Storybook only — forces the inline ContactCard to render regardless of
+   * detectContactIntent, so its composed-in-page state can be previewed
+   * without typing a live contact-intent message. Never wire to application
+   * state; showContactCard from useChat() is the real signal in production.
+   */
+  forceShowContactCard?: boolean;
 }
 
 const BOOT_LINES = [
@@ -96,6 +103,7 @@ export function HomeV4Blend({
   onChatSubmit,
   initialMessages = [],
   skipBoot = false,
+  forceShowContactCard = false,
 }: HomeV4BlendProps) {
   const {
     messages,
@@ -241,7 +249,7 @@ export function HomeV4Blend({
             ),
           )
         )}
-        {showContactCard && (
+        {(forceShowContactCard || showContactCard) && (
           <ContactCard
             status={contactFormStatus}
             errorText={contactErrorText}
