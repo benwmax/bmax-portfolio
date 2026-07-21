@@ -211,7 +211,16 @@ export function CaseStudyPage({
   // overlay (via MobileChatSurface). Same messages, same context-suggestion
   // chips; only the container ref and className differ.
   const renderChatLog = (ref: RefObject<HTMLDivElement | null>, className: string) => (
-    <div className={className} ref={ref} aria-live="polite" aria-label="Chat messages">
+    <div
+      className={className}
+      ref={ref}
+      // 'off' while streaming: chunks append to the same message dozens of
+      // times per reply, and an always-on live region reads each partial
+      // fragment. Flips to 'polite' once the reply finishes so the whole
+      // thing gets announced once, not word-by-word.
+      aria-live={chatStatus === 'loading' ? 'off' : 'polite'}
+      aria-label="Chat messages"
+    >
       {messages.map((m, i) =>
         m.role === 'user' ? (
           <p key={i} className={styles.msgUser}>
@@ -283,6 +292,15 @@ export function CaseStudyPage({
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:image" content={`https://viewbens.work/og/${companySlug}.png`} />
       </Helmet>
+
+      {/* All page content except the mobile chat overlay lives inside this
+          wrapper, so it can be made inert while the overlay is open —
+          otherwise a keyboard/AT user could reach the NavBar, sidebar, and
+          page content behind the full-screen overlay (WCAG 2.4.3, 4.1.2). */}
+      <div
+        aria-hidden={mobileChatOpen ? true : undefined}
+        inert={mobileChatOpen ? true : undefined}
+      >
       <a href="#main-content" className="skip-link">
         Skip to main content
       </a>
@@ -517,6 +535,8 @@ export function CaseStudyPage({
           </div>
         </aside>
       )}
+      </div>
+      {/* end inert-controlled wrapper */}
 
       {/* ——— MOBILE FAB + CHAT OVERLAY ———
           Below 1100px the docked panel above is hidden, so on mobile this is the

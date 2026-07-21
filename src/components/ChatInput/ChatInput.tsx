@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback, useEffect, useId } from 'react';
 import type { FormEvent, KeyboardEvent, ChangeEvent } from 'react';
 import styles from './ChatInput.module.css';
 
@@ -39,6 +39,7 @@ export function ChatInput({
   const [isFocused, setIsFocused] = useState(false);
   const [isMultiRow, setIsMultiRow] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const keyHintId = useId();
 
   const isLoading = status === 'loading';
   const isOffline = status === 'offline';
@@ -144,6 +145,7 @@ export function ChatInput({
               placeholder={showCaret ? '' : placeholder}
               readOnly={isLoading}
               aria-label="Ask a question"
+              aria-describedby={keyHintId}
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
               onKeyDown={handleKeyDown}
@@ -190,9 +192,26 @@ export function ChatInput({
               multi-row on first paint (autoResize runs once on mount, before webfont
               metrics settle, and never reruns for unchanged content), which showed the
               counter over the placeholder with no real content to count. */}
+          {/* No aria-live here on purpose — with a live region this fired on
+              every keystroke, interrupting a screen reader user mid-typing
+              for a count they can't overflow anyway (value is truncated to
+              MAX_CHARS). Purely visual; the field can't silently hit a limit
+              AT users aren't told about. */}
           {multiline && !isLoading && isMultiRow && isFilled && (
-            <span className={styles.counter} aria-live="polite" aria-atomic="true">
+            <span className={styles.counter}>
               {value.length} / {MAX_CHARS}
+            </span>
+          )}
+
+          {/* Screen-reader-only: the Enter-submits/Shift+Enter-newline
+              convention (see handleKeyDown above) reverses the native
+              textarea default of plain Enter inserting a newline — without
+              this, a screen reader or dictation user composing a multi-line
+              question by muscle memory could fire an incomplete message
+              (WCAG 3.3.2). */}
+          {multiline && (
+            <span id={keyHintId} className={styles.srOnly}>
+              Press Enter to send. Press Shift+Enter for a new line.
             </span>
           )}
         </label>

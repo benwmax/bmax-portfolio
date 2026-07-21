@@ -1,17 +1,18 @@
 import styles from './ImageCaption.module.css';
 
-export interface ImageCaptionProps {
+interface ImageCaptionBase {
   /** Text shown in the title bar tab — e.g. "usaa · A/B test pipeline" */
   tabLabel: string;
   /** Fig caption below the chrome frame */
   caption: string;
-  /**
-   * URL of an actual screenshot. When omitted a dot-grid placeholder is shown
-   * with a terminal prompt indicating where the image will go.
-   */
-  src?: string;
-  alt?: string;
 }
+
+// alt is required whenever src is provided — a default of alt="" would
+// silently ship a real screenshot as decorative, hiding it from screen
+// reader users with no compiler warning (WCAG 1.1.1). Omit both together to
+// show the dot-grid placeholder instead.
+export type ImageCaptionProps = ImageCaptionBase &
+  ({ src: string; alt: string } | { src?: undefined; alt?: undefined });
 
 export function ImageCaption({ tabLabel, caption, src, alt = '' }: ImageCaptionProps) {
   return (

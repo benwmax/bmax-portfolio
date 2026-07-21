@@ -194,7 +194,16 @@ export function HomeV4Blend({
 
   function renderLog(logRef: RefObject<HTMLDivElement | null>, className: string) {
     return (
-      <div className={className} ref={logRef}>
+      <div
+        className={className}
+        ref={logRef}
+        // 'off' while streaming: chunks append to the same message dozens of
+        // times per reply, and an always-on live region reads each partial
+        // fragment. Flips to 'polite' once the reply finishes so the whole
+        // thing gets announced once, not word-by-word.
+        aria-live={chatStatus === 'loading' ? 'off' : 'polite'}
+        aria-label="Chat messages"
+      >
         {messages.length === 0 ? (
           <>
             <p className={styles.msgAssistant}>
@@ -299,8 +308,14 @@ export function HomeV4Blend({
        * All interactive page content lives inside this wrapper.
        * aria-hidden + inert during boot prevents keyboard users from tabbing
        * through invisible content behind the boot overlay (WCAG 1.3.1, 4.1.2).
+       * Also inert while the mobile chat overlay is open, for the same
+       * reason — otherwise a keyboard/AT user could reach the NavBar, hero,
+       * and work grid behind the full-screen overlay (WCAG 2.4.3, 4.1.2).
        */}
-      <div aria-hidden={bootActive ? true : undefined} inert={bootActive ? true : undefined}>
+      <div
+        aria-hidden={bootActive || mobileChatOpen ? true : undefined}
+        inert={bootActive || mobileChatOpen ? true : undefined}
+      >
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>
@@ -414,41 +429,44 @@ export function HomeV4Blend({
                 ))}
               </div>
             </section>
-
-            {/* ——— FOOTER ——— */}
-            <footer className={styles.footer}>
-              <div className={styles.footerTop}>
-                {/* h2 not <p> so screen reader heading navigation finds the footer CTA */}
-                <h2 className={styles.footerHeading}>
-                  Building something experts can't get wrong
-                  <span className={styles.footerQuestion}>?</span>
-                </h2>
-                <div className={styles.footerLinks}>
-                  {SOCIAL_LINKS.map((l) => {
-                    const isExternal = l.href.startsWith('http');
-                    return (
-                      <a
-                        key={l.label}
-                        href={l.href}
-                        className={styles.footerLink}
-                        {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                      >
-                        {l.label}
-                        {/* Informs AT users the link opens in a new tab */}
-                        {isExternal && <span className="sr-only"> (opens in new tab)</span>}
-                      </a>
-                    );
-                  })}
-                </div>
-              </div>
-              <div className={styles.footerFine}>
-                <span>© 2026 Ben Maxwell · viewbens.work</span>
-                <span>
-                  Built with Claude — directed, not autopiloted. The process is the case study.
-                </span>
-              </div>
-            </footer>
           </main>
+
+          {/* footer is intentionally a sibling of <main>, not nested inside it —
+              nesting it there strips the contentinfo landmark role. See
+              docs/ai-component-guide.md Accessibility Patterns → Footer
+              landmark placement. */}
+          <footer className={styles.footer}>
+            <div className={styles.footerTop}>
+              {/* h2 not <p> so screen reader heading navigation finds the footer CTA */}
+              <h2 className={styles.footerHeading}>
+                Building something experts can't get wrong
+                <span className={styles.footerQuestion}>?</span>
+              </h2>
+              <div className={styles.footerLinks}>
+                {SOCIAL_LINKS.map((l) => {
+                  const isExternal = l.href.startsWith('http');
+                  return (
+                    <a
+                      key={l.label}
+                      href={l.href}
+                      className={styles.footerLink}
+                      {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                    >
+                      {l.label}
+                      {/* Informs AT users the link opens in a new tab */}
+                      {isExternal && <span className="sr-only"> (opens in new tab)</span>}
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
+            <div className={styles.footerFine}>
+              <span>© 2026 Ben Maxwell · viewbens.work</span>
+              <span>
+                Built with Claude — directed, not autopiloted. The process is the case study.
+              </span>
+            </div>
+          </footer>
         </div>
 
         {/* ——— DOCKED PANEL (fixed right rail, desktop only) ——— */}
@@ -472,23 +490,25 @@ export function HomeV4Blend({
             />
           </div>
         </aside>
-
-        {/* ——— MOBILE FAB + CHAT OVERLAY ———
-            The FAB appears once a conversation has started (isDocked) or the
-            entry point was unlocked on a case study page (fabRevealed, which
-            persists back to Home per the shared session). Hidden before either,
-            per the mobile flow decided 2026-07-19. */}
-        <MobileChatSurface
-          visible={isDocked || fabRevealed}
-          open={mobileChatOpen}
-          onOpenChange={setMobileChatOpen}
-          messageCount={messages.length}
-          chatStatus={chatStatus}
-          onSubmit={handleSubmit}
-          renderLog={renderLog}
-        />
       </div>
-      {/* end interactive content wrapper */}
+      {/* end interactive content wrapper — MobileChatSurface renders outside it
+          (below) so the wrapper's inert state can hide the rest of the page
+          behind the mobile overlay without also hiding the overlay itself. */}
+
+      {/* ——— MOBILE FAB + CHAT OVERLAY ———
+          The FAB appears once a conversation has started (isDocked) or the
+          entry point was unlocked on a case study page (fabRevealed, which
+          persists back to Home per the shared session). Hidden before either,
+          per the mobile flow decided 2026-07-19. */}
+      <MobileChatSurface
+        visible={isDocked || fabRevealed}
+        open={mobileChatOpen}
+        onOpenChange={setMobileChatOpen}
+        messageCount={messages.length}
+        chatStatus={chatStatus}
+        onSubmit={handleSubmit}
+        renderLog={renderLog}
+      />
     </div>
   );
 }

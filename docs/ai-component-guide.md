@@ -391,6 +391,8 @@ The BM_ wordmark link carries `aria-label="Ben Maxwell – Home"`. Do not remove
 
 Retro/Futuristic segmented control, fixed to the top-right of `NavBar`. A real two-option radiogroup (`role="radiogroup"`), not an icon toggle — the theme names are the feature. Theme state lives on `<html data-theme>` via `src/hooks/useTheme.ts`, not a React provider, so this component is self-contained and works standalone in Storybook exactly as it does in production.
 
+Implements the full ARIA APG radiogroup keyboard pattern, not just the roles: roving `tabIndex` (only the checked option is a Tab stop) plus Arrow key navigation that both moves focus and changes the selection. Click still works independently. Don't add `role="radio"`/`radiogroup"` to a control that doesn't implement this — the roles alone create an accessibility-tree promise that native tab-per-button behavior breaks (WCAG 4.1.2).
+
 #### Props
 
 | Prop | Type | Notes |
@@ -490,7 +492,7 @@ The case study page header. H1 is always a problem statement. Accent meta values
 
 ### ImageCaption
 
-**File:** `src/components/ImageCaption.tsx`
+**File:** `src/components/ImageCaption/ImageCaption.tsx`
 **Storybook:** `Components/ImageCaption`
 
 Terminal-chrome frame for all case study screenshots. Never use a plain `<img>` tag for portfolio artifacts — always use `ImageCaption`.
@@ -499,8 +501,8 @@ Terminal-chrome frame for all case study screenshots. Never use a plain `<img>` 
 
 | Prop | Type | Notes |
 |---|---|---|
-| `src` | `string` | Image URL. Omit to show dot-grid placeholder |
-| `alt` | `string` | Always required for accessibility |
+| `src` | `string` | Image URL. Omit both `src` and `alt` to show the dot-grid placeholder instead. |
+| `alt` | `string` | **Required whenever `src` is set** — enforced at the type level (a discriminated union), not just a convention. There is no default that lets a real screenshot silently ship as decorative. |
 | `tabLabel` | `string` | Format: "project · artifact-type" |
 | `caption` | `string` | Format: "Fig. 01 — description." |
 

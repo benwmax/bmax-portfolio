@@ -51,17 +51,21 @@ export function MobileChatSurface({
 }: MobileChatSurfaceProps) {
   const fabRef = useRef<HTMLButtonElement | null>(null);
   const logRef = useRef<HTMLDivElement | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
 
   // Keep the overlay log pinned to the newest message as the reply streams in.
   useEffect(() => {
     if (open && logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight;
   }, [messageCount, open]);
 
-  // Return focus to the FAB when the overlay closes (WCAG 2.4.3 focus order).
-  // Tracks the previous open state so focus only moves on an actual close, not
-  // on every render while closed.
+  // Move focus into the dialog when it opens, and return it to the FAB when
+  // it closes (WCAG 2.4.3 focus order) — without this, opening the overlay
+  // leaves keyboard/AT focus wherever it was on the page behind it. Tracks
+  // the previous open state so focus only moves on an actual transition, not
+  // on every render while open/closed.
   const wasOpen = useRef(open);
   useEffect(() => {
+    if (!wasOpen.current && open) closeButtonRef.current?.focus();
     if (wasOpen.current && !open) fabRef.current?.focus();
     wasOpen.current = open;
   }, [open]);
@@ -112,6 +116,7 @@ export function MobileChatSurface({
               ONLINE
             </span>
             <button
+              ref={closeButtonRef}
               type="button"
               className={styles.mobileOverlayClose}
               onClick={() => onOpenChange(false)}
