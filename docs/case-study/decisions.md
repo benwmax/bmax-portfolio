@@ -814,3 +814,73 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
   `api/lib/system-prompt.ts`, `src/hooks/useChatSession.ts`,
   `src/pages/explorations/HomeV4Blend.tsx`, `src/pages/CaseStudyPage.tsx`, `.env.example`,
   `docs/ai-component-guide.md`, `docs/case-study/build-plan.md`.
+
+## 2026-07-20 — Storybook documentation audit
+- Decision: Audit the whole codebase for components missing Storybook coverage or carrying
+  stale documentation, then close the gaps found. Three features shipped in three days — the
+  Futuristic theme (2026-07-17), mobile chat handoff (2026-07-19), and this morning's in-chat
+  contact flow (2026-07-20) — outpaced Storybook and `docs/ai-component-guide.md`.
+- Reasoning: CLAUDE.md treats Storybook as a public, hiring-manager-facing system of record and
+  `ai-component-guide.md` as the authoritative reference a session should read before building
+  anything. Letting either drift from what's actually in production undercuts both — a stale
+  guide actively misleads the next session, not just the next viewer.
+- What was found (none of it a deliberate scope cut — checked against the explicit out-of-scope
+  list, which covers none of this):
+  - `src/components/MobileChatSurface.tsx` (built 2026-07-19) and
+    `src/components/ThemeToggle/ThemeToggle.tsx` (built 2026-07-17) had zero Storybook footprint
+    — no story, no MDX — despite both being live production components. MobileChatSurface in
+    particular is the component CLAUDE.md calls out by name as carrying two "load-bearing and
+    easy to regress" behaviors.
+  - `ai-component-guide.md`'s "Homepage" page-template entry still documented the retired
+    `src/pages/HomePage.tsx` as if it were current — wrong file path, description didn't match
+    production (no mention of the boot sequence, scanline, or staggered grid `HomeV4Blend.tsx`
+    actually has). The guide's Decision Tree and Component Reference also had no entries for
+    `ThemeToggle` or `MobileChatSurface`, and neither Storybook's Foundations stories nor the
+    guide documented the Futuristic theme's palette/type at all.
+  - `Homepage.stories.tsx`, `explorations/Blend.stories.tsx`, and `CaseStudyPage.stories.tsx`
+    all predated this morning's contact-flow feature (commit `2fb5983`) and didn't demonstrate
+    the new inline `ContactCard` state, even though `HomeV4Blend.tsx` and `CaseStudyPage.tsx`
+    both gained it today. `ContactCard` itself was fully documented in isolation the same day it
+    shipped — this was specifically about the *composed* page state never being shown.
+  - The five exploration-namespace stories (Signal, Boot, Phosphor, Blend, Original) have no
+    `parameters.ai` block, technically contradicting the 2026-06-20 entry's "every story has ai
+    guidance" line.
+- Two calls made, both checked with Ben first:
+  - **ContactCard composed-state demo:** added a Storybook-only `forceShowContactCard` prop to
+    `HomeV4Blend.tsx` and `CaseStudyPage.tsx`, following the existing `forceHover`
+    (`CaseStudyCard`) / `forceFocused` (`ChatInput`) precedent, rather than leaving the composed
+    state undemonstrated. Chosen over a docs-note-only approach because the precedent for
+    Storybook-only override props already exists in this codebase and the alternative (a
+    Storybook interactions/play-function test) isn't a pattern used anywhere else here.
+  - **Exploration-story `ai` blocks:** documented an explicit exemption in
+    `ai-component-guide.md`'s "How to Use This Guide" section instead of retrofitting `ai`
+    blocks onto five stories that document retired/comparison variants nobody should build
+    against. The one production-selected story that matters (`Pages/Homepage`, covering
+    `HomeV4Blend`) already carries the full block.
+- Also left as a flagged, unaddressed nit: `src/components/Contact/Contact.stories.tsx` is
+  colocated with its component instead of living under `src/stories/` like every other
+  page-level story. Purely organizational — not a documentation gap, since `Contact` correctly
+  has no MDX (matching the pattern that page templates don't get MDX) — and not worth the
+  churn of moving it unless Ben wants it addressed too.
+- What changed: new `src/stories/components/MobileChatSurface.stories.tsx` + `.mdx`, new
+  `src/stories/components/ThemeToggle.stories.tsx` + `.mdx`, a cross-reference note added to
+  `NavBar.mdx`; `docs/ai-component-guide.md` rewritten Homepage section, new `ThemeToggle`/
+  `MobileChatSurface` Component Reference entries, new Futuristic Foundations subsection, new
+  exploration-story exemption note, bumped "Last updated"; `Foundations/Colors` and
+  `Foundations/Typography` Storybook stories got new Futuristic-theme token-table variants;
+  `forceShowContactCard` prop added to `HomeV4Blend.tsx` and `CaseStudyPage.tsx` plus new
+  "Contact card visible" story variants on `Homepage.stories.tsx`,
+  `explorations/Blend.stories.tsx`, and `CaseStudyPage.stories.tsx`.
+- Verification: `npm run build` and `npm run lint` clean; `npm run build-storybook` confirmed
+  the new stories compile and render, the Futuristic Foundations variants render correctly
+  under the theme switcher, and the new `forceShowContactCard` states show `ContactCard` inline
+  without needing to type a live contact-intent message.
+  Files: `src/stories/components/MobileChatSurface.stories.tsx` (new),
+  `src/stories/components/MobileChatSurface.mdx` (new),
+  `src/stories/components/ThemeToggle.stories.tsx` (new),
+  `src/stories/components/ThemeToggle.mdx` (new), `src/stories/components/NavBar.mdx`,
+  `src/stories/foundations/Colors.stories.tsx`, `src/stories/foundations/Typography.stories.tsx`,
+  `src/pages/explorations/HomeV4Blend.tsx`, `src/pages/CaseStudyPage.tsx`,
+  `src/stories/Homepage.stories.tsx`, `src/stories/explorations/Blend.stories.tsx`,
+  `src/stories/CaseStudyPage.stories.tsx`, `docs/ai-component-guide.md`,
+  `docs/case-study/build-plan.md`.

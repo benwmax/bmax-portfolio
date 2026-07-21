@@ -73,6 +73,13 @@ export interface CaseStudyPageProps extends CaseStudyContent {
   /** Storybook / test — intercepts submit instead of calling /api/chat */
   onChatSubmit?: (text: string) => void;
   initialMessages?: CsMessage[];
+  /**
+   * Storybook only — forces the inline ContactCard to render regardless of
+   * detectContactIntent, so its composed-in-page state can be previewed
+   * without typing a live contact-intent message. Never wire to application
+   * state; showContactCard from useChat() is the real signal in production.
+   */
+  forceShowContactCard?: boolean;
 }
 
 const NAV_SECTIONS = [
@@ -107,6 +114,7 @@ export function CaseStudyPage({
   showChat = true,
   onChatSubmit,
   initialMessages = [],
+  forceShowContactCard = false,
 }: CaseStudyPageProps) {
   const { pathname } = useLocation();
   const {
@@ -248,7 +256,7 @@ export function CaseStudyPage({
           ))}
         </div>
       )}
-      {showContactCard && (
+      {(forceShowContactCard || showContactCard) && (
         <ContactCard
           status={contactFormStatus}
           errorText={contactErrorText}
