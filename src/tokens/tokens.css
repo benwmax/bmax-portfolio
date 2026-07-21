@@ -287,7 +287,11 @@
   --chat-placeholder: var(--color-text-muted);
   --chat-prompt-color: var(--color-green-accent);
   --chat-caret: var(--color-green-bright);
-  --chat-focus-border: var(--color-interactive-border);
+  /* --color-interactive-border (~1.9:1 contrast) is the decorative/dark tier
+     — never sufficient as a focus indicator (WCAG 1.4.11). Every other focus
+     ring in this system uses --color-green-accent (~10:1); this one should
+     too. See docs/ai-component-guide.md Accessibility Patterns. */
+  --chat-focus-border: var(--color-green-accent);
   --chat-font: var(--font-mono-ui);
 
   /* Button — primary (ASK, submit) */

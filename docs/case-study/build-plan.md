@@ -402,6 +402,13 @@ independently; only the widget's visual styling depends on those.*
       images exist in content yet (all five `src/content/*.ts` files have zero image refs) —
       this is really gated on Phase 1E (image audit), not a QA task
 - [x] Accessibility audit: keyboard navigation, screen reader, color contrast (2026-06-22 — 7 fixes across 6 files; see decisions.md 2026-06-22)
+- [x] Full accessibility re-audit covering every component, including everything built after the
+      2026-06-22 pass (2026-07-20 — 14 fixes across 16 files: landmark nesting, missing headings,
+      chat log live-region handling, mobile overlay focus containment, ContactCard focus loss,
+      ProcessStep/CaseStudyHero/CaseStudyCard/ImageCaption/Contact fixes, ChatInput/Input focus
+      ring contrast, ThemeToggle keyboard pattern; see decisions.md 2026-07-20). Note: no live
+      screen-reader (VoiceOver/NVDA) pass performed — worth doing before launch, particularly on
+      the mobile chat overlay and both chat logs.
 - [x] All internal links resolve correctly (2026-07-16) — found `/contact` was linked from
       every page's NavBar but never wired into App.tsx's routes (404 on click); added the
       missing route using the existing Contact component

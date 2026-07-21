@@ -49,6 +49,18 @@ export function ContactCard({ status, errorText, onSubmit, onDismiss, className 
 
   const sending = status === 'sending';
 
+  // The Send button uses native `disabled` while sending (see Button below),
+  // which drops it out of the tab order and silently returns focus to <body>
+  // if it had focus when clicked — a keyboard user loses their place with no
+  // announcement. Move focus to this status line instead, which also
+  // announces "Sending…" via role="status" (WCAG 2.4.3, 4.1.3).
+  const sendingStatusRef = useRef<HTMLParagraphElement | null>(null);
+  const wasSending = useRef(false);
+  useEffect(() => {
+    if (!wasSending.current && sending) sendingStatusRef.current?.focus();
+    wasSending.current = sending;
+  }, [sending]);
+
   function handleFormSubmit(e: FormEvent) {
     e.preventDefault();
     if (sending) return;
@@ -108,6 +120,12 @@ export function ContactCard({ status, errorText, onSubmit, onDismiss, className 
             {errorText}
           </p>
         )}
+
+        {/* tabIndex=-1: focusable programmatically (see the sending useEffect
+            above) but not part of the normal Tab order. */}
+        <p ref={sendingStatusRef} tabIndex={-1} role="status" aria-live="polite" className="sr-only">
+          {sending ? 'Sending your message…' : ''}
+        </p>
 
         <Input
           label="NAME (OPTIONAL)"

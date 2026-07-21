@@ -15,7 +15,7 @@ export interface ProcessStepProps {
 
 export function ProcessStep({ num, phase, title, body, artifact }: ProcessStepProps) {
   return (
-    <div className={styles.step}>
+    <li className={styles.step}>
       <span className={styles.num} aria-hidden="true">
         {num}
       </span>
@@ -27,11 +27,13 @@ export function ProcessStep({ num, phase, title, body, artifact }: ProcessStepPr
         <p className={styles.body}>{body}</p>
         <span className={styles.artifact}>{artifact}</span>
       </div>
-    </div>
+    </li>
   );
 }
 
-/** Wraps a list of ProcessStep cards with the correct 2px seam gap. */
+/** Wraps a list of ProcessStep cards with the correct 2px seam gap.
+ *  <ol>: the visual number is aria-hidden, so list semantics are how AT
+ *  users get "item 2 of 4" sequence context (WCAG 1.3.1). */
 export function ProcessSteps({ children }: { children: React.ReactNode }) {
-  return <div className={styles.list}>{children}</div>;
+  return <ol className={styles.list}>{children}</ol>;
 }

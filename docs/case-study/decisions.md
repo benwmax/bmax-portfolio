@@ -884,3 +884,101 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
   `src/stories/Homepage.stories.tsx`, `src/stories/explorations/Blend.stories.tsx`,
   `src/stories/CaseStudyPage.stories.tsx`, `docs/ai-component-guide.md`,
   `docs/case-study/build-plan.md`.
+
+## 2026-07-20 — Full accessibility audit and fix pass
+- Decision: Audit every component and page for accessibility issues (WCAG 2.1 AA), not just the
+  ones covered by the 2026-06-22 pass, and fix what's real. Requested directly ("check all
+  components for accessibility"), and overdue — several components shipped after 2026-06-22
+  (ContactCard, MobileChatSurface, ThemeToggle) never got an accessibility pass at all, and the
+  ChatInput Enter-key change that landed on `main` this morning (commit `f488064`) hadn't been
+  checked either.
+- Method: three parallel research passes (primitives; content components; chat components +
+  pages), each read against the project's own documented Accessibility Patterns
+  (`docs/ai-component-guide.md`) plus general WCAG 2.1 AA criteria, explicitly told not to
+  re-report anything the 2026-06-22 pass already fixed. Every finding was independently verified
+  against the actual source before any fix — several findings included precise line numbers and
+  reasoning that held up on inspection.
+- Findings and fixes (14 real issues, all fixed):
+  - **Landmark structure:** `HomeV4Blend.tsx`'s `<footer>` was nested inside `<main>`, stripping
+    its `contentinfo` role — the exact "Wrong" example the guide's own Accessibility Patterns
+    section warns against, in a file that otherwise has a real a11y-conscious comment two lines
+    above it. Moved `<footer>` to a sibling of `<main>`.
+  - **Missing heading:** `NotFoundPage.tsx` had no `<h1>` at all — the "404 error terminal" is an
+    `aria-label` on a `<div>`, invisible to heading-navigation. Added an `sr-only` `<h1>Page not
+    found</h1>` rather than a visible one, to avoid duplicating the terminal's own "Error 404: Not
+    found" line.
+  - **Chat log live regions, in opposite directions:** `HomeV4Blend.tsx`'s message log had no
+    `aria-live` at all (a streaming reply was completely silent to screen readers), while
+    `CaseStudyPage.tsx`'s had `aria-live="polite"` permanently on — which, combined with how
+    streaming mutates the same `<p>` dozens of times per reply, floods AT users with every partial
+    chunk instead of one coherent reply. Fixed both to `aria-live={chatStatus === 'loading' ?
+    'off' : 'polite'}` — silent while streaming, announced once on completion.
+  - **Mobile chat overlay didn't isolate the background:** `MobileChatSurface` marks itself
+    `inert`/`aria-hidden` while *closed*, but nothing made the *rest of the page* (NavBar, hero,
+    sidebar) inert while the overlay was *open* — a keyboard/AT user could tab straight through to
+    background content sitting behind the visual overlay. Restructured `HomeV4Blend.tsx` and
+    `CaseStudyPage.tsx` so `MobileChatSurface` renders as a sibling of (not a descendant inside)
+    the page's inert-controlled content wrapper, so the wrapper can go inert without also
+    disabling the dialog sitting outside it. Also added focus-on-open (moves to the dialog's close
+    button) to complement the focus-on-close behavior that already existed.
+  - **ContactCard's Send button silently dropped focus:** the button uses native `disabled` while
+    `status === 'sending'`, which — if the button had focus when clicked, the normal case for a
+    keyboard user — removes it from the tab order and returns focus to `<body>` with zero
+    announcement. Added a `role="status"` line that both announces "Sending your message…" and
+    receives focus explicitly on that transition, so a keyboard user doesn't silently lose their
+    place in a form embedded deep in a scrolled chat log.
+  - **Five smaller, independent fixes:** `CaseStudyHero`'s meta grid had `aria-label` on a plain
+    `<div>` (not exposed as a labeled object without a role — added `role="group"`);
+    `CaseStudyCard`'s link (the only interactive element among its siblings) had no
+    `:focus-visible` rule at all, just the bare browser default; `ProcessStep`'s explicitly
+    numbered sequence used a plain `<div>` instead of `<ol>`/`<li>`, so the only place the sequence
+    existed for AT users was DOM order; `ImageCaption`'s `alt` prop defaulted to `''` with nothing
+    stopping a real screenshot from shipping as decorative once real images land (Phase 4E is
+    still pending them) — made `alt` required whenever `src` is passed via a discriminated union
+    type, not just a comment; the Contact page's copy-to-clipboard buttons swapped their own
+    visible label with no live-region announcement of the result.
+  - **ChatInput/Input focus indicators used the wrong contrast tier:** both routed their focus
+    treatment through `--color-interactive-border`/`--color-green-border` (~1.9:1) — the exact
+    token the guide's own Accessibility Patterns section says to never use for a focus indicator,
+    reserved for decorative use. `ChatInput` additionally couldn't distinguish "focused" from
+    "filled, not focused" at all, since both states shared the same `.active` class. Added a real
+    `.field:focus-within` ring on `--color-green-accent` (~10:1) to `ChatInput`, independent of
+    `.active`; repointed the shared `--chat-focus-border` token (used by `Input`) from
+    `--color-interactive-border` to `--color-green-accent`.
+  - **ChatInput's character counter over-announced:** `aria-live="polite"` on the counter fired on
+    every keystroke once multiline and filled — the field truncates at `MAX_CHARS` so it can't
+    silently overflow, so the live region was pure interruption with no informational payoff.
+    Dropped the live region; kept the counter as a plain visual element.
+  - **Enter-key convention undocumented for assistive tech:** this morning's `f488064` change
+    (plain Enter submits, Shift+Enter inserts a newline in multiline mode) reverses the prior
+    default and isn't discoverable from `aria-label="Ask a question"` alone — a screen reader or
+    dictation user composing a question by the native textarea convention (Enter = newline) could
+    fire an incomplete message. Added an `sr-only` hint wired via `aria-describedby`, matching the
+    file's own existing pattern for the loading-state live region.
+  - **ThemeToggle claimed a keyboard pattern it didn't implement:** `role="radiogroup"`/`"radio"`
+    imply the ARIA APG radiogroup keyboard model (roving tabindex, Arrow keys move *and* select),
+    but every option was an independent Tab stop with no Arrow key handling — a toolbar of buttons
+    wearing radio-group roles. Implemented the real pattern: `tabIndex={active ? 0 : -1}` plus
+    Arrow key selection between the two options, focus following the change.
+- What wasn't changed: the primitives audit found no issues in `Button.tsx`, `Tag.tsx`, or
+  `StatusIndicator.tsx`; the content-components audit found no issues in `NavBar.tsx`,
+  `RoleCallout.tsx`, or `StatBlock.tsx`. `ai-component-guide.md`'s `ImageCaption` and
+  `ThemeToggle` entries were updated to describe the new stricter type and the keyboard pattern,
+  respectively (the guide already *said* alt was "always required" in prose — the type just
+  didn't enforce it until now).
+- Verification: `npm run build`, `npm run lint`, and `npm run build-storybook` all clean on every
+  touched file (the same 18 pre-existing warnings remain, all in files this pass didn't touch).
+  No live browser/screen-reader test performed — no browser tooling in this environment; the
+  fixes are structural/attribute-level and match established, already-verified patterns elsewhere
+  in the codebase (the boot-sequence `inert` wrapper, the `role="status"` live-region pattern),
+  but a real screen-reader pass (VoiceOver/NVDA) on the mobile overlay and the two chat logs is
+  worth doing before launch.
+  Files: `src/pages/explorations/HomeV4Blend.tsx`, `src/pages/CaseStudyPage.tsx`,
+  `src/pages/NotFoundPage.tsx`, `src/components/MobileChatSurface.tsx`,
+  `src/components/ContactCard/ContactCard.tsx`, `src/components/CaseStudyHero/CaseStudyHero.tsx`,
+  `src/components/CaseStudyCard/CaseStudyCard.module.css`,
+  `src/components/ProcessStep/ProcessStep.tsx`, `src/components/ProcessStep/ProcessStep.module.css`,
+  `src/components/ImageCaption/ImageCaption.tsx`, `src/components/Contact/Contact.tsx`,
+  `src/components/ChatInput/ChatInput.tsx`, `src/components/ChatInput/ChatInput.module.css`,
+  `src/components/ThemeToggle/ThemeToggle.tsx`, `src/tokens/tokens.css`,
+  `docs/ai-component-guide.md`, `src/stories/components/ThemeToggle.mdx`.

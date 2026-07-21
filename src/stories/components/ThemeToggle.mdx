@@ -9,6 +9,8 @@ The Retro / Futuristic segmented control that sits at the top right of every pag
 
 Theme state lives on `<html data-theme>` rather than in a React provider (see `src/hooks/useTheme.ts`). An inline script in `index.html` applies the saved theme before first paint, so this component only ever reads and writes the attribute — which is also why it works standalone here in Storybook exactly as it does in production, with no decorator required.
 
+Implements the full ARIA APG radiogroup keyboard pattern: only the checked option is a Tab stop (roving `tabIndex`), and ArrowLeft/ArrowUp/ArrowRight/ArrowDown move focus to — and select — the other option. Click still works independently of keyboard use.
+
 ## Variants
 
 ### Default — Retro active

@@ -46,6 +46,15 @@
 .hover {
   border-color: var(--color-green-border);
 }
+
+/* The card is the only interactive element among these eight — a bare browser
+   outline isn't sufficient (see docs/ai-component-guide.md Accessibility
+   Patterns → Focus-visible on custom interactive elements). */
+.card:focus-visible {
+  outline: 2px solid var(--color-green-accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
 .card:hover::before,
 .card:hover::after,
 .hover::before,
