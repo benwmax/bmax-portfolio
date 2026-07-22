@@ -405,6 +405,13 @@ independently; only the widget's visual styling depends on those.*
       images exist in content yet (all five `src/content/*.ts` files have zero image refs) —
       this is really gated on Phase 1E (image audit), not a QA task
 - [x] Accessibility audit: keyboard navigation, screen reader, color contrast (2026-06-22 — 7 fixes across 6 files; see decisions.md 2026-06-22)
+- [x] Full accessibility re-audit covering every component, including everything built after the
+      2026-06-22 pass (2026-07-20 — 14 fixes across 16 files: landmark nesting, missing headings,
+      chat log live-region handling, mobile overlay focus containment, ContactCard focus loss,
+      ProcessStep/CaseStudyHero/CaseStudyCard/ImageCaption/Contact fixes, ChatInput/Input focus
+      ring contrast, ThemeToggle keyboard pattern; see decisions.md 2026-07-20). Note: no live
+      screen-reader (VoiceOver/NVDA) pass performed — worth doing before launch, particularly on
+      the mobile chat overlay and both chat logs.
 - [x] All internal links resolve correctly (2026-07-16) — found `/contact` was linked from
       every page's NavBar but never wired into App.tsx's routes (404 on click); added the
       missing route using the existing Contact component
@@ -419,6 +426,20 @@ independently; only the widget's visual styling depends on those.*
 - [x] Dark mode works across all pages and components (2026-07-16) — background color
       (`rgb(14,16,15)` / `#0e100f`) verified identical across all 9 routes × 3 viewports ×
       3 browser engines
+- [x] Storybook documentation audit (2026-07-20) — the Futuristic theme (2026-07-17), mobile
+      chat handoff (2026-07-19), and in-chat contact flow (2026-07-20) had outpaced Storybook
+      and `docs/ai-component-guide.md`. Closed: `MobileChatSurface` and `ThemeToggle` had zero
+      Storybook coverage (no story, no MDX) despite both being production components — added
+      full story + MDX pairs for each; `ai-component-guide.md`'s Homepage entry still documented
+      the retired `HomePage.tsx` instead of the live `HomeV4Blend.tsx` — corrected, plus added
+      `ThemeToggle`/`MobileChatSurface` to the Decision Tree and Component Reference, and a
+      Futuristic-theme subsection to Foundations; `Foundations/Colors` and `Foundations/Typography`
+      Storybook stories got matching Futuristic-theme token tables; `Homepage.stories.tsx`,
+      `explorations/Blend.stories.tsx`, and `CaseStudyPage.stories.tsx` didn't demonstrate the new
+      inline `ContactCard` state — added a Storybook-only `forceShowContactCard` prop
+      (`HomeV4Blend.tsx`, `CaseStudyPage.tsx`, following the existing `forceHover`/`forceFocused`
+      convention) and a story variant on each. See decisions.md 2026-07-20 (Storybook
+      documentation audit entry).
 
 ---
 

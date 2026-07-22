@@ -4,7 +4,7 @@
 Read this before building any new UI — it will save you from re-inventing components that already
 exist or using them wrong.*
 
-*Last updated: 2026-06-20*
+*Last updated: 2026-07-20*
 
 ---
 
@@ -12,8 +12,13 @@ exist or using them wrong.*
 
 1. Check the **Decision Tree** below to identify which component handles your use case.
 2. Read the component section — especially **Prop cheat sheet** and **Pitfalls**.
-3. Check the Storybook story for that component; every story has a `parameters.ai` block with
-   `guidance`, `contentRules`, and `avoid` fields.
+3. Check the Storybook story for that component; every *production* component/page story has a
+   `parameters.ai` block with `guidance`, `contentRules`, and `avoid` fields. **Exception:**
+   archival exploration stories (`Explorations/*` — Signal, Boot, Phosphor, Blend — plus
+   `Explorations/00 · Original Homepage`) are exempt. They document retired/comparison variants,
+   not living components a session might build against, so an `ai` block would just be guidance
+   for code nobody should extend. The production story that documents the *selected* design
+   (`Pages/Homepage`, covering `HomeV4Blend`) does carry the full `ai` block.
 4. When in doubt, look at how the component is used in existing page stories
    (`Pages/Homepage`, `Pages/Case Study`) before building something new.
 
@@ -37,13 +42,15 @@ value has a CSS custom property. They are documented in `Foundations/Colors` and
 | Generic form text field | `Input` |
 | Inline "send Ben a message" form in the chat log | `ContactCard` |
 | Site header / navigation | `NavBar` |
+| Retro/Futuristic theme switch | `ThemeToggle` |
+| Mobile "Ask Ben" FAB + full-screen chat overlay | `MobileChatSurface` |
 | Work grid thumbnail + link | `CaseStudyCard` |
 | Case study page hero (title, meta grid) | `CaseStudyHero` |
 | Screenshot / artifact with caption | `ImageCaption` |
 | Explicit ownership rows | `RoleCallout` + `RoleCallouts` |
 | Numbered case study process steps | `ProcessStep` + `ProcessSteps` |
 | Outcome stat cell | `StatBlock` + `StatGrid` |
-| Full homepage | `HomePage` (page component) |
+| Full homepage | `HomeV4Blend` (page component, `Pages/Homepage` in Storybook — see note below) |
 | Full case study page | `CaseStudyPage` (page component) |
 | About page | `AboutPage` (page component) |
 | Resume page | `ResumePage` (page component) |
@@ -67,6 +74,20 @@ Two accent families: phosphor green (interactive) and warm amber (callouts, indu
 - **Text hierarchy:** primary (`#ccd4b0`) → secondary (`#8a9478`) → tertiary (`#6b7055`) → muted (`#5a6050`) → disabled (`#3d4035`).
 
 Never hardcode hex values. Always use `--color-*` CSS custom properties or Tailwind token classes.
+
+#### Futuristic theme (second, user-selectable theme)
+
+**Storybook:** every component and page-level story with a "Futuristic V2" variant; token tables in `Foundations/Colors` and `Foundations/Typography`.
+**File:** `src/tokens/tokens.css`, `[data-theme='futuristic']` override block.
+
+A second, light sci-fi theme toggled by `ThemeToggle` (top right of every `NavBar`) and persisted to `localStorage`. Retro is always the default. It's fully token-driven — most components need zero logic changes, only a CSS override block — with a few scoped effect swaps (cursor blink → soft pulse, block caret → insertion bar).
+
+- **Accent:** azure (replaces phosphor green as the interactive color) plus a warm gold secondary accent (replaces amber).
+- **Display type:** Space Grotesk (replaces Space Mono for display contexts under this theme).
+- **Surface texture:** a fine line-grid at ~5% opacity (replaces the dot grid), with a consistent azure hairline HUD accent language — top rails, tick marks, docked-rail edges, chamfered index chips.
+- Story variants are named **"Futuristic V2"** in Storybook — "V2" is a naming/iteration label carried over from a mid-build revision, not a second live theme; there is still only Retro and Futuristic. See `decisions.md` 2026-07-17 for the V1→V2 revision reasoning.
+
+Never add theme-conditional logic to a component — the whole system works by having components read theme-agnostic tokens (`--color-green-accent`, etc.) that resolve differently under `[data-theme='futuristic']`. If a component looks wrong under Futuristic, the fix is almost always in `tokens.css`, not the component.
 
 ---
 
@@ -306,6 +327,38 @@ Structured Name/Email/Message form (built from `Input` + `Button`) that renders 
 
 ---
 
+### MobileChatSurface
+
+**File:** `src/components/MobileChatSurface.tsx`
+**Storybook:** `Components/MobileChatSurface`
+
+The mobile-only "Ask Ben" entry point — a floating action button that opens a full-screen chat overlay. Shared by `HomeV4Blend` and `CaseStudyPage` so mobile chat behaves identically on both. Desktop keeps its inline hero panel / docked rail instead — everything here is gated to `<=760px` by CSS and correctly renders nothing above that width.
+
+#### Props
+
+| Prop | Type | Notes |
+|---|---|---|
+| `visible` | `boolean` | Whether the FAB exists at all. Drive from `fabRevealed \|\| messages.length > 0` on Home, `true` on case study pages. |
+| `open` | `boolean` | Controlled open state of the overlay. |
+| `onOpenChange` | `(open: boolean) => void` | — |
+| `messageCount` | `number` | Drives the FAB badge and its `aria-label`. |
+| `chatStatus` | `ChatWidgetStatus` | Passed straight through to the overlay's `ChatInput`. |
+| `onSubmit` | `(text: string) => void` | — |
+| `renderLog` | `(ref, className) => ReactNode` | Render prop — the parent owns the log's content and per-page message styling; this component only supplies the ref (for autoscroll) and container class. |
+
+#### The two behaviors that are easy to regress
+
+- **FAB visibility formula:** `fabRevealed || messages.length > 0`, not message count alone. `fabRevealed` lives in the shared chat context and survives navigation, so a case-study visit reveals the FAB via `revealFab()` on mount even before a message is sent.
+- **Homepage submit must hand off to the overlay.** The homepage's inline hero chat wraps its submit handler (`handleHeroSubmit`) to open this overlay first — on mobile there is no docked rail for the reply to flow into, so skipping the hand-off streams the reply into a hidden, non-interactive panel. See `decisions.md` 2026-07-19.
+
+#### Pitfalls
+
+- Never fork a second FAB/overlay pair into a page file — both pages must import this one component
+- Never render it on About/Resume/Contact/404 — chat (and its mobile entry point) is scoped to Home + case study pages only (decisions.md 2026-07-18)
+- Don't remove the `inert` attribute on the closed overlay — it keeps the hidden log out of the tab order for keyboard/screen-reader users
+
+---
+
 ### NavBar
 
 **File:** `src/components/NavBar.tsx`
@@ -328,6 +381,34 @@ Site header. Present on every page. Three fixed nav links. Pass `activePath` fro
 #### Accessibility
 
 The BM_ wordmark link carries `aria-label="Ben Maxwell – Home"`. Do not remove this — "BM" alone is opaque to screen readers (WCAG 2.4.4 Link Purpose). The trailing underscore is `aria-hidden="true"` by design.
+
+---
+
+### ThemeToggle
+
+**File:** `src/components/ThemeToggle/ThemeToggle.tsx`
+**Storybook:** `Components/ThemeToggle`
+
+Retro/Futuristic segmented control, fixed to the top-right of `NavBar`. A real two-option radiogroup (`role="radiogroup"`), not an icon toggle — the theme names are the feature. Theme state lives on `<html data-theme>` via `src/hooks/useTheme.ts`, not a React provider, so this component is self-contained and works standalone in Storybook exactly as it does in production.
+
+Implements the full ARIA APG radiogroup keyboard pattern, not just the roles: roving `tabIndex` (only the checked option is a Tab stop) plus Arrow key navigation that both moves focus and changes the selection. Click still works independently. Don't add `role="radio"`/`radiogroup"` to a control that doesn't implement this — the roles alone create an accessibility-tree promise that native tab-per-button behavior breaks (WCAG 4.1.2).
+
+#### Props
+
+| Prop | Type | Notes |
+|---|---|---|
+| `className` | `string` | Optional. Layout hook only — no visual variants to configure. |
+
+#### Content rules
+
+- Exactly two options: "Retro" and "Futuristic," abbreviated "RET"/"FUT" below 560px so the NavBar still fits its three nav links at a 390px viewport.
+- Labels are full theme names, not icons.
+
+#### Pitfalls
+
+- Never relocate it out of the NavBar's top-right corner
+- Never add a third theme option without a design pass — the styling assumes exactly two
+- Don't wrap it in a provider or add a second persistence layer — `useTheme` already owns `localStorage` (`viewbens-theme`) and the `data-theme` attribute
 
 ---
 
@@ -411,7 +492,7 @@ The case study page header. H1 is always a problem statement. Accent meta values
 
 ### ImageCaption
 
-**File:** `src/components/ImageCaption.tsx`
+**File:** `src/components/ImageCaption/ImageCaption.tsx`
 **Storybook:** `Components/ImageCaption`
 
 Terminal-chrome frame for all case study screenshots. Never use a plain `<img>` tag for portfolio artifacts — always use `ImageCaption`.
@@ -420,8 +501,8 @@ Terminal-chrome frame for all case study screenshots. Never use a plain `<img>` 
 
 | Prop | Type | Notes |
 |---|---|---|
-| `src` | `string` | Image URL. Omit to show dot-grid placeholder |
-| `alt` | `string` | Always required for accessibility |
+| `src` | `string` | Image URL. Omit both `src` and `alt` to show the dot-grid placeholder instead. |
+| `alt` | `string` | **Required whenever `src` is set** — enforced at the type level (a discriminated union), not just a convention. There is no default that lets a real screenshot silently ship as decorative. |
 | `tabLabel` | `string` | Format: "project · artifact-type" |
 | `caption` | `string` | Format: "Fig. 01 — description." |
 
@@ -574,10 +655,17 @@ Outcome stat cell — phosphor green headline value, ALL CAPS label, optional on
 
 ### Homepage
 
-**File:** `src/pages/HomePage.tsx`
-**Storybook:** `Pages/Homepage`
+**File:** `src/pages/explorations/HomeV4Blend.tsx` — despite the `explorations/` path, this is the live
+production homepage, not a draft. It's the selected design from the three-way exploration phase
+(Signal/Boot/Phosphor); the retired original is `src/pages/HomePage.tsx` (see note below).
+**Storybook:** `Pages/Homepage` (also mirrored at `Explorations/04 · Blend` for exploration-history
+comparison — same component, two story titles)
 
-Split hero (identity left, chat right), work grid, stat rail, footer. When the user sends the first message, the hero chat panel fades out and the 400px docked rail slides in.
+Fast 3-line boot sequence (~1.5s, replays on reload), full-viewport green scanline, split hero (typewriter
+headline left, chat right), a 4-column staggered-reveal case study grid, and footer. When the visitor
+sends the first message, the hero chat panel fades out and the desktop docked rail slides in. On mobile
+(≤760px) chat instead hands off to `MobileChatSurface`'s full-screen overlay — see that component's
+section above.
 
 #### Props
 
@@ -585,18 +673,27 @@ Split hero (identity left, chat right), work grid, stat rail, footer. When the u
 |---|---|---|
 | `onChatSubmit` | `function` | Handler for chat message submission |
 | `initialMessages` | `Message[]` | Seed messages to pre-populate the conversation |
+| `skipBoot` | `boolean` | Skips the boot-sequence intro animation — useful for reviewing the assembled layout without waiting. Not Storybook-only; also used to skip the replay on client-side navigation back to `/`. |
 
 #### States
 
-- **Hero idle (Default):** No messages, greeting text and three suggestion chips shown, docked rail hidden
-- **Conversation started:** Hero panel faded, docked 400px rail visible, page acquires padding-right
-- **Mobile (≤768px):** Single column, docked rail hidden, hero chat panel is the only chat surface
+- **Full boot sequence (Default):** 3-line terminal boot, then the page assembles in. Hero shows greeting + suggestion chips, docked rail hidden.
+- **Assembled (skip intro):** `skipBoot={true}` — same idle layout, boot skipped.
+- **Conversation started:** Hero panel faded, docked 400px rail visible (desktop only), page acquires padding-right. A contact-intent message renders an inline `ContactCard` at the end of the log — see that component's section above.
+- **Mobile (≤760px):** Single column, docked rail hidden; chat is handled entirely by `MobileChatSurface`'s FAB + overlay, not the inline hero panel past the first submit.
 
 #### Pitfalls
 
 - Don't add content outside the existing hero layout — identity left, chat right
 - Don't try to keep the hero panel visible during a conversation
 - Don't show the docked rail on mobile — it's desktop-only
+- Don't change the work grid order — finalized as 01 Portfolio Rebuild, 02 Upfluent, 03 Sagent, 04 USAA, 05 Sabre
+- Don't skip wiring the homepage's inline submit through `handleHeroSubmit` on mobile — it must open `MobileChatSurface`'s overlay before submitting, or the reply streams into the faded, non-interactive hero panel (decisions.md 2026-07-19)
+- `forceShowContactCard` is Storybook-only — never wire it to application state; `showContactCard` from `useChat()` is the real production signal
+
+**A note on `src/pages/HomePage.tsx`:** this is the retired original homepage design, kept only as a
+Storybook comparison artifact under `Explorations/00 · Original Homepage`. It is not routed in `App.tsx`
+and should not be built against — if you're updating "the homepage," that's `HomeV4Blend.tsx`.
 
 ---
 
@@ -659,6 +756,7 @@ All 8 sections are mandatory. The sidebar TOC is generated from them. Do not ski
 - Don't use `accent: true` for role, method, or non-numeric meta values
 - Don't write `heroTitle` as a project description — it must be a problem statement
 - Don't use `layout="linear"` as the default — sidebar + chat is the intended experience
+- `forceShowContactCard` is Storybook-only — never wire it to application state; `showContactCard` from `useChat()` is the real production signal
 
 ---
 

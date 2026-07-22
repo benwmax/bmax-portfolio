@@ -250,6 +250,43 @@ export const WithConversation: Story = {
   },
 };
 
+export const ContactCardVisible: Story = {
+  name: 'USAA — Contact card visible',
+  args: {
+    ...USAA,
+    layout: 'sidebar',
+    showChat: true,
+    onChatSubmit: fn(),
+    initialMessages: [
+      { role: 'user', text: 'Why two parallel tracks?' },
+      {
+        role: 'assistant',
+        text: "Conversion was bleeding now — we couldn't wait 18 months for the new platform. The two-track approach let us apply research insights immediately to production A/B tests, so the business saw measurable results throughout instead of at the end.",
+      },
+    ],
+    forceShowContactCard: true,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Shows the inline ContactCard composed into the docked chat rail. In production this ' +
+          'only appears once detectContactIntent matches a real message or reply — there\'s no ' +
+          'prop to trigger that from outside a live exchange, so this story sets a Storybook-only ' +
+          'forceShowContactCard flag instead of seeding a fake trigger phrase. See ' +
+          'Components/ContactCard for the component\'s own full state matrix.',
+      },
+    },
+    ai: {
+      guidance:
+        'Reference for how ContactCard sits inside the docked chat rail — forceShowContactCard is Storybook-only, never wire it to application state. Consult Components/ContactCard for the component\'s own states.',
+      avoid: [
+        'forceShowContactCard is Storybook-only — never use it in application code. showContactCard from useChat() is the real production signal.',
+      ],
+    },
+  },
+};
+
 export const Futuristic: Story = {
   name: 'USAA — Futuristic V2',
   parameters: {

@@ -17,6 +17,15 @@ export function Contact() {
   const [emailCopied, setEmailCopied] = useState(false);
   const [urlCopied, setUrlCopied] = useState(false);
 
+  // The buttons already swap their own visible label to "COPIED ✓", but that
+  // change is silent to screen readers with no live region watching it — this
+  // announces the same event out loud (WCAG 4.1.3).
+  const copyAnnouncement = emailCopied
+    ? 'Email address copied.'
+    : urlCopied
+      ? 'LinkedIn URL copied.'
+      : '';
+
   return (
     <div className={styles.wrapper}>
       <a href="#main-content" className="skip-link">
@@ -30,6 +39,10 @@ export function Contact() {
         <h1 className={styles.heading}>
           Say <span className={styles.headingAmber}>hello</span>.
         </h1>
+
+        <p role="status" aria-live="polite" className="sr-only">
+          {copyAnnouncement}
+        </p>
 
         <div className={styles.cards}>
           {/* ── Email ── */}

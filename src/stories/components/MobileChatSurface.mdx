@@ -1,0 +1,77 @@
+import { Meta, Canvas, ArgTypes } from '@storybook/addon-docs/blocks';
+import * as MobileChatSurfaceStories from './MobileChatSurface.stories';
+
+<Meta of={MobileChatSurfaceStories} />
+
+# MobileChatSurface
+
+The mobile-only "Ask Ben" entry point: a floating action button that opens a full-screen chat overlay. Shared by [`HomeV4Blend`](/docs/pages-homepage--docs) and [`CaseStudyPage`](/docs/pages-case-study--docs) so mobile chat behaves identically on both — desktop keeps its inline hero panel / docked rail instead. Everything here is gated to `<=760px` by `MobileChatSurface.module.css`; above that width the component renders nothing, which is correct, not broken.
+
+## Why this exists
+
+On mobile, the homepage's inline chat panel is built to collapse into the desktop docked rail the moment a conversation starts — `opacity:0` + `pointer-events:none`. There is no docked rail on mobile, so without this component the assistant's reply streamed into a hidden, dead surface while a redundant FAB floated over the top. Case study pages had no mobile chat entry point at all. See `docs/case-study/decisions.md` (2026-07-19) for the full incident and fix.
+
+## Variants
+
+### FAB hidden
+
+`visible=false` — the entry point doesn't exist yet. This is the homepage's state before `fabRevealed` is set and before any message has been sent.
+
+<Canvas of={MobileChatSurfaceStories.FabHidden} />
+
+### FAB visible — no messages
+
+`visible=true`, no conversation started. Case study pages start here (`revealFab()` runs on mount); the homepage reaches it once `fabRevealed` flips true.
+
+<Canvas of={MobileChatSurfaceStories.FabVisible} />
+
+### FAB visible — message badge
+
+A conversation is underway but the overlay is closed. The badge mirrors `messages.length`, not an unread count.
+
+<Canvas of={MobileChatSurfaceStories.FabWithBadge} />
+
+### Overlay open
+
+The full-screen chat sheet. It stays mounted at all times (`aria-hidden` + `inert` while closed) rather than unmounting, so the log survives as a stable live region across opens.
+
+<Canvas of={MobileChatSurfaceStories.OverlayOpen} />
+
+### Interactive
+
+A controlled wrapper for manually exercising the open/close interaction and focus-return behavior in the canvas, rather than a fixed prop snapshot.
+
+<Canvas of={MobileChatSurfaceStories.Interactive} />
+
+## The two behaviors that are easy to regress
+
+- **FAB visibility formula:** `fabRevealed || messages.length > 0` — not message count alone. `fabRevealed` is a session-only flag in the shared chat context that case study pages set on mount and that survives navigation back to Home. Drop the `fabRevealed` half and the FAB disappears on a fresh case-study visit until the visitor sends a message.
+- **Homepage submit must hand off to the overlay.** The homepage's inline hero chat calls a `handleHeroSubmit` wrapper that opens this overlay before submitting — a no-op on desktop (where the overlay stays `display:none` and the reply flows into the docked rail as before). Skip that hand-off and the first mobile reply streams into the collapsed, non-interactive hero panel again.
+
+## Do's
+
+- **Import this one component from both pages.** Never fork a second FAB/overlay pair into a page file — that's exactly the drift this component was extracted to prevent.
+- **Keep `visible` and `open` as two separate booleans.** `visible` controls whether the entry point exists at all; `open` controls the overlay. Collapsing them loses the "FAB exists but overlay is closed" state.
+
+## Don'ts
+
+- **Don't wire this into any page other than Home or a case study page.** Chat is intentionally scoped off About/Resume/Contact/404 (decisions.md 2026-07-18) — the FAB does not follow the visitor there.
+- **Don't remove `inert` from the closed overlay.** It keeps the hidden log out of the tab order; visually hiding it with CSS alone is not sufficient for keyboard/screen-reader users.
+- **Don't view these stories at a desktop viewport expecting to see anything.** The empty canvas above 760px is the correct, CSS-gated behavior, not a broken story.
+
+## AI guidance
+
+The shared mobile chat surface for Home and case study pages — never fork a second copy of this FAB/overlay pair into a page file. Two behaviors here are load-bearing and easy to regress: the FAB visibility formula, and the homepage's hand-off to this overlay on first submit (see above).
+
+**Content rules**
+- FAB label is fixed: "Ask Ben" with a `›` prompt glyph — do not reword it.
+- The badge only appears once `messageCount > 0`; it mirrors the conversation's message count.
+
+**Avoid**
+- Don't render this component above the 760px breakpoint — it's CSS-gated to mobile and correctly renders nothing on a desktop viewport.
+- Don't duplicate the FAB/overlay markup in a page file.
+- Don't hide the FAB while a conversation exists just because the overlay is closed — only `open` toggles the overlay.
+
+## Props
+
+<ArgTypes of={MobileChatSurfaceStories} />

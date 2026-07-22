@@ -63,3 +63,23 @@ export const ConversationSeeded: Story = {
   name: 'Conversation seeded',
   args: { onChatSubmit: fn(), initialMessages: SEED_MESSAGES, skipBoot: true },
 };
+
+export const ContactCardVisible: Story = {
+  name: 'Contact card visible',
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'forceShowContactCard (Storybook-only) forces the inline ContactCard into the log — ' +
+          'see Pages/Homepage → "Contact card visible" for the full explanation, and ' +
+          'Components/ContactCard for the component\'s own state matrix.',
+      },
+    },
+  },
+  args: {
+    onChatSubmit: fn(),
+    initialMessages: SEED_MESSAGES,
+    skipBoot: true,
+    forceShowContactCard: true,
+  },
+};
