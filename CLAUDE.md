@@ -510,7 +510,13 @@ started; Phases 6–7 not started. Per decisions.md 2026-07-16, launch is being
 prioritized ahead of the Sagent case study — Sagent ships with placeholder copy
 and gets a full pass post-launch.
 
-**Last updated:** 2026-07-20 (in-chat "get in touch" contact flow shipped via Resend —
+**Last updated:** 2026-07-22 (contact flow is now live end to end — Ben created the Resend
+account, verified the `viewbens.work` sending domain, and added `RESEND_API_KEY` to Vercel.
+Verified by sending a real message through the deployed `/api/contact`: 200 response and the
+email was delivered to ben@viewbens.work with the correct visitor Reply-To. The Resend
+blocker is cleared. Added `scripts/verify-contact-email.mjs`.)
+
+**Previously updated:** 2026-07-20 (in-chat "get in touch" contact flow shipped via Resend —
 `api/contact.ts`, `api/lib/contact-limit.ts`, `api/lib/cors.ts`, `src/components/ContactCard/`;
 `ALLOWED_ORIGINS` moved to the shared `api/lib/cors.ts`. New Ben-blocked item: Resend account
 + `viewbens.work` sending-domain verification. See decisions.md 2026-07-20.)
@@ -676,7 +682,8 @@ under `src/pages/explorations/` — is the real production homepage, not a draft
   which check tripped. Origin allowlist extracted to the shared `api/lib/cors.ts`. Chose a
   structured form over conversational field collection, and a client-side regex over model
   tool-use — see decisions.md 2026-07-20 for both trade-offs. Verified in a real browser via
-  Playwright; **live email delivery is still untested** pending Ben's Resend setup below.
+  Playwright; live email delivery verified end to end 2026-07-22 — a real send through the
+  deployed `/api/contact` reached ben@viewbens.work with the correct visitor Reply-To.
 
 **Immediate next steps:**
 (Resynced 2026-07-19 — removed a stale "Ben to choose homepage direction" item: that was
@@ -688,11 +695,6 @@ both created 2026-07-16, and this session ran multiple verification scripts agai
 a new item below for removing the temporary `.vercel.app` origin allowlist entry at
 cutover, added 2026-07-19. build-plan.md's checkboxes are the source of truth if this
 drifts again.)
-- **Ben — Resend setup (blocks the contact flow):** create a Resend account, verify the
-  `viewbens.work` sending domain (add the DNS records Resend provides), and add
-  `RESEND_API_KEY` to Vercel env vars. The contact form ships but **cannot send email until
-  this is done**, and live delivery has never been tested. See `.env.example` and
-  build-plan.md Phase 4F.
 - **Phase 1C:** Sagent brain dump — strongest Director-level case study, starts from zero
 - **Phase 4E:** OG images only — create 1200×630 PNGs in public/og/ before launch
   (meta descriptions, sitemap.xml, robots.txt, and canonical tags are already done;

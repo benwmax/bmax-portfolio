@@ -359,9 +359,12 @@ independently; only the widget's visual styling depends on those.*
       (runs against both the visitor's message and the assistant's reply) and rendered
       inline in the chat log on Home + case study pages. Sends via Resend. See
       decisions.md, 2026-07-20.
-- [ ] **Ben:** create a Resend account, verify the viewbens.work sending domain, add
-      `RESEND_API_KEY` to Vercel env vars (see .env.example) — the contact form can't
-      actually send email until this is done
+- [x] **Ben:** create a Resend account, verify the viewbens.work sending domain, add
+      `RESEND_API_KEY` to Vercel env vars (see .env.example) (2026-07-22) — done and
+      verified end to end: a real message sent through the live `/api/contact` on the
+      `.vercel.app` deployment returned 200 and was delivered to ben@viewbens.work with
+      the correct visitor Reply-To. See `scripts/verify-contact-email.mjs` for the local
+      guard-path checks (honeypot, too-fast, invalid input) plus a real-send step.
 
 ---
 

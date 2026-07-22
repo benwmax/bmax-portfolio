@@ -786,3 +786,44 @@ this was caught by actually driving the form in a browser, not by reading the co
 
 **Where I overrode or redirected Claude:**
 N/A.
+
+## 2026-07-22
+**What I did:**
+Finished and verified the chat-triggered "get in touch" email flow. Ben had
+already created the Resend account, verified the `viewbens.work` sending domain,
+added `RESEND_API_KEY` to Vercel, and redeployed. Confirmed delivery end to end
+by POSTing a real message to the deployed `/api/contact` on the `.vercel.app`
+deployment — returned 200, and the email landed in ben@viewbens.work with the
+visitor address as Reply-To. Added `scripts/verify-contact-email.mjs` (mirrors
+`verify-chat-safeguards.mjs`) to exercise the guard paths plus a real send.
+Checked off build-plan.md's Resend task and cleared the "untested"/blocked
+language in CLAUDE.md.
+
+**What I decided:**
+Test against the deployed endpoint rather than locally. It's the more faithful
+test anyway (real Vercel env, real edge IP injection, real Resend), and it
+sidesteps needing secrets in `.env.local`.
+
+**Why:**
+The whole point was to confirm live delivery works. A 200 from the deployed
+endpoint distinguishes success from the failure modes on its own: 503 = missing
+key, 502 = Resend rejected the send. Domain-verified sending is not the same as
+receiving, so the real proof was the message actually arriving — which it did.
+
+**What I'm uncertain about:**
+Nothing on the contact flow itself now. Still open: the mobile ContactCard
+inside the overlay has only been tested via browser resize/Playwright, never a
+real device (tracked in Phase 5).
+
+**What Claude contributed:**
+Wrote the verification script, ran the live end-to-end test, and updated the
+docs.
+
+**Where I overrode or redirected Claude:**
+Claude ran `vercel env pull` to refresh `.env.local` before realizing the four
+API secrets are marked Sensitive in Vercel — the pull overwrote their real
+local values with `[SENSITIVE]` placeholders. No production impact (Vercel
+runtime still holds the real values), but the local file needs restoring from
+OneDrive version history to run the local scripts. Lesson: don't `vercel env
+pull` over a working `.env.local` when the vars are Sensitive; they can't be
+pulled back.
