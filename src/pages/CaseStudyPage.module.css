@@ -292,7 +292,7 @@
 
 .msgUser {
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: var(--text-md);
   line-height: 1.65;
   color: var(--color-text-primary);
   margin: 0;
