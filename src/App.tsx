@@ -5,6 +5,7 @@ import { AboutPage } from './pages/AboutPage';
 import { ResumePage } from './pages/ResumePage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { Contact } from './components/Contact';
+import { ScrollToTop } from './components/ScrollToTop';
 import { ChatProvider } from './context/ChatContext';
 import { portfolioRebuildData } from './content/portfolio-rebuild';
 import { upfluentData } from './content/upfluent';
@@ -18,6 +19,7 @@ function App() {
       {/* Shared above the routes so the conversation survives navigation
           between Home and case study pages — see decisions.md 2026-07-18. */}
       <ChatProvider>
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<HomeV4Blend />} />
           <Route path="/work" element={<HomeV4Blend />} />
