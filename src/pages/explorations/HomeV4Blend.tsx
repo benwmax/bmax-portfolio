@@ -10,7 +10,13 @@ import { useChat } from '../../context/useChat';
 import { splitParagraphs } from '../../hooks/useChatSession';
 import type { Message } from '../../hooks/useChatSession';
 import { CASE_STUDIES, SUGGESTIONS, HERO_STATS, SOCIAL_LINKS } from './data';
-import { useTypewriter, useInView, useCountUp, usePrefersReducedMotion } from './hooks';
+import {
+  useTypewriter,
+  useInView,
+  useCountUp,
+  usePrefersReducedMotion,
+  useIsMobileViewport,
+} from './hooks';
 import styles from './HomeV4Blend.module.css';
 
 export type { Message };
@@ -121,6 +127,7 @@ export function HomeV4Blend({
     initialMessages,
   });
   const reduced = usePrefersReducedMotion();
+  const isMobile = useIsMobileViewport();
   const [booted, setBooted] = useState(skipBoot);
   const [mobileChatOpen, setMobileChatOpen] = useState(false);
   const heroRef = useRef<HTMLElement | null>(null);
@@ -311,10 +318,18 @@ export function HomeV4Blend({
        * Also inert while the mobile chat overlay is open, for the same
        * reason — otherwise a keyboard/AT user could reach the NavBar, hero,
        * and work grid behind the full-screen overlay (WCAG 2.4.3, 4.1.2).
+       *
+       * The mobile-overlay case is gated on `isMobile`: on desktop the overlay
+       * is display:none, but `mobileChatOpen` is still set true on first hero
+       * submit (see handleHeroSubmit) so the reply can flow to the docked rail.
+       * Without the viewport guard, that flag would make the entire desktop
+       * page inert — nothing clickable or focusable. Gating on the same
+       * `max-width: 760px` breakpoint the overlay uses keeps inert tied to the
+       * overlay actually being on screen.
        */}
       <div
-        aria-hidden={bootActive || mobileChatOpen ? true : undefined}
-        inert={bootActive || mobileChatOpen ? true : undefined}
+        aria-hidden={bootActive || (mobileChatOpen && isMobile) ? true : undefined}
+        inert={bootActive || (mobileChatOpen && isMobile) ? true : undefined}
       >
         <a href="#main-content" className="skip-link">
           Skip to main content
