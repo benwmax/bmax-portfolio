@@ -243,7 +243,6 @@ export function HomePage({ onChatSubmit, initialMessages = [] }: HomePageProps) 
                   multiline
                   showStatus={false}
                 />
-                <p className={styles.chatFootnote}>ONLINE · assistant ready · ~2s response</p>
               </div>
             </aside>
           </div>

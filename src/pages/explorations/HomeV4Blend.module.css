@@ -493,14 +493,6 @@
   padding: 14px 16px 16px;
 }
 
-.chatFootnote {
-  margin: 10px 0 0;
-  font-family: var(--font-mono-ui);
-  font-size: var(--text-xs);
-  letter-spacing: 0.06em;
-  color: var(--color-text-tertiary);
-}
-
 /* ——— SCROLL CUE (from V3 Phosphor) ——— */
 .scrollCue {
   position: absolute;
@@ -586,16 +578,29 @@
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 20px;
+  /* Equalize every row to the tallest row so all cards share one height —
+     including a card that wraps alone onto a new row. Reset to auto in the
+     single-column mobile layout below, where equal heights would only add
+     dead space to shorter cards. */
+  grid-auto-rows: 1fr;
 }
 
-/* Reveal-on-scroll wrapper. Stagger set inline via --i. */
+/* Reveal-on-scroll wrapper. Stagger set inline via --i.
+   Flex column so the card fills the stretched grid cell's full height. */
 .reveal {
+  display: flex;
+  flex-direction: column;
   opacity: 0;
   transform: translateY(22px);
   transition:
     opacity 0.6s var(--ease-default),
     transform 0.6s var(--ease-default);
   transition-delay: calc(var(--i, 0) * 90ms);
+}
+
+/* The CaseStudyCard grows to fill the reveal wrapper's height. */
+.reveal > * {
+  flex: 1;
 }
 
 .revealIn {
@@ -727,6 +732,8 @@
   }
   .workGrid {
     grid-template-columns: 1fr;
+    /* Single column: let each card size to its own content. */
+    grid-auto-rows: auto;
   }
   .footer {
     padding: 40px 20px 28px;

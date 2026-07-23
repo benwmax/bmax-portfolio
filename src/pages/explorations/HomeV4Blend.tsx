@@ -409,7 +409,6 @@ export function HomeV4Blend({
                       multiline
                       showStatus={false}
                     />
-                    <p className={styles.chatFootnote}>ONLINE · assistant ready · ~2s response</p>
                   </div>
                 </aside>
               </div>

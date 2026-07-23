@@ -290,15 +290,6 @@
   flex-shrink: 0;
 }
 
-/* Hero-only footnote — response time / status hint below the input */
-.chatFootnote {
-  margin: 10px 0 0;
-  font-family: var(--font-mono-ui);
-  font-size: var(--text-xs);
-  letter-spacing: 0.06em;
-  color: var(--color-text-tertiary);
-}
-
 /* ——— WORK SECTION ——— */
 .workSection {
   width: 100%;

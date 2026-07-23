@@ -177,7 +177,6 @@ export function HomeV1Signal({ onChatSubmit, initialMessages = [] }: HomeV1Signa
                   multiline
                   showStatus={false}
                 />
-                <p className={styles.chatFootnote}>ONLINE · assistant ready · ~2s response</p>
               </div>
             </aside>
           </div>
