@@ -126,7 +126,7 @@
 
 .mobileOverlayClose {
   font-family: var(--font-mono-display);
-  font-size: 16px;
+  font-size: 32px;
   color: var(--color-text-secondary);
   background: transparent;
   border: none;
