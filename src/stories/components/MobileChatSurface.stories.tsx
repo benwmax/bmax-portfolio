@@ -36,7 +36,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'The mobile-only "Ask Ben" entry point — a floating action button that opens a ' +
+          'The mobile-only "Ask about Ben" entry point — a floating action button that opens a ' +
           'full-screen chat overlay. Shared by the homepage and case study pages so mobile ' +
           'chat behaves identically on both; desktop keeps its inline/docked panels instead. ' +
           'Every part of this component is gated to <=760px by CSS (see ' +
@@ -49,7 +49,7 @@ const meta = {
       guidance:
         'The shared mobile chat surface for Home and case study pages — never fork a second copy of this FAB/overlay pair into a page file. Two behaviors here are load-bearing and easy to regress (see decisions.md 2026-07-19): (1) FAB visibility must be driven by `fabRevealed || messages.length > 0`, not just message count alone — case study pages call revealFab() on mount so the entry point exists even before a conversation starts; (2) the homepage inline hero chat collapses to a dead, non-interactive surface once a conversation starts on mobile (it is built to slide into the desktop docked rail, which does not exist on mobile) — the first submit must hand off to this overlay via a wrapper like handleHeroSubmit, or the reply streams into a hidden panel.',
       contentRules: [
-        'FAB label is fixed: "Ask Ben" with a › prompt glyph — do not reword it.',
+        'FAB label is fixed: "Ask about Ben" with a › prompt glyph — do not reword it.',
         'The badge only appears once messageCount > 0; it mirrors the conversation\'s message count, not unread count.',
       ],
       avoid: [

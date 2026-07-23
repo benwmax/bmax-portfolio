@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════
-   MobileChatSurface — the mobile-only "Ask Ben" entry point.
+   MobileChatSurface — the mobile-only "Ask about Ben" entry point.
    A floating action button that opens a full-screen chat overlay, shared
    by the homepage and case study pages. Desktop keeps its inline/docked
    panels — everything here is gated to <=760px.

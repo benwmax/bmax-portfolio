@@ -43,7 +43,7 @@ value has a CSS custom property. They are documented in `Foundations/Colors` and
 | Inline "send Ben a message" form in the chat log | `ContactCard` |
 | Site header / navigation | `NavBar` |
 | Retro/Futuristic theme switch | `ThemeToggle` |
-| Mobile "Ask Ben" FAB + full-screen chat overlay | `MobileChatSurface` |
+| Mobile "Ask about Ben" FAB + full-screen chat overlay | `MobileChatSurface` |
 | Work grid thumbnail + link | `CaseStudyCard` |
 | Case study page hero (title, meta grid) | `CaseStudyHero` |
 | Screenshot / artifact with caption | `ImageCaption` |
@@ -332,7 +332,7 @@ Structured Name/Email/Message form (built from `Input` + `Button`) that renders 
 **File:** `src/components/MobileChatSurface.tsx`
 **Storybook:** `Components/MobileChatSurface`
 
-The mobile-only "Ask Ben" entry point — a floating action button that opens a full-screen chat overlay. Shared by `HomeV4Blend` and `CaseStudyPage` so mobile chat behaves identically on both. Desktop keeps its inline hero panel / docked rail instead — everything here is gated to `<=760px` by CSS and correctly renders nothing above that width.
+The mobile-only "Ask about Ben" entry point — a floating action button that opens a full-screen chat overlay. Shared by `HomeV4Blend` and `CaseStudyPage` so mobile chat behaves identically on both. Desktop keeps its inline hero panel / docked rail instead — everything here is gated to `<=760px` by CSS and correctly renders nothing above that width.
 
 #### Props
 

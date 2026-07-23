@@ -114,7 +114,7 @@ export function HomePage({ onChatSubmit, initialMessages = [] }: HomePageProps) 
   // Shared panel header
   const chatBarJSX = (
     <div className={styles.chatBar}>
-      <span className={styles.chatBarLabel}>Ask Ben</span>
+      <span className={styles.chatBarLabel}>Ask about Ben</span>
       <span className={styles.chatOnlineBadge}>
         <span className={`${styles.chatOnlineDot} cursor-blink`} aria-hidden />
         ONLINE
@@ -229,7 +229,7 @@ export function HomePage({ onChatSubmit, initialMessages = [] }: HomePageProps) 
               className={[styles.chatPanel, isDocked ? styles.chatPanelHidden : '']
                 .filter(Boolean)
                 .join(' ')}
-              aria-label="Ask Ben — assistant"
+              aria-label="Ask about Ben — assistant"
               aria-hidden={isDocked}
               inert={isDocked ? true : undefined}
             >
@@ -320,7 +320,7 @@ export function HomePage({ onChatSubmit, initialMessages = [] }: HomePageProps) 
         className={[styles.dockedPanel, isDocked ? '' : styles.dockedPanelHidden]
           .filter(Boolean)
           .join(' ')}
-        aria-label="Ask Ben — assistant"
+        aria-label="Ask about Ben — assistant"
         aria-hidden={!isDocked}
         inert={!isDocked ? true : undefined}
       >
@@ -349,7 +349,7 @@ export function HomePage({ onChatSubmit, initialMessages = [] }: HomePageProps) 
           <span className={styles.fabPrompt} aria-hidden>
             ›
           </span>
-          Ask Ben
+          Ask about Ben
           {messages.length > 0 && (
             <span className={styles.fabBadge} aria-hidden>
               {messages.length}
@@ -365,12 +365,12 @@ export function HomePage({ onChatSubmit, initialMessages = [] }: HomePageProps) 
           .join(' ')}
         role="dialog"
         aria-modal="true"
-        aria-label="Ask Ben — assistant"
+        aria-label="Ask about Ben — assistant"
         aria-hidden={!mobileChatOpen}
         inert={!mobileChatOpen ? true : undefined}
       >
         <div className={styles.mobileOverlayBar}>
-          <span className={styles.chatBarLabel}>Ask Ben</span>
+          <span className={styles.chatBarLabel}>Ask about Ben</span>
           <div className={styles.mobileOverlayBarRight}>
             <span className={styles.chatOnlineBadge}>
               <span className={`${styles.chatOnlineDot} cursor-blink`} aria-hidden />

@@ -191,7 +191,7 @@ export function HomeV4Blend({
   // Shared panel chrome — rendered in hero panel, docked panel, and mobile overlay
   const chatBarJSX = (
     <div className={styles.chatBar}>
-      <span className={styles.chatBarLabel}>Ask Ben</span>
+      <span className={styles.chatBarLabel}>Ask about Ben</span>
       <span className={styles.chatOnlineBadge}>
         <span className={`${styles.chatOnlineDot} cursor-blink`} aria-hidden />
         ONLINE
@@ -395,7 +395,7 @@ export function HomeV4Blend({
                   className={[styles.chatPanel, isDocked ? styles.chatPanelHidden : '']
                     .filter(Boolean)
                     .join(' ')}
-                  aria-label="Ask Ben — assistant"
+                  aria-label="Ask about Ben — assistant"
                   aria-hidden={isDocked}
                   inert={isDocked ? true : undefined}
                 >
@@ -489,7 +489,7 @@ export function HomeV4Blend({
           className={[styles.dockedPanel, isDocked ? '' : styles.dockedPanelHidden]
             .filter(Boolean)
             .join(' ')}
-          aria-label="Ask Ben — assistant"
+          aria-label="Ask about Ben — assistant"
           aria-hidden={!isDocked}
           inert={!isDocked ? true : undefined}
         >

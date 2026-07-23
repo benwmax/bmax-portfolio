@@ -192,7 +192,7 @@ export function CaseStudyPage({
     });
   }, [company, chatSuggestions, setPageContext]);
 
-  // Unlock the mobile "Ask Ben" FAB on landing here — mobile has no inline or
+  // Unlock the mobile "Ask about Ben" FAB on landing here — mobile has no inline or
   // docked chat on case study pages (the docked panel is display:none below
   // 1100px), so the FAB is the only chat entry point. Stays unlocked back on
   // Home via the shared session. Skipped when the chat is disabled entirely.
@@ -513,9 +513,9 @@ export function CaseStudyPage({
 
       {/* ——— DOCKED CHAT PANEL ——— */}
       {showChat && (
-        <aside className={styles.chatPanel} aria-label="Ask Ben assistant">
+        <aside className={styles.chatPanel} aria-label="Ask about Ben assistant">
           <div className={styles.chatHeader}>
-            <span className={styles.chatHeaderLabel}>Ask Ben</span>
+            <span className={styles.chatHeaderLabel}>Ask about Ben</span>
             <span className={styles.chatOnlineBadge}>
               <span className={`${styles.chatOnlineDot} cursor-blink`} aria-hidden="true" />
               ONLINE

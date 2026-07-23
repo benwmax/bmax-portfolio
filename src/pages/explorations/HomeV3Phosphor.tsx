@@ -169,7 +169,7 @@ export function HomeV3Phosphor({ onChatSubmit, initialMessages = [] }: HomeV3Pho
           <div className={styles.commandWrap}>
             <div className={styles.command}>
               <div className={styles.commandBar}>
-                <span className={styles.commandLabel}>Ask Ben — assistant</span>
+                <span className={styles.commandLabel}>Ask about Ben — assistant</span>
                 <span className={styles.commandBadge}>
                   <span className={`${styles.heroDot} cursor-blink`} aria-hidden />
                   ONLINE
