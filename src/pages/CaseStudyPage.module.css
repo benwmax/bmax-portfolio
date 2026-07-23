@@ -418,6 +418,14 @@
   }
 }
 
+/* Mobile chat overlay (MobileChatSurface) reads this module's .msgUser —
+   bumped one type-scale step for the smaller overlay viewport. */
+@media (max-width: 760px) {
+  .msgUser {
+    font-size: var(--text-lg);
+  }
+}
+
 /* ═══════════════════════════════════════════════════════════════════
    FUTURISTIC V2 — case study HUD refinements
    ═══════════════════════════════════════════════════════════════════ */

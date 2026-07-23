@@ -781,6 +781,12 @@
   .dockedPanel {
     display: none;
   }
+
+  /* MobileChatSurface reads this module's .msgUser too — bumped one
+     type-scale step for the smaller overlay viewport. */
+  .msgUser {
+    font-size: var(--text-lg);
+  }
 }
 
 /* ——— REDUCED MOTION ——— */
