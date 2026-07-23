@@ -396,7 +396,7 @@
 
 .msgUser {
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: var(--text-md);
   line-height: 1.65;
   color: var(--color-text-primary);
   margin: 0;
@@ -780,6 +780,12 @@
 
   .dockedPanel {
     display: none;
+  }
+
+  /* MobileChatSurface reads this module's .msgUser too — bumped one
+     type-scale step for the smaller overlay viewport. */
+  .msgUser {
+    font-size: var(--text-lg);
   }
 }
 
