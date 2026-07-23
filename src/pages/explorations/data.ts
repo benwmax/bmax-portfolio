@@ -100,6 +100,6 @@ export const TELEMETRY = [
 
 export const SOCIAL_LINKS = [
   { label: 'ben@benjaminwmaxwell.com', href: 'mailto:ben@benjaminwmaxwell.com' },
-  { label: 'LinkedIn', href: 'https://linkedin.com/in/benwmax' },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/benjaminwmaxwell/' },
   { label: 'GitHub', href: 'https://github.com/benwmax' },
 ] as const;

@@ -105,6 +105,14 @@ function HeroStat({ figure, label, start }: { figure: string; label: string; sta
   );
 }
 
+// The boot sequence should play once per visit, not on every return to the
+// homepage. This module-level flag is set the first time the boot completes and
+// read on mount so in-app navigation back to Home skips the loader and renders
+// instantly. It lives for the lifetime of the loaded app (the SPA session), so
+// a full browser refresh resets it and the boot plays again — a hard reload
+// counts as a fresh arrival. Intentionally not persisted to storage.
+let bootPlayed = false;
+
 export function HomeV4Blend({
   onChatSubmit,
   initialMessages = [],
@@ -128,7 +136,10 @@ export function HomeV4Blend({
   });
   const reduced = usePrefersReducedMotion();
   const isMobile = useIsMobileViewport();
-  const [booted, setBooted] = useState(skipBoot);
+  // Skip the boot overlay if Storybook forces it off, or if the boot already
+  // played earlier this session (returning to Home via in-app navigation). The
+  // typewriter/count-up intro still runs — only the loader is skipped.
+  const [booted, setBooted] = useState(skipBoot || bootPlayed);
   const [mobileChatOpen, setMobileChatOpen] = useState(false);
   const heroRef = useRef<HTMLElement | null>(null);
   const scanRef = useRef<HTMLDivElement | null>(null);
@@ -303,7 +314,14 @@ export function HomeV4Blend({
           className={[styles.boot, booted ? styles.bootHidden : ''].filter(Boolean).join(' ')}
           aria-hidden={booted}
         >
-          {!booted && <BootSequence onDone={() => setBooted(true)} />}
+          {!booted && (
+            <BootSequence
+              onDone={() => {
+                bootPlayed = true;
+                setBooted(true);
+              }}
+            />
+          )}
         </div>
       )}
 

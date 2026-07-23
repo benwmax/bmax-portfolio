@@ -88,13 +88,13 @@ export function Contact() {
             </div>
 
             <a
-              href="https://linkedin.com/in/benwmax"
+              href="https://www.linkedin.com/in/benjaminwmaxwell/"
               className={styles.cardAddress}
               target="_blank"
               rel="noopener noreferrer"
             >
               linkedin.com<span className={styles.addressSlash}>/</span>in
-              <span className={styles.addressSlash}>/</span>benwmax
+              <span className={styles.addressSlash}>/</span>benjaminwmaxwell
               <span className="sr-only"> (opens in new tab)</span>
             </a>
 
@@ -104,12 +104,12 @@ export function Contact() {
             </p>
 
             <div className={styles.cardActions}>
-              <Button variant="primary" href="https://linkedin.com/in/benwmax">
+              <Button variant="primary" href="https://www.linkedin.com/in/benjaminwmaxwell/">
                 OPEN PROFILE +<span className="sr-only"> (opens in new tab)</span>
               </Button>
               <Button
                 variant="secondary"
-                onClick={() => copyText('https://linkedin.com/in/benwmax', setUrlCopied)}
+                onClick={() => copyText('https://www.linkedin.com/in/benjaminwmaxwell/', setUrlCopied)}
               >
                 {urlCopied ? 'COPIED ✓' : 'COPY URL'}
               </Button>
@@ -140,7 +140,7 @@ export function Contact() {
       <footer className={styles.footer}>
         <div className={styles.footerFine}>
           <span>© 2026 Ben Maxwell · viewbens.work</span>
-          <span>ben@viewbens.work · linkedin/in/benwmax · ≤ 48h</span>
+          <span>ben@viewbens.work · linkedin/in/benjaminwmaxwell · ≤ 48h</span>
         </div>
       </footer>
     </div>

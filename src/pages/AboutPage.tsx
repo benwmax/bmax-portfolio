@@ -220,7 +220,7 @@ export function AboutPage() {
               ben@viewbens.work
             </a>
             <a
-              href="https://linkedin.com/in/benwmax"
+              href="https://www.linkedin.com/in/benjaminwmaxwell/"
               className={styles.footerLink}
               target="_blank"
               rel="noopener noreferrer"

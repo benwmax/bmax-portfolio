@@ -136,12 +136,12 @@ export function ResumePage() {
                 ben@viewbens.work
               </a>
               <a
-                href="https://linkedin.com/in/benwmax"
+                href="https://www.linkedin.com/in/benjaminwmaxwell/"
                 className={styles.contactItem}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                linkedin.com/in/benwmax
+                linkedin.com/in/benjaminwmaxwell
               </a>
               <a href="/" className={styles.contactItem}>
                 viewbens.work

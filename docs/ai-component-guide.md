@@ -808,7 +808,7 @@ Contact page — two channel cards (email + LinkedIn) with copy-to-clipboard act
 
 **Content:**
 - Email: ben@viewbens.work
-- LinkedIn: linkedin.com/in/benwmax
+- LinkedIn: linkedin.com/in/benjaminwmaxwell
 - Receipt strip: "REPLY WITHIN ≤ 48 hrs" · "TIMEZONE Dallas · UTC-5" · "STATUS Available"
 
 **Update content:** edit `Contact.tsx` directly. No props.
@@ -954,7 +954,7 @@ When a page has more than one `<nav>`, each must have a distinct `aria-label`:
 Any link with `target="_blank"` needs a screen-reader announcement. Add sr-only text inside the link:
 
 ```tsx
-<a href="https://linkedin.com/in/benwmax" target="_blank" rel="noopener noreferrer">
+<a href="https://www.linkedin.com/in/benjaminwmaxwell/" target="_blank" rel="noopener noreferrer">
   LinkedIn
   <span className="sr-only"> (opens in new tab)</span>
 </a>

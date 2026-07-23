@@ -89,4 +89,4 @@ If you're hiring for a Principal or Director role and want to understand how I w
 
 ---
 
-*Ben Maxwell · ben@viewbens.work · [linkedin.com/in/benwmax](https://linkedin.com/in/benwmax)*
+*Ben Maxwell · ben@viewbens.work · [linkedin.com/in/benjaminwmaxwell](https://www.linkedin.com/in/benjaminwmaxwell/)*
