@@ -5,7 +5,7 @@ import * as MobileChatSurfaceStories from './MobileChatSurface.stories';
 
 # MobileChatSurface
 
-The mobile-only "Ask Ben" entry point: a floating action button that opens a full-screen chat overlay. Shared by [`HomeV4Blend`](/docs/pages-homepage--docs) and [`CaseStudyPage`](/docs/pages-case-study--docs) so mobile chat behaves identically on both — desktop keeps its inline hero panel / docked rail instead. Everything here is gated to `<=760px` by `MobileChatSurface.module.css`; above that width the component renders nothing, which is correct, not broken.
+The mobile-only "Ask about Ben" entry point: a floating action button that opens a full-screen chat overlay. Shared by [`HomeV4Blend`](/docs/pages-homepage--docs) and [`CaseStudyPage`](/docs/pages-case-study--docs) so mobile chat behaves identically on both — desktop keeps its inline hero panel / docked rail instead. Everything here is gated to `<=760px` by `MobileChatSurface.module.css`; above that width the component renders nothing, which is correct, not broken.
 
 ## Why this exists
 
@@ -64,7 +64,7 @@ A controlled wrapper for manually exercising the open/close interaction and focu
 The shared mobile chat surface for Home and case study pages — never fork a second copy of this FAB/overlay pair into a page file. Two behaviors here are load-bearing and easy to regress: the FAB visibility formula, and the homepage's hand-off to this overlay on first submit (see above).
 
 **Content rules**
-- FAB label is fixed: "Ask Ben" with a `›` prompt glyph — do not reword it.
+- FAB label is fixed: "Ask about Ben" with a `›` prompt glyph — do not reword it.
 - The badge only appears once `messageCount > 0`; it mirrors the conversation's message count.
 
 **Avoid**

@@ -411,7 +411,7 @@ for the build checklist.
   daily cap for `api/contact.ts`, deliberately separate from chat's budget.
 - `src/components/ContactCard/` — the inline contact form rendered in the chat
   log, including the honeypot field and minimum-fill-time anti-bot signals.
-- `src/components/MobileChatSurface.tsx` — the mobile-only "Ask Ben" entry
+- `src/components/MobileChatSurface.tsx` — the mobile-only "Ask about Ben" entry
   point (floating action button + full-screen overlay), shared by the homepage
   and case study pages so the mobile chat behaves identically on both. See
   decisions.md (2026-07-19).
@@ -465,7 +465,7 @@ for the build checklist.
   soft formatting guidance). Any page that renders assistant messages must call
   `splitParagraphs()` on the text, not render it as one block — `HomeV4Blend.tsx` shipped
   without this for weeks before being caught 2026-07-19; see decisions.md 2026-07-19.
-- On mobile (<=760px) the chat is a floating "Ask Ben" button that opens a full-screen
+- On mobile (<=760px) the chat is a floating "Ask about Ben" button that opens a full-screen
   overlay, both in `src/components/MobileChatSurface.tsx` and shared by the homepage and
   case study pages. Two behaviors are load-bearing and easy to regress: (1) starting a chat
   from the homepage's inline container must OPEN the overlay (via `handleHeroSubmit` in

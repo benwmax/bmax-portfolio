@@ -29,7 +29,7 @@ export interface MobileChatSurfaceProps {
 }
 
 /**
- * The mobile-only "Ask Ben" entry point: a floating action button that opens a
+ * The mobile-only "Ask about Ben" entry point: a floating action button that opens a
  * full-screen chat overlay. Shared by the homepage and case study pages so the
  * mobile chat behaves identically on both. Desktop keeps its inline/docked
  * panels — everything here is suppressed above 760px by the stylesheet.
@@ -87,7 +87,7 @@ export function MobileChatSurface({
           <span className={styles.fabPrompt} aria-hidden>
             ›
           </span>
-          Ask Ben
+          Ask about Ben
           {messageCount > 0 && (
             <span className={styles.fabBadge} aria-hidden>
               {messageCount}
@@ -104,12 +104,12 @@ export function MobileChatSurface({
           .join(' ')}
         role="dialog"
         aria-modal="true"
-        aria-label="Ask Ben — assistant"
+        aria-label="Ask about Ben — assistant"
         aria-hidden={!open}
         inert={!open ? true : undefined}
       >
         <div className={styles.mobileOverlayBar}>
-          <span className={styles.chatBarLabel}>Ask Ben</span>
+          <span className={styles.chatBarLabel}>Ask about Ben</span>
           <div className={styles.mobileOverlayBarRight}>
             <span className={styles.chatOnlineBadge}>
               <span className={`${styles.chatOnlineDot} cursor-blink`} aria-hidden />

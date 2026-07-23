@@ -114,9 +114,9 @@ export function HomeV1Signal({ onChatSubmit, initialMessages = [] }: HomeV1Signa
             </div>
 
             {/* Chat panel */}
-            <aside className={styles.chatPanel} aria-label="Ask Ben — assistant">
+            <aside className={styles.chatPanel} aria-label="Ask about Ben — assistant">
               <div className={styles.chatBar}>
-                <span className={styles.chatBarLabel}>Ask Ben</span>
+                <span className={styles.chatBarLabel}>Ask about Ben</span>
                 <span className={styles.chatOnlineBadge}>
                   <span className={`${styles.chatOnlineDot} cursor-blink`} aria-hidden />
                   ONLINE

@@ -144,7 +144,7 @@ export interface UseChatSession {
   /** Call on mount to tell the assistant what page the visitor is on; pass `null` from pages with no case-study context of their own (e.g. Home) so it doesn't linger from whatever was viewed previously. */
   setPageContext: (context: PageContext | null) => void;
   /**
-   * Whether the mobile "Ask Ben" FAB entry point has been unlocked this
+   * Whether the mobile "Ask about Ben" FAB entry point has been unlocked this
    * session. Starts false so the FAB is hidden until the visitor either starts
    * a chat or lands on a case study page. Once true it stays true — the shared
    * session lives above the router (ChatProvider), so it persists across
