@@ -1,8 +1,17 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { ReactNode, RefObject } from 'react';
 import { ChatInput } from './ChatInput';
 import type { ChatWidgetStatus } from './ChatInput';
 import styles from './MobileChatSurface.module.css';
+
+// How close to the bottom (in px) still counts as "at the bottom" — small
+// scroll jitter or sub-pixel rounding shouldn't flip the scroll-to-bottom
+// button on and off.
+const SCROLL_BOTTOM_THRESHOLD_PX = 96;
+
+function isNearBottom(el: HTMLDivElement) {
+  return el.scrollHeight - el.scrollTop - el.clientHeight <= SCROLL_BOTTOM_THRESHOLD_PX;
+}
 
 export interface MobileChatSurfaceProps {
   /**
@@ -53,10 +62,56 @@ export function MobileChatSurface({
   const logRef = useRef<HTMLDivElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
 
-  // Keep the overlay log pinned to the newest message as the reply streams in.
+  // Whether the visitor is currently scrolled to (near) the bottom of the
+  // log. Read by the auto-scroll effect below so an in-progress reply
+  // doesn't yank someone back down mid-reread; written by the scroll
+  // listener further down, and reset whenever the overlay opens fresh.
+  const isNearBottomRef = useRef(true);
+  const prevOpenForScrollRef = useRef(open);
+  const [showScrollToBottom, setShowScrollToBottom] = useState(false);
+
+  // Keep the overlay log pinned to the newest message as the reply streams
+  // in — but only while the visitor hasn't scrolled up to reread earlier
+  // messages. Opening the overlay always jumps to the latest message and
+  // resets scroll tracking, regardless of where it was left last time.
   useEffect(() => {
-    if (open && logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight;
+    const el = logRef.current;
+    if (!open || !el) return;
+    const justOpened = !prevOpenForScrollRef.current;
+    if (justOpened) {
+      isNearBottomRef.current = true;
+      setShowScrollToBottom(false);
+    }
+    if (justOpened || isNearBottomRef.current) {
+      el.scrollTop = el.scrollHeight;
+    }
+    prevOpenForScrollRef.current = open;
   }, [messageCount, open]);
+
+  // Track whether the visitor has scrolled away from the bottom, to show/hide
+  // the scroll-to-bottom button and to gate the auto-scroll effect above.
+  // The log container is always mounted (see the overlay comment below), so
+  // this only needs to attach once.
+  useEffect(() => {
+    const el = logRef.current;
+    if (!el) return;
+    const handleScroll = () => {
+      const nearBottom = isNearBottom(el);
+      isNearBottomRef.current = nearBottom;
+      setShowScrollToBottom(!nearBottom);
+    };
+    el.addEventListener('scroll', handleScroll, { passive: true });
+    return () => el.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  function handleScrollToBottom() {
+    const el = logRef.current;
+    if (!el) return;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    el.scrollTo({ top: el.scrollHeight, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+    isNearBottomRef.current = true;
+    setShowScrollToBottom(false);
+  }
 
   // Move focus into the dialog when it opens, and return it to the FAB when
   // it closes (WCAG 2.4.3 focus order) — without this, opening the overlay
@@ -126,7 +181,19 @@ export function MobileChatSurface({
             </button>
           </div>
         </div>
-        {renderLog(logRef, styles.mobileOverlayLog)}
+        <div className={styles.mobileOverlayLogWrap}>
+          {renderLog(logRef, styles.mobileOverlayLog)}
+          {showScrollToBottom && (
+            <button
+              type="button"
+              className={styles.scrollToBottomBtn}
+              onClick={handleScrollToBottom}
+              aria-label="Scroll to latest message"
+            >
+              ↓
+            </button>
+          )}
+        </div>
         <div className={styles.chatInputWrap}>
           <ChatInput
             onSubmit={onSubmit}

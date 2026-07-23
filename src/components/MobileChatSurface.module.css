@@ -151,6 +151,17 @@
   outline-offset: 2px;
 }
 
+/* Positions the scroll-to-bottom button relative to the log rather than the
+   whole overlay, so it stays pinned just above the input bar regardless of
+   how tall the (multiline) input grows. */
+.mobileOverlayLogWrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
 .mobileOverlayLog {
   padding: 20px;
   display: flex;
@@ -160,6 +171,51 @@
   flex: 1;
   min-height: 0;
   padding-bottom: max(20px, env(safe-area-inset-bottom));
+}
+
+/* Appears once the visitor scrolls up from the bottom of the log; jumps
+   back to the newest message on click. See MobileChatSurface.tsx for the
+   scroll-position tracking that drives it. */
+.scrollToBottomBtn {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  border: none;
+  background: var(--color-green-accent);
+  color: var(--color-bg-page);
+  font-family: var(--font-mono-display);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: var(--shadow-fab);
+  z-index: 5;
+  transition:
+    background-color var(--duration-base) var(--ease-default),
+    box-shadow var(--duration-base) var(--ease-default),
+    transform var(--duration-base) var(--ease-default);
+}
+
+.scrollToBottomBtn:hover {
+  background: var(--color-green-bright);
+  box-shadow: var(--shadow-fab-hover);
+  transform: translateX(-50%) translateY(-1px);
+}
+
+.scrollToBottomBtn:active {
+  transform: translateX(-50%) translateY(0);
+  box-shadow: var(--shadow-fab-active);
+}
+
+.scrollToBottomBtn:focus-visible {
+  outline: 2px solid var(--color-green-bright);
+  outline-offset: 3px;
 }
 
 /* ——— CHROME — shared with the inline/docked panels; copied here so this
@@ -196,7 +252,8 @@
 
 /* ——— REDUCED MOTION ——— */
 @media (prefers-reduced-motion: reduce) {
-  .mobileOverlay {
+  .mobileOverlay,
+  .scrollToBottomBtn {
     transition: none;
   }
 }

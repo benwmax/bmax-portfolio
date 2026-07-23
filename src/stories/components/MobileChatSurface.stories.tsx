@@ -47,10 +47,11 @@ const meta = {
     },
     ai: {
       guidance:
-        'The shared mobile chat surface for Home and case study pages — never fork a second copy of this FAB/overlay pair into a page file. Two behaviors here are load-bearing and easy to regress (see decisions.md 2026-07-19): (1) FAB visibility must be driven by `fabRevealed || messages.length > 0`, not just message count alone — case study pages call revealFab() on mount so the entry point exists even before a conversation starts; (2) the homepage inline hero chat collapses to a dead, non-interactive surface once a conversation starts on mobile (it is built to slide into the desktop docked rail, which does not exist on mobile) — the first submit must hand off to this overlay via a wrapper like handleHeroSubmit, or the reply streams into a hidden panel.',
+        'The shared mobile chat surface for Home and case study pages — never fork a second copy of this FAB/overlay pair into a page file. Behaviors here are load-bearing and easy to regress (see decisions.md 2026-07-19): (1) FAB visibility must be driven by `fabRevealed || messages.length > 0`, not just message count alone — case study pages call revealFab() on mount so the entry point exists even before a conversation starts; (2) the homepage inline hero chat collapses to a dead, non-interactive surface once a conversation starts on mobile (it is built to slide into the desktop docked rail, which does not exist on mobile) — the first submit must hand off to this overlay via a wrapper like handleHeroSubmit, or the reply streams into a hidden panel; (3) auto-scroll-to-newest-message only fires while the visitor is near the bottom of the log (tracked via a scroll listener) — scrolling up to reread pauses it and surfaces a scroll-to-bottom button instead of yanking their position on the next reply.',
       contentRules: [
         'FAB label is fixed: "Ask about Ben" with a › prompt glyph — do not reword it.',
         'The badge only appears once messageCount > 0; it mirrors the conversation\'s message count, not unread count.',
+        'The scroll-to-bottom button only appears once the visitor has scrolled away from the bottom of the log — it is not a persistent affordance.',
       ],
       avoid: [
         "Don't render this component above the 760px breakpoint — it's CSS-gated to mobile and will render nothing (correctly) on a desktop viewport.",
