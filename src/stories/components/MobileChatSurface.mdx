@@ -43,10 +43,11 @@ A controlled wrapper for manually exercising the open/close interaction and focu
 
 <Canvas of={MobileChatSurfaceStories.Interactive} />
 
-## The two behaviors that are easy to regress
+## The behaviors that are easy to regress
 
 - **FAB visibility formula:** `fabRevealed || messages.length > 0` — not message count alone. `fabRevealed` is a session-only flag in the shared chat context that case study pages set on mount and that survives navigation back to Home. Drop the `fabRevealed` half and the FAB disappears on a fresh case-study visit until the visitor sends a message.
 - **Homepage submit must hand off to the overlay.** The homepage's inline hero chat calls a `handleHeroSubmit` wrapper that opens this overlay before submitting — a no-op on desktop (where the overlay stays `display:none` and the reply flows into the docked rail as before). Skip that hand-off and the first mobile reply streams into the collapsed, non-interactive hero panel again.
+- **Auto-scroll pauses while the visitor has scrolled up.** The log tracks whether the visitor is near the bottom (`isNearBottomRef`, updated by a scroll listener). New messages only force-scroll to the newest one while that's true; otherwise the scroll-to-bottom button appears instead of yanking their position around mid-reread. Opening the overlay always resets this and jumps to the bottom, regardless of where it was left last time it was open.
 
 ## Do's
 
