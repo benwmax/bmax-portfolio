@@ -30,7 +30,7 @@ const meta = {
       guidance:
         'The production homepage — Blend 04. This is the selected design from the explorations phase. Never build a homepage layout from scratch; use this component.',
       contentRules: [
-        'Work grid order is finalized: 01 Portfolio Rebuild, 02 Upfluent, 03 Sagent, 04 USAA, 05 Sabre.',
+        'Work grid order is finalized: 01 Portfolio Rebuild, 02 Upfluent, 03 USAA, 04 Sabre (Sagent is unlisted pending content).',
         'The status badge reads "Available for Design Leader roles" — no blinking dot.',
         'Suggestion chips should be conversation starters about specific work.',
       ],

@@ -43,8 +43,30 @@ export interface CaseMeta {
   accent?: boolean;
 }
 
+/** Sections a figure can be anchored to. Deliberately not every section —
+ *  Role and Outcomes are already visual (callout cards, stat grid), so a
+ *  screenshot there competes rather than supports. */
+export type FigureSection = 'problem' | 'context' | 'process' | 'decision' | 'hard';
+
+/**
+ * A captioned screenshot anchored to a section.
+ *
+ * The src/alt union mirrors ImageCaptionProps: alt is required whenever src is
+ * set, so a real screenshot can't silently ship as decorative (WCAG 1.1.1).
+ * Omitting both together renders the dot-grid placeholder — which is the point.
+ * A page can declare where its figures go, with real captions, before the
+ * screenshots exist, then gain them by adding two fields.
+ */
+export type CaseFigure = {
+  section: FigureSection;
+  /** Chrome tab label — e.g. "portfolio rebuild · storybook" */
+  tabLabel: string;
+  /** Caption text WITHOUT a "Fig. 0N — " prefix. Numbering is automatic. */
+  caption: string;
+} & ({ src: string; alt: string } | { src?: undefined; alt?: undefined });
+
 export interface CaseStudyContent {
-  /** "04" */
+  /** "03" — the displayed index chip, not a stable id */
   number: string;
   /** "2018–2020" */
   dateRange: string;
@@ -57,12 +79,52 @@ export interface CaseStudyContent {
   role: RoleRow[];
   userContext: { paragraphs: string[] };
   process: ProcessStep[];
+  /**
+   * `artifactLabel` is the older single-figure mechanism, kept because Upfluent,
+   * USAA, and Sabre use it. Prefer `figures` on new pages — and use one or the
+   * other per page, never both, since each numbers its figures from 01.
+   */
   keyDecision: { heading: string; paragraphs: string[]; artifactLabel?: string };
   whatWasHard: { paragraphs: string[] };
   outcomes: OutcomeStat[];
   whatIdDoDifferently: { paragraphs: string[] };
+  /** Captioned screenshots, anchored per section and numbered in array order. */
+  figures?: CaseFigure[];
   chatSuggestions?: string[];
   nextCase?: { title: string; href: string };
+}
+
+/**
+ * Renders the figures anchored to one section, numbered by their position in
+ * the page's whole `figures` array so captions read Fig. 01, 02, 03 down the
+ * page regardless of which section each belongs to.
+ */
+function SectionFigures({ figures, section }: { figures?: CaseFigure[]; section: FigureSection }) {
+  const all = figures ?? [];
+  const mine = all.filter((f) => f.section === section);
+  if (mine.length === 0) return null;
+
+  return (
+    <>
+      {mine.map((f) => {
+        const caption = `Fig. ${String(all.indexOf(f) + 1).padStart(2, '0')} — ${f.caption}`;
+        // Two explicit branches rather than spreading src/alt: ImageCaptionProps
+        // is a union, and only a direct `f.src !== undefined` check narrows
+        // `f.alt` from `string | undefined` to `string`.
+        return f.src !== undefined ? (
+          <ImageCaption
+            key={f.tabLabel}
+            tabLabel={f.tabLabel}
+            caption={caption}
+            src={f.src}
+            alt={f.alt}
+          />
+        ) : (
+          <ImageCaption key={f.tabLabel} tabLabel={f.tabLabel} caption={caption} />
+        );
+      })}
+    </>
+  );
 }
 
 export interface CaseStudyPageProps extends CaseStudyContent {
@@ -108,6 +170,7 @@ export function CaseStudyPage({
   whatWasHard,
   outcomes,
   whatIdDoDifferently,
+  figures,
   chatSuggestions = [],
   nextCase,
   layout = 'sidebar',
@@ -301,240 +364,257 @@ export function CaseStudyPage({
         aria-hidden={mobileChatOpen ? true : undefined}
         inert={mobileChatOpen ? true : undefined}
       >
-      <a href="#main-content" className="skip-link">
-        Skip to main content
-      </a>
-      {/* ——— NAV ——— */}
-      <NavBar activePath="/work" />
+        <a href="#main-content" className="skip-link">
+          Skip to main content
+        </a>
+        {/* ——— NAV ——— */}
+        <NavBar activePath="/work" />
 
-      {/* ——— SCROLL PROGRESS ——— */}
-      <div className={styles.progressTrack} aria-hidden="true">
-        <div className={styles.progressBar} ref={progressBarRef} />
-      </div>
+        {/* ——— SCROLL PROGRESS ——— */}
+        <div className={styles.progressTrack} aria-hidden="true">
+          <div className={styles.progressBar} ref={progressBarRef} />
+        </div>
 
-      {/* ——— PAGE BODY ——— */}
-      <div
-        className={[styles.pageBody, showChat ? styles.pageBodyWithChat : '']
-          .filter(Boolean)
-          .join(' ')}
-      >
-        <div className={styles.layoutInner}>
-          {/* ——— SIDEBAR ——— */}
-          {layout === 'sidebar' && (
-            <aside className={styles.sidebar} aria-label="Contents">
-              <div className={styles.sidebarLabel}>Contents</div>
-              <nav aria-label="Case study contents">
-                {NAV_SECTIONS.map(({ id, label, num }) => (
-                  <a
-                    key={id}
-                    href={`#sec-${id}`}
-                    className={[
-                      styles.sidebarLink,
-                      activeSection === id ? styles.sidebarLinkActive : '',
-                    ]
-                      .filter(Boolean)
-                      .join(' ')}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      scrollToSection(id);
-                    }}
-                    aria-current={activeSection === id ? 'location' : undefined}
-                  >
-                    <span
+        {/* ——— PAGE BODY ——— */}
+        <div
+          className={[styles.pageBody, showChat ? styles.pageBodyWithChat : '']
+            .filter(Boolean)
+            .join(' ')}
+        >
+          <div className={styles.layoutInner}>
+            {/* ——— SIDEBAR ——— */}
+            {layout === 'sidebar' && (
+              <aside className={styles.sidebar} aria-label="Contents">
+                <div className={styles.sidebarLabel}>Contents</div>
+                <nav aria-label="Case study contents">
+                  {NAV_SECTIONS.map(({ id, label, num }) => (
+                    <a
+                      key={id}
+                      href={`#sec-${id}`}
                       className={[
-                        styles.sidebarNum,
-                        activeSection === id ? styles.sidebarNumActive : '',
+                        styles.sidebarLink,
+                        activeSection === id ? styles.sidebarLinkActive : '',
                       ]
                         .filter(Boolean)
                         .join(' ')}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        scrollToSection(id);
+                      }}
+                      aria-current={activeSection === id ? 'location' : undefined}
                     >
-                      {num}
-                    </span>
-                    <span>{label}</span>
-                  </a>
-                ))}
-              </nav>
-            </aside>
-          )}
+                      <span
+                        className={[
+                          styles.sidebarNum,
+                          activeSection === id ? styles.sidebarNumActive : '',
+                        ]
+                          .filter(Boolean)
+                          .join(' ')}
+                      >
+                        {num}
+                      </span>
+                      <span>{label}</span>
+                    </a>
+                  ))}
+                </nav>
+              </aside>
+            )}
 
-          {/* ——— MAIN ——— */}
-          <main className={styles.main} id="main-content">
-            {/* HERO */}
-            <CaseStudyHero
-              number={number}
-              dateRange={dateRange}
-              title={heroTitle}
-              subtitle={heroSubtitle}
-              meta={meta}
-            />
+            {/* ——— MAIN ——— */}
+            <main className={styles.main} id="main-content">
+              {/* HERO */}
+              <CaseStudyHero
+                number={number}
+                dateRange={dateRange}
+                title={heroTitle}
+                subtitle={heroSubtitle}
+                meta={meta}
+              />
 
-            {/* 01 · PROBLEM */}
-            <section id="sec-problem" className={styles.section} aria-labelledby="heading-problem">
-              <span className={styles.sectionKicker}>01 · Problem</span>
-              <h2 id="heading-problem" className={styles.sectionHeading}>
-                {problem.heading}
-              </h2>
-              <div className={styles.prose}>
-                {problem.paragraphs.map((p, i) => (
-                  <p key={i}>{p}</p>
-                ))}
-              </div>
-            </section>
+              {/* 01 · PROBLEM */}
+              <section
+                id="sec-problem"
+                className={styles.section}
+                aria-labelledby="heading-problem"
+              >
+                <span className={styles.sectionKicker}>01 · Problem</span>
+                <h2 id="heading-problem" className={styles.sectionHeading}>
+                  {problem.heading}
+                </h2>
+                <div className={styles.prose}>
+                  {problem.paragraphs.map((p, i) => (
+                    <p key={i}>{p}</p>
+                  ))}
+                </div>
+                <SectionFigures figures={figures} section="problem" />
+              </section>
 
-            {/* 02 · ROLE */}
-            <section id="sec-role" className={styles.section} aria-labelledby="heading-role">
-              <span className={styles.sectionKicker}>02 · Role</span>
-              <h2 id="heading-role" className="sr-only">
-                Role
-              </h2>
-              <RoleCallouts>
-                {role.map((row, i) => (
-                  <RoleCallout key={i} label={row.label} content={row.content} />
-                ))}
-              </RoleCallouts>
-            </section>
+              {/* 02 · ROLE */}
+              <section id="sec-role" className={styles.section} aria-labelledby="heading-role">
+                <span className={styles.sectionKicker}>02 · Role</span>
+                <h2 id="heading-role" className="sr-only">
+                  Role
+                </h2>
+                <RoleCallouts>
+                  {role.map((row, i) => (
+                    <RoleCallout key={i} label={row.label} content={row.content} />
+                  ))}
+                </RoleCallouts>
+              </section>
 
-            {/* 03 · USER CONTEXT */}
-            <section id="sec-context" className={styles.section} aria-labelledby="heading-context">
-              <span className={styles.sectionKicker}>03 · User context</span>
-              <h2 id="heading-context" className="sr-only">
-                User context
-              </h2>
-              <div className={styles.prose}>
-                {userContext.paragraphs.map((p, i) => (
-                  <p key={i}>{p}</p>
-                ))}
-              </div>
-            </section>
+              {/* 03 · USER CONTEXT */}
+              <section
+                id="sec-context"
+                className={styles.section}
+                aria-labelledby="heading-context"
+              >
+                <span className={styles.sectionKicker}>03 · User context</span>
+                <h2 id="heading-context" className="sr-only">
+                  User context
+                </h2>
+                <div className={styles.prose}>
+                  {userContext.paragraphs.map((p, i) => (
+                    <p key={i}>{p}</p>
+                  ))}
+                </div>
+                <SectionFigures figures={figures} section="context" />
+              </section>
 
-            {/* 04 · PROCESS */}
-            <section id="sec-process" className={styles.section} aria-labelledby="heading-process">
-              <span className={styles.sectionKicker}>04 · Process</span>
-              <h2 id="heading-process" className="sr-only">
-                Process
-              </h2>
-              <ProcessSteps>
-                {process.map((step, i) => (
-                  <ProcessStep
-                    key={i}
-                    num={i + 1}
-                    phase={step.phase}
-                    title={step.title}
-                    body={step.body}
-                    artifact={step.artifact}
+              {/* 04 · PROCESS */}
+              <section
+                id="sec-process"
+                className={styles.section}
+                aria-labelledby="heading-process"
+              >
+                <span className={styles.sectionKicker}>04 · Process</span>
+                <h2 id="heading-process" className="sr-only">
+                  Process
+                </h2>
+                <ProcessSteps>
+                  {process.map((step, i) => (
+                    <ProcessStep
+                      key={i}
+                      num={i + 1}
+                      phase={step.phase}
+                      title={step.title}
+                      body={step.body}
+                      artifact={step.artifact}
+                    />
+                  ))}
+                </ProcessSteps>
+                <SectionFigures figures={figures} section="process" />
+              </section>
+
+              {/* 05 · KEY DECISION */}
+              <section
+                id="sec-decision"
+                className={styles.section}
+                aria-labelledby="heading-decision"
+              >
+                <span className={styles.sectionKicker}>05 · Key decision</span>
+                <h2 id="heading-decision" className={styles.sectionHeading}>
+                  {keyDecision.heading}
+                </h2>
+                <div className={styles.prose}>
+                  {keyDecision.paragraphs.map((p, i) => (
+                    <p key={i}>{p}</p>
+                  ))}
+                </div>
+                {keyDecision.artifactLabel && (
+                  <ImageCaption
+                    tabLabel={`${company.toLowerCase()} · ${keyDecision.artifactLabel}`}
+                    caption={`Fig. 01 — ${keyDecision.artifactLabel}.`}
                   />
-                ))}
-              </ProcessSteps>
-            </section>
+                )}
+                <SectionFigures figures={figures} section="decision" />
+              </section>
 
-            {/* 05 · KEY DECISION */}
-            <section
-              id="sec-decision"
-              className={styles.section}
-              aria-labelledby="heading-decision"
-            >
-              <span className={styles.sectionKicker}>05 · Key decision</span>
-              <h2 id="heading-decision" className={styles.sectionHeading}>
-                {keyDecision.heading}
-              </h2>
-              <div className={styles.prose}>
-                {keyDecision.paragraphs.map((p, i) => (
-                  <p key={i}>{p}</p>
-                ))}
+              {/* 06 · WHAT WAS HARD */}
+              <section id="sec-hard" className={styles.section} aria-labelledby="heading-hard">
+                <span className={styles.sectionKicker}>06 · What was hard</span>
+                <h2 id="heading-hard" className="sr-only">
+                  What was hard
+                </h2>
+                <div className={styles.prose}>
+                  {whatWasHard.paragraphs.map((p, i) => (
+                    <p key={i}>{p}</p>
+                  ))}
+                </div>
+                <SectionFigures figures={figures} section="hard" />
+              </section>
+
+              {/* 07 · OUTCOMES */}
+              <section
+                id="sec-outcomes"
+                className={styles.section}
+                aria-labelledby="heading-outcomes"
+              >
+                <span className={styles.sectionKicker}>07 · Outcomes</span>
+                <h2 id="heading-outcomes" className="sr-only">
+                  Outcomes
+                </h2>
+                <StatGrid>
+                  {outcomes.map((o, i) => (
+                    <StatBlock key={i} value={o.value} label={o.label} body={o.body} />
+                  ))}
+                </StatGrid>
+              </section>
+
+              {/* 08 · WHAT I'D DO DIFFERENTLY */}
+              <section
+                id="sec-reflection"
+                className={styles.section}
+                aria-labelledby="heading-reflection"
+              >
+                <span className={styles.sectionKicker}>08 · What I'd do differently</span>
+                <h2 id="heading-reflection" className="sr-only">
+                  What I'd do differently
+                </h2>
+                <div className={styles.prose}>
+                  {whatIdDoDifferently.paragraphs.map((p, i) => (
+                    <p key={i}>{p}</p>
+                  ))}
+                </div>
+              </section>
+
+              {/* END TICK */}
+              <div className={styles.endTick}>
+                <span className={styles.endTickLabel}>End of case study</span>
+                <span className={styles.endTickLine} aria-hidden="true" />
+                {nextCase && (
+                  <Link to={nextCase.href} className={styles.endTickNext}>
+                    Next: {nextCase.title} →
+                  </Link>
+                )}
               </div>
-              {keyDecision.artifactLabel && (
-                <ImageCaption
-                  tabLabel={`${company.toLowerCase()} · ${keyDecision.artifactLabel}`}
-                  caption={`Fig. 01 — ${keyDecision.artifactLabel}.`}
-                />
-              )}
-            </section>
-
-            {/* 06 · WHAT WAS HARD */}
-            <section id="sec-hard" className={styles.section} aria-labelledby="heading-hard">
-              <span className={styles.sectionKicker}>06 · What was hard</span>
-              <h2 id="heading-hard" className="sr-only">
-                What was hard
-              </h2>
-              <div className={styles.prose}>
-                {whatWasHard.paragraphs.map((p, i) => (
-                  <p key={i}>{p}</p>
-                ))}
-              </div>
-            </section>
-
-            {/* 07 · OUTCOMES */}
-            <section
-              id="sec-outcomes"
-              className={styles.section}
-              aria-labelledby="heading-outcomes"
-            >
-              <span className={styles.sectionKicker}>07 · Outcomes</span>
-              <h2 id="heading-outcomes" className="sr-only">
-                Outcomes
-              </h2>
-              <StatGrid>
-                {outcomes.map((o, i) => (
-                  <StatBlock key={i} value={o.value} label={o.label} body={o.body} />
-                ))}
-              </StatGrid>
-            </section>
-
-            {/* 08 · WHAT I'D DO DIFFERENTLY */}
-            <section
-              id="sec-reflection"
-              className={styles.section}
-              aria-labelledby="heading-reflection"
-            >
-              <span className={styles.sectionKicker}>08 · What I'd do differently</span>
-              <h2 id="heading-reflection" className="sr-only">
-                What I'd do differently
-              </h2>
-              <div className={styles.prose}>
-                {whatIdDoDifferently.paragraphs.map((p, i) => (
-                  <p key={i}>{p}</p>
-                ))}
-              </div>
-            </section>
-
-            {/* END TICK */}
-            <div className={styles.endTick}>
-              <span className={styles.endTickLabel}>End of case study</span>
-              <span className={styles.endTickLine} aria-hidden="true" />
-              {nextCase && (
-                <Link to={nextCase.href} className={styles.endTickNext}>
-                  Next: {nextCase.title} →
-                </Link>
-              )}
-            </div>
-          </main>
+            </main>
+          </div>
         </div>
-      </div>
 
-      {/* ——— DOCKED CHAT PANEL ——— */}
-      {showChat && (
-        <aside className={styles.chatPanel} aria-label="Ask about Ben assistant">
-          <div className={styles.chatHeader}>
-            <span className={styles.chatHeaderLabel}>Ask about Ben</span>
-            <span className={styles.chatOnlineBadge}>
-              <span className={`${styles.chatOnlineDot} cursor-blink`} aria-hidden="true" />
-              ONLINE
-            </span>
-          </div>
+        {/* ——— DOCKED CHAT PANEL ——— */}
+        {showChat && (
+          <aside className={styles.chatPanel} aria-label="Ask about Ben assistant">
+            <div className={styles.chatHeader}>
+              <span className={styles.chatHeaderLabel}>Ask about Ben</span>
+              <span className={styles.chatOnlineBadge}>
+                <span className={`${styles.chatOnlineDot} cursor-blink`} aria-hidden="true" />
+                ONLINE
+              </span>
+            </div>
 
-          <div className={styles.chatContext} aria-label={`Context: ${company}`}>
-            <span>Context</span>
-            <span className={styles.chatContextLine} aria-hidden="true" />
-            <span className={styles.chatContextValue}>{company}</span>
-          </div>
+            <div className={styles.chatContext} aria-label={`Context: ${company}`}>
+              <span>Context</span>
+              <span className={styles.chatContextLine} aria-hidden="true" />
+              <span className={styles.chatContextValue}>{company}</span>
+            </div>
 
-          {renderChatLog(chatLogRef, styles.chatLog)}
+            {renderChatLog(chatLogRef, styles.chatLog)}
 
-          <div className={styles.chatInputWrap}>
-            <ChatInput onSubmit={handleSubmit} status={chatStatus} showStatus={false} />
-          </div>
-        </aside>
-      )}
+            <div className={styles.chatInputWrap}>
+              <ChatInput onSubmit={handleSubmit} status={chatStatus} showStatus={false} />
+            </div>
+          </aside>
+        )}
       </div>
       {/* end inert-controlled wrapper */}
 

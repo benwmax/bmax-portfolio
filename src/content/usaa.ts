@@ -1,7 +1,7 @@
 import type { CaseStudyContent } from '../pages/CaseStudyPage';
 
 export const usaaData: CaseStudyContent = {
-  number: '04',
+  number: '03',
   dateRange: '2018–2020',
   company: 'USAA',
   heroTitle: 'Modernizing P&C insurance without losing the members who trusted it.',

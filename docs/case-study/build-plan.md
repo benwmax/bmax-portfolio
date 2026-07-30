@@ -19,11 +19,19 @@ lead case study — documenting it as it happens is as important as building it.
 
 ## Case Study Order
 
+**Strategic order** (unchanged):
+
 1. Portfolio Rebuild with Claude ← lead case study
 2. Upfluent
 3. Sagent
 4. USAA
 5. Sabre
+
+**Currently displayed** (2026-07-29): `01` Portfolio Rebuild, `02` Upfluent, `03` USAA,
+`04` Sabre. Sagent is unlisted — its route is removed and `/work/sagent` 404s — because its
+content is still a placeholder pending 1C. It reclaims `03` when it ships, pushing USAA and
+Sabre back down. The compaction is a display decision, not a reordering one.
+See decisions.md 2026-07-29.
 
 *Do not reorder without a documented reason in decisions.md.*
 
@@ -34,13 +42,13 @@ lead case study — documenting it as it happens is as important as building it.
 | Phase | Name | Status | Blocked By |
 |-------|------|--------|------------|
 | 0 | Setup | Complete (2026-06-20) | — |
-| 1 | Strategy and Content | In progress | — |
+| 1 | Strategy and Content | In progress — 1A/1B/1D complete; 1C (Sagent) not started, and Sagent is now unlisted from the site until it is | — |
 | 2 | Visual Identity | Complete (2026-06-17) | — |
 | 3 | Storybook Foundation | Complete (2026-07-16) | — |
 | 4 | Site Assembly | In progress — 4A/4B/4C/4D/4F complete; 4E blocked on OG images (Ben) | — |
 | 5 | QA and Pre-Launch | In progress — Lighthouse/cross-browser/a11y/links/console/typography/dark-mode all complete; real-device testing and image checks (blocked on Phase 1E) remain | — |
 | 6 | Launch | Not started | Phase 5 |
-| 7 | Meta Case Study | Not started | Phase 6 |
+| 7 | Meta Case Study | In progress — case study written and published 2026-07-29, ahead of Phase 6; screenshots, before/after, and a Lighthouse re-check remain | — |
 
 ---
 
@@ -99,6 +107,10 @@ Each case study follows this structure:
       (2026-06-09)
 
 ### 1C. Sagent — build from scratch (parallel)
+*Blocking the case study's return to the site. As of 2026-07-29 Sagent is unlisted (route
+removed, card removed, sitemap entry removed) rather than shipping holding copy —
+`src/content/sagent.ts` is intact, so re-listing is one import + one route + one card once
+this section is done. See decisions.md 2026-07-29.*
 - [ ] Brain dump: problem, what you owned, what changed, what was hard
 - [ ] Identify what artifacts exist (screens, photos, diagrams, data)
 - [ ] Write problem statement
@@ -108,9 +120,12 @@ Each case study follows this structure:
 - [ ] Log artifact gaps — what needs to be created or recreated
 
 ### 1D. Meta case study outline
-*Outline only — full draft comes in Phase 7 after the site exists*
-- [ ] Write section outline
-- [ ] Identify screenshots and artifacts needed from the build process
+*Superseded 2026-07-29 — the full case study was written ahead of Phase 7 rather than
+outlined first, since the material in process-journal.md and key-insights.md was already
+richer than an outline. See Phase 7 for what remains.*
+- [x] Write section outline (2026-07-29 — went straight to full draft)
+- [x] Identify screenshots and artifacts needed from the build process (2026-07-29 — three
+      captioned figure slots declared in `portfolio-rebuild.ts`, awaiting Ben's screenshots)
 - [ ] Set up screenshot habit during Phases 3-5
 
 ### 1E. Image audit — all case studies
@@ -257,9 +272,9 @@ Each documented as a full-page Storybook story.
 - [x] 404 (2026-06-22)
 
 ### 4B. Case study content integration
-- [x] Portfolio Rebuild (placeholder — full content in Phase 7) (2026-06-22)
+- [x] Portfolio Rebuild — full content written (2026-07-29, ahead of Phase 7)
 - [x] Upfluent (2026-06-22)
-- [x] Sagent (placeholder — full draft blocked on Phase 1C brain dump) (2026-06-22)
+- [x] ~~Sagent~~ — unlisted 2026-07-29 pending 1C; content file intact, route removed
 - [x] USAA (2026-06-22)
 - [x] Sabre (2026-06-22)
 
@@ -347,9 +362,11 @@ independently; only the widget's visual styling depends on those.*
       method (recompute the hash from `dist/index.html` and diff against `vercel.json`).
 - [ ] Retune GLOBAL_DAILY_MESSAGE_CAP once the real Anthropic Workspace spend cap is known
 - [ ] Tune rate limits / caps against real traffic
-- [ ] Update system-prompt.ts as Upfluent, USAA, and Sagent case studies
-      are finalized (ongoing — revisit each time a case study moves to
-      "published")
+- [ ] Update system-prompt.ts as case studies are finalized (ongoing — revisit each time a
+      case study moves to "published"). Done for Upfluent, USAA, Sabre, and Portfolio
+      Rebuild; Sagent's block was replaced with an "OTHER EXPERIENCE (no case study page —
+      do not offer one)" section on 2026-07-29 so the assistant can answer about the role
+      without sending a visitor to a dead URL. Restore its case study block when it ships.
 - [x] In-chat "get in touch" contact flow (2026-07-20) — `api/contact.ts` (new Edge
       Function, mirrors chat.ts's origin/rate-limit/fail-closed pattern), `api/lib/
       contact-limit.ts` (own per-IP + global-daily Redis budget), `api/lib/cors.ts`
@@ -458,18 +475,24 @@ independently; only the widget's visual styling depends on those.*
 ## Phase 7 — Meta Case Study
 *Written after launch — the site is the proof*
 
-- [ ] Write full case study draft using process-journal and key-insights
-      as source material
+- [x] Write full case study draft using process-journal and key-insights
+      as source material (2026-07-29 — pulled forward from post-launch)
 - [ ] Integrate build process screenshots captured during Phases 3-5
-- [ ] Write "What Claude couldn't do" section explicitly
+      *(unblocked: three captioned figure slots are live in `portfolio-rebuild.ts`; adding a
+      screenshot is dropping a file in `public/case/portfolio/` and adding `src` + `alt`)*
+- [x] Write "What Claude couldn't do" section explicitly (2026-07-29 — lands in
+      `whatWasHard`, blending three angles per Ben's direction)
   - Positioning statement
   - Visual identity direction
   - Which work to lead with
   - What to leave out of each case study
   - The decision to use this project as lead case study
-- [ ] Write "What failed or was redirected" section
+- [x] Write "What failed or was redirected" section (2026-07-29 — the two-pass audit and the
+      Version A/B override)
 - [ ] Before/after comparison (existing site vs. rebuilt site)
-- [ ] Publish and replace Phase 4 placeholder
+- [x] Publish and replace Phase 4 placeholder (2026-07-29)
+- [ ] Re-run Lighthouse to confirm the `96–100` figure the page now claims — the recorded
+      numbers predate the contact flow and mobile chat overlay
 - [ ] Write final process-journal.md entry
 
 ---
@@ -479,8 +502,9 @@ independently; only the widget's visual styling depends on those.*
 **Visual style references** — resolved (Phase 2 complete, 2026-06-17). No longer blocking.
 
 **Sagent content** — your strongest Director-level evidence. Starts from
-zero. Must run in parallel with other Phase 1 work or it becomes the
-last thing written and the first thing that gets rushed. Still open.
+zero. Still open, and now the only case study not on the site: as of 2026-07-29 it's
+unlisted rather than shipping holding copy, so the cost of it staying unwritten is a missing
+case study rather than a visibly broken one. Re-listing is trivial once 1C is done.
 
 **Remaining Phase 3 blocker before Phase 4 can start:**
 - Storybook deploy (3G) — all Layers and tooling complete; deploy is the last gate

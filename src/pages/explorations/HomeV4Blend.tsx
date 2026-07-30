@@ -445,7 +445,11 @@ export function HomeV4Blend({
               <div className={styles.workHead}>
                 <div>
                   <div className={styles.workKicker}>Selected work · 2014–2026</div>
-                  <h2 className={styles.workTitle}>Four tools, four regulated industries</h2>
+                  {/* Deliberately uncounted. This heading previously read "Four tools,
+                      four regulated industries" — a countable claim that was wrong above
+                      five cards and wrong differently above four. Echoing the positioning
+                      statement instead means it can't go stale as the grid changes. */}
+                  <h2 className={styles.workTitle}>Expert tools, high-stakes industries</h2>
                 </div>
               </div>
 

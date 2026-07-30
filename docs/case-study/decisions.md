@@ -982,3 +982,95 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
   `src/components/ChatInput/ChatInput.tsx`, `src/components/ChatInput/ChatInput.module.css`,
   `src/components/ThemeToggle/ThemeToggle.tsx`, `src/tokens/tokens.css`,
   `docs/ai-component-guide.md`, `src/stories/components/ThemeToggle.mdx`.
+
+## 2026-07-29 — Unlist Sagent; write the Portfolio Rebuild case study ahead of Phase 7
+
+- Decision: Three linked calls.
+  1. **Sagent comes off the site entirely** until its content exists. The route is removed
+     from `App.tsx`, the card from `explorations/data.ts`, the entry from `sitemap.xml`, and
+     Upfluent's `nextCase` now skips to USAA. `/work/sagent` falls through to the 404.
+     `src/content/sagent.ts` is left untouched.
+  2. **The Portfolio Rebuild case study (01) is written now**, ahead of its Phase 7 slot,
+     from the material already in `docs/case-study/`.
+  3. **Displayed numbering compacts to 01–04** (USAA 04→03, Sabre 05→04).
+- Reasoning:
+  - Both 01 and 03 were shipping the literal string "Case study in progress." on a site that
+    is otherwise launch-ready at Lighthouse 96–100. On a portfolio whose whole argument is
+    craft and judgment, holding copy is the most expensive thing on the page. The two get
+    opposite treatments because the source material is opposite: Sagent has ~15 scattered
+    facts and no brain dump, so it can't be written honestly yet; Portfolio Rebuild has more
+    source material than any other case study (984-line decisions.md, 829-line
+    process-journal.md, key-insights.md) and is the lead case study.
+  - Unlisted-but-reachable was rejected: a placeholder page findable by URL is the exact
+    failure mode being removed. Nothing pre-launch links to it, so the 404 costs nothing.
+  - On numbering: Ben chose to compact rather than leave a 01, 02, 04, 05 gap, and to resync
+    every doc that states the order. **This is not a reordering decision.** Sagent remains
+    third in the strategic order for the reason given in CLAUDE.md (strongest Director-level
+    evidence) and reclaims 03 when it ships, pushing USAA and Sabre back down. Worded that
+    way in every doc so a future session doesn't read it as a demotion.
+- Content notes: The "What was hard" section blends three angles at Ben's direction — the AI
+  as a confident bad editor (it missed the NDA question, misjudged which case study showed
+  craft, offered boilerplate as strategy), the Version A/B draft override, and the recursive
+  credibility problem (the page is hosted on the thing it describes). All three are about
+  having to stay discerning while using AI, which is the trust signal the section exists for.
+  Outcomes deliberately say "launch-ready", not "Live — viewbens.work": the domain still
+  serves the old site, and claiming otherwise on the one case study about judgment would be
+  self-refuting.
+- Also shipped: a `figures` array on `CaseStudyContent` (see the 2026-07-29 entry below).
+- Open question: the `96–100` Lighthouse figure the page now claims is from the 2026-07-16
+  measurement, taken before the contact flow and mobile chat overlay shipped. Re-run
+  Lighthouse before launch; if it drifted, change the copy, not the number.
+
+## 2026-07-29 — Real image support for case studies (`figures`)
+
+- Decision: Added an optional `figures: CaseFigure[]` to `CaseStudyContent`, anchoring
+  captioned screenshots to a section (`problem | context | process | decision | hard`) and
+  numbering them automatically in array order. `keyDecision.artifactLabel` is kept working
+  for Upfluent, USAA, and Sabre, but `figures` is the mechanism for anything new; a page uses
+  one or the other, never both, since each numbers from 01.
+- Reasoning: `ImageCaption` has always been able to render a real `<img>` — `CaseStudyPage`
+  simply never passed `src`, so **every case study on the site was showing a dot-grid
+  placeholder**, and there was exactly one figure slot per page with a hardcoded "Fig. 01"
+  caption. Ben is adding screenshots next, so the wiring had to exist first. Omitting
+  `src`/`alt` still renders the placeholder, which means a page can ship with final captions
+  and positions and gain real images later by adding two fields — no component or page edits.
+- `CaseFigure` mirrors `ImageCaptionProps`' union so `alt` is required whenever `src` is set;
+  a real screenshot can't silently ship as decorative (WCAG 1.1.1). Role and Outcomes
+  deliberately can't hold a figure — they're already visual, so an image competes there.
+- Verified in a real browser, not by inspection: pointed a figure at a probe PNG in
+  `public/case/portfolio/`, confirmed a real `<img>` rendered with its `alt` intact while the
+  sibling figures stayed placeholders and captions stayed sequential, then reverted the probe.
+- Alternatives considered: extending `artifactLabel` to take a `src` (rejected — still one
+  figure per page, still locked to the Key Decision section).
+
+## 2026-07-29 — Collapse three duplicated case study arrays into one
+
+- Decision: `HomePage.tsx`, `CaseStudyPage.stories.tsx`, and `CaseStudyCard.stories.tsx` now
+  import real data (`CASE_STUDIES`, `usaaData`, `portfolioRebuildData`) instead of carrying
+  their own inline copies. Removed roughly 200 lines of duplicated content.
+- Reasoning: This duplication has already caused a real bug — Sabre went missing from the
+  homepage work grid in two places while being fully built (process-journal.md 2026-07-18).
+  Hiding Sagent meant editing the same list in four places, which surfaced how much the
+  copies had already drifted: `CaseStudyCard.stories.tsx` had Sabre as "Lead UX Designer"
+  (production says "UX Designer") with year `2014–17` (production says `2015–18`), and the
+  lead case study as year `2025–`. Storybook is deployed publicly as a portfolio artifact, so
+  it showing different copy than the site is a visible defect, not just tech debt.
+- Also fixed: the Portfolio Rebuild card's `tag` was `'Meta'`, which is not one of the five
+  canonical industry labels CLAUDE.md rule 4 defines. Now `'AI Collaboration'` — the
+  canonical label that exists for exactly this card.
+- The five canonical industry labels stay five. `Mortgage` is simply unused on the grid while
+  Sagent is unlisted; shrinking the set for a temporary state would be real drift.
+- Open question: **Sabre's date range disagrees across three files** — `2015–18` in
+  `explorations/data.ts`, `2014–18` on the Resume page, `2014–17` in a Storybook story. Not
+  caused by this pass and not guessed at; needs one answer from Ben.
+
+## 2026-07-29 — Drop the count from the work grid heading
+
+- Decision: "Four tools, four regulated industries" → "Expert tools, high-stakes industries"
+  on the production homepage (`HomeV4Blend.tsx`).
+- Reasoning: It was a countable claim that didn't count. Above five cards it was wrong; above
+  four it's wrong differently (three regulated industries plus one meta project — Portfolio
+  Rebuild isn't an industry). Echoing the positioning statement instead means it can't go
+  stale the next time the grid changes, which has now happened twice. On a portfolio arguing
+  that Ben catches this class of detail, a heading that fails its own arithmetic is the worst
+  place to leave one.

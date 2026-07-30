@@ -38,6 +38,10 @@ const MAX_REQUEST_BYTES = 8 * 1024;
 // affects answer quality, not security. Deliberately not string-interpolated
 // from arbitrary client input into the system prompt — see the allowlist
 // check below.
+//
+// 'Sagent' is retained deliberately even though its page is currently unrouted
+// (see decisions.md 2026-07-29): no client can send it today, an extra entry
+// costs nothing, and it's needed again the moment the case study ships.
 const ALLOWED_PAGE_CONTEXTS = new Set(['Portfolio Rebuild', 'Upfluent', 'Sagent', 'USAA', 'Sabre']);
 
 // Structured, single-line JSON logs — Vercel captures stdout as Function
@@ -47,15 +51,26 @@ function logEvent(event: Record<string, unknown>): void {
   console.log(JSON.stringify({ ts: new Date().toISOString(), ...event }));
 }
 
-function jsonResponse(status: number, body: Record<string, unknown>, cors: Record<string, string>): Response {
-  return new Response(JSON.stringify(body), { status, headers: { ...cors, 'Content-Type': 'application/json' } });
+function jsonResponse(
+  status: number,
+  body: Record<string, unknown>,
+  cors: Record<string, string>,
+): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...cors, 'Content-Type': 'application/json' },
+  });
 }
 
 // Used whenever a Redis-backed check (rate limit or either cap reservation)
 // throws. Fails closed: chat goes down for the outage's duration rather
 // than letting rate limiting or the spend breaker run unenforced.
 function unavailableResponse(cors: Record<string, string>): Response {
-  return jsonResponse(503, { error: 'Chat is temporarily unavailable — please try again shortly.' }, cors);
+  return jsonResponse(
+    503,
+    { error: 'Chat is temporarily unavailable — please try again shortly.' },
+    cors,
+  );
 }
 
 export default async function handler(req: Request): Promise<Response> {
@@ -110,7 +125,11 @@ export default async function handler(req: Request): Promise<Response> {
   }
   if (!rateLimitOk) {
     logEvent({ event: 'blocked', reason: 'rate-limit', ip });
-    return jsonResponse(429, { error: `Rate limit reached. Maximum ${MAX_MESSAGES_PER_HOUR} messages per hour.` }, cors);
+    return jsonResponse(
+      429,
+      { error: `Rate limit reached. Maximum ${MAX_MESSAGES_PER_HOUR} messages per hour.` },
+      cors,
+    );
   }
 
   let body: { message?: unknown; pageContext?: unknown };
@@ -126,7 +145,10 @@ export default async function handler(req: Request): Promise<Response> {
     logEvent({ event: 'blocked', reason: 'invalid-message', ip });
     return jsonResponse(400, { error: 'message must be a non-empty string.' }, cors);
   }
-  const userMessage: StoredMessage = { role: 'user', content: rawMessage.slice(0, MAX_MESSAGE_LENGTH) };
+  const userMessage: StoredMessage = {
+    role: 'user',
+    content: rawMessage.slice(0, MAX_MESSAGE_LENGTH),
+  };
 
   // Which case study page the visitor is currently on, if any — allowlisted
   // rather than trusted as free text, since it's client-supplied and gets
@@ -162,7 +184,9 @@ export default async function handler(req: Request): Promise<Response> {
     logEvent({ event: 'blocked', reason: 'session-cap', ip });
     return jsonResponse(
       429,
-      { error: `Session limit reached (${SESSION_MESSAGE_CAP} messages). Refresh the page to start a new session.` },
+      {
+        error: `Session limit reached (${SESSION_MESSAGE_CAP} messages). Refresh the page to start a new session.`,
+      },
       cors,
     );
   }
@@ -179,7 +203,11 @@ export default async function handler(req: Request): Promise<Response> {
     await releaseSessionMessage(sid);
     await releaseGlobalMessage();
     logEvent({ event: 'blocked', reason: 'global-budget', globalUsage: globalCount });
-    return jsonResponse(503, { error: 'Chat is temporarily at capacity — please check back later.' }, cors);
+    return jsonResponse(
+      503,
+      { error: 'Chat is temporarily at capacity — please check back later.' },
+      cors,
+    );
   }
 
   // History load is best-effort/fail-open (see session.ts) — it only

@@ -52,6 +52,57 @@ export const Default: Story = {
   },
 };
 
+/**
+ * A stand-in screenshot as an inline SVG data URI rather than a committed PNG —
+ * the point is to exercise the src/alt code path, and a real binary asset would
+ * need maintaining for no added coverage.
+ */
+const SAMPLE_SCREENSHOT =
+  'data:image/svg+xml;utf8,' +
+  encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+       <rect width="640" height="360" fill="#141612"/>
+       <rect x="32" y="32" width="240" height="14" rx="2" fill="#00e054" opacity="0.8"/>
+       <rect x="32" y="66" width="440" height="8" rx="2" fill="#ccd4b0" opacity="0.35"/>
+       <rect x="32" y="86" width="380" height="8" rx="2" fill="#ccd4b0" opacity="0.35"/>
+       <rect x="32" y="130" width="264" height="150" rx="3" fill="#ccd4b0" opacity="0.08"/>
+       <rect x="320" y="130" width="264" height="150" rx="3" fill="#ccd4b0" opacity="0.08"/>
+       <rect x="32" y="304" width="120" height="24" rx="3" fill="#c08820" opacity="0.7"/>
+     </svg>`,
+  );
+
+export const WithImage: Story = {
+  name: 'With a real image',
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The populated state. Passing `src` swaps the dot-grid placeholder for a real ' +
+          '`<img>`; the window chrome and caption are unchanged, so a page looks the same ' +
+          'before and after screenshots arrive. `alt` is required by the props type whenever ' +
+          '`src` is set — a real screenshot must never ship as decorative (WCAG 1.1.1).',
+      },
+    },
+    ai: {
+      guidance:
+        'The populated state. Always pass src and alt together — the props union enforces it. Write alt that describes what the screenshot shows, not "screenshot of the app".',
+      contentRules: [
+        'alt describes the content and its point, e.g. "Storybook docs page for the Button component, showing all five states".',
+      ],
+      avoid: [
+        'Never pass src without alt — the type forbids it, and it would hide the image from screen reader users.',
+        "Don't restate the caption in the alt text — they are read together, so duplicating is noise.",
+      ],
+    },
+  },
+  args: {
+    tabLabel: 'portfolio rebuild · storybook',
+    caption: 'Fig. 01 — The component library, documented as a public artifact.',
+    src: SAMPLE_SCREENSHOT,
+    alt: 'A Storybook documentation page: a green heading, two lines of prose, two component preview panels side by side, and an amber tag below them.',
+  },
+};
+
 export const SabrePlaceholder: Story = {
   name: 'Sabre — hotel workspace placeholder',
   parameters: {

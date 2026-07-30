@@ -16,11 +16,6 @@
     <changefreq>monthly</changefreq>
   </url>
   <url>
-    <loc>https://viewbens.work/work/sagent</loc>
-    <priority>0.9</priority>
-    <changefreq>monthly</changefreq>
-  </url>
-  <url>
     <loc>https://viewbens.work/work/usaa</loc>
     <priority>0.9</priority>
     <changefreq>monthly</changefreq>

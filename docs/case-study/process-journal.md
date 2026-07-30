@@ -827,3 +827,56 @@ runtime still holds the real values), but the local file needs restoring from
 OneDrive version history to run the local scripts. Lesson: don't `vercel env
 pull` over a working `.env.local` when the vars are Sensitive; they can't be
 pulled back.
+
+## 2026-07-29
+**What I did:**
+Took the Sagent case study off the site and had Claude write the Portfolio Rebuild case
+study (01) from the material already in `docs/case-study/`. Asked for questions as it went,
+and for screenshots to be addable afterward.
+
+**What I decided:**
+Sagent fully hidden — route removed so `/work/sagent` 404s, not just delisted — since a
+placeholder page reachable by URL is exactly the thing worth removing. Renumber the
+remaining case studies to 01–04 and resync every doc that states the order, rather than
+leaving a 01/02/04/05 gap. And for "What was hard," blend all three angles Claude offered
+instead of picking one: the confident-but-wrong first AI audit, the Version A/B override,
+and the recursive credibility problem. They're all the same point — using AI while staying
+discerning about it — and that's the section that has to earn trust.
+
+**Why:**
+Both 01 and 03 were showing "Case study in progress." on a site that's otherwise
+launch-ready. Sagent can't be written honestly yet (no brain dump), but 01 has more source
+material than anything else in the project and it's the lead case study, so it was the
+expensive one to leave broken.
+
+**What I'm uncertain about:**
+The Lighthouse `96–100` figure the new page claims is from the 2026-07-16 run, before the
+contact flow and mobile chat shipped — needs a re-run before launch. Sabre's date range
+still disagrees across three files and I haven't picked one. And the mobile ContactCard on
+a real device is still untested, same as the last three entries.
+
+**What Claude contributed:**
+Read the ask as ambiguous and asked before writing anything — "hide Sagent, then write a
+page for it" could have meant either case study, and it argued for Portfolio Rebuild from
+evidence (the empty `screenshots/` directory, the volume of material in `docs/case-study/`)
+rather than guessing. Found that `ImageCaption` could already render a real `<img>` and that
+`CaseStudyPage` simply never passed `src` — meaning every case study on the site has been
+showing a placeholder frame this whole time — and wired a `figures` array through instead of
+just unblocking the one existing slot. Proved that path in a browser with a probe image
+rather than declaring it done, then reverted the probe.
+
+Also caught two things I didn't ask about: the Portfolio Rebuild card was tagged `'Meta'`,
+which isn't one of the five canonical industry labels; and the work grid heading "Four
+tools, four regulated industries" was a countable claim that didn't count either before or
+after the change. Noticed the case study list existed in four hand-maintained copies that
+had already drifted (Sabre's role and dates differed between Storybook and production) and
+collapsed them to one — which is the same duplication that lost Sabre from the grid back on
+2026-07-18. Matched the straight-apostrophe convention in the content files after checking
+rather than assuming, having first written the file with typographic ones.
+
+**Where I overrode or redirected Claude:**
+It recommended keeping the 01/02/04/05 gap to avoid churn when Sagent returns. I chose the
+renumber with full doc resync instead — the gap reads as a missing case study to anyone
+looking, and this portfolio's whole argument is that I notice that kind of thing. It took
+the redirect and added the "strategic order unchanged, display numbers compacted" framing
+to every doc so the next session doesn't misread the compaction as demoting Sagent.

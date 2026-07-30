@@ -447,9 +447,13 @@ The work-grid entry point. Always a link (`href` required). 16:9 thumbnail, inde
 |---|---|
 | 01 | Portfolio Rebuild |
 | 02 | Upfluent |
-| 03 | Sagent |
-| 04 | USAA |
-| 05 | Sabre |
+| 03 | USAA |
+| 04 | Sabre |
+
+Sagent is deliberately absent: its content is still a placeholder, so the page is unrouted
+and unlisted rather than shipping holding copy. It remains third in the strategic order and
+reclaims `03` when it ships, pushing USAA and Sabre back down. Don't treat the compacted
+numbering as a reordering decision. See decisions.md 2026-07-29.
 
 #### Pitfalls
 
@@ -516,6 +520,10 @@ Terminal-chrome frame for all case study screenshots. Never use a plain `<img>` 
 
 - Never use a plain `<img>` tag for case study artifacts
 - Never use a grey box placeholder — the dot-grid treatment is the system default
+- Inside a case study, don't render `ImageCaption` directly — declare a `figures` entry on
+  the content object instead, so numbering and placement stay consistent. See
+  "Adding figures to a case study" under CaseStudyPage. When going through `figures`, the
+  caption omits the "Fig. 0N —" prefix; it's generated.
 
 ---
 
@@ -687,7 +695,7 @@ section above.
 - Don't add content outside the existing hero layout — identity left, chat right
 - Don't try to keep the hero panel visible during a conversation
 - Don't show the docked rail on mobile — it's desktop-only
-- Don't change the work grid order — finalized as 01 Portfolio Rebuild, 02 Upfluent, 03 Sagent, 04 USAA, 05 Sabre
+- Don't change the work grid order — displayed as 01 Portfolio Rebuild, 02 Upfluent, 03 USAA, 04 Sabre (Sagent unlisted pending content, still third strategically)
 - Don't skip wiring the homepage's inline submit through `handleHeroSubmit` on mobile — it must open `MobileChatSurface`'s overlay before submitting, or the reply streams into the faded, non-interactive hero panel (decisions.md 2026-07-19)
 - `forceShowContactCard` is Storybook-only — never wire it to application state; `showContactCard` from `useChat()` is the real production signal
 
@@ -722,10 +730,41 @@ interface CaseStudyContent {
   whatWasHard: Section;     // { paragraphs[] }
   outcomes: StatItem[];     // [{ value, label, body? }] — maps to StatBlock
   whatIdDoDifferently: Section; // { paragraphs[] }
+  figures?: CaseFigure[];       // Captioned screenshots — see "Adding figures" below
   chatSuggestions?: string[];   // 2–3 conversation starters for the docked chat
   nextCase?: { title, href };   // Link to next case study
 }
 ```
+
+#### Adding figures to a case study
+
+Two mechanisms exist. **Use `figures` for anything new.**
+
+`figures` anchors captioned screenshots to a section and numbers them automatically in
+array order, so captions read Fig. 01, 02, 03 down the page:
+
+```ts
+figures: [
+  {
+    section: 'process',                        // problem | context | process | decision | hard
+    tabLabel: 'portfolio rebuild · storybook', // "project · artifact-type"
+    caption: 'The component library, documented as a public artifact.', // no "Fig. 0N —" prefix
+    // src + alt are optional, but only together:
+    src: '/case/portfolio/storybook.png',
+    alt: 'Storybook docs page for the Button component, showing all five states.',
+  },
+],
+```
+
+Omitting `src`/`alt` renders the dot-grid placeholder. That's the intended way to ship a
+page before its screenshots exist — the captions and positions are already right, and
+gaining a real image later means adding two fields and nothing else.
+
+`keyDecision.artifactLabel` is the older single-figure mechanism, still used by Upfluent,
+USAA, and Sabre. **Never set both on one page** — each numbers its figures from 01.
+
+Role and Outcomes deliberately can't hold a figure: they're already visual (callout rows,
+stat grid), so a screenshot competes with them rather than supporting the prose.
 
 #### Section order (mandatory)
 
@@ -892,14 +931,22 @@ Both surfaces also render `ContactCard` at the end of the message log (not insid
 
 ### Work Grid (Homepage)
 
+Don't hand-write the cards. The grid renders from the `CASE_STUDIES` array in
+`src/pages/explorations/data.ts`, which is the single source of truth shared by the live
+homepage, the retired `HomePage.tsx`, and the Storybook grid story. Hardcoded copies of
+this list drifted three separate times — add or reorder cards in `data.ts`.
+
 ```tsx
-{/* 2×2 grid — all five case studies */}
-<CaseStudyCard index="01" title="Portfolio Rebuild" desc="..." tag="AI Collaboration" href="/work/portfolio" ... />
-<CaseStudyCard index="02" title="Upfluent" desc="..." tag="Fintech" href="/work/upfluent" ... />
-<CaseStudyCard index="03" title="Sagent" desc="..." tag="Mortgage" href="/work/sagent" ... />
-<CaseStudyCard index="04" title="USAA" desc="..." tag="Insurance" href="/work/usaa" ... />
-<CaseStudyCard index="05" title="Sabre" desc="..." tag="Travel" href="/work/sabre" ... />
+import { CASE_STUDIES } from './explorations/data';
+
+{
+  CASE_STUDIES.map((cs) => <CaseStudyCard key={cs.index} {...cs} />);
+}
 ```
+
+Current displayed order: `01` Portfolio Rebuild, `02` Upfluent, `03` USAA, `04` Sabre.
+Sagent is unlisted while its content is a placeholder — it remains strategically third
+and reclaims `03` when it ships. See decisions.md 2026-07-29.
 
 ---
 
@@ -1005,10 +1052,16 @@ Do not build them unless Ben explicitly re-adds them to the plan.
 See the questions report (delivered 2026-06-20) for items needing decisions before the guide
 can be fully finalized. Key open items:
 
-1. **Case study index mismatch in CaseStudyCard.stories.tsx** — Grid story doesn't match finalized order
+1. ~~**Case study index mismatch in CaseStudyCard.stories.tsx**~~ — resolved 2026-07-29: the
+   Grid story now renders from the real `CASE_STUDIES` array, so it can't mismatch.
 2. **`@storybook/addon-mcp` parameter schema** — confirm it uses `parameters.ai` or different namespace
 3. **CaseStudyContent field-by-field docs** — full TypeScript interface in this guide, or link to source?
 4. **"Fifteen years" copy** — career arc starts May 2014 (~12 years); decide copy update
-5. **Sagent CaseStudyHero story** — add placeholder now or wait for content?
-6. **Portfolio Rebuild case study** — add placeholder CaseStudyCard now or wait?
+5. **Sagent CaseStudyHero story** — the story still exists with placeholder args that don't
+   match `src/content/sagent.ts`. Harmless while the page is unlisted; reconcile when the
+   case study ships.
+6. ~~**Portfolio Rebuild case study**~~ — resolved 2026-07-29: written in full
+   (`src/content/portfolio-rebuild.ts`), card live, page story added.
 7. **Contact page classification** — "Page Templates" section (current) or separate section?
+8. **Sabre's date range disagrees across files** — `2015–18` in `explorations/data.ts`,
+   `2014–18` on the Resume page, `2014–17` in `CaseStudyCard.stories.tsx`. Needs one answer.

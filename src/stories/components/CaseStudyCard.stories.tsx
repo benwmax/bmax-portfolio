@@ -1,5 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { CaseStudyCard } from '../../components/CaseStudyCard';
+// The live work grid, not a story-local copy. The hardcoded version of this
+// story had drifted from production on several fields (Sabre's role and dates,
+// the lead case study's year) — rendering from the real array makes that
+// impossible.
+import { CASE_STUDIES } from '../../pages/explorations/data';
 
 const meta = {
   title: 'Components/CaseStudyCard',
@@ -13,12 +18,12 @@ const meta = {
     },
     ai: {
       guidance:
-        'The work-grid entry point. Always a link (href required). Index chips reflect the finalized case study order: 01 Portfolio Rebuild, 02 Upfluent, 03 Sagent, 04 USAA, 05 Sabre.',
+        'The work-grid entry point. Always a link (href required). Index chips reflect the finalized case study order: 01 Portfolio Rebuild, 02 Upfluent, 03 USAA, 04 Sabre (Sagent is unlisted pending content).',
       contentRules: [
-        'index: zero-padded two digits — "01", "02", "03", "04", "05".',
+        'index: zero-padded two digits — "01" through "04".',
         'desc: one-sentence hook, the problem angle — not the project name.',
         'tag: industry label from the canonical five (Travel, Fintech, Mortgage, Insurance, AI Collaboration).',
-        'Case study order is finalized in CLAUDE.md: 01 Portfolio Rebuild, 02 Upfluent, 03 Sagent, 04 USAA, 05 Sabre.',
+        'Case study order is finalized in CLAUDE.md: 01 Portfolio Rebuild, 02 Upfluent, 03 USAA, 04 Sabre (Sagent is unlisted pending content).',
       ],
       avoid: [
         "Don't omit href — the card should always navigate.",
@@ -57,7 +62,7 @@ export const Default: Story = {
     },
   },
   args: {
-    index: '05',
+    index: '04',
     title: 'Sabre Red Workspace',
     desc: 'Making a command-line tool learnable — without slowing the veterans.',
     tag: 'Travel',
@@ -86,7 +91,7 @@ export const Hover: Story = {
     },
   },
   args: {
-    index: '05',
+    index: '04',
     title: 'Sabre Red Workspace',
     desc: 'Making a command-line tool learnable — without slowing the veterans.',
     tag: 'Travel',
@@ -125,22 +130,28 @@ export const WithoutMeta: Story = {
 };
 
 export const Grid: Story = {
-  name: '2×2 grid — all five case studies',
+  name: '2×2 grid — the live work grid',
   parameters: {
     docs: {
       description: {
         story:
-          'Homepage card grid. Five case studies, deliberate order: lead case study first (current work, AI fluency), then client work in reverse relevance to target roles. The grid is 2-column at desktop — not a list, a composition.',
+          'The homepage card grid, rendered from the same CASE_STUDIES array the live site ' +
+          'uses — so this story cannot drift from production. Deliberate order: lead case ' +
+          'study first (current work, AI fluency), then client work in reverse relevance to ' +
+          'target roles. 2-column at desktop — not a list, a composition. Sagent is absent ' +
+          'because it is currently unlisted pending its content; see decisions.md 2026-07-29.',
       },
     },
     ai: {
       guidance:
-        'The canonical homepage work grid: 2 columns, 296px each, 20px gap. Case study order is finalized — do not reorder.',
+        'The canonical homepage work grid: 2 columns, 296px each, 20px gap. Renders from CASE_STUDIES in src/pages/explorations/data.ts — add or reorder cards there, not here. Order is finalized; do not reorder.',
       contentRules: [
-        'Finalized order: 01 Portfolio Rebuild (lead), 02 Upfluent, 03 Sagent, 04 USAA, 05 Sabre.',
-        'All five case studies appear. The lead case study (Portfolio Rebuild) is always first.',
+        'Displayed order: 01 Portfolio Rebuild (lead), 02 Upfluent, 03 USAA, 04 Sabre.',
+        'The lead case study (Portfolio Rebuild) is always first.',
+        'Sagent is strategically third and reclaims 03 when its content ships — it is unlisted, not dropped.',
       ],
       avoid: [
+        "Don't hardcode cards in this story — it drifted from production for exactly that reason.",
         "Don't use a single-column list for the work grid.",
         "Don't build a masonry, carousel, or filtered-grid alternative.",
         "Don't reorder the case studies without explicit direction from Ben.",
@@ -155,57 +166,9 @@ export const Grid: Story = {
         gap: '20px',
       }}
     >
-      <CaseStudyCard
-        index="01"
-        title="Portfolio Rebuild"
-        desc="Directing AI to rebuild a portfolio — where the process itself is the case study."
-        tag="AI Collaboration"
-        href="/work/portfolio"
-        role="UX Designer · Director"
-        year="2025–"
-      />
-      <CaseStudyCard
-        index="02"
-        title="Upfluent"
-        desc="A hybrid AI chatbot: talk like an advisor, act with real controls."
-        tag="Fintech"
-        href="/work/upfluent"
-        role="Lead UX Designer"
-        year="2023–24"
-        sector="Fintech"
-      />
-      <CaseStudyCard
-        index="03"
-        title="Sagent"
-        desc="Design leadership on a mortgage platform with no design director."
-        tag="Mortgage"
-        href="/work/sagent"
-        role="Principal UX Designer"
-        year="2021–22"
-        sector="Mortgage"
-      />
-      <CaseStudyCard
-        index="04"
-        title="USAA"
-        desc="Modernizing P&C insurance without losing the members who trusted it."
-        tag="Insurance"
-        href="/work/usaa"
-        role="Senior UX Designer"
-        year="2018–20"
-        sector="Insurance"
-      />
-      <CaseStudyCard
-        index="05"
-        title="Sabre Red Workspace"
-        desc="Making a command-line tool learnable — without slowing the veterans."
-        tag="Travel"
-        href="/work/sabre"
-        role="Lead UX Designer"
-        year="2014–17"
-        stat="$1B"
-        statLabel="Contract"
-        sector="Travel Tech"
-      />
+      {CASE_STUDIES.map((cs) => (
+        <CaseStudyCard key={cs.index} {...cs} />
+      ))}
     </div>
   ),
 };
@@ -233,7 +196,7 @@ export const Futuristic: Story = {
   render: () => (
     <div style={{ display: 'grid', gridTemplateColumns: '280px 280px', gap: '20px' }}>
       <CaseStudyCard
-        index="05"
+        index="04"
         title="Sabre GetThere"
         desc="Making a command-line booking tool learnable without slowing the veterans."
         tag="Travel"

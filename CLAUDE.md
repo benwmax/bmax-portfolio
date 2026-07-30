@@ -83,6 +83,25 @@ throughout — not just in the opener.
 **Do not suggest reordering these without flagging it explicitly and explaining
 the strategic reason.**
 
+### Sagent is currently unlisted (2026-07-29)
+
+The order above is the **strategic** order and has not changed. But Sagent's content is
+still a placeholder (Phase 1C brain dump not started), so rather than shipping "Case study
+in progress." to visitors it has been taken off the site: route removed from `App.tsx`, card
+removed from `explorations/data.ts`, entry removed from `sitemap.xml`, and Upfluent's
+`nextCase` points to USAA. `/work/sagent` returns the 404 page.
+`src/content/sagent.ts` is intact and untouched.
+
+**Displayed numbering is therefore compacted to `01` Portfolio Rebuild, `02` Upfluent,
+`03` USAA, `04` Sabre.** Sagent reclaims `03` when it ships, pushing USAA and Sabre back
+down. Do not read the compaction as a demotion or as a reordering decision — it is a display
+consequence of the page being unlisted. See decisions.md 2026-07-29.
+
+Re-listing checklist when Phase 1C is done: restore the route and import in `App.tsx`, the
+card in `explorations/data.ts` (with `index: '03'`, renumbering USAA and Sabre), the
+`sitemap.xml` entry, Upfluent's `nextCase`, and Sagent's case study block in
+`api/lib/system-prompt.ts` (currently covered under "OTHER EXPERIENCE").
+
 ---
 
 ## NDA and Confidentiality Constraints
@@ -127,8 +146,12 @@ without password gates, anonymization, or confidentiality notes.
 │   ├── stories/                     ← Storybook stories
 │   ├── pages/                       ← page-level components
 │   ├── tokens/                      ← design tokens (CSS custom properties)
+│   ├── content/                     ← typed CaseStudyContent objects, one per case study
 │   └── styles/                      ← global styles, Tailwind config
 └── public/
+    ├── case/                        ← case study screenshots, per-project subdirs
+    │   └── portfolio/               ← wired to the `figures` slots in portfolio-rebuild.ts
+    └── og/                          ← 1200×630 OG images (Phase 4E, still to be made)
 ```
 
 ---
@@ -370,11 +393,18 @@ and things that were intentionally left out of scope.
 
 4. **The five canonical industry labels are: Travel, Fintech, Mortgage, Insurance, AI Collaboration.**
    Do not invent new industry labels. These are the only tags used across all case study cards
-   and Tag components.
+   and Tag components. `Mortgage` is currently unused on the grid because Sagent is unlisted —
+   the set stays five; it returns with the case study.
 
-5. **The case study order is finalized:** 01 Portfolio Rebuild, 02 Upfluent, 03 Sagent,
-   04 USAA, 05 Sabre. Index chips and meta must reflect this order. Do not reorder without
-   flagging it explicitly and explaining the strategic reason.
+5. **The displayed case study order is:** 01 Portfolio Rebuild, 02 Upfluent, 03 USAA,
+   04 Sabre. Index chips and meta must reflect this. Sagent is unlisted pending content and
+   reclaims 03 when it ships — see "Sagent is currently unlisted" above. Do not reorder
+   without flagging it explicitly and explaining the strategic reason.
+
+   The work grid renders from `CASE_STUDIES` in `src/pages/explorations/data.ts` — the single
+   source of truth, shared by the live homepage, the retired `HomePage.tsx`, and the Storybook
+   grid story. **Never hardcode the card list**; it existed in four hand-maintained copies and
+   drifted (see decisions.md 2026-07-29).
 
 6. **Components removed from scope are intentionally absent.** The following were cut and
    should not be built: Select, Icon wrapper, Link component, Avatar, Container/Section/Grid/
@@ -426,13 +456,19 @@ for the build checklist.
   Workspace spend cap changes.
 - `api/lib/system-prompt.ts` is the assistant's brief and needs upkeep —
   update it whenever a case study moves from "in progress" to "published" so
-  the assistant doesn't undersell or misstate finished work. As of
-  2026-06-15, Upfluent, USAA, and Sabre have all been rewritten and the
-  system prompt's "still being finalized" language for those is now stale.
+  the assistant doesn't undersell or misstate finished work. As of 2026-07-29 all four
+  listed case studies (Portfolio Rebuild, Upfluent, USAA, Sabre) are published and described
+  in full; no "still being finalized" language remains.
   It also carries safety/anti-jailbreak instructions (persona-lock,
   anti-defamation, ignore-embedded-instructions, groundedness, no code
   execution) added 2026-07-17 — keep these when editing the case study
   content around them.
+- **The brief must never point a visitor at a page that doesn't exist.** Sagent's case study
+  block was replaced 2026-07-29 with an `OTHER EXPERIENCE (no case study page — do not offer
+  one)` section covering Sagent, Market Rebellion, and the early roles, because those appear
+  on About/Resume and visitors will ask about them. Its previous wording told the assistant to
+  "direct the visitor to the other case studies," which would now mean offering a 404. Restore
+  a real case study block when Sagent ships.
 - Conversation history and the session message cap are server-side
   authoritative (`api/lib/session.ts`), not client-supplied — the client only
   ever sends the newest message. Do not revert to trusting a client-supplied
@@ -510,7 +546,16 @@ started; Phases 6–7 not started. Per decisions.md 2026-07-16, launch is being
 prioritized ahead of the Sagent case study — Sagent ships with placeholder copy
 and gets a full pass post-launch.
 
-**Last updated:** 2026-07-22 (contact flow is now live end to end — Ben created the Resend
+**Last updated:** 2026-07-29 (Sagent unlisted from the site — route, card, and sitemap entry
+removed, `/work/sagent` now 404s, `src/content/sagent.ts` intact — and the Portfolio Rebuild
+case study written in full, ahead of its Phase 7 slot. Displayed numbering compacted to
+01–04 with the strategic order unchanged. Added a `figures` array to `CaseStudyContent` so
+case studies can hold real captioned screenshots — `ImageCaption` always supported `src`, but
+`CaseStudyPage` never passed it, so every case study had been rendering a placeholder frame.
+Collapsed four hand-maintained copies of the case study list into one. No holding copy
+remains anywhere on the site. See decisions.md 2026-07-29 for all five entries.)
+
+**Previously updated:** 2026-07-22 (contact flow is now live end to end — Ben created the Resend
 account, verified the `viewbens.work` sending domain, and added `RESEND_API_KEY` to Vercel.
 Verified by sending a real message through the deployed `/api/contact`: 200 response and the
 email was delivered to ben@viewbens.work with the correct visitor Reply-To. The Resend
@@ -685,6 +730,18 @@ under `src/pages/explorations/` — is the real production homepage, not a draft
   Playwright; live email delivery verified end to end 2026-07-22 — a real send through the
   deployed `/api/contact` reached ben@viewbens.work with the correct visitor Reply-To.
 
+- Sagent unlisted and Portfolio Rebuild case study written (2026-07-29). `/work/sagent` 404s;
+  `src/content/sagent.ts` is intact for a one-line re-wire after Phase 1C. Case study 01 is
+  now real content sourced from `docs/case-study/` — no placeholder copy anywhere on the site.
+  Displayed numbering compacted to 01–04 (strategic order unchanged). New `figures` array on
+  `CaseStudyContent` gives every case study captioned, positioned screenshot slots that render
+  the dot-grid placeholder until `src` + `alt` are added; verified in a browser with a probe
+  image. `HomePage.tsx`, `CaseStudyPage.stories.tsx`, and `CaseStudyCard.stories.tsx` now
+  import real data instead of carrying drifted inline copies. Work grid heading changed from
+  "Four tools, four regulated industries" to "Expert tools, high-stakes industries" — the count
+  was wrong before and after. Portfolio Rebuild's card tag corrected from the non-canonical
+  `'Meta'` to `'AI Collaboration'`. See decisions.md 2026-07-29.
+
 **Immediate next steps:**
 (Resynced 2026-07-19 — removed a stale "Ben to choose homepage direction" item: that was
 decided 2026-06-22, HomeV4Blend wired as production per build-plan.md Phase 4A, but this
@@ -695,10 +752,18 @@ both created 2026-07-16, and this session ran multiple verification scripts agai
 a new item below for removing the temporary `.vercel.app` origin allowlist entry at
 cutover, added 2026-07-19. build-plan.md's checkboxes are the source of truth if this
 drifts again.)
-- **Phase 1C:** Sagent brain dump — strongest Director-level case study, starts from zero
+- **Phase 1C:** Sagent brain dump — strongest Director-level case study, starts from zero.
+  As of 2026-07-29 this is what gates Sagent's return to the site (it's unlisted, not broken).
+- **Portfolio Rebuild screenshots (Ben):** three captioned figure slots are live and waiting in
+  `src/content/portfolio-rebuild.ts` — anchored to Process, Key decision, and What was hard.
+  Drop files in `public/case/portfolio/` and add `src` + `alt` to the matching entry. No
+  component or page edits needed; see docs/ai-component-guide.md → "Adding figures".
+- **Re-run Lighthouse before launch:** `/work/portfolio` now claims `96–100` in its Outcomes,
+  sourced from the 2026-07-16 measurement — which predates the contact flow and the mobile chat
+  overlay. If the numbers drifted, change the copy, not the number.
 - **Phase 4E:** OG images only — create 1200×630 PNGs in public/og/ before launch
   (meta descriptions, sitemap.xml, robots.txt, and canonical tags are already done;
-  see build-plan.md 4E)
+  see build-plan.md 4E). Note `/og/sagent.png` is no longer needed while Sagent is unlisted.
 - **Real-device mobile testing:** the mobile chat overlay handoff, FAB behavior at 390px, and
   the ContactCard inside the mobile overlay have all only been verified via browser resize
   and Playwright — never on an actual device. Flagged in three consecutive journal entries
@@ -710,10 +775,14 @@ drifts again.)
 
 **Decisions still open:**
 - Market Rebellion: referenced on About page as brief career arc item (decided 2026-06-20)
-- Sagent case study content (to be built from scratch)
+- Sagent case study content (to be built from scratch) — now also gates its return to the site
 - "Fifteen years" / "15+ years" copy on About and Resume: career arc now starts May 2014,
   which is ~12 years to 2026 — decide whether to update copy to "twelve years", "over a
-  decade", or leave it as a loose approximation
+  decade", or leave it as a loose approximation. Note the same claim is in
+  `api/lib/system-prompt.ts` ("Fifteen-plus years") — fix all three together.
+- **Sabre's date range disagrees across three files** (surfaced 2026-07-29, not fixed —
+  needs Ben's answer): `2015–18` in `src/pages/explorations/data.ts`, `2014–18` on the Resume
+  page, `2014–17` in `CaseStudyCard.stories.tsx`. Pick one and propagate.
 
 ---
 

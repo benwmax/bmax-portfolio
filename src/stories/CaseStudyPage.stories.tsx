@@ -1,7 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { fn } from '@vitest/spy';
 import { CaseStudyPage } from '../pages/CaseStudyPage';
-import type { CaseStudyContent } from '../pages/CaseStudyPage';
+// Real production content, not a story-local copy. These used to be inline
+// duplicates of src/content/*.ts, which is how the story and the live page
+// drifted apart — Storybook is published as a portfolio artifact, so it
+// showing different copy than the site is a visible defect, not just debt.
+import { usaaData } from '../content/usaa';
+import { portfolioRebuildData } from '../content/portfolio-rebuild';
 
 const meta = {
   title: 'Pages/Case Study',
@@ -53,114 +58,14 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/* ─────────────────────────────────────────────────────────────
-   USAA content — the reference case study for the template
-───────────────────────────────────────────────────────────── */
-const USAA: CaseStudyContent = {
-  number: '04',
-  dateRange: '2018–2020',
-  company: 'USAA',
-  heroTitle: 'Modernizing P&C insurance without losing the members who trusted it.',
-  heroSubtitle:
-    "USAA's digital experience was showing its age. Mobile acquisition was leaking, members were calling support for things they should've done themselves, and fintech competitors were making insurance feel easy. We had the trust advantage. The experience wasn't holding up its end.",
-  meta: [
-    { label: 'My role', value: 'Lead UX Designer · P&C' },
-    { label: 'Method', value: 'Heuristic review · Design sprint' },
-    { label: 'Conversion', value: '+4–6%', accent: true },
-    { label: 'Ship time', value: '< 3 mo.', accent: true },
-  ],
-  problem: {
-    heading: "An experience that hadn't kept pace",
-    paragraphs: [
-      "USAA's digital products were built in the early 2000s and it showed. Mobile insurance shopping was growing fast, acquisition was leaking, and members were calling support for things they should have been able to do themselves.",
-      "Meanwhile, Lemonade and its fintech cousins were making insurance feel easy — fast, mobile-first, built for a generation that didn't want to talk to anyone. USAA still had the trust advantage. The experience wasn't holding up its end.",
-    ],
-  },
-  role: [
-    {
-      label: 'Owned',
-      content:
-        'Lead designer on P&C insurance. I sat between the team and our Director — defining project strategy, running workshops, leading stakeholder meetings, mentoring junior designers, and making the work happen.',
-    },
-    {
-      label: 'Director layer',
-      content: 'My Director handled the org layer. I handled everything in the room.',
-    },
-    {
-      label: 'In the room',
-      content:
-        'Ran a design sprint with cross-functional stakeholders to align on KPIs, size up the competition, and get testable directions on the table fast.',
-    },
-  ],
-  userContext: {
-    paragraphs: [
-      "USAA's membership was quietly shifting. The military core — active and former service members — was giving way to their families: spouses, kids, a generation that had never served and didn't carry the same institutional loyalty or privacy concerns.",
-      'That created a genuine tension. Service members wanted formality and discretion. Their families wanted a normal consumer app. Modernize and you risk alienating longtime members; stand still and you lose the next generation.',
-      "Military-specific edge cases weren't really edge cases: deployments, relocations, a spouse managing everything solo. These scenarios showed up constantly and the product mostly ignored them.",
-    ],
-  },
-  process: [
-    {
-      phase: 'Assess',
-      title: 'Baseline before redesign',
-      body: 'Heuristic assessment and usability testing to get an honest read on what was actually broken — no redesigning before we knew what was wrong.',
-      artifact: 'Heuristic review · Usability testing',
-    },
-    {
-      phase: 'Align',
-      title: 'Sprint to surface KPIs',
-      body: 'Cross-functional design sprint to surface competing stakeholder priorities, size up fintech competition, and get testable directions on the table fast.',
-      artifact: 'Design sprint',
-    },
-    {
-      phase: 'Build',
-      title: 'Two parallel tracks',
-      body: 'Legacy A/B tests — built on the old stack, informed by new research — shipped quickly while the full redesign continued in the background. Measurable wins in production without waiting 18 months.',
-      artifact: 'A/B testing · Service blueprint',
-    },
-  ],
-  keyDecision: {
-    heading: 'Ship on the old stack now, redesign in parallel',
-    paragraphs: [
-      "Running legacy improvements and the full redesign simultaneously instead of waiting for the new platform. It would've been easier to wait. Instead we pulled insights from the redesign and applied them immediately to production A/B tests — delivering measurable wins throughout.",
-      'The two-track approach meant the business never had to wait 18 months for a big reveal. Results showed up in production from week one.',
-    ],
-    artifactLabel: 'A/B test → redesign pipeline',
-  },
-  whatWasHard: {
-    paragraphs: [
-      'Four months into a renters insurance overhaul — research done, concepts tested, final approach nearly dev-ready — our primary stakeholder got reorganized out. New exec, new team, different ideas.',
-      "They hired a third-party agency to redo the work and handed us an advisory role for the next twelve months. The agency's final output was nearly identical to ours.",
-      "Managing that moment was more about leadership than design. The work was gone. The team felt it. Keeping people motivated while chaperoning someone else's version of your own project is a specific kind of hard. We did it. Leadership noticed. Steps were taken.",
-    ],
-  },
-  outcomes: [
-    { value: '+4–6%', label: 'Conversion lift · P&C', body: 'Homeowners up 5%.' },
-    {
-      value: '↓ Calls',
-      label: 'Self-service tasks',
-      body: 'Support call volume dropped for basic actions.',
-    },
-    { value: '< 3 mo.', label: 'Mobile redesign ship', body: 'Test-validated, under 3 months.' },
-    {
-      value: 'Scaled',
-      label: 'Service blueprint',
-      body: 'Running cross-org without dedicated headcount.',
-    },
-  ],
-  whatIdDoDifferently: {
-    paragraphs: [
-      'Start the service blueprint work earlier — run it alongside the initial assessment instead of after it. The ecosystem mapping uncovered regulatory dependencies and call center gaps that affected decisions already in flight.',
-      "Knowing the operational layer sooner would've sharpened the problem definition from day one.",
-    ],
-  },
-  chatSuggestions: [
-    'Why two parallel tracks?',
-    'What happened with the agency?',
-    'How did you measure conversion?',
-  ],
-  nextCase: { title: 'Sabre', href: '/work/sabre' },
-};
+/* ---------------------------------------------------------------
+   Reference content
+   USAA is the reference case study for the template; Portfolio
+   Rebuild exercises the `figures` array (captioned slots that render
+   the placeholder frame until real screenshots are added).
+--------------------------------------------------------------- */
+const USAA = usaaData;
+const PORTFOLIO_REBUILD = portfolioRebuildData;
 
 /* ─────────────────────────────────────────────────────────────
    STORIES
@@ -187,6 +92,41 @@ export const Default: Story = {
   },
   args: {
     ...USAA,
+    layout: 'sidebar',
+    showChat: true,
+    onChatSubmit: fn(),
+  },
+};
+
+export const PortfolioRebuild: Story = {
+  name: 'Portfolio Rebuild — with figures',
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The lead case study, and the only one using the `figures` array rather than ' +
+          'keyDecision.artifactLabel. Figures are anchored per section and numbered in array ' +
+          'order, so captions read Fig. 01–03 down the page regardless of which section each ' +
+          'belongs to. All three render the dot-grid placeholder here because no `src` is set ' +
+          'yet — that is the intended pre-screenshot state, not a broken image.',
+      },
+    },
+    ai: {
+      guidance:
+        'Use `figures` for new case studies, not keyDecision.artifactLabel. Give each figure a section, a tabLabel, and a caption; add src + alt once a real screenshot exists. Never set both mechanisms on one page — each numbers its figures from 01.',
+      contentRules: [
+        'figures[].section is one of: problem, context, process, decision, hard. Role and Outcomes are excluded — they are already visual.',
+        'caption omits the "Fig. 0N — " prefix; numbering is generated from array order.',
+        'src and alt must be provided together — alt is required whenever src is set (WCAG 1.1.1).',
+      ],
+      avoid: [
+        'Don\'t write a caption that starts with "Fig." — it will be doubled.',
+        "Don't set keyDecision.artifactLabel on a page that uses figures.",
+      ],
+    },
+  },
+  args: {
+    ...PORTFOLIO_REBUILD,
     layout: 'sidebar',
     showChat: true,
     onChatSubmit: fn(),
@@ -271,15 +211,15 @@ export const ContactCardVisible: Story = {
       description: {
         story:
           'Shows the inline ContactCard composed into the docked chat rail. In production this ' +
-          'only appears once detectContactIntent matches a real message or reply — there\'s no ' +
+          "only appears once detectContactIntent matches a real message or reply — there's no " +
           'prop to trigger that from outside a live exchange, so this story sets a Storybook-only ' +
           'forceShowContactCard flag instead of seeding a fake trigger phrase. See ' +
-          'Components/ContactCard for the component\'s own full state matrix.',
+          "Components/ContactCard for the component's own full state matrix.",
       },
     },
     ai: {
       guidance:
-        'Reference for how ContactCard sits inside the docked chat rail — forceShowContactCard is Storybook-only, never wire it to application state. Consult Components/ContactCard for the component\'s own states.',
+        "Reference for how ContactCard sits inside the docked chat rail — forceShowContactCard is Storybook-only, never wire it to application state. Consult Components/ContactCard for the component's own states.",
       avoid: [
         'forceShowContactCard is Storybook-only — never use it in application code. showContactCard from useChat() is the real production signal.',
       ],

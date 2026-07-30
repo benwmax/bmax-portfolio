@@ -5,6 +5,10 @@ import { CaseStudyCard } from '../components/CaseStudyCard';
 import { ChatInput } from '../components/ChatInput';
 import { useChatSession, splitParagraphs } from '../hooks/useChatSession';
 import type { Message } from '../hooks/useChatSession';
+// Shared with the production homepage rather than re-declared. These used to be
+// byte-identical copies, which drifted in practice — Sabre went missing from one
+// grid and not the other (see process-journal.md 2026-07-18). One array now.
+import { CASE_STUDIES, SUGGESTIONS } from './explorations/data';
 import styles from './HomePage.module.css';
 
 // Re-exported so Storybook stories can import the type from this module
@@ -17,71 +21,13 @@ export interface HomePageProps {
   initialMessages?: Message[];
 }
 
-
-const SUGGESTIONS = [
-  'How did Sabre win the $1B contract?',
-  'What did you do at Upfluent?',
-  'What are you looking for next?',
-] as const;
-
-const CASE_STUDIES = [
-  {
-    index: '01',
-    title: 'Portfolio Rebuild with Claude',
-    desc: 'Directing an AI to build a portfolio — and making the process the case study.',
-    tag: 'Meta',
-    href: '/work/portfolio',
-    role: 'Principal UX Designer',
-    year: '2026',
-    sector: 'Product Design',
-  },
-  {
-    index: '02',
-    title: 'Upfluent',
-    desc: 'A hybrid AI chatbot: talk like an advisor, act with real controls.',
-    tag: 'Fintech',
-    href: '/work/upfluent',
-    role: 'Lead UX Designer',
-    year: '2023–24',
-    sector: 'Fintech',
-  },
-  {
-    index: '03',
-    title: 'Sagent',
-    desc: 'Design leadership on a mortgage platform with no design director.',
-    tag: 'Mortgage',
-    href: '/work/sagent',
-    role: 'Principal UX Designer',
-    year: '2021–22',
-    sector: 'Mortgage',
-  },
-  {
-    index: '04',
-    title: 'USAA',
-    desc: 'Modernizing P&C insurance without losing the members who trusted it.',
-    tag: 'Insurance',
-    href: '/work/usaa',
-    role: 'Senior UX Designer',
-    year: '2018–20',
-    sector: 'Insurance',
-  },
-  {
-    index: '05',
-    title: 'Sabre',
-    desc: 'One command-line tool, two opposite users, and a $1B contract on the line.',
-    tag: 'Travel',
-    href: '/work/sabre',
-    role: 'UX Designer',
-    year: '2015–18',
-    sector: 'Travel',
-  },
-] as const;
-
+// Sagent is omitted to match the work grid, which is unlisted while its case
+// study is a placeholder. See decisions.md 2026-07-29.
 const STAT_RAIL_DATA = [
   { date: 'Portfolio Rebuild · 2026', outcome: 'Principal · AI-directed process, public.' },
   { date: 'Upfluent · 2023–24', outcome: 'Lead · AI chatbot, signup 30% shorter.' },
-  { date: 'Sagent · 2021–22', outcome: 'Co-lead · 4 designers, 12 business teams.' },
   { date: 'USAA · 2018–20', outcome: 'Lead, P&C · conversion +4–6%.' },
+  { date: 'Sabre · 2015–18', outcome: 'IC, Hotel · $1B contract, +23% revenue.' },
 ] as const;
 
 export function HomePage({ onChatSubmit, initialMessages = [] }: HomePageProps) {
