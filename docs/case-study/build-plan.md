@@ -382,6 +382,15 @@ independently; only the widget's visual styling depends on those.*
       `.vercel.app` deployment returned 200 and was delivered to ben@viewbens.work with
       the correct visitor Reply-To. See `scripts/verify-contact-email.mjs` for the local
       guard-path checks (honeypot, too-fast, invalid input) plus a real-send step.
+- [x] Fix ContactCard ordering in the chat log (2026-08-01) — the card shipped on 2026-07-20
+      rendered after the whole message list, so a follow-up question and its reply appeared
+      *above* the form instead of below it (found by Ben using the live site).
+      `useChatSession` now exposes `contactCardAfter` — the number of messages preceding the
+      card — anchored to the turn that surfaced it, and both pages render it inside the
+      message map. The anchor pins on first surface and never moves, because relocating the
+      card remounts it and drops a half-typed draft. Verified in a real browser on Home and
+      `/work/usaa`, including a stash-and-re-run proving the check reproduces the bug. See
+      decisions.md, 2026-08-01.
 
 ---
 

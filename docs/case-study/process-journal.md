@@ -880,3 +880,43 @@ renumber with full doc resync instead — the gap reads as a missing case study 
 looking, and this portfolio's whole argument is that I notice that kind of thing. It took
 the redirect and added the "strategic order unchanged, display numbers compacted" framing
 to every doc so the next session doesn't misread the compaction as demoting Sagent.
+
+## 2026-08-01
+**What I did:**
+Found a bug by using my own site: with the contact form open in the chat, typing a follow-up
+put my message and the assistant's reply *above* the form instead of below it. Sent Claude a
+screenshot of it and had it fixed.
+
+**What I decided:**
+Fix it as a positioning problem, not a display problem. The form belongs to the turn that
+offered it, so it should sit in the transcript at that point and stay there — not float to
+the bottom, and not chase the newest message either.
+
+**Why:**
+Small bug, bad signal. The chat is the most-demoed thing on this site and one of the loudest
+claims the portfolio makes; a transcript that doesn't read in order undercuts it more than
+the actual severity warrants. Anyone evaluating me is going to type into that box.
+
+**What I'm uncertain about:**
+Nothing new here. The standing three are unchanged: Lighthouse needs a re-run before launch,
+Sabre's dates still disagree across three files, and the mobile ContactCard still hasn't been
+opened on a real device — four entries running now.
+
+**What Claude contributed:**
+Read the actual cause instead of the symptom — the card was rendered as a sibling after
+`messages.map(...)`, so it was never *in* the log, just under it. Caught a consequence I
+hadn't thought about: because a component's position determines its identity in React's tree,
+letting the card follow the newest message would remount it and wipe whatever the visitor had
+half-typed. So the anchor pins on first surface and deliberately doesn't move.
+
+Then it proved the fix rather than asserting it — drove both the homepage and a case study
+page in a real browser with the API stubbed, and, when the first probe produced a confusing
+result, said so and rebuilt the probe instead of reporting the number it got. Best part: it
+stashed the fix and re-ran the same check to confirm the test actually reproduces my bug, so
+a passing result means something. Also flagged that Prettier fails on all three files on
+clean `main` and left formatting alone rather than burying a 40-line fix in a reformat.
+
+**Where I overrode or redirected Claude:**
+Nothing to redirect on the fix itself. It stopped after the code and asked whether to write
+the docs up rather than assuming — right call generally, though on a fix this documented I'd
+have been fine with it just doing it.

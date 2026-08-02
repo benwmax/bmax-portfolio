@@ -495,6 +495,14 @@ for the build checklist.
   matches; the two are coupled by convention, not by code. See decisions.md (2026-07-20).
 - `api/contact.ts` has its own rate limits and daily cap, separate from chat's, because an
   email send is a different resource than an LLM token. Don't merge the two budgets.
+- **The inline ContactCard is a transcript entry, not a footer.** `useChatSession` exposes
+  `contactCardAfter` (the number of messages that render before the card); pages must render
+  it at that position *inside* the message map, not after the whole list — appending it means
+  every follow-up turn appears above the form. Two rules go with it: the anchor pins on first
+  surface and never moves (relocating it remounts `ContactCard` and drops a half-typed draft),
+  and pages clamp with `Math.min(contactCardAfter ?? messages.length, messages.length)` so
+  Storybook's `forceShowContactCard` still works. Fixed 2026-08-01 after shipping the wrong
+  way on 2026-07-20; see decisions.md 2026-08-01.
 - The assistant's replies are rendered by `splitParagraphs()` (`src/hooks/useChatSession.ts`)
   into separate `<p>` blocks, and the system prompt's formatting section enforces short,
   frequent paragraph breaks as a hard rule (not a suggestion — Haiku doesn't reliably follow
@@ -546,7 +554,14 @@ started; Phases 6–7 not started. Per decisions.md 2026-07-16, launch is being
 prioritized ahead of the Sagent case study — Sagent ships with placeholder copy
 and gets a full pass post-launch.
 
-**Last updated:** 2026-07-29 (Sagent unlisted from the site — route, card, and sitemap entry
+**Last updated:** 2026-08-01 (Ordering fix in the chat: the inline ContactCard was rendered
+after the whole message list, so a follow-up question and its reply appeared *above* the
+form. It's now anchored to the turn that surfaced it via `contactCardAfter` in
+`useChatSession`. Verified in a real browser on both the homepage and a case study page,
+including a stash-and-re-run to confirm the check reproduces the original bug. See
+decisions.md 2026-08-01 and the ContactCard entry under "AI Chat Feature" → Key constraints.)
+
+**Previously updated:** 2026-07-29 (Sagent unlisted from the site — route, card, and sitemap entry
 removed, `/work/sagent` now 404s, `src/content/sagent.ts` intact — and the Portfolio Rebuild
 case study written in full, ahead of its Phase 7 slot. Displayed numbering compacted to
 01–04 with the strategic order unchanged. Added a `figures` array to `CaseStudyContent` so

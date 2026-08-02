@@ -1074,3 +1074,40 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
   stale the next time the grid changes, which has now happened twice. On a portfolio arguing
   that Ben catches this class of detail, a heading that fails its own arithmetic is the worst
   place to leave one.
+
+## 2026-08-01 — The in-chat contact form is a transcript entry, not a footer
+
+- Decision: `useChatSession` no longer exposes the contact card as a boolean pinned to the end
+  of the log. It now carries `contactCardAfter: number | null` — the count of messages that
+  render *before* the card — set to `messagesRef.current.length + 2` at submit time (this
+  turn's user message plus its assistant reply). `HomeV4Blend.tsx` and `CaseStudyPage.tsx`
+  render the card at that position inside the message map instead of after it.
+- Reasoning: Ben hit the bug live. The card was a sibling rendered after `messages.map(...)`,
+  so it was stuck to the bottom of the log rather than holding a place in it — every follow-up
+  question and its reply were inserted *above* the form. The transcript stopped reading as a
+  conversation: the visitor's newest message appeared before a form that was offered several
+  turns earlier. The form belongs to the turn that surfaced it, so it has to be positioned
+  like a message, not appended like a footer.
+- **The anchor pins on first surface and never moves.** Re-detecting contact intent later
+  leaves an existing card where it is. This is load-bearing, not conservatism: the card's
+  position determines its slot in React's children array, so relocating it remounts
+  `ContactCard` and silently discards whatever the visitor had already typed. `dismissContactCard`
+  clears the anchor, so a declined card can legitimately reappear lower down later.
+- Verified in a real browser (Playwright against the dev server, `/api/chat` stubbed so no
+  Anthropic traffic), on both the homepage and `/work/usaa`. The fix was then stashed and the
+  same check re-run to confirm it reproduces the reported bug — card at index 4, below the
+  follow-up — so the check isn't vacuous. Drafts typed into all three mounted card instances
+  (hero panel, docked rail, always-mounted mobile overlay) survived the follow-up, confirming
+  no remount. All three "Contact card visible" Storybook stories still render one card.
+- Side effect, accepted: on case study pages the "Try asking" suggestion chips now render
+  *below* the card rather than above it. The two rarely coexist — chips clear on submit — and
+  when they do (navigating to another case study with a card still open) the bottom of the log
+  is the right place for them.
+- Alternatives considered: making the card a `role: 'contact'` entry in the `messages` array.
+  Cleaner conceptually, but it widens the `Message` type through every render site and every
+  Storybook story for the same result. Rejected as churn.
+- Note for future edits: `contactCardAfter` counts messages, so anything that appends to
+  `messages` outside `handleSubmit` — today only `setPageContext`'s one-time page-context
+  note — shifts positions after it. Both pages clamp with
+  `Math.min(contactCardAfter ?? messages.length, messages.length)`, which is also what makes
+  Storybook's `forceShowContactCard` (no anchor at all) still render at the end of a seeded log.
