@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Fragment } from 'react';
 import type { RefObject } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { NavBar } from '../../components/NavBar';
@@ -126,6 +126,7 @@ export function HomeV4Blend({
     setPageContext,
     fabRevealed,
     showContactCard,
+    contactCardAfter,
     contactFormStatus,
     contactErrorText,
     submitContactForm,
@@ -210,6 +211,25 @@ export function HomeV4Blend({
     </div>
   );
 
+  const contactCardJSX = (
+    <ContactCard
+      status={contactFormStatus}
+      errorText={contactErrorText}
+      onSubmit={submitContactForm}
+      onDismiss={dismissContactCard}
+    />
+  );
+
+  // The contact form is a transcript entry, not a footer: it renders after the
+  // turn that surfaced it, so a follow-up question and its reply appear below
+  // it rather than above it. `contactCardAfter` is that position as a message
+  // count; the clamp covers Storybook's forceShowContactCard (no anchor at
+  // all) and pins the card to the end of the log in that case.
+  const contactCardAt =
+    forceShowContactCard || showContactCard
+      ? Math.min(contactCardAfter ?? messages.length, messages.length)
+      : null;
+
   function renderLog(logRef: RefObject<HTMLDivElement | null>, className: string) {
     return (
       <div
@@ -246,44 +266,42 @@ export function HomeV4Blend({
             </div>
           </>
         ) : (
-          messages.map((m, i) =>
-            m.role === 'user' ? (
-              <p key={i} className={styles.msgUser}>
-                <span className={styles.msgUserPrompt} aria-hidden>
-                  {'› '}
-                </span>
-                {m.text}
-              </p>
-            ) : (
-              <div key={i} className={styles.msgAssistant}>
-                {(() => {
-                  const paras = splitParagraphs(m.text);
-                  const displayParas = paras.length > 0 ? paras : [''];
-                  return displayParas.map((para, pi) => (
-                    <p key={pi} className={styles.msgAssistantPara}>
-                      {para}
-                      {pi === displayParas.length - 1 &&
-                        i === messages.length - 1 &&
-                        m.text === '' && (
-                          <span className={`${styles.msgCursor} cursor-blink`} aria-hidden>
-                            _
-                          </span>
-                        )}
-                    </p>
-                  ));
-                })()}
-              </div>
-            ),
-          )
+          messages.map((m, i) => (
+            <Fragment key={i}>
+              {m.role === 'user' ? (
+                <p className={styles.msgUser}>
+                  <span className={styles.msgUserPrompt} aria-hidden>
+                    {'› '}
+                  </span>
+                  {m.text}
+                </p>
+              ) : (
+                <div className={styles.msgAssistant}>
+                  {(() => {
+                    const paras = splitParagraphs(m.text);
+                    const displayParas = paras.length > 0 ? paras : [''];
+                    return displayParas.map((para, pi) => (
+                      <p key={pi} className={styles.msgAssistantPara}>
+                        {para}
+                        {pi === displayParas.length - 1 &&
+                          i === messages.length - 1 &&
+                          m.text === '' && (
+                            <span className={`${styles.msgCursor} cursor-blink`} aria-hidden>
+                              _
+                            </span>
+                          )}
+                      </p>
+                    ));
+                  })()}
+                </div>
+              )}
+              {contactCardAt === i + 1 && contactCardJSX}
+            </Fragment>
+          ))
         )}
-        {(forceShowContactCard || showContactCard) && (
-          <ContactCard
-            status={contactFormStatus}
-            errorText={contactErrorText}
-            onSubmit={submitContactForm}
-            onDismiss={dismissContactCard}
-          />
-        )}
+        {/* Only reachable with an empty log (Storybook's forced card) — every
+            other position is rendered inside the map above. */}
+        {contactCardAt === 0 && contactCardJSX}
       </div>
     );
   }

@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import type { ChatWidgetStatus } from '../components/ChatInput';
 import type { ContactFormStatus, ContactSubmission } from '../components/ContactCard';
 
@@ -159,8 +159,16 @@ export interface UseChatSession {
    * 1100px). Idempotent.
    */
   revealFab: () => void;
-  /** Whether the inline ContactCard should render at the end of the message log. */
+  /** Whether the inline ContactCard should render in the message log at all. */
   showContactCard: boolean;
+  /**
+   * Where the card sits in the log, as the number of messages that render
+   * before it — the card belongs to the turn that surfaced it, not to the
+   * bottom of the transcript. Pages must render it at this position rather
+   * than after the whole list, or a follow-up question and its reply appear
+   * *above* the form instead of below it. null whenever no card is showing.
+   */
+  contactCardAfter: number | null;
   contactFormStatus: ContactFormStatus;
   /** Server-side error message from the last failed /api/contact attempt, if any. */
   contactErrorText?: string;
@@ -179,11 +187,16 @@ export function useChatSession({
   const [activeSuggestions, setActiveSuggestions] = useState<string[]>([]);
   const [fabRevealed, setFabRevealed] = useState(false);
   const revealFab = useCallback(() => setFabRevealed(true), []);
-  const [showContactCard, setShowContactCard] = useState(false);
+  // The contact card's position in the transcript, stored as the number of
+  // messages that precede it rather than as a plain boolean: it's an entry in
+  // the message log, not a footer stuck to the bottom of it. Anchoring it means
+  // later turns render below the form instead of jumping above it.
+  const [contactCardAfter, setContactCardAfter] = useState<number | null>(null);
+  const showContactCard = contactCardAfter !== null;
   const [contactFormStatus, setContactFormStatus] = useState<ContactFormStatus>('idle');
   const [contactErrorText, setContactErrorText] = useState<string | undefined>(undefined);
 
-  const dismissContactCard = useCallback(() => setShowContactCard(false), []);
+  const dismissContactCard = useCallback(() => setContactCardAfter(null), []);
 
   const submitContactForm = useCallback(async (fields: ContactSubmission) => {
     setContactFormStatus('sending');
@@ -200,6 +213,16 @@ export function useChatSession({
   // Refs, not state — read at submit time, shouldn't themselves trigger renders.
   const pageContextRef = useRef<string | null>(null);
   const announcedRef = useRef<Set<string>>(new Set());
+  // Mirrors `messages` so handleSubmit can work out where the contact card
+  // should land without closing over the array — depending on it would rebuild
+  // the callback on every streamed chunk. Synced after commit, which is
+  // current at submit time: a submit can't begin while one is in flight
+  // (submittingRef below), and nothing else appends between the click and this
+  // read.
+  const messagesRef = useRef<Message[]>(initialMessages);
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
   // Synchronous submit lock: `chatStatus` is React state and updates on the
   // next render, so a fast double-trigger (e.g. Enter then a stray click)
   // before that render could otherwise pass the isLoading check twice and
@@ -246,14 +269,26 @@ export function useChatSession({
       if (submittingRef.current) return;
       submittingRef.current = true;
 
-      // Surface the contact card immediately, alongside the streaming reply
-      // rather than waiting on it — the trigger is independent of what the
-      // assistant ends up saying. Skipped once a message has already been
-      // sent successfully this session, so a later unrelated "thanks, I'll
-      // reach out" doesn't reopen a form that already did its job.
-      if (contactFormStatus !== 'sent' && detectContactIntent(text)) {
-        setShowContactCard(true);
-      }
+      // Anchor the card after this turn's user message and assistant reply —
+      // both appended just below — so it renders under the answer that
+      // prompted it and holds that spot as the conversation continues.
+      const anchorAfterThisTurn = messagesRef.current.length + 2;
+
+      // Pin on first surface only. Re-triggering later must not relocate a
+      // card the visitor may already be typing into: moving it in the log
+      // would remount it and silently drop the draft. Skipped once a message
+      // has been sent successfully this session, so a later unrelated
+      // "thanks, I'll reach out" doesn't reopen a form that already did its
+      // job.
+      const surfaceContactCard = () => {
+        if (contactFormStatus === 'sent') return;
+        setContactCardAfter((prev) => (prev === null ? anchorAfterThisTurn : prev));
+      };
+
+      // Surface immediately, alongside the streaming reply rather than waiting
+      // on it — the trigger is independent of what the assistant ends up
+      // saying.
+      if (detectContactIntent(text)) surfaceContactCard();
 
       setChatStatus('loading');
       setActiveSuggestions([]);
@@ -292,8 +327,8 @@ export function useChatSession({
 
         if (errorText) {
           replaceLastAssistant(errorText);
-        } else if (contactFormStatus !== 'sent' && detectContactIntent(assistantText)) {
-          setShowContactCard(true);
+        } else if (detectContactIntent(assistantText)) {
+          surfaceContactCard();
         }
       } catch {
         replaceLastAssistant("The assistant isn't available right now — try again in a moment.");
@@ -314,6 +349,7 @@ export function useChatSession({
     fabRevealed,
     revealFab,
     showContactCard,
+    contactCardAfter,
     contactFormStatus,
     contactErrorText,
     submitContactForm,
