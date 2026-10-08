@@ -1143,4 +1143,4 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
   the Regular strokes disappear and three monospace glyphs at default spacing leave the square
   mostly empty. Same colors and the green terminal-cursor underscore as the wordmark.
 - Alternatives considered: a two-letter `B_` mark (bigger glyphs, but no longer the wordmark).
-- Note: `public/icons.svg` is unreferenced Vite boilerplate — safe to delete.
+- Note: `public/icons.svg` (unreferenced Vite boilerplate) deleted in the same PR.
