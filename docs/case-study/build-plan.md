@@ -508,6 +508,12 @@ independently; only the widget's visual styling depends on those.*
       so this is a measurement-environment difference, not a code regression — but the
       `96–100` claim is still unconfirmed. Left unchecked until it's confirmed with
       PageSpeed Insights against the deployed site.)*
+      *(2026-10-08 later, local Mac re-run, same Lighthouse 12.2.1 + `vite preview`, mobile
+      preset, two runs per page: Home 96/100/100/100; portfolio, upfluent, usaa, sabre, about,
+      resume, contact all 98/100/100/100. Supports `96–100`. An unmerged 2026-09-25 branch had
+      measured Home at 92–95 and proposed changing the copy to `92–100`; that change was
+      dropped (branch deleted) because it no longer reproduces. PSI on the deployed URL is
+      still the confirming check.)*
 - [ ] Write final process-journal.md entry
 
 ---
