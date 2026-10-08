@@ -28,7 +28,7 @@ export const portfolioRebuildData: CaseStudyContent = {
   meta: [
     { label: 'My role', value: 'Director · Sole designer' },
     { label: 'Method', value: 'AI-directed build' },
-    { label: 'Lighthouse', value: '96–100', accent: true },
+    { label: 'Lighthouse', value: '94–100', accent: true },
     { label: 'Build time', value: '8 weeks', accent: true },
   ],
   problem: {
@@ -96,9 +96,9 @@ export const portfolioRebuildData: CaseStudyContent = {
   },
   outcomes: [
     {
-      value: '96–100',
+      value: '94–100',
       label: 'Lighthouse · 8 pages',
-      body: 'Performance 96–98. Accessibility, best practices, SEO all 100.',
+      body: "Performance 94–98 — the homepage's boot intro is the low end. Accessibility, best practices, SEO all 100.",
     },
     {
       value: '2',

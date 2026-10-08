@@ -504,7 +504,7 @@ independently; only the widget's visual styling depends on those.*
       Version A/B override)
 - [ ] Before/after comparison (existing site vs. rebuilt site)
 - [x] Publish and replace Phase 4 placeholder (2026-07-29)
-- [ ] Re-run Lighthouse to confirm the `96–100` figure the page now claims — the recorded
+- [x] Re-run Lighthouse to confirm the `96–100` figure the page now claims — the recorded
       numbers predate the contact flow and mobile chat overlay
       *(2026-10-08 re-run, Lighthouse 12.2.1, production build via `vite preview`: mobile
       preset 88–91 performance, 100/100/100 elsewhere on all 8 routes; desktop preset Home
@@ -518,6 +518,13 @@ independently; only the widget's visual styling depends on those.*
       measured Home at 92–95 and proposed changing the copy to `92–100`; that change was
       dropped (branch deleted) because it no longer reproduces. PSI on the deployed URL is
       still the confirming check.)*
+      *(2026-10-08, resolved: PageSpeed Insights was unavailable — the API's shared daily
+      quota was exhausted and the web tool never returned — so Lighthouse 12.2.1 ran from
+      Ben's Mac against the live `bmax-portfolio.vercel.app`, mobile preset, two runs per
+      page. Home 94/94; every other page 97–98 on warm runs (two cold first loads scored 89
+      and 92 and recovered to 97 on repeat); 100/100/100 everywhere. Copy changed to
+      `94–100` per the "change the copy, not the number" rule — Ben's call. See decisions.md
+      2026-10-08.)*
 - [ ] Write final process-journal.md entry
 
 ---
