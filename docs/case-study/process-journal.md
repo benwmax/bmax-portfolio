@@ -1022,8 +1022,8 @@ order. The chat transcript had been copy-pasted between the homepage and the cas
 and both chat rendering bugs so far (2026-07-19, 2026-08-01) came from those copies drifting.
 
 **What I'm uncertain about:**
-- Two small visible changes from merging the transcript copies are Claude's calls, still
-  unreviewed: the typing cursor now shows for the whole streamed reply on both surfaces (the
+- Two small visible changes from merging the transcript copies were Claude's calls (I
+  confirmed both later the same day): the typing cursor now shows for the whole streamed reply on both surfaces (the
   homepage used to show it only until the first words arrived), and the reply indent is 16px
   everywhere (the case study rail was 14px).
 - The Contact page's new search description is Claude's draft. That page never had one.

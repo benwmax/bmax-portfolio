@@ -1157,9 +1157,9 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
   ContactCard ordering fix needing to be made twice (2026-08-01). It's also the most
   important UI on the site and wasn't in the public Storybook. Documented component count goes
   from 15 to 16 (case study and chat brief updated).
-- Unified in the process (Claude's call, flagged for review): the streaming cursor now shows
-  for the whole reply on both surfaces. Home previously showed it only before the first chunk
-  arrived. Reply indent is 16px on both (case study rail was 14px).
+- Unified in the process (Claude's call, confirmed by Ben the same day): the streaming cursor
+  now shows for the whole reply on both surfaces. Home previously showed it only before the
+  first chunk arrived. Reply indent is 16px on both (case study rail was 14px).
 - Alternatives considered: suggestion chips inside the component. Not done — the two surfaces
   style them differently (size, hover nudge, Futuristic squaring), and unifying that is a
   design call, not a refactor.
