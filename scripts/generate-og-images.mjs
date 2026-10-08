@@ -65,7 +65,8 @@ function page({ kicker, title, desc, tag }) {
     font: 700 68px/1.08 'Space Mono', monospace; letter-spacing: -0.035em;
     max-width: 1020px; margin-bottom: 26px;
   }
-  h1 em { font-style: normal; color: ${T.green}; }
+  /* Amber, matching the live homepage hero (.heroAmber in HomeV4Blend.module.css). */
+  h1 em { font-style: normal; color: ${T.amber}; }
   .desc {
     font: 400 28px/1.4 'IBM Plex Mono', monospace; color: ${T.textSecondary};
     max-width: 980px;
