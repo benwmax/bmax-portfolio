@@ -806,6 +806,11 @@ drifts again.)
   the ContactCard inside the mobile overlay have all only been verified via browser resize
   and Playwright — never on an actual device. Flagged in three consecutive journal entries
   (2026-07-19, 2026-07-19 later, 2026-07-20); still open in build-plan.md Phase 5.
+  **The step-by-step pass is `docs/testing/mobile-safari-qa.md`** (written 2026-07-20,
+  refreshed 2026-10-08): real iPhone Safari + desktop Safari against the deployed site,
+  every listed page, then focused checks on the chat overlay, input zoom, theme persistence,
+  CSP, streaming, safe areas, rotation, the in-chat contact form, and link previews. Ben's
+  task — Claude has no physical device access.
 - **At the viewbens.work domain cutover:** remove the temporary `https://bmax-portfolio.vercel.app`
   entry from `ALLOWED_ORIGINS` in `api/lib/cors.ts` (added 2026-07-19 for pre-launch testing,
   moved out of `api/chat.ts` 2026-07-20 — see the `TEMPORARY` code comment and decisions.md

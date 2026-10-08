@@ -426,7 +426,11 @@ independently; only the widget's visual styling depends on those.*
       the full-screen overlay on first submit and sharing the FAB/overlay across Home + case
       study pages via `src/components/MobileChatSurface.tsx` (case study pages had no mobile
       chat entry before this). See decisions.md 2026-07-19. Systematic real-device testing
-      across the whole site is still needed.
+      across the whole site is still needed. Step-by-step runbook:
+      `docs/testing/mobile-safari-qa.md` (scoped 2026-07-20, refreshed 2026-10-08 for the
+      contact form, ChatTranscript, unlisted Sagent, and per-route link previews). Ben's task
+      to run — Claude has no physical device access. Check this box and log results in
+      process-journal.md once done.
 - [ ] Image optimization: WebP format, lazy loading, proper srcset — blocked: no real case study
       images exist in content yet (all five `src/content/*.ts` files have zero image refs) —
       this is really gated on Phase 1E (image audit), not a QA task
