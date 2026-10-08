@@ -958,7 +958,8 @@ the USAA 2–4 sentence standard.
   it locally. If my run also lands below 96, change the copy.
 - **404 page.** The same run flagged a 4.43:1 contrast failure on the 404's `shell — 80×24`
   label. It's the same tertiary-on-raised pattern fixed in ChatInput on 2026-07-16. It's out
-  of scope here and has not been fixed.
+  of scope here; fixed later the same day. The label now uses `--color-text-secondary`
+  (5.23:1 Retro, 6.81:1 Futuristic), and Lighthouse accessibility on the 404 is back to 100.
 - **Whether to publish the env-pull story.** It's honest, and it's the kind of failure the
   "what Claude couldn't do" section exists for. It's also the most unflattering line about the
   tooling on the page. Cut it if it reads as a gripe rather than a lesson.
