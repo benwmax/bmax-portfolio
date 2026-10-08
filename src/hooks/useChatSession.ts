@@ -46,6 +46,12 @@ export function detectContactIntent(text: string): boolean {
   return CONTACT_INTENT_PATTERN.test(text);
 }
 
+// Shown when an API error arrives without a visitor-facing message from the
+// server. Deliberately no status code — "(502)" means nothing to a visitor and
+// reads as broken. The server's own `error` text, when present, still wins.
+const CHAT_FALLBACK_ERROR = 'Something went wrong on my end. Try again in a moment.';
+const CONTACT_FALLBACK_ERROR = "Couldn't send your message. Try again, or email ben@viewbens.work directly.";
+
 // Mirrors streamChat's error-handling shape below, but for the single-shot
 // (non-streaming) /api/contact endpoint.
 async function postContact(fields: ContactSubmission): Promise<{ ok: boolean; errorText?: string }> {
@@ -60,9 +66,9 @@ async function postContact(fields: ContactSubmission): Promise<{ ok: boolean; er
 
     try {
       const json = (await res.json()) as { error?: string };
-      return { ok: false, errorText: json.error ?? `Something went wrong (${res.status}).` };
+      return { ok: false, errorText: json.error ?? CONTACT_FALLBACK_ERROR };
     } catch {
-      return { ok: false, errorText: `Something went wrong (${res.status}).` };
+      return { ok: false, errorText: CONTACT_FALLBACK_ERROR };
     }
   } catch {
     return { ok: false, errorText: "Couldn't send your message — check your connection and try again." };
@@ -109,9 +115,9 @@ async function streamChat(
     if (!res.ok) {
       try {
         const json = (await res.json()) as { error?: string };
-        return { errorText: json.error ?? `Something went wrong (${res.status}).` };
+        return { errorText: json.error ?? CHAT_FALLBACK_ERROR };
       } catch {
-        return { errorText: `Something went wrong (${res.status}).` };
+        return { errorText: CHAT_FALLBACK_ERROR };
       }
     }
 

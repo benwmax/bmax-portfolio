@@ -111,7 +111,7 @@ function MagneticCTA({ reduced }: { reduced: boolean }) {
     <span className={styles.magnetWrap}>
       <a
         ref={ref}
-        href="mailto:ben@benjaminwmaxwell.com"
+        href="mailto:ben@viewbens.work"
         className={styles.magnet}
         onPointerMove={onMove}
         onPointerLeave={onLeave}
