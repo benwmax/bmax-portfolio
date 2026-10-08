@@ -24,7 +24,7 @@ export const portfolioRebuildData: CaseStudyContent = {
   company: 'Portfolio Rebuild',
   heroTitle: 'Directing an AI to build a portfolio — and making the process the case study.',
   heroSubtitle:
-    "I rebuilt this site with Claude as a collaborator, not an autopilot. Every strategic call — positioning, what to lead with, what to cut — stayed mine. The interesting part isn't that AI wrote code fast. It's where I had to overrule it.",
+    "I rebuilt this site with Claude as a collaborator, not an autopilot. Every strategic call stayed mine. The interesting part isn't that AI wrote code fast — it's where I had to overrule it.",
   meta: [
     { label: 'My role', value: 'Director · Sole designer' },
     { label: 'Method', value: 'AI-directed build' },
@@ -47,7 +47,7 @@ export const portfolioRebuildData: CaseStudyContent = {
     {
       label: 'Claude owned',
       content:
-        'Code generation, first drafts, audits, and surfacing things I had stopped seeing in my own work. Fast, and often right. Never the decision-maker.',
+        'Code, first drafts, audits, and surfacing things I had stopped seeing in my own work. Fast, often right, and never the decision-maker.',
     },
     {
       label: 'The distinction',
@@ -57,43 +57,42 @@ export const portfolioRebuildData: CaseStudyContent = {
   ],
   userContext: {
     paragraphs: [
-      "The reader is a design director or hiring manager with about ninety seconds and four other tabs open. They aren't auditing my process. They're deciding whether to keep reading.",
-      'That makes AI collaboration a liability as much as a selling point. The same audience curious about how I work with AI is primed to spot slop — one generic gradient, one sentence about leveraging synergies, and the argument dies before it gets made.',
-      'So the site has to survive a skim and reward a close read. And it has to look like it was made by someone with taste, before anyone reads a word about method.',
+      "The reader is a design director with about ninety seconds and four other tabs open. They aren't auditing my process. They're deciding whether to keep reading.",
+      'That makes AI a liability as much as a selling point. The people curious about how I work with AI are the same people primed to spot slop, and one generic gradient ends the argument before it starts. The site has to look like someone with taste made it before anyone reads a word about method.',
     ],
   },
   process: [
     {
       phase: 'Audit',
       title: 'Two AI passes, stacked against each other',
-      body: 'Ran a straight portfolio assessment, then pointed a second adversarial review at its output. The second pass caught what the first missed — no NDA question, a misread of which case study actually showed craft, and a generic site map dressed up as strategy.',
+      body: 'Ran a straight portfolio assessment, then pointed an adversarial review at its output. The second pass caught what the first missed: the unasked NDA question, a misread of which case study showed craft, and a generic site map dressed up as strategy.',
       artifact: 'Adversarial review · Positioning synthesis',
     },
     {
       phase: 'System',
       title: 'Tokens first, components second',
-      body: 'Locked the palette and type scale into CSS custom properties before building a single component, then built the library on ShadCN primitives with a public Storybook. When I later wanted a second full aesthetic, it cost a token override block instead of a refactor.',
-      artifact: 'Design tokens · Storybook · 12 MDX docs',
+      body: 'Locked the palette and type scale into CSS custom properties before building a single component, then documented the library in a public Storybook. When I wanted a second full aesthetic, it cost a token override block instead of a refactor.',
+      artifact: 'Design tokens · Storybook · 15 MDX docs',
     },
     {
       phase: 'Ship',
       title: "Build the AI, don't just claim it",
-      body: 'Put a live assistant on the site so visitors can interrogate the work instead of taking my word for the AI fluency. It runs on an edge function with a scoped brief, server-side session authority, rate limits, and a spend cap — a public LLM endpoint is an attack surface, not a demo.',
-      artifact: 'Edge function · Prompt-injection hardening',
+      body: 'Put a live assistant on the site so visitors can question the work instead of taking my word for it. Treating it as an attack surface paid off: the first version trusted the chat history the browser sent back, so a tampered client could fake a reply where the assistant had already broken character. History now lives on the server.',
+      artifact: 'Edge function · Server-side session · Spend cap',
     },
   ],
   keyDecision: {
     heading: 'Make the rebuild the lead case study',
     paragraphs: [
       'The original plan was simple: rebuild the site, add a Sagent case study, ship. Instead I moved this project to position one, ahead of every client engagement.',
-      'My newest client work is from 2024. This is from this month. Leading with it means the first thing a director sees is how I work now — directing a process, not executing a brief — instead of how I worked in 2017.',
+      'My newest client work is from 2024. This is from 2026. Leading with it means the first thing a director sees is how I work now — directing a process, not executing a brief.',
     ],
   },
   whatWasHard: {
     paragraphs: [
-      'The AI was a confident bad editor before it was a good one. Its first read of my portfolio was fluent and wrong in ways that were hard to spot — it never asked whether the USAA screens raised an NDA problem, it called my only visually strong case study the weakest, and it handed back Home → Work → About as if that were a strategy.',
-      'So I stopped asking it for answers and made it argue with itself instead. Same with the writing: I had it draft one case study two ways, then rejected its recommendation to merge them and kept the leaner version — the merge would have read like a template again.',
-      'And the whole thing is recursive. This page is hosted on the thing it describes, so the site gets judged before the argument gets made. Every wrap point and focus ring is a claim about my judgment, which meant no default got accepted just because it worked.',
+      "The AI was a confident bad editor before it was a good one. Its first audit never raised the NDA question, called my only visually strong case study the weakest, and offered Home → Work → About as strategy. Later, while refreshing local config, it overwrote my real API keys with redacted placeholders. Fluent isn't the same as careful.",
+      'So I made it argue with itself, and overruled it where taste was the call. It wanted to merge two drafts of a case study; I kept the leaner one. It wanted to leave a gap in the case study numbering to save churn; I renumbered, because a gap reads as something missing — and noticing that is the whole argument.',
+      'And the whole thing is recursive. This page is hosted on the thing it describes, so every wrap point and focus ring is a claim about my judgment. No default got accepted just because it worked.',
     ],
   },
   outcomes: [
@@ -108,7 +107,7 @@ export const portfolioRebuildData: CaseStudyContent = {
       body: 'Retro and Futuristic, one token layer apart.',
     },
     {
-      value: '12',
+      value: '15',
       label: 'Documented components',
       body: 'Public Storybook, MDX docs, stories for every state.',
     },
@@ -121,7 +120,7 @@ export const portfolioRebuildData: CaseStudyContent = {
   whatIdDoDifferently: {
     paragraphs: [
       'Write the documentation rules before the first prompt, not after the fourth session started cold. The project instructions and component guide exist because I kept re-explaining the same constraints — they should have been the first artifact, not a mid-project patch.',
-      'And test on a real phone earlier. Emulated viewports caught most things and missed the one that mattered: on mobile, a reply streamed into a panel that had already collapsed and gone dead.',
+      "And get it on a real phone sooner. Emulated viewports and scripted browsers caught almost everything, but they're the AI's view of the site, not a visitor's. A real device is the one check I can't delegate.",
     ],
   },
   // Placeholder slots — captions and positions are final, screenshots pending.

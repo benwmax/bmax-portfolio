@@ -935,3 +935,56 @@ it also scored 89–91 there, so the gap is the measurement environment, not a r
 Generated the OG images from the shared case-study data rather than hardcoding the copy.
 **Where I overrode or redirected Claude:** Claude had framed the years claim as likely
 wrong (career arc starts 2014); the listed roles aren't the whole history.
+
+## 2026-10-08 (later — Portfolio Rebuild refresh)
+**What I did:**
+Refreshed the Portfolio Rebuild case study (`src/content/portfolio-rebuild.ts`) against the
+docs as they stand now, not as they stood on 2026-07-29 when it was first written. Kept the
+shared 8-section template rather than building a custom page.
+
+**What I decided:**
+Refresh, not rebuild. Claude asked up front whether "build the case study page from the docs"
+meant a new custom page, a content refresh, or template extras, because the page already
+existed. I chose the refresh.
+
+**Why:**
+The page was mostly right but had drifted. The component count said 12 when Storybook now
+documents 15. "This is from this month" stopped being true in August. Some of the best material
+in the journal postdated the page entirely. User context and What was hard had also crept past
+the USAA 2–4 sentence standard.
+
+**What changed:**
+- Ship step now names the concrete security finding (the browser-supplied chat history that
+  could fake a broken-character reply, moved to the server) instead of listing safeguards.
+- What was hard adds two real moments: the `vercel env pull` that overwrote local API keys
+  (2026-07-22), and the 01/02/04/05 renumbering override (2026-07-29).
+- What I'd do differently reframes the real-phone point as "the one check I can't delegate"
+  instead of asserting which bug emulation missed.
+- User context cut from three paragraphs to two; the hero subtitle was tightened.
+- `api/lib/system-prompt.ts` was synced so the assistant tells the same story (15 components,
+  the server-side history fix, the env-pull and renumber moments).
+
+**What I'm uncertain about:**
+- **Lighthouse.** Claude re-ran it on the production build in its cloud container. Performance
+  came out 90–93, not 96–98. Accessibility, best practices, and SEO were 100 on all 8
+  indexable routes. CLS and TBT were both ~0, so this isn't a layout regression. The gap is FCP
+  and Speed Index under simulated throttling, measured on a different machine and network than
+  the 2026-07-16 run, so it isn't a clean comparison. The `96–100` claim stays until I re-run
+  it locally. If my run also lands below 96, change the copy.
+- **404 page.** The same run flagged a 4.43:1 contrast failure on the 404's `shell — 80×24`
+  label. It's the same tertiary-on-raised pattern fixed in ChatInput on 2026-07-16. It's out
+  of scope here; fixed later the same day. The label now uses `--color-text-secondary`
+  (5.23:1 Retro, 6.81:1 Futuristic), and Lighthouse accessibility on the 404 is back to 100.
+- **Whether to publish the env-pull story.** It's honest, and it's the kind of failure the
+  "what Claude couldn't do" section exists for. It's also the most unflattering line about the
+  tooling on the page. Cut it if it reads as a gripe rather than a lesson.
+
+**What Claude contributed:**
+Asked which of three readings I meant before writing anything. Audited the live copy against
+the journal and the current repo, and found the stale count by counting the MDX files rather
+than trusting the docs. Re-ran Lighthouse rather than carrying the old number forward, and
+reported the result without either quietly changing the claim or quietly keeping it. Verified
+the page in a browser at 1440 and 390.
+
+**Where I overrode or redirected Claude:**
+N/A. It offered the three directions and I picked one.

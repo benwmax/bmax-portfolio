@@ -558,6 +558,14 @@ and gets a full pass post-launch.
 set to 2015–18 everywhere; OG images generated into `public/og/`; Lighthouse re-run — see
 "Immediate next steps". See decisions.md 2026-10-08.)
 
+**Also updated:** 2026-10-08 (Portfolio Rebuild case study refreshed against the current docs
+on the existing template: component count 12 → 15, stale "this month" fixed, the server-side
+chat-history fix, the env-pull and renumbering moments added, and sections trimmed back to the
+USAA length standard. The chat brief in `api/lib/system-prompt.ts` was synced to match.
+Lighthouse re-run in a cloud container gave performance 90–93 with everything else 100. That
+environment isn't comparable, so the `96–100` claim stands pending Ben's local re-run. See
+process-journal.md 2026-10-08.)
+
 **Previously updated:** 2026-08-01 (Ordering fix in the chat: the inline ContactCard was rendered
 after the whole message list, so a follow-up question and its reply appeared *above* the
 form. It's now anchored to the turn that surfaced it via `contactCardAfter` in
