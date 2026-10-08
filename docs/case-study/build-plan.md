@@ -427,8 +427,8 @@ independently; only the widget's visual styling depends on those.*
       study pages via `src/components/MobileChatSurface.tsx` (case study pages had no mobile
       chat entry before this). See decisions.md 2026-07-19. Systematic real-device testing
       across the whole site is still needed. Step-by-step runbook:
-      `docs/testing/mobile-safari-qa.md` (scoped 2026-07-20, refreshed 2026-10-08 for the
-      contact form, ChatTranscript, unlisted Sagent, and per-route link previews). Ben's task
+      `docs/testing/mobile-safari-qa.md` (scoped 2026-07-20; simplified 2026-10-08 to a
+      ~25-minute phone-only pass, with console checks on desktop Safari). Ben's task
       to run — Claude has no physical device access. Check this box and log results in
       process-journal.md once done.
 - [ ] Image optimization: WebP format, lazy loading, proper srcset — blocked: no real case study
