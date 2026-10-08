@@ -1,0 +1,61 @@
+/* Message styles for every chat surface. The scrolling container itself
+   (padding, gap, height) belongs to each surface and comes in via className. */
+
+.user {
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  line-height: 1.65;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.userPrompt {
+  font-family: var(--font-mono-display);
+  color: var(--color-green-accent);
+}
+
+/* 18px, not the body scale: replies are the thing visitors came to read, and
+   14–15px read as fine print in the narrow rail (decisions.md 2026-07-19). */
+.assistant {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--color-text-secondary);
+  margin: 0;
+  border-left: 2px solid var(--color-green-border);
+  padding-left: 16px;
+}
+
+.assistantPara {
+  margin: 0;
+}
+
+.assistantPara + .assistantPara {
+  margin-top: 12px;
+}
+
+.cursor {
+  color: var(--color-green-bright);
+}
+
+/* Futuristic: the blinking "_" becomes a soft pulsing dot. font-size: 0
+   suppresses the underscore glyph; the box is reshaped in CSS so no markup
+   changes between themes. */
+:global([data-theme='futuristic']) .cursor {
+  font-size: 0;
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-full);
+  background: var(--color-green-bright);
+  margin-left: 5px;
+  vertical-align: middle;
+}
+
+/* Mobile: conversations happen in the full-screen overlay (MobileChatSurface),
+   so visitor messages go up one type-scale step for the smaller viewport. */
+@media (max-width: 760px) {
+  .user {
+    font-size: var(--text-lg);
+  }
+}

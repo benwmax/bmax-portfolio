@@ -496,19 +496,22 @@ for the build checklist.
 - `api/contact.ts` has its own rate limits and daily cap, separate from chat's, because an
   email send is a different resource than an LLM token. Don't merge the two budgets.
 - **The inline ContactCard is a transcript entry, not a footer.** `useChatSession` exposes
-  `contactCardAfter` (the number of messages that render before the card); pages must render
-  it at that position *inside* the message map, not after the whole list — appending it means
-  every follow-up turn appears above the form. Two rules go with it: the anchor pins on first
-  surface and never moves (relocating it remounts `ContactCard` and drops a half-typed draft),
-  and pages clamp with `Math.min(contactCardAfter ?? messages.length, messages.length)` so
-  Storybook's `forceShowContactCard` still works. Fixed 2026-08-01 after shipping the wrong
-  way on 2026-07-20; see decisions.md 2026-08-01.
+  `contactCardAfter` (the number of messages that render before the card), and
+  `ChatTranscript` renders the card at that position *inside* the message list, not after it —
+  appending it means every follow-up turn appears above the form. Pages pass the card and
+  `contactCardAfter` in; they don't place it themselves. The anchor pins on first surface and
+  never moves (relocating it remounts `ContactCard` and drops a half-typed draft). Fixed
+  2026-08-01 after shipping the wrong way on 2026-07-20; see decisions.md 2026-08-01.
 - The assistant's replies are rendered by `splitParagraphs()` (`src/hooks/useChatSession.ts`)
   into separate `<p>` blocks, and the system prompt's formatting section enforces short,
   frequent paragraph breaks as a hard rule (not a suggestion — Haiku doesn't reliably follow
-  soft formatting guidance). Any page that renders assistant messages must call
-  `splitParagraphs()` on the text, not render it as one block — `HomeV4Blend.tsx` shipped
-  without this for weeks before being caught 2026-07-19; see decisions.md 2026-07-19.
+  soft formatting guidance). `ChatTranscript` does the splitting. Any page that renders chat
+  messages must use it rather than its own markup — `HomeV4Blend.tsx` shipped without
+  paragraph splitting for weeks before being caught 2026-07-19; see decisions.md 2026-07-19.
+- **`src/components/ChatTranscript/` is the only place chat messages are rendered** (extracted
+  2026-10-08). Home and CaseStudyPage each carried a copy before, and both bugs above came from
+  the copies drifting. Each surface passes its own container `className`, and its suggestion
+  chips as `children`. See decisions.md 2026-10-08.
 - On mobile (<=760px) the chat is a floating "Ask about Ben" button that opens a full-screen
   overlay, both in `src/components/MobileChatSurface.tsx` and shared by the homepage and
   case study pages. Two behaviors are load-bearing and easy to regress: (1) starting a chat
