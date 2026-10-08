@@ -108,13 +108,13 @@ export function ResumePage() {
         <title>Resume — Ben Maxwell | UX Design Leader</title>
         <meta
           name="description"
-          content="Résumé for Ben Maxwell — UX Design Leader with 12+ years building expert tools in regulated industries including fintech, travel, insurance, and mortgage."
+          content="Résumé for Ben Maxwell — UX Design Leader with 15+ years building expert tools in regulated industries including fintech, travel, insurance, and mortgage."
         />
         <link rel="canonical" href="https://viewbens.work/resume" />
         <meta property="og:title" content="Resume — Ben Maxwell" />
         <meta
           property="og:description"
-          content="Résumé for Ben Maxwell — UX Design Leader with 12+ years experience in fintech, travel, insurance, and mortgage."
+          content="Résumé for Ben Maxwell — UX Design Leader with 15+ years experience in fintech, travel, insurance, and mortgage."
         />
         <meta property="og:url" content="https://viewbens.work/resume" />
       </Helmet>

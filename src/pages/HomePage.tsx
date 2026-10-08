@@ -228,8 +228,8 @@ export function HomePage({ onChatSubmit, initialMessages = [] }: HomePageProps) 
                 <span className={styles.footerQuestion}>?</span>
               </p>
               <div className={styles.footerLinks}>
-                <a href="mailto:ben@benjaminwmaxwell.com" className={styles.footerLink}>
-                  ben@benjaminwmaxwell.com
+                <a href="mailto:ben@viewbens.work" className={styles.footerLink}>
+                  ben@viewbens.work
                 </a>
                 <a
                   href="https://www.linkedin.com/in/benjaminwmaxwell/"
