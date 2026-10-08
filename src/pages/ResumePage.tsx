@@ -55,7 +55,7 @@ const EXPERIENCE = [
   {
     role: 'Senior UX Designer',
     company: 'Sabre',
-    dates: '2014–18',
+    dates: '2015–18',
     sector: 'Travel technology',
     outcomes: [
       'Redesigned the NDC booking channel; work contributed to a $1B government contract win and +23% revenue lift.',

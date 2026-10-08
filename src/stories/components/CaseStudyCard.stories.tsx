@@ -68,7 +68,7 @@ export const Default: Story = {
     tag: 'Travel',
     href: '/work/sabre',
     role: 'Lead UX Designer',
-    year: '2014–17',
+    year: '2015–18',
     stat: '$1B',
     statLabel: 'Contract',
     sector: 'Travel Tech',
@@ -97,7 +97,7 @@ export const Hover: Story = {
     tag: 'Travel',
     href: '/work/sabre',
     role: 'Lead UX Designer',
-    year: '2014–17',
+    year: '2015–18',
     stat: '$1B',
     statLabel: 'Contract',
     sector: 'Travel Tech',
@@ -201,7 +201,7 @@ export const Futuristic: Story = {
         desc="Making a command-line booking tool learnable without slowing the veterans."
         tag="Travel"
         role="Lead Designer"
-        year="2014–17"
+        year="2015–18"
         stat="$1B"
         sector="Travel"
         href="/work/sabre"

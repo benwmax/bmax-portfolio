@@ -922,6 +922,21 @@ the docs up rather than assuming — right call generally, though on a fix this 
 have been fine with it just doing it.
 
 ## 2026-10-08
+**What I did:** Asked what's left before launch. Resolved the two open copy questions
+(experience years, Sabre dates), re-ran Lighthouse, and had Claude generate OG images.
+**What I decided:** "Over fifteen years" — my history goes back further than the listed
+roles. Sabre is 2015–2018. Placeholder OG images are good enough to launch.
+**Why:** Both copy questions were the kind of contradiction a recruiter would catch; OG
+images were the last Phase 4 blocker.
+**What I'm uncertain about:** Lighthouse mobile performance measured 88–91 in Claude's
+environment vs. the 96–98 recorded in July and claimed on the Portfolio Rebuild page.
+**What Claude contributed:** Rebuilt the 2026-07-16 commit and measured it side by side —
+it also scored 89–91 there, so the gap is the measurement environment, not a regression.
+Generated the OG images from the shared case-study data rather than hardcoding the copy.
+**Where I overrode or redirected Claude:** Claude had framed the years claim as likely
+wrong (career arc starts 2014); the listed roles aren't the whole history.
+
+## 2026-10-08 (later — Portfolio Rebuild refresh)
 **What I did:**
 Refreshed the Portfolio Rebuild case study (`src/content/portfolio-rebuild.ts`) against the
 docs as they stand now, not as they stood on 2026-07-29 when it was first written. Kept the
