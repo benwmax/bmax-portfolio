@@ -1185,3 +1185,19 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
 - Alternatives considered: pre-rendering whole pages (react-snap or an SSG plugin — heavier,
   and fights the boot sequence and chat), edge middleware rewriting the head per request
   (more moving parts for fixed values), moving to an SSR framework (far too big pre-launch).
+
+## 2026-10-08 — Lighthouse claim changed to 94–100
+- Decision: (Ben) The Portfolio Rebuild case study now claims Lighthouse `94–100`
+  ("Performance 94–98 — the homepage's boot intro is the low end"). It was `96–100`. Updated
+  in the meta stat, the outcomes block, and `api/lib/system-prompt.ts`.
+- Reasoning: Measured against the live deployment, the homepage scores 94, consistently. This
+  applies the 2026-07-29 rule: if the numbers drift, change the copy, not the number. The
+  earlier local `vite preview` run (Home 96) didn't include the real network path.
+- Method: PageSpeed Insights was unavailable (the API's shared daily quota was exhausted and the
+  web tool never returned), so Lighthouse 12.2.1 ran from Ben's Mac against
+  `bmax-portfolio.vercel.app`, mobile preset, two runs per page. Home 94/94; every other page
+  97–98 on warm runs. Two cold first loads (Portfolio 89, Contact 92) scored 97 on repeat and
+  were treated as cache warm-up, not the page's real score. Accessibility, best practices, and
+  SEO were 100 on every run.
+- Alternatives considered: waiting for PageSpeed Insights to come back, and shortening the
+  boot intro to win the points back. Neither was chosen.

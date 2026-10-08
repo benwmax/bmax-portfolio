@@ -566,7 +566,7 @@ count 15 → 16). Four copy fixes: one public email, "15+ years" in search descr
 hours" on Contact, no raw HTTP codes in chat errors. Per-route static HTML so link previews
 show the right page — the per-case-study OG images had never been seen by LinkedIn, Slack,
 iMessage, or X. The QA runbook was refreshed, then simplified to a no-cable pass. Lighthouse
-re-run locally on Ben's Mac supports `96–100`. All stale branches deleted; the repo is down
+against the live deployment changed the claim to `94–100` (Home scores 94). All stale branches deleted; the repo is down
 to `main`. See decisions.md and process-journal.md 2026-10-08.)
 
 **Earlier on 2026-10-08:** (Launch prep: "over fifteen years" copy settled and Sabre dates
@@ -578,7 +578,7 @@ on the existing template: component count 12 → 15, stale "this month" fixed, t
 chat-history fix, the env-pull and renumbering moments added, and sections trimmed back to the
 USAA length standard. The chat brief in `api/lib/system-prompt.ts` was synced to match.
 Lighthouse re-run in a cloud container gave performance 90–93 with everything else 100. That
-environment isn't comparable, so the `96–100` claim stands pending Ben's local re-run. See
+environment isn't comparable. Resolved later that day: the claim is now `94–100`. See
 process-journal.md 2026-10-08.)
 
 **Previously updated:** 2026-08-01 (Ordering fix in the chat: the inline ContactCard was rendered
@@ -812,13 +812,6 @@ drifts again.)
   `src/content/portfolio-rebuild.ts` — anchored to Process, Key decision, and What was hard.
   Drop files in `public/case/portfolio/` and add `src` + `alt` to the matching entry. No
   component or page edits needed; see docs/ai-component-guide.md → "Adding figures".
-- **Confirm Lighthouse before launch:** `/work/portfolio` claims `96–100` in its Outcomes.
-  Re-run 2026-10-08 in Claude's cloud environment measured mobile performance 88–91 — but the
-  2026-07-16 commit scored the same there, so it's environmental, not a regression. A later
-  local re-run the same day on Ben's Mac (Lighthouse 12.2.1, mobile preset) gave Home 96 and
-  every other page 98, with 100 elsewhere — supporting the claim. Still confirm with
-  PageSpeed Insights on the deployed URL; if the numbers drifted, change the copy, not the
-  number.
 - **OG images:** done 2026-10-08 as generated placeholders — `public/og/*.png` from
   `scripts/generate-og-images.mjs` (reads `CASE_STUDIES`). Re-run it after any card title/desc
   change; when Sagent ships, re-running produces `sagent.png` automatically.
