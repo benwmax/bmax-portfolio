@@ -98,7 +98,7 @@ export const portfolioRebuildData: CaseStudyContent = {
   outcomes: [
     {
       value: '96–100',
-      label: 'Lighthouse · 9 routes',
+      label: 'Lighthouse · 8 pages',
       body: 'Performance 96–98. Accessibility, best practices, SEO all 100.',
     },
     {
