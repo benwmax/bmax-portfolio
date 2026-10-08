@@ -147,6 +147,7 @@ without password gates, anonymization, or confidentiality notes.
 │   ├── pages/                       ← page-level components
 │   ├── tokens/                      ← design tokens (CSS custom properties)
 │   ├── content/                     ← typed CaseStudyContent objects, one per case study
+│   ├── seo/                         ← per-route head tags (pageMeta.ts) + PageHead
 │   └── styles/                      ← global styles, Tailwind config
 └── public/
     ├── case/                        ← case study screenshots, per-project subdirs
@@ -441,6 +442,8 @@ for the build checklist.
   daily cap for `api/contact.ts`, deliberately separate from chat's budget.
 - `src/components/ContactCard/` — the inline contact form rendered in the chat
   log, including the honeypot field and minimum-fill-time anti-bot signals.
+- `src/components/ChatTranscript/` — the chat message log, shared by every chat
+  surface (2026-10-08). The only place chat messages are rendered.
 - `src/components/MobileChatSurface.tsx` — the mobile-only "Ask about Ben" entry
   point (floating action button + full-screen overlay), shared by the homepage
   and case study pages so the mobile chat behaves identically on both. See
@@ -557,11 +560,20 @@ started; Phases 6–7 not started. Per decisions.md 2026-07-16, launch is being
 prioritized ahead of the Sagent case study — Sagent ships with placeholder copy
 and gets a full pass post-launch.
 
-**Last updated:** 2026-10-08 (Launch prep: "over fifteen years" copy settled and Sabre dates
+**Last updated:** 2026-10-08, third pass (Shipped seven PRs, all merged: #25, #27, #28, #29,
+#30, #12, #31. `ChatTranscript` extracted as the one place chat messages render (component
+count 15 → 16). Four copy fixes: one public email, "15+ years" in search descriptions, "48
+hours" on Contact, no raw HTTP codes in chat errors. Per-route static HTML so link previews
+show the right page — the per-case-study OG images had never been seen by LinkedIn, Slack,
+iMessage, or X. The QA runbook was refreshed, then simplified to a no-cable pass. Lighthouse
+re-run locally on Ben's Mac supports `96–100`. All stale branches deleted; the repo is down
+to `main`. See decisions.md and process-journal.md 2026-10-08.)
+
+**Earlier on 2026-10-08:** (Launch prep: "over fifteen years" copy settled and Sabre dates
 set to 2015–18 everywhere; OG images generated into `public/og/`; Lighthouse re-run — see
 "Immediate next steps". See decisions.md 2026-10-08.)
 
-**Also updated:** 2026-10-08 (Portfolio Rebuild case study refreshed against the current docs
+**Earlier on 2026-10-08:** (Portfolio Rebuild case study refreshed against the current docs
 on the existing template: component count 12 → 15, stale "this month" fixed, the server-side
 chat-history fix, the env-pull and renumbering moments added, and sections trimmed back to the
 USAA length standard. The chat brief in `api/lib/system-prompt.ts` was synced to match.
@@ -771,6 +783,18 @@ under `src/pages/explorations/` — is the real production homepage, not a draft
   "Four tools, four regulated industries" to "Expert tools, high-stakes industries" — the count
   was wrong before and after. Portfolio Rebuild's card tag corrected from the non-canonical
   `'Meta'` to `'AI Collaboration'`. See decisions.md 2026-07-29.
+- `ChatTranscript` extracted (2026-10-08, PR #27): the chat message log used by the homepage,
+  case study rails, and mobile overlay is now one component with stories and an MDX doc,
+  replacing two drifting copies. Documented component count is now 16 (case study and chat
+  brief updated). See decisions.md 2026-10-08.
+- Launch copy fixes (2026-10-08, PR #29): homepage footer email → `ben@viewbens.work`, the one
+  public address; About/Resume search descriptions "12+ years" → "15+ years"; Contact "two
+  business days" → "48 hours"; chat and contact errors no longer show raw HTTP codes.
+- Per-route link previews (2026-10-08, PR #30): `src/seo/pageMeta.ts` + `PageHead` + the
+  `scripts/prerender-meta.ts` Vite plugin. Verified on the Vercel preview by fetching each
+  route's raw HTML. See "Per-page head tags" below and decisions.md 2026-10-08.
+- Real-device QA runbook (2026-10-08, PRs #12 and #31): `docs/testing/mobile-safari-qa.md`,
+  now a ~25-minute checklist with no cable. Not yet run.
 
 **Immediate next steps:**
 (Resynced 2026-07-19 — removed a stale "Ben to choose homepage direction" item: that was
@@ -790,8 +814,10 @@ drifts again.)
   component or page edits needed; see docs/ai-component-guide.md → "Adding figures".
 - **Confirm Lighthouse before launch:** `/work/portfolio` claims `96–100` in its Outcomes.
   Re-run 2026-10-08 in Claude's cloud environment measured mobile performance 88–91 — but the
-  2026-07-16 commit scored the same there, so it's environmental, not a regression. Confirm
-  with PageSpeed Insights on the deployed URL; if the numbers drifted, change the copy, not the
+  2026-07-16 commit scored the same there, so it's environmental, not a regression. A later
+  local re-run the same day on Ben's Mac (Lighthouse 12.2.1, mobile preset) gave Home 96 and
+  every other page 98, with 100 elsewhere — supporting the claim. Still confirm with
+  PageSpeed Insights on the deployed URL; if the numbers drifted, change the copy, not the
   number.
 - **OG images:** done 2026-10-08 as generated placeholders — `public/og/*.png` from
   `scripts/generate-og-images.mjs` (reads `CASE_STUDIES`). Re-run it after any card title/desc
@@ -814,11 +840,18 @@ drifts again.)
 - **At the viewbens.work domain cutover:** remove the temporary `https://bmax-portfolio.vercel.app`
   entry from `ALLOWED_ORIGINS` in `api/lib/cors.ts` (added 2026-07-19 for pre-launch testing,
   moved out of `api/chat.ts` 2026-07-20 — see the `TEMPORARY` code comment and decisions.md
-  2026-07-19)
+  2026-07-19). Link-preview images start working at the same moment: `og:image` URLs point at
+  `viewbens.work`, so until it serves this site, shared links show the right title but no
+  image.
 
 **Decisions still open:**
 - Market Rebellion: referenced on About page as brief career arc item (decided 2026-06-20)
 - Sagent case study content (to be built from scratch) — now also gates its return to the site
+- **Ben to review (2026-10-08):** two chat behavior changes made while extracting
+  `ChatTranscript` — the typing cursor now shows for the whole streamed reply on both surfaces
+  (Home used to show it only until the first words arrived), and the reply indent is 16px
+  everywhere (the case study rail was 14px). Also the Contact page's new search description in
+  `src/seo/pageMeta.ts`, which is Claude's draft.
 
 ---
 
