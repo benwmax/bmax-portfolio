@@ -798,7 +798,7 @@ drifts again.)
   change; when Sagent ships, re-running produces `sagent.png` automatically.
 - **Per-page head tags (2026-10-08):** every route's title, description, canonical, `og:*` and
   `twitter:*` tags come from `src/seo/pageMeta.ts`. `PageHead` sets them in the browser, and
-  `scripts/prerender-meta.mjs` (part of `npm run build`) writes a static
+  `scripts/prerender-meta.ts` (a Vite plugin, so it runs in Vercel's plain `vite build` too) writes a static
   `dist/<route>/index.html` per route so link-preview crawlers, which don't run JavaScript, see
   the right page. **A new route needs an entry in `ROUTE_META`** or its shared links preview as
   the homepage. When Sagent re-lists, add `/work/sagent` there too. See decisions.md 2026-10-08.

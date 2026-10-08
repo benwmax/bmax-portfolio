@@ -6,7 +6,7 @@ import type { PageMeta } from './pageMeta';
  * Sets a page's <head> tags from its PageMeta. Every routed page renders one.
  *
  * The same values are baked into static HTML at build time for crawlers that
- * don't run JavaScript (scripts/prerender-meta.mjs). Those static copies are
+ * don't run JavaScript (scripts/prerender-meta.ts). Those static copies are
  * removed when the app boots (src/main.tsx), so the browser only ever holds
  * this one set — no duplicate description or og:image tags.
  */

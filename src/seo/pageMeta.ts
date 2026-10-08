@@ -3,22 +3,20 @@
 //
 //   1. PageHead (src/seo/PageHead.tsx), which sets the tags in the browser so
 //      they stay right during in-app navigation.
-//   2. scripts/prerender-meta.mjs, which runs after `vite build` and writes a
-//      static dist/<route>/index.html per route with these tags baked in.
+//   2. scripts/prerender-meta.ts, a Vite plugin that runs at the end of every
+//      `vite build` and writes a static dist/<route>/index.html per route with
+//      these tags baked in.
 //
 // The static files exist because link-preview crawlers (LinkedIn, Slack,
 // iMessage, X) don't run JavaScript. Before this, every URL served the same
 // index.html, so a shared case study link previewed as the homepage. See
 // decisions.md 2026-10-08.
-//
-// Imports use explicit .ts extensions so the prerender script can load this
-// file with plain Node (built-in type stripping) — no bundler involved.
 
 import type { CaseStudyContent } from '../pages/CaseStudyPage';
-import { portfolioRebuildData } from '../content/portfolio-rebuild.ts';
-import { upfluentData } from '../content/upfluent.ts';
-import { usaaData } from '../content/usaa.ts';
-import { sabreData } from '../content/sabre.ts';
+import { portfolioRebuildData } from '../content/portfolio-rebuild';
+import { upfluentData } from '../content/upfluent';
+import { usaaData } from '../content/usaa';
+import { sabreData } from '../content/sabre';
 
 export const SITE_URL = 'https://viewbens.work';
 
