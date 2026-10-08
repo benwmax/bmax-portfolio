@@ -978,6 +978,8 @@ the USAA 2–4 sentence standard.
 - **Whether to publish the env-pull story.** It's honest, and it's the kind of failure the
   "what Claude couldn't do" section exists for. It's also the most unflattering line about the
   tooling on the page. Cut it if it reads as a gripe rather than a lesson.
+  **Resolved same day: cut.** Removed from the page and from the chat brief; the incident stays
+  recorded in the 2026-07-22 entry.
 
 **What Claude contributed:**
 Asked which of three readings I meant before writing anything. Audited the live copy against

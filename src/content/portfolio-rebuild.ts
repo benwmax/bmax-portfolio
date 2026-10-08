@@ -90,7 +90,7 @@ export const portfolioRebuildData: CaseStudyContent = {
   },
   whatWasHard: {
     paragraphs: [
-      "The AI was a confident bad editor before it was a good one. Its first audit never raised the NDA question, called my only visually strong case study the weakest, and offered Home → Work → About as strategy. Later, while refreshing local config, it overwrote my real API keys with redacted placeholders. Fluent isn't the same as careful.",
+      'The AI was a confident bad editor before it was a good one. Its first audit never raised the NDA question, called my only visually strong case study the weakest, and offered Home → Work → About as strategy.',
       'So I made it argue with itself, and overruled it where taste was the call. It wanted to merge two drafts of a case study; I kept the leaner one. It wanted to leave a gap in the case study numbering to save churn; I renumbered, because a gap reads as something missing — and noticing that is the whole argument.',
       'And the whole thing is recursive. This page is hosted on the thing it describes, so every wrap point and focus ring is a claim about my judgment. No default got accepted just because it worked.',
     ],
