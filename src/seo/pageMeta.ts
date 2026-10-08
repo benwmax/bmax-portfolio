@@ -71,7 +71,8 @@ const RESUME_META: PageMeta = {
 };
 
 // Contact had no page metadata before 2026-10-08 — it inherited whatever the
-// previous page set. Copy drawn from the page's own "≤ 48h" promise.
+// previous page set. Copy drawn from the page's own "≤ 48h" promise; approved
+// by Ben 2026-10-08.
 const CONTACT_META: PageMeta = {
   title: 'Contact — Ben Maxwell | UX Design Leader',
   description:

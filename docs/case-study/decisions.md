@@ -1180,8 +1180,8 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
   but never ran on Vercel (caught on the preview deploy by fetching raw HTML per route).
 - No runtime cost: same JS bundle, ~4 KB of HTML per route, written at build time. The inline
   theme script is byte-identical in every file, so the CSP hash in `vercel.json` still matches.
-- New copy (Claude's draft, flagged for review): `/contact` had no metadata before and now has
-  a title and description drawn from the page's "≤ 48h" promise.
+- New copy (Claude's draft, approved by Ben the same day): `/contact` had no metadata before
+  and now has a title and description drawn from the page's "≤ 48h" promise.
 - Alternatives considered: pre-rendering whole pages (react-snap or an SSG plugin — heavier,
   and fights the boot sequence and chat), edge middleware rewriting the head per request
   (more moving parts for fixed values), moving to an SSR framework (far too big pre-launch).
