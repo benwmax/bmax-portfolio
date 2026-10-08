@@ -394,55 +394,6 @@
   overflow-y: auto;
 }
 
-.msgUser {
-  font-family: var(--font-sans);
-  font-size: var(--text-md);
-  line-height: 1.65;
-  color: var(--color-text-primary);
-  margin: 0;
-}
-
-.msgUserPrompt {
-  font-family: var(--font-mono-display);
-  color: var(--color-green-accent);
-}
-
-.msgAssistant {
-  font-family: var(--font-sans);
-  font-size: 18px;
-  line-height: 1.7;
-  color: var(--color-text-secondary);
-  margin: 0;
-  border-left: 2px solid var(--color-green-border);
-  padding-left: 16px;
-}
-
-.msgAssistantPara {
-  margin: 0;
-}
-
-.msgAssistantPara + .msgAssistantPara {
-  margin-top: 12px;
-}
-
-.msgCursor {
-  color: var(--color-green-bright);
-}
-
-/* Futuristic: the blinking "_" in chat messages becomes a soft pulsing dot.
-   font-size: 0 suppresses the underscore glyph; the box is reshaped in CSS
-   so no markup changes between themes. */
-:global([data-theme='futuristic']) .msgCursor {
-  font-size: 0;
-  display: inline-block;
-  width: 7px;
-  height: 7px;
-  border-radius: var(--radius-full);
-  background: var(--color-green-bright);
-  margin-left: 5px;
-  vertical-align: middle;
-}
-
 .chatSuggestions {
   display: flex;
   flex-direction: column;
@@ -787,12 +738,6 @@
 
   .dockedPanel {
     display: none;
-  }
-
-  /* MobileChatSurface reads this module's .msgUser too — bumped one
-     type-scale step for the smaller overlay viewport. */
-  .msgUser {
-    font-size: var(--text-lg);
   }
 }
 

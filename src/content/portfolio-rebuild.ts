@@ -72,7 +72,7 @@ export const portfolioRebuildData: CaseStudyContent = {
       phase: 'System',
       title: 'Tokens first, components second',
       body: 'Locked the palette and type scale into CSS custom properties before building a single component, then documented the library in a public Storybook. When I wanted a second full aesthetic, it cost a token override block instead of a refactor.',
-      artifact: 'Design tokens · Storybook · 15 MDX docs',
+      artifact: 'Design tokens · Storybook · 16 MDX docs',
     },
     {
       phase: 'Ship',
@@ -107,7 +107,7 @@ export const portfolioRebuildData: CaseStudyContent = {
       body: 'Retro and Futuristic, one token layer apart.',
     },
     {
-      value: '15',
+      value: '16',
       label: 'Documented components',
       body: 'Public Storybook, MDX docs, stories for every state.',
     },

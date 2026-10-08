@@ -1,12 +1,12 @@
-import { useState, useRef, useEffect, Fragment } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import type { RefObject } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { NavBar } from '../components/NavBar';
 import { ChatInput } from '../components/ChatInput';
 import { ContactCard } from '../components/ContactCard';
+import { ChatTranscript } from '../components/ChatTranscript';
 import { MobileChatSurface } from '../components/MobileChatSurface';
-import { splitParagraphs } from '../hooks/useChatSession';
 import type { Message as CsMessage } from '../hooks/useChatSession';
 import { useChat } from '../context/useChat';
 import { CaseStudyHero } from '../components/CaseStudyHero';
@@ -271,74 +271,27 @@ export function CaseStudyPage({
     window.scrollTo({ top, behavior: 'smooth' });
   };
 
-  const contactCardJSX = (
-    <ContactCard
-      status={contactFormStatus}
-      errorText={contactErrorText}
-      onSubmit={submitContactForm}
-      onDismiss={dismissContactCard}
-    />
-  );
-
-  // The contact form is a transcript entry, not a footer: it renders after the
-  // turn that surfaced it, so a follow-up question and its reply appear below
-  // it rather than above it. `contactCardAfter` is that position as a message
-  // count; the clamp covers Storybook's forceShowContactCard (no anchor at
-  // all) and pins the card to the end of the log in that case.
-  const contactCardAt =
-    forceShowContactCard || showContactCard
-      ? Math.min(contactCardAfter ?? messages.length, messages.length)
-      : null;
-
   // The message log, rendered into both the desktop docked panel and the mobile
   // overlay (via MobileChatSurface). Same messages, same context-suggestion
   // chips; only the container ref and className differ.
   const renderChatLog = (ref: RefObject<HTMLDivElement | null>, className: string) => (
-    <div
-      className={className}
+    <ChatTranscript
       ref={ref}
-      // 'off' while streaming: chunks append to the same message dozens of
-      // times per reply, and an always-on live region reads each partial
-      // fragment. Flips to 'polite' once the reply finishes so the whole
-      // thing gets announced once, not word-by-word.
-      aria-live={chatStatus === 'loading' ? 'off' : 'polite'}
-      aria-label="Chat messages"
+      className={className}
+      messages={messages}
+      streaming={chatStatus === 'loading'}
+      contactCardAfter={contactCardAfter}
+      contactCard={
+        (forceShowContactCard || showContactCard) && (
+          <ContactCard
+            status={contactFormStatus}
+            errorText={contactErrorText}
+            onSubmit={submitContactForm}
+            onDismiss={dismissContactCard}
+          />
+        )
+      }
     >
-      {messages.map((m, i) => (
-        <Fragment key={i}>
-          {m.role === 'user' ? (
-            <p className={styles.msgUser}>
-              <span className={styles.msgUserPrompt} aria-hidden="true">
-                ›{' '}
-              </span>
-              {m.text}
-            </p>
-          ) : (
-            <div className={styles.msgAssistant}>
-              {(() => {
-                const paras = splitParagraphs(m.text);
-                const displayParas = paras.length > 0 ? paras : [''];
-                return displayParas.map((para, pi) => (
-                  <p key={pi} className={styles.msgAssistantPara}>
-                    {para}
-                    {pi === displayParas.length - 1 &&
-                      i === messages.length - 1 &&
-                      chatStatus === 'loading' && (
-                        <span className={`${styles.msgCursor} cursor-blink`} aria-hidden="true">
-                          _
-                        </span>
-                      )}
-                  </p>
-                ));
-              })()}
-            </div>
-          )}
-          {contactCardAt === i + 1 && contactCardJSX}
-        </Fragment>
-      ))}
-      {/* Only reachable with an empty log (Storybook's forced card) — every
-          other position is rendered inside the map above. */}
-      {contactCardAt === 0 && contactCardJSX}
       {activeSuggestions.length > 0 && (
         <div className={styles.chatSuggestions}>
           <span className={styles.chatSuggestLabel}>Try asking</span>
@@ -354,7 +307,7 @@ export function CaseStudyPage({
           ))}
         </div>
       )}
-    </div>
+    </ChatTranscript>
   );
 
   const canonicalUrl = `https://viewbens.work${pathname}`;

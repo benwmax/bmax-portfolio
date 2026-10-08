@@ -40,6 +40,7 @@ value has a CSS custom property. They are documented in `Foundations/Colors` and
 | AI assistant availability signal | `StatusIndicator` |
 | Full AI chat widget (prompt + button + status) | `ChatInput` |
 | Generic form text field | `Input` |
+| Chat message log (any chat surface) | `ChatTranscript` |
 | Inline "send Ben a message" form in the chat log | `ContactCard` |
 | Site header / navigation | `NavBar` |
 | Retro/Futuristic theme switch | `ThemeToggle` |
@@ -324,6 +325,35 @@ Structured Name/Email/Message form (built from `Input` + `Button`) that renders 
 - Don't strip the hidden honeypot field or the `elapsedMs` timing signal — both are load-bearing for `/api/contact`'s spam prevention
 - Don't drop the "Not now" dismiss — the intent detection is a heuristic and can false-positive
 - Don't clear the fields on an error response — the visitor's draft should survive a retry
+
+---
+
+### ChatTranscript
+
+**File:** `src/components/ChatTranscript/ChatTranscript.tsx`
+**Storybook:** `Components/ChatTranscript`
+
+The chat message log shared by every chat surface: the homepage hero panel, the docked rails on Home and case study pages, and the mobile overlay. It renders visitor messages and paragraph-split assistant replies, shows the streaming cursor, switches the live region off while streaming, and places the inline `ContactCard` after the turn that surfaced it. Extracted 2026-10-08 from duplicated copies in `HomeV4Blend` and `CaseStudyPage`. Two shipped bugs came from those copies drifting (2026-07-19, 2026-08-01).
+
+#### Props
+
+| Prop | Type | Notes |
+|---|---|---|
+| `messages` | `Message[]` | From `useChat()` |
+| `streaming` | `boolean` | `chatStatus === 'loading'` — drives the cursor and `aria-live` |
+| `contactCard` | `ReactNode` | The `ContactCard` element when it should show, otherwise null/false |
+| `contactCardAfter` | `number \| null` | From `useChatSession` — messages rendered before the card. Null pins it to the end |
+| `greeting` | `string` | Homepage only — shown while the log is empty |
+| `children` | `ReactNode` | Rendered last — suggestion chips, styled by each surface |
+| `className` | `string` | The surface's scrolling container (padding, gap, height) |
+| `ref` | `Ref<HTMLDivElement>` | The page scrolls this to the bottom on new messages |
+
+#### Pitfalls
+
+- Don't render chat messages outside this component — that duplication is what caused the two drift bugs
+- Don't append `ContactCard` after the transcript — pass it in so later turns render below it
+- Don't move `contactCardAfter` once set — that remounts `ContactCard` and drops a half-typed draft
+- Supporting markdown/HTML in replies must ship with output sanitization (e.g. DOMPurify) in the same commit
 
 ---
 
@@ -885,17 +915,28 @@ Contact page — two channel cards (email + LinkedIn) with copy-to-clipboard act
 <StatusIndicator status={chatStatus} label="ONLINE · assistant ready" />
 ```
 
-Both surfaces also render `ContactCard` at the end of the message log (not inside `ChatInput`) whenever `useChatSession`'s `showContactCard` is true:
+Both surfaces render their message log with `ChatTranscript`, which places `ContactCard` after the turn that surfaced it, not at the end of the log:
 
 ```tsx
-{showContactCard && (
-  <ContactCard
-    status={contactFormStatus}
-    errorText={contactErrorText}
-    onSubmit={submitContactForm}
-    onDismiss={dismissContactCard}
-  />
-)}
+<ChatTranscript
+  ref={logRef}
+  className={styles.chatLog}
+  messages={messages}
+  streaming={chatStatus === 'loading'}
+  contactCardAfter={contactCardAfter}
+  contactCard={
+    showContactCard && (
+      <ContactCard
+        status={contactFormStatus}
+        errorText={contactErrorText}
+        onSubmit={submitContactForm}
+        onDismiss={dismissContactCard}
+      />
+    )
+  }
+>
+  {/* suggestion chips, styled per surface */}
+</ChatTranscript>
 ```
 
 ### Case Study Process Section

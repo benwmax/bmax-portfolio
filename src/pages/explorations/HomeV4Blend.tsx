@@ -1,13 +1,13 @@
-import { useState, useEffect, useRef, Fragment } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { RefObject } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { NavBar } from '../../components/NavBar';
 import { CaseStudyCard } from '../../components/CaseStudyCard';
 import { ChatInput } from '../../components/ChatInput';
 import { ContactCard } from '../../components/ContactCard';
+import { ChatTranscript } from '../../components/ChatTranscript';
 import { MobileChatSurface } from '../../components/MobileChatSurface';
 import { useChat } from '../../context/useChat';
-import { splitParagraphs } from '../../hooks/useChatSession';
 import type { Message } from '../../hooks/useChatSession';
 import { CASE_STUDIES, SUGGESTIONS, HERO_STATS, SOCIAL_LINKS } from './data';
 import {
@@ -211,98 +211,43 @@ export function HomeV4Blend({
     </div>
   );
 
-  const contactCardJSX = (
-    <ContactCard
-      status={contactFormStatus}
-      errorText={contactErrorText}
-      onSubmit={submitContactForm}
-      onDismiss={dismissContactCard}
-    />
-  );
-
-  // The contact form is a transcript entry, not a footer: it renders after the
-  // turn that surfaced it, so a follow-up question and its reply appear below
-  // it rather than above it. `contactCardAfter` is that position as a message
-  // count; the clamp covers Storybook's forceShowContactCard (no anchor at
-  // all) and pins the card to the end of the log in that case.
-  const contactCardAt =
-    forceShowContactCard || showContactCard
-      ? Math.min(contactCardAfter ?? messages.length, messages.length)
-      : null;
-
   function renderLog(logRef: RefObject<HTMLDivElement | null>, className: string) {
     return (
-      <div
-        className={className}
+      <ChatTranscript
         ref={logRef}
-        // 'off' while streaming: chunks append to the same message dozens of
-        // times per reply, and an always-on live region reads each partial
-        // fragment. Flips to 'polite' once the reply finishes so the whole
-        // thing gets announced once, not word-by-word.
-        aria-live={chatStatus === 'loading' ? 'off' : 'polite'}
-        aria-label="Chat messages"
+        className={className}
+        messages={messages}
+        streaming={chatStatus === 'loading'}
+        greeting="Howdy. Ask about any case study, what I'm looking for, or how I work with AI."
+        contactCardAfter={contactCardAfter}
+        contactCard={
+          (forceShowContactCard || showContactCard) && (
+            <ContactCard
+              status={contactFormStatus}
+              errorText={contactErrorText}
+              onSubmit={submitContactForm}
+              onDismiss={dismissContactCard}
+            />
+          )
+        }
       >
-        {messages.length === 0 ? (
-          <>
-            <p className={styles.msgAssistant}>
-              Howdy. Ask about any case study, what I'm looking for, or how I work with AI.{' '}
-              <span className={`${styles.msgCursor} cursor-blink`} aria-hidden>
-                _
-              </span>
-            </p>
-            {/* role="group" gives AT users the context that these are related options */}
-            <div className={styles.chatSuggestions} role="group" aria-label="Suggested questions">
-              <span className={styles.chatSuggestLabel}>Try asking</span>
-              {SUGGESTIONS.map((s) => (
-                <button
-                  key={s}
-                  type="button"
-                  className={styles.chatSuggestBtn}
-                  onClick={() => handleHeroSubmit(s)}
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-          </>
-        ) : (
-          messages.map((m, i) => (
-            <Fragment key={i}>
-              {m.role === 'user' ? (
-                <p className={styles.msgUser}>
-                  <span className={styles.msgUserPrompt} aria-hidden>
-                    {'› '}
-                  </span>
-                  {m.text}
-                </p>
-              ) : (
-                <div className={styles.msgAssistant}>
-                  {(() => {
-                    const paras = splitParagraphs(m.text);
-                    const displayParas = paras.length > 0 ? paras : [''];
-                    return displayParas.map((para, pi) => (
-                      <p key={pi} className={styles.msgAssistantPara}>
-                        {para}
-                        {pi === displayParas.length - 1 &&
-                          i === messages.length - 1 &&
-                          m.text === '' && (
-                            <span className={`${styles.msgCursor} cursor-blink`} aria-hidden>
-                              _
-                            </span>
-                          )}
-                      </p>
-                    ));
-                  })()}
-                </div>
-              )}
-              {contactCardAt === i + 1 && contactCardJSX}
-            </Fragment>
-          ))
+        {messages.length === 0 && (
+          // role="group" gives AT users the context that these are related options
+          <div className={styles.chatSuggestions} role="group" aria-label="Suggested questions">
+            <span className={styles.chatSuggestLabel}>Try asking</span>
+            {SUGGESTIONS.map((s) => (
+              <button
+                key={s}
+                type="button"
+                className={styles.chatSuggestBtn}
+                onClick={() => handleHeroSubmit(s)}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
         )}
-        {/* Only reachable with an empty log (Storybook's forced card) — every
-            other position is rendered inside the map above. */}
-        {contactCardAt === 0 && contactCardJSX}
-      </div>
+      </ChatTranscript>
     );
   }
 

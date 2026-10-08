@@ -1144,3 +1144,22 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
   mostly empty. Same colors and the green terminal-cursor underscore as the wordmark.
 - Alternatives considered: a two-letter `B_` mark (bigger glyphs, but no longer the wordmark).
 - Note: `public/icons.svg` (unreferenced Vite boilerplate) deleted in the same PR.
+
+## 2026-10-08 — ChatTranscript extracted as the one place chat messages render
+- Decision: (Ben) Extract the chat message log into `src/components/ChatTranscript/`, with
+  stories and an MDX doc. `HomeV4Blend` and `CaseStudyPage` both use it now. It owns message
+  styles, paragraph splitting, the streaming cursor, live-region switching, and where the
+  ContactCard sits. Each surface keeps its own container sizing (`className`) and suggestion
+  chips (`children`), because those really do differ between the hero, the rails, and the
+  overlay.
+- Reasoning: The two pages carried near-identical copies, and both chat rendering bugs so far
+  came from those copies drifting: paragraph splitting missing on Home (2026-07-19), and the
+  ContactCard ordering fix needing to be made twice (2026-08-01). It's also the most
+  important UI on the site and wasn't in the public Storybook. Documented component count goes
+  from 15 to 16 (case study and chat brief updated).
+- Unified in the process (Claude's call, flagged for review): the streaming cursor now shows
+  for the whole reply on both surfaces. Home previously showed it only before the first chunk
+  arrived. Reply indent is 16px on both (case study rail was 14px).
+- Alternatives considered: suggestion chips inside the component. Not done — the two surfaces
+  style them differently (size, hover nudge, Futuristic squaring), and unifying that is a
+  design call, not a refactor.
