@@ -847,11 +847,9 @@ drifts again.)
 **Decisions still open:**
 - Market Rebellion: referenced on About page as brief career arc item (decided 2026-06-20)
 - Sagent case study content (to be built from scratch) — now also gates its return to the site
-- **Ben to review (2026-10-08):** two chat behavior changes made while extracting
-  `ChatTranscript` — the typing cursor now shows for the whole streamed reply on both surfaces
-  (Home used to show it only until the first words arrived), and the reply indent is 16px
-  everywhere (the case study rail was 14px). Also the Contact page's new search description in
-  `src/seo/pageMeta.ts`, which is Claude's draft.
+- **Ben to review (2026-10-08):** the Contact page's new search description in
+  `src/seo/pageMeta.ts`, which is Claude's draft. (The two `ChatTranscript` behavior changes
+  — cursor for the whole reply, 16px indent everywhere — were confirmed by Ben the same day.)
 
 ---
 
