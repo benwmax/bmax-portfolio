@@ -1,6 +1,7 @@
 /// <reference types="vitest/config" />
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { prerenderMeta } from './scripts/prerender-meta';
 
 // https://vite.dev/config/
 import path from 'node:path';
@@ -12,7 +13,9 @@ const dirname =
 
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
-  plugins: [react()],
+  // prerenderMeta bakes per-route head tags into static HTML for link-preview
+  // crawlers — see scripts/prerender-meta.ts.
+  plugins: [react(), prerenderMeta()],
   resolve: {
     alias: {
       '@': path.resolve(dirname, 'src'),

@@ -151,7 +151,7 @@ without password gates, anonymization, or confidentiality notes.
 └── public/
     ├── case/                        ← case study screenshots, per-project subdirs
     │   └── portfolio/               ← wired to the `figures` slots in portfolio-rebuild.ts
-    └── og/                          ← 1200×630 OG images (Phase 4E, still to be made)
+    └── og/                          ← 1200×630 OG images, rendered by `npm run og`
 ```
 
 ---
@@ -796,6 +796,12 @@ drifts again.)
 - **OG images:** done 2026-10-08 as generated placeholders — `public/og/*.png` from
   `scripts/generate-og-images.mjs` (reads `CASE_STUDIES`). Re-run it after any card title/desc
   change; when Sagent ships, re-running produces `sagent.png` automatically.
+- **Per-page head tags (2026-10-08):** every route's title, description, canonical, `og:*` and
+  `twitter:*` tags come from `src/seo/pageMeta.ts`. `PageHead` sets them in the browser, and
+  `scripts/prerender-meta.ts` (a Vite plugin, so it runs in Vercel's plain `vite build` too) writes a static
+  `dist/<route>/index.html` per route so link-preview crawlers, which don't run JavaScript, see
+  the right page. **A new route needs an entry in `ROUTE_META`** or its shared links preview as
+  the homepage. When Sagent re-lists, add `/work/sagent` there too. See decisions.md 2026-10-08.
 - **Real-device mobile testing:** the mobile chat overlay handoff, FAB behavior at 390px, and
   the ContactCard inside the mobile overlay have all only been verified via browser resize
   and Playwright — never on an actual device. Flagged in three consecutive journal entries

@@ -1163,3 +1163,25 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
 - Alternatives considered: suggestion chips inside the component. Not done — the two surfaces
   style them differently (size, hover nudge, Futuristic squaring), and unifying that is a
   design call, not a refactor.
+
+## 2026-10-08 — Per-route static HTML so link previews show the right page
+- Decision: (Ben) Every route's head tags now come from one module, `src/seo/pageMeta.ts`.
+  A Vite plugin (`scripts/prerender-meta.ts`) writes a static
+  `dist/<route>/index.html` per route with those tags baked in. In the browser, `PageHead`
+  sets the same values, and `src/main.tsx` removes the static copies on boot.
+- Reasoning: Link-preview crawlers (LinkedIn, Slack, iMessage, X) don't run JavaScript, and
+  every URL served the same `index.html` — so a shared case study link previewed as the
+  homepage, and the per-case-study OG images from Phase 4E were never shown. Confirmed by
+  fetching the live `.vercel.app` deployment. Separately, browsers ended up with two of every
+  description and `og:*` tag (static first), and the `twitter:*` tags were never overridden at
+  all. One metadata module also means a page's tags can't drift between the two consumers.
+- It's a Vite plugin rather than a step in `npm run build` because Vercel's build command for
+  this project is plain `vite build` — the first version, a post-build npm step, deployed fine
+  but never ran on Vercel (caught on the preview deploy by fetching raw HTML per route).
+- No runtime cost: same JS bundle, ~4 KB of HTML per route, written at build time. The inline
+  theme script is byte-identical in every file, so the CSP hash in `vercel.json` still matches.
+- New copy (Claude's draft, flagged for review): `/contact` had no metadata before and now has
+  a title and description drawn from the page's "≤ 48h" promise.
+- Alternatives considered: pre-rendering whole pages (react-snap or an SSG plugin — heavier,
+  and fights the boot sequence and chat), edge middleware rewriting the head per request
+  (more moving parts for fixed values), moving to an SSR framework (far too big pre-launch).

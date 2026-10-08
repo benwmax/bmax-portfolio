@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { NavBar } from '../NavBar';
 import { Button } from '../Button';
+import { PageHead } from '../../seo/PageHead';
+import { CONTACT_META } from '../../seo/pageMeta';
 import styles from './Contact.module.css';
 
 async function copyText(text: string, setter: (v: boolean) => void) {
@@ -28,6 +30,7 @@ export function Contact() {
 
   return (
     <div className={styles.wrapper}>
+      <PageHead meta={CONTACT_META} />
       <a href="#main-content" className="skip-link">
         Skip to main content
       </a>

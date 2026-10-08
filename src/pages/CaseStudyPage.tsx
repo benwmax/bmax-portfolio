@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import type { RefObject } from 'react';
 import { useLocation, Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
+import { PageHead } from '../seo/PageHead';
+import { caseStudyMeta } from '../seo/pageMeta';
 import { NavBar } from '../components/NavBar';
 import { ChatInput } from '../components/ChatInput';
 import { ContactCard } from '../components/ContactCard';
@@ -310,22 +311,12 @@ export function CaseStudyPage({
     </ChatTranscript>
   );
 
-  const canonicalUrl = `https://viewbens.work${pathname}`;
+  // The last URL segment names the case study's OG image (public/og/{slug}.png).
   const companySlug = pathname.split('/').pop() ?? 'work';
-  const pageDescription =
-    heroSubtitle.length > 155 ? heroSubtitle.slice(0, 152) + '...' : heroSubtitle;
 
   return (
     <div className={styles.wrapper}>
-      <Helmet>
-        <title>{`${company} · ${heroTitle.replace(/\.$/, '')} — Ben Maxwell`}</title>
-        <meta name="description" content={pageDescription} />
-        <link rel="canonical" href={canonicalUrl} />
-        <meta property="og:title" content={`${company} — Ben Maxwell`} />
-        <meta property="og:description" content={pageDescription} />
-        <meta property="og:url" content={canonicalUrl} />
-        <meta property="og:image" content={`https://viewbens.work/og/${companySlug}.png`} />
-      </Helmet>
+      <PageHead meta={caseStudyMeta(companySlug, { company, heroTitle, heroSubtitle })} />
 
       {/* All page content except the mobile chat overlay lives inside this
           wrapper, so it can be made inert while the overlay is open —
