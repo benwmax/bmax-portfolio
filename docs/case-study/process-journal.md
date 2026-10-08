@@ -1059,3 +1059,38 @@ and both chat rendering bugs so far (2026-07-19, 2026-08-01) came from those cop
 - Claude's runbook assumed I'd tether the iPhone to the Mac to read its console. I said no.
   It moved the console checks to desktop Safari (same engine, same security policy) and cut
   the pass from about an hour to 25 minutes.
+
+## 2026-10-08 (evening — closing review items, Lighthouse claim)
+**What I did:**
+Closed the review items left from the earlier entry, updated CLAUDE.md's status (#33), and
+settled the Lighthouse claim.
+- #34: kept both ChatTranscript behavior changes — the cursor for the whole reply, and the
+  16px indent everywhere.
+- #35: approved the Contact page's search description as Claude wrote it.
+- #36: changed the Portfolio Rebuild Lighthouse claim from `96–100` to `94–100`.
+
+**What I decided:**
+Change the copy to `94–100` now, from live measurements, rather than wait for PageSpeed
+Insights or shorten the boot intro to win the points back.
+
+**Why:**
+Measured against the live site, the homepage scores 94 every time. The rule since 2026-07-29
+is "change the copy, not the number." A claim on a portfolio about judgment shouldn't round up.
+
+**What I'm uncertain about:**
+- PageSpeed Insights never ran. The API's shared daily quota was exhausted, and the web tool
+  sat on "loading" for minutes. The numbers come from Lighthouse on my Mac against the live
+  site — the same engine and mobile simulation, but a different machine than Google's. If a
+  real PSI run later disagrees, the copy may need another pass.
+- Two cold first loads (Portfolio 89, Contact 92) were treated as cache warm-up because both
+  scored 97 on repeat. A visitor's first load is also cold, so "warm" may flatter it a little.
+
+**What Claude contributed:**
+Tried the PSI API first, then the web tool, and when both failed, said so and proposed the
+closest substitute instead of quietly reporting the local numbers as PSI. Ran two passes per
+page so one-off cold loads wouldn't decide the claim. Laid out three options rather than
+picking one. Over the day, three separate Lighthouse runs gave three different homepage numbers
+(88–91 cloud, 96 local build, 94 live), and Claude kept them apart instead of averaging them.
+
+**Where I overrode or redirected Claude:**
+N/A. Claude recommended `94–100` and I agreed.
