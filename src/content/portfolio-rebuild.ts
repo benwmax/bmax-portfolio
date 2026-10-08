@@ -34,8 +34,7 @@ export const portfolioRebuildData: CaseStudyContent = {
   problem: {
     heading: 'A portfolio full of evidence and no argument',
     paragraphs: [
-      "My old portfolio had strong outcomes on it — a $1B contract, a 23% revenue lift, conversion wins at USAA. What it didn't have was a reason to read them in order. The reader had to assemble the case themselves, and readers don't do that.",
-      "The first AI audit told me the homepage was weak and some links were broken. They weren't broken — they were password gates I'd put on NDA work, and it never asked. It took a second adversarial pass, aimed at the first one's output, to name the real failure: evidence without argument is just a pile of stuff.",
+      "My old portfolio had strong outcomes on it — a $1B contract, a 23% revenue lift, conversion wins at USAA — and no reason to read them in order. The reader had to assemble the case themselves, and readers don't do that. The first AI audit missed it entirely and handed back surface fixes. It took a second adversarial pass, aimed at the first one's output, to name the real failure: evidence without argument is just a pile of stuff.",
     ],
   },
   role: [

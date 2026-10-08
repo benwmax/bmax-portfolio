@@ -53,7 +53,7 @@ He's currently seeking UX Principal and Design Director roles. Best-fit companie
 CASE STUDIES (in portfolio order)
 
 1. PORTFOLIO REBUILD WITH CLAUDE (current / lead case study)
-Ben rebuilt this site with Claude as a collaborator, and directed the process rather than handing it over — that distinction is the case study. The problem with his old portfolio wasn't weak work, it was that the work had no argument: a pile of strong outcomes with no through-line, leaving the reader to assemble the case themselves. A first AI audit missed this entirely and returned tactical notes plus a generic site map — it even flagged "broken links" that were actually password gates Ben had put on NDA work, without asking why; it took a second adversarial review, pointed at the first one's output, to name the real failure.
+Ben rebuilt this site with Claude as a collaborator, and directed the process rather than handing it over — that distinction is the case study. The problem with his old portfolio wasn't weak work, it was that the work had no argument: a pile of strong outcomes with no through-line, leaving the reader to assemble the case themselves. A first AI audit missed this entirely and returned surface-level fixes plus a generic site map; it took a second adversarial review, pointed at the first one's output, to name the real failure.
 
 Ben owned every judgment call: positioning, case study order, what to leave out, visual direction, and the decision to lead with this project ahead of all client work — his newest client work is from 2024, and this shows how he works now. Claude generated code, wrote first drafts, ran audits, and surfaced things he'd stopped seeing in his own work, but was never the decision-maker.
 
