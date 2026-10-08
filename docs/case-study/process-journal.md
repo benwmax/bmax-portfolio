@@ -990,3 +990,71 @@ the page in a browser at 1440 and 390.
 
 **Where I overrode or redirected Claude:**
 N/A. It offered the three directions and I picked one.
+
+## 2026-10-08 (later — branch cleanup, ChatTranscript, link previews, QA runbook)
+**What I did:**
+Pulled main and found a local `og-images` branch that had done the same OG/favicon work as the
+merged PR #21, separately. Compared the two side by side, kept main's images, and deleted the
+branch. Then a long run of smaller PRs, all merged the same day:
+- #25: "9 routes" → "8 pages" in the Lighthouse claim.
+- #27: extracted `ChatTranscript`, the chat message log, into one component with stories and
+  an MDX doc. Documented component count went from 15 to 16.
+- #28: merged the leftover "broken links" correction from an older branch.
+- #29: four copy fixes found while reviewing stale branches: footer email → ben@viewbens.work,
+  "12+ years" → "15+ years" in the About/Resume search descriptions, "two business days" →
+  "48 hours" on Contact, and no raw HTTP status codes in chat errors.
+- #30: per-route static HTML so link previews show the right page.
+- #12, then #31: refreshed the real-device QA runbook, then cut it down to a no-cable pass.
+Deleted 21 merged or stale branches. The repo is down to `main`.
+
+**What I decided:**
+- Keep main's OG image design over the `og-images` branch's framed-card version.
+- Pull the chat transcript out into a shared component.
+- `ben@viewbens.work` is the one public email.
+- Fix link previews before launch, since sharing case study links is how recruiters pass work
+  around.
+- No cable between the phone and the Mac for QA. Simplify the runbook instead.
+
+**Why:**
+Main's images read their copy from the shared case study data. The other branch typed it into
+the script by hand, and its homepage card listed Mortgage and put the case studies in reverse
+order. The chat transcript had been copy-pasted between the homepage and the case study page,
+and both chat rendering bugs so far (2026-07-19, 2026-08-01) came from those copies drifting.
+
+**What I'm uncertain about:**
+- Two small visible changes from merging the transcript copies are Claude's calls, still
+  unreviewed: the typing cursor now shows for the whole streamed reply on both surfaces (the
+  homepage used to show it only until the first words arrived), and the reply indent is 16px
+  everywhere (the case study rail was 14px).
+- The Contact page's new search description is Claude's draft. That page never had one.
+- Link-preview images point at viewbens.work, which still serves the old site. Shared links
+  have the right title but no image until the domain cutover.
+- The simplified QA pass can't catch a JavaScript error that only happens on iOS.
+- The QA pass itself still hasn't been run.
+
+**What Claude contributed:**
+- Before porting the old branch's "92–100" Lighthouse correction, found that main already had
+  a newer, conflicting re-run. Ran Lighthouse locally (Home 96, every other page 98) instead of
+  picking one, which kept "96–100".
+- Counted components and MDX files to confirm the claimed 15 rather than trusting either
+  branch.
+- Found the link-preview problem while looking into what looked like a minor duplicate-tag
+  issue. Every URL served the homepage's tags to anything that doesn't run JavaScript, so the
+  per-case-study OG images had never been seen.
+- Its first fix for that passed every local check and did nothing on Vercel, because Vercel
+  runs `vite build` directly rather than `npm run build`. It was only caught because I'd said
+  to merge once the preview checked out, and Claude fetched each route's raw HTML from the
+  preview instead of trusting the green deploy. It rebuilt the fix as a Vite plugin and
+  re-verified before merging.
+- Smaller misses: a branch-deletion command that silently deleted nothing (a zsh quirk) until
+  re-run, and a GitHub merge that went through but left PR #28 showing "open" for a while.
+- Flagged that another session committed to the branch it was working on mid-task, and kept
+  that commit out of its own changes.
+
+**Where I overrode or redirected Claude:**
+- I asked Claude to port the Lighthouse fix. It came back with evidence that the fix would now
+  understate the site and didn't make the change. I went with it. Worth noting as a case where it
+  pushed back on an instruction with data instead of following it.
+- Claude's runbook assumed I'd tether the iPhone to the Mac to read its console. I said no.
+  It moved the console checks to desktop Safari (same engine, same security policy) and cut
+  the pass from about an hour to 25 minutes.
