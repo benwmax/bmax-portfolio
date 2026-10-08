@@ -91,7 +91,7 @@ export function AboutPage() {
               <span className={styles.headingAccent}>learnable</span>.
             </h1>
             <p className={styles.lede}>
-              Fifteen years across travel, insurance, fintech, and mortgage — building tools
+              Over fifteen years across travel, insurance, fintech, and mortgage — building tools
               that experts actually adopt. The work is in the details: the decision that made
               onboarding six months faster, the research that redesigned how an industry works,
               the chatbot that let retail traders think like professionals.
@@ -153,7 +153,7 @@ export function AboutPage() {
             <div className={styles.sectionHeader}>
               <span className={styles.sectionKicker}>03 · Career arc</span>
               <h2 id="heading-career" className={styles.sectionHeading}>
-                Four industries, fifteen years.
+                Four industries, over fifteen years.
               </h2>
             </div>
             <ol className={styles.careerList} aria-label="Career history">

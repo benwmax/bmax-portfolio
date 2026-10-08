@@ -548,13 +548,17 @@ to check off?"*
 this prose summary had drifted out of sync with it as of 2026-07-17 and was
 resynced below): Phase 0 and 2 complete; Phase 3 (Storybook Foundation) complete
 as of 2026-07-16, including deployment to system.viewbens.work; Phase 4 (Site
-Assembly) in progress — 4A/4B/4C/4D/4F complete, 4E blocked on OG images (Ben);
+Assembly) complete as of 2026-10-08 (OG images shipped as generated placeholders);
 Phase 5 (QA and Pre-Launch) in progress; Phase 1 (Sagent content, 1C) still not
 started; Phases 6–7 not started. Per decisions.md 2026-07-16, launch is being
 prioritized ahead of the Sagent case study — Sagent ships with placeholder copy
 and gets a full pass post-launch.
 
-**Last updated:** 2026-08-01 (Ordering fix in the chat: the inline ContactCard was rendered
+**Last updated:** 2026-10-08 (Launch prep: "over fifteen years" copy settled and Sabre dates
+set to 2015–18 everywhere; OG images generated into `public/og/`; Lighthouse re-run — see
+"Immediate next steps". See decisions.md 2026-10-08.)
+
+**Previously updated:** 2026-08-01 (Ordering fix in the chat: the inline ContactCard was rendered
 after the whole message list, so a follow-up question and its reply appeared *above* the
 form. It's now anchored to the turn that surfaced it via `contactCardAfter` in
 `useChatSession`. Verified in a real browser on both the homepage and a case study page,
@@ -773,12 +777,14 @@ drifts again.)
   `src/content/portfolio-rebuild.ts` — anchored to Process, Key decision, and What was hard.
   Drop files in `public/case/portfolio/` and add `src` + `alt` to the matching entry. No
   component or page edits needed; see docs/ai-component-guide.md → "Adding figures".
-- **Re-run Lighthouse before launch:** `/work/portfolio` now claims `96–100` in its Outcomes,
-  sourced from the 2026-07-16 measurement — which predates the contact flow and the mobile chat
-  overlay. If the numbers drifted, change the copy, not the number.
-- **Phase 4E:** OG images only — create 1200×630 PNGs in public/og/ before launch
-  (meta descriptions, sitemap.xml, robots.txt, and canonical tags are already done;
-  see build-plan.md 4E). Note `/og/sagent.png` is no longer needed while Sagent is unlisted.
+- **Confirm Lighthouse before launch:** `/work/portfolio` claims `96–100` in its Outcomes.
+  Re-run 2026-10-08 in Claude's cloud environment measured mobile performance 88–91 — but the
+  2026-07-16 commit scored the same there, so it's environmental, not a regression. Confirm
+  with PageSpeed Insights on the deployed URL; if the numbers drifted, change the copy, not the
+  number.
+- **OG images:** done 2026-10-08 as generated placeholders — `public/og/*.png` from
+  `scripts/generate-og-images.mjs` (reads `CASE_STUDIES`). Re-run it after any card title/desc
+  change; when Sagent ships, re-running produces `sagent.png` automatically.
 - **Real-device mobile testing:** the mobile chat overlay handoff, FAB behavior at 390px, and
   the ContactCard inside the mobile overlay have all only been verified via browser resize
   and Playwright — never on an actual device. Flagged in three consecutive journal entries
@@ -791,13 +797,6 @@ drifts again.)
 **Decisions still open:**
 - Market Rebellion: referenced on About page as brief career arc item (decided 2026-06-20)
 - Sagent case study content (to be built from scratch) — now also gates its return to the site
-- "Fifteen years" / "15+ years" copy on About and Resume: career arc now starts May 2014,
-  which is ~12 years to 2026 — decide whether to update copy to "twelve years", "over a
-  decade", or leave it as a loose approximation. Note the same claim is in
-  `api/lib/system-prompt.ts` ("Fifteen-plus years") — fix all three together.
-- **Sabre's date range disagrees across three files** (surfaced 2026-07-29, not fixed —
-  needs Ben's answer): `2015–18` in `src/pages/explorations/data.ts`, `2014–18` on the Resume
-  page, `2014–17` in `CaseStudyCard.stories.tsx`. Pick one and propagate.
 
 ---
 
