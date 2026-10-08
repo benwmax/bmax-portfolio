@@ -99,8 +99,9 @@ const images = [
   {
     file: 'home.png',
     kicker: 'Ben Maxwell · Portfolio',
-    // Positioning statement — CLAUDE.md "Positioning and Audience" (2026-06-02).
-    title: 'I make expert-level tools <em>learnable</em>.',
+    // Matches the live homepage hero (HomeV4Blend.tsx), the shorter form of the
+    // positioning statement in CLAUDE.md "Positioning and Audience".
+    title: 'I make expert tools <em>learnable</em>.',
     desc: "For agents, adjusters, attorneys, and traders who can't afford to get it wrong.",
     tag: null,
   },
