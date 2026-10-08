@@ -556,18 +556,25 @@ resynced below): Phase 0 and 2 complete; Phase 3 (Storybook Foundation) complete
 as of 2026-07-16, including deployment to system.viewbens.work; Phase 4 (Site
 Assembly) complete as of 2026-10-08 (OG images shipped as generated placeholders);
 Phase 5 (QA and Pre-Launch) in progress; Phase 1 (Sagent content, 1C) still not
-started; Phases 6–7 not started. Per decisions.md 2026-07-16, launch is being
+started; Phase 6 (Launch) not started; Phase 7 (Meta Case Study) in progress — written and
+published 2026-07-29, screenshots and before/after remaining. Per decisions.md 2026-07-16, launch is being
 prioritized ahead of the Sagent case study — Sagent ships with placeholder copy
 and gets a full pass post-launch.
 
-**Last updated:** 2026-10-08, third pass (Shipped seven PRs, all merged: #25, #27, #28, #29,
+**Last updated:** 2026-10-08, evening. Ben closed the review items left from the third pass:
+kept both ChatTranscript behavior changes (#34) and approved the Contact page description
+(#35). The Lighthouse claim went to `94–100` from live measurements (#36), because
+PageSpeed Insights was unavailable (quota) — see decisions.md 2026-10-08. Journal entries
+merged (#32, #37). Nothing from today is waiting on Ben's review.
+
+**Third pass, 2026-10-08:** (Shipped seven PRs, all merged: #25, #27, #28, #29,
 #30, #12, #31. `ChatTranscript` extracted as the one place chat messages render (component
 count 15 → 16). Four copy fixes: one public email, "15+ years" in search descriptions, "48
 hours" on Contact, no raw HTTP codes in chat errors. Per-route static HTML so link previews
 show the right page — the per-case-study OG images had never been seen by LinkedIn, Slack,
-iMessage, or X. The QA runbook was refreshed, then simplified to a no-cable pass. Lighthouse
-against the live deployment changed the claim to `94–100` (Home scores 94). All stale branches deleted; the repo is down
-to `main`. See decisions.md and process-journal.md 2026-10-08.)
+iMessage, or X. The QA runbook was refreshed, then simplified to a no-cable pass. All stale
+branches deleted; the repo is down to `main`. See decisions.md and process-journal.md
+2026-10-08.)
 
 **Earlier on 2026-10-08:** (Launch prep: "over fifteen years" copy settled and Sabre dates
 set to 2015–18 everywhere; OG images generated into `public/og/`; Lighthouse re-run — see
