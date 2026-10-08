@@ -1111,3 +1111,25 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
   note — shifts positions after it. Both pages clamp with
   `Math.min(contactCardAfter ?? messages.length, messages.length)`, which is also what makes
   Storybook's `forceShowContactCard` (no anchor at all) still render at the end of a seeded log.
+
+## 2026-10-08 — "Over fifteen years" stays; Sabre dates are 2015–18
+- Decision: (Ben) The experience claim reads "over fifteen years" / "15+". It's true — Ben's
+  work history predates the earliest role listed (2014); the listed roles are a selection, not
+  the full record. About page copy updated ("Over fifteen years…", "Four industries, over
+  fifteen years."); Resume (`15+`) and `api/lib/system-prompt.ts` (`Fifteen-plus`) already
+  said this. (Ben) Sabre's dates are 2015–2018, propagated to the Resume page and the
+  CaseStudyCard stories; the homepage card and `src/content/sabre.ts` already said so.
+- Reasoning: Closes the two copy contradictions flagged 2026-07-29 before launch.
+- Open question: AT&T is listed as Mar–Oct 2015 and Sabre now starts in 2015 — read as
+  sequential, but worth a glance if anyone asks for exact months.
+
+## 2026-10-08 — OG images are generated placeholders, not hand-made art
+- Decision: Ship generated, on-theme OG images (dot-grid charcoal, `BM_` wordmark, Space
+  Mono/IBM Plex Mono, case study title + one-liner + canonical tag) instead of blocking
+  launch on bespoke art. `scripts/generate-og-images.mjs` renders them with Playwright from
+  `CASE_STUDIES` in `src/pages/explorations/data.ts`.
+- Reasoning: Phase 4E was the last launch blocker in Phase 4, and a broken preview image is
+  worse than a plain one. Reading from `CASE_STUDIES` means a title change is one command,
+  not five hand edits that drift — same lesson as decisions.md 2026-07-29.
+- Alternatives considered: hand-made Figma art per case study (still possible later — drop a
+  same-named PNG in `public/og/` and stop re-running the script).
