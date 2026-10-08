@@ -23,7 +23,7 @@ When `role`, `year`, `stat`, and `sector` are omitted, the meta grid collapses e
 
 <Canvas of={CardStories.WithoutMeta} />
 
-## Work grid — all five case studies
+## Work grid — the live case studies
 
 The canonical homepage layout: 2 columns, 296px each, 20px gap.
 
@@ -33,7 +33,7 @@ The canonical homepage layout: 2 columns, 296px each, 20px gap.
 
 - **Always pass `href`.** The card should always be a navigation link.
 - **`desc` is the hook.** One sentence, the problem angle — not the project name.
-- **Follow the finalized case study order:** 01 Portfolio Rebuild, 02 Upfluent, 03 Sagent, 04 USAA, 05 Sabre.
+- **Follow the finalized case study order:** 01 Portfolio Rebuild, 02 Upfluent, 03 USAA, 04 Sabre (Sagent is unlisted pending content).
 - **Use canonical index chips:** zero-padded two digits — `"01"`, `"02"`, etc.
 - **Use a canonical industry tag:** Travel, Fintech, Mortgage, Insurance, AI Collaboration.
 
@@ -47,14 +47,14 @@ The canonical homepage layout: 2 columns, 296px each, 20px gap.
 
 ## AI guidance
 
-The work-grid entry point. Always a link (`href` required). Index chips reflect the finalized case study order: 01 Portfolio Rebuild, 02 Upfluent, 03 Sagent, 04 USAA, 05 Sabre.
+The work-grid entry point. Always a link (`href` required). Index chips reflect the finalized case study order: 01 Portfolio Rebuild, 02 Upfluent, 03 USAA, 04 Sabre (Sagent is unlisted pending content).
 
 **Content rules**
 - `index`: zero-padded two digits — `"01"`, `"02"`, `"03"`, `"04"`, `"05"`.
 - `desc`: one-sentence hook, the problem angle — not the project name.
 - `tag`: industry label from the canonical five (Travel, Fintech, Mortgage, Insurance, AI Collaboration).
 - `stat` + `statLabel`: headline outcome — e.g., `stat="$1B"` `statLabel="Contract"`.
-- Case study order is finalized: 01 Portfolio Rebuild, 02 Upfluent, 03 Sagent, 04 USAA, 05 Sabre.
+- Case study order is finalized: 01 Portfolio Rebuild, 02 Upfluent, 03 USAA, 04 Sabre (Sagent is unlisted pending content).
 
 **Avoid**
 - Don't omit `href` — the card should always navigate.

@@ -746,3 +746,442 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
   Files: `src/components/MobileChatSurface.tsx` (new), `src/components/MobileChatSurface.module.css`
   (new), `src/hooks/useChatSession.ts`, `src/pages/explorations/HomeV4Blend.tsx` (+ `.module.css`),
   `src/pages/CaseStudyPage.tsx`.
+
+## 2026-07-20 — In-chat "get in touch" contact flow, via Resend
+- Decision: The AI chat widget now recognizes when a visitor wants to reach Ben and offers
+  an inline "SEND BEN A MESSAGE" form (Name optional, Email + Message required) right in the
+  chat log, which emails him directly at ben@viewbens.work through Resend. New endpoint
+  `api/contact.ts` (Vercel Edge Function), new component `src/components/ContactCard/`, and
+  `useChatSession.ts` grew a client-side `detectContactIntent()` check that drives it.
+- Reasoning: Ben asked for a seamless way for chat visitors to reach him without leaving the
+  widget, with spam prevention baked in. The chat backend already had a mature
+  abuse-prevention stack (origin allowlist, Upstash rate limits, atomic Redis reservations,
+  fail-closed on Redis errors) — the contact flow mirrors that shape rather than inventing a
+  new one, but on its own budget: an email send is a different resource (real cost, lands in
+  Ben's inbox) than an LLM token, so it gets its own rate limits and daily circuit breaker
+  (`api/lib/contact-limit.ts`), not a share of `/api/chat`'s.
+- Structured form over conversational collection: chose a Name/Email/Message form (built
+  from the existing `Input`/`Button` primitives) over having the assistant collect the same
+  fields turn-by-turn in chat. A form is reliable to validate and guarantees Ben gets a
+  usable reply-to address; free-text collection would need to parse an email out of prose
+  and is easy for a visitor to get wrong turn-by-turn.
+- Client-side intent detection over model tool-use: the Anthropic call in `api/chat.ts`
+  doesn't use tool-use at all today, and wiring it up (a second model round-trip to decide
+  "should I offer the form") felt disproportionate for what's fundamentally a keyword match.
+  Instead, `detectContactIntent()` — a regex over phrases like "get in touch," "reach out,"
+  "hire you," "email you" — runs client-side against both the visitor's own message *and*
+  the assistant's finished reply (so an out-of-scope redirect that mentions reaching out
+  still surfaces the form, even if the visitor's original message didn't itself read as a
+  contact request). A false positive just shows a dismissible card — low cost — so a
+  broad-but-plausible phrase list was an acceptable trade against the complexity of real
+  tool-use. `system-prompt.ts`'s SCOPE section was updated so the assistant's own wording
+  about "reach out" now points at the same in-chat form instead of a bare `mailto:` mention,
+  and its SAFETY section grew one narrow, explicit exception to "don't claim actions you
+  can't perform" — the assistant can say the form is available, but still can't send anything
+  itself.
+- Spam prevention stack (no CAPTCHA/Turnstile — see the 2026-07-18 hardening entry's reasoning
+  for deferring that at this scale, which still applies here): origin allowlist (shared with
+  `/api/chat` via new `api/lib/cors.ts`, extracted so the temporary `.vercel.app` allowlist
+  entry only needs removing in one place at cutover), per-IP hourly + daily Redis rate limits
+  tighter than chat's, a global daily circuit breaker independent of chat's budget, a hidden
+  honeypot field (fully removed from the accessibility tree, not just visually hidden, so it
+  can't snag a legitimate screen-reader user), a minimum-fill-time check (rejects submissions
+  faster than a human could plausibly type one), request-size and field-length caps, and
+  fail-closed (503) on any Redis error. Honeypot/fill-time rejections return the same success
+  response a real send would, so an automated caller can't learn which check tripped.
+- Bug found and fixed during verification: the ContactCard's email field used native HTML
+  `type="email"`/`required` validation *and* custom JS validation with a styled error state.
+  The browser's own unstyled constraint-validation tooltip fired first and pre-empted the
+  custom error UI entirely — confirmed via a real browser test (typing an invalid email
+  produced Chrome's native "Please include an '@'..." tooltip instead of the intended red
+  error text). Fixed by adding `noValidate` to the form so validation and its display are
+  handled entirely by component state, as intended.
+- Open item — Ben: the form can't actually send email until a Resend account is created and
+  the `viewbens.work` sending domain is verified there (DNS records), with `RESEND_API_KEY`
+  added to Vercel env vars. See `.env.example` and `build-plan.md` Phase 4F.
+- Verification: `npm run build` and `npm run lint` clean on all touched files. Full browser
+  verification via Playwright against a real `vite dev` server (no `/api` Edge runtime
+  available locally, so `/api/chat` and `/api/contact` both 404 as expected) and against
+  Storybook: confirmed the card appears on both the homepage hero/docked chat and a case
+  study page's docked rail when a contact-intent message is sent, dismiss hides it, sending
+  another contact-intent message re-triggers it, client-side validation now shows correctly
+  post-fix, and a submit against the (unavailable-in-dev) endpoint shows the error state with
+  the visitor's fields preserved rather than cleared. No console errors beyond the expected
+  404/connection-reset noise from the missing local API routes. Live email delivery is
+  untested pending Ben's Resend setup above.
+  Files: `api/contact.ts` (new), `api/lib/contact-limit.ts` (new), `api/lib/cors.ts` (new,
+  extracted from `api/chat.ts`), `src/components/ContactCard/` (new), `api/chat.ts`,
+  `api/lib/system-prompt.ts`, `src/hooks/useChatSession.ts`,
+  `src/pages/explorations/HomeV4Blend.tsx`, `src/pages/CaseStudyPage.tsx`, `.env.example`,
+  `docs/ai-component-guide.md`, `docs/case-study/build-plan.md`.
+
+## 2026-07-20 — Storybook documentation audit
+- Decision: Audit the whole codebase for components missing Storybook coverage or carrying
+  stale documentation, then close the gaps found. Three features shipped in three days — the
+  Futuristic theme (2026-07-17), mobile chat handoff (2026-07-19), and this morning's in-chat
+  contact flow (2026-07-20) — outpaced Storybook and `docs/ai-component-guide.md`.
+- Reasoning: CLAUDE.md treats Storybook as a public, hiring-manager-facing system of record and
+  `ai-component-guide.md` as the authoritative reference a session should read before building
+  anything. Letting either drift from what's actually in production undercuts both — a stale
+  guide actively misleads the next session, not just the next viewer.
+- What was found (none of it a deliberate scope cut — checked against the explicit out-of-scope
+  list, which covers none of this):
+  - `src/components/MobileChatSurface.tsx` (built 2026-07-19) and
+    `src/components/ThemeToggle/ThemeToggle.tsx` (built 2026-07-17) had zero Storybook footprint
+    — no story, no MDX — despite both being live production components. MobileChatSurface in
+    particular is the component CLAUDE.md calls out by name as carrying two "load-bearing and
+    easy to regress" behaviors.
+  - `ai-component-guide.md`'s "Homepage" page-template entry still documented the retired
+    `src/pages/HomePage.tsx` as if it were current — wrong file path, description didn't match
+    production (no mention of the boot sequence, scanline, or staggered grid `HomeV4Blend.tsx`
+    actually has). The guide's Decision Tree and Component Reference also had no entries for
+    `ThemeToggle` or `MobileChatSurface`, and neither Storybook's Foundations stories nor the
+    guide documented the Futuristic theme's palette/type at all.
+  - `Homepage.stories.tsx`, `explorations/Blend.stories.tsx`, and `CaseStudyPage.stories.tsx`
+    all predated this morning's contact-flow feature (commit `2fb5983`) and didn't demonstrate
+    the new inline `ContactCard` state, even though `HomeV4Blend.tsx` and `CaseStudyPage.tsx`
+    both gained it today. `ContactCard` itself was fully documented in isolation the same day it
+    shipped — this was specifically about the *composed* page state never being shown.
+  - The five exploration-namespace stories (Signal, Boot, Phosphor, Blend, Original) have no
+    `parameters.ai` block, technically contradicting the 2026-06-20 entry's "every story has ai
+    guidance" line.
+- Two calls made, both checked with Ben first:
+  - **ContactCard composed-state demo:** added a Storybook-only `forceShowContactCard` prop to
+    `HomeV4Blend.tsx` and `CaseStudyPage.tsx`, following the existing `forceHover`
+    (`CaseStudyCard`) / `forceFocused` (`ChatInput`) precedent, rather than leaving the composed
+    state undemonstrated. Chosen over a docs-note-only approach because the precedent for
+    Storybook-only override props already exists in this codebase and the alternative (a
+    Storybook interactions/play-function test) isn't a pattern used anywhere else here.
+  - **Exploration-story `ai` blocks:** documented an explicit exemption in
+    `ai-component-guide.md`'s "How to Use This Guide" section instead of retrofitting `ai`
+    blocks onto five stories that document retired/comparison variants nobody should build
+    against. The one production-selected story that matters (`Pages/Homepage`, covering
+    `HomeV4Blend`) already carries the full block.
+- Also left as a flagged, unaddressed nit: `src/components/Contact/Contact.stories.tsx` is
+  colocated with its component instead of living under `src/stories/` like every other
+  page-level story. Purely organizational — not a documentation gap, since `Contact` correctly
+  has no MDX (matching the pattern that page templates don't get MDX) — and not worth the
+  churn of moving it unless Ben wants it addressed too.
+- What changed: new `src/stories/components/MobileChatSurface.stories.tsx` + `.mdx`, new
+  `src/stories/components/ThemeToggle.stories.tsx` + `.mdx`, a cross-reference note added to
+  `NavBar.mdx`; `docs/ai-component-guide.md` rewritten Homepage section, new `ThemeToggle`/
+  `MobileChatSurface` Component Reference entries, new Futuristic Foundations subsection, new
+  exploration-story exemption note, bumped "Last updated"; `Foundations/Colors` and
+  `Foundations/Typography` Storybook stories got new Futuristic-theme token-table variants;
+  `forceShowContactCard` prop added to `HomeV4Blend.tsx` and `CaseStudyPage.tsx` plus new
+  "Contact card visible" story variants on `Homepage.stories.tsx`,
+  `explorations/Blend.stories.tsx`, and `CaseStudyPage.stories.tsx`.
+- Verification: `npm run build` and `npm run lint` clean; `npm run build-storybook` confirmed
+  the new stories compile and render, the Futuristic Foundations variants render correctly
+  under the theme switcher, and the new `forceShowContactCard` states show `ContactCard` inline
+  without needing to type a live contact-intent message.
+  Files: `src/stories/components/MobileChatSurface.stories.tsx` (new),
+  `src/stories/components/MobileChatSurface.mdx` (new),
+  `src/stories/components/ThemeToggle.stories.tsx` (new),
+  `src/stories/components/ThemeToggle.mdx` (new), `src/stories/components/NavBar.mdx`,
+  `src/stories/foundations/Colors.stories.tsx`, `src/stories/foundations/Typography.stories.tsx`,
+  `src/pages/explorations/HomeV4Blend.tsx`, `src/pages/CaseStudyPage.tsx`,
+  `src/stories/Homepage.stories.tsx`, `src/stories/explorations/Blend.stories.tsx`,
+  `src/stories/CaseStudyPage.stories.tsx`, `docs/ai-component-guide.md`,
+  `docs/case-study/build-plan.md`.
+
+## 2026-07-20 — Full accessibility audit and fix pass
+- Decision: Audit every component and page for accessibility issues (WCAG 2.1 AA), not just the
+  ones covered by the 2026-06-22 pass, and fix what's real. Requested directly ("check all
+  components for accessibility"), and overdue — several components shipped after 2026-06-22
+  (ContactCard, MobileChatSurface, ThemeToggle) never got an accessibility pass at all, and the
+  ChatInput Enter-key change that landed on `main` this morning (commit `f488064`) hadn't been
+  checked either.
+- Method: three parallel research passes (primitives; content components; chat components +
+  pages), each read against the project's own documented Accessibility Patterns
+  (`docs/ai-component-guide.md`) plus general WCAG 2.1 AA criteria, explicitly told not to
+  re-report anything the 2026-06-22 pass already fixed. Every finding was independently verified
+  against the actual source before any fix — several findings included precise line numbers and
+  reasoning that held up on inspection.
+- Findings and fixes (14 real issues, all fixed):
+  - **Landmark structure:** `HomeV4Blend.tsx`'s `<footer>` was nested inside `<main>`, stripping
+    its `contentinfo` role — the exact "Wrong" example the guide's own Accessibility Patterns
+    section warns against, in a file that otherwise has a real a11y-conscious comment two lines
+    above it. Moved `<footer>` to a sibling of `<main>`.
+  - **Missing heading:** `NotFoundPage.tsx` had no `<h1>` at all — the "404 error terminal" is an
+    `aria-label` on a `<div>`, invisible to heading-navigation. Added an `sr-only` `<h1>Page not
+    found</h1>` rather than a visible one, to avoid duplicating the terminal's own "Error 404: Not
+    found" line.
+  - **Chat log live regions, in opposite directions:** `HomeV4Blend.tsx`'s message log had no
+    `aria-live` at all (a streaming reply was completely silent to screen readers), while
+    `CaseStudyPage.tsx`'s had `aria-live="polite"` permanently on — which, combined with how
+    streaming mutates the same `<p>` dozens of times per reply, floods AT users with every partial
+    chunk instead of one coherent reply. Fixed both to `aria-live={chatStatus === 'loading' ?
+    'off' : 'polite'}` — silent while streaming, announced once on completion.
+  - **Mobile chat overlay didn't isolate the background:** `MobileChatSurface` marks itself
+    `inert`/`aria-hidden` while *closed*, but nothing made the *rest of the page* (NavBar, hero,
+    sidebar) inert while the overlay was *open* — a keyboard/AT user could tab straight through to
+    background content sitting behind the visual overlay. Restructured `HomeV4Blend.tsx` and
+    `CaseStudyPage.tsx` so `MobileChatSurface` renders as a sibling of (not a descendant inside)
+    the page's inert-controlled content wrapper, so the wrapper can go inert without also
+    disabling the dialog sitting outside it. Also added focus-on-open (moves to the dialog's close
+    button) to complement the focus-on-close behavior that already existed.
+  - **ContactCard's Send button silently dropped focus:** the button uses native `disabled` while
+    `status === 'sending'`, which — if the button had focus when clicked, the normal case for a
+    keyboard user — removes it from the tab order and returns focus to `<body>` with zero
+    announcement. Added a `role="status"` line that both announces "Sending your message…" and
+    receives focus explicitly on that transition, so a keyboard user doesn't silently lose their
+    place in a form embedded deep in a scrolled chat log.
+  - **Five smaller, independent fixes:** `CaseStudyHero`'s meta grid had `aria-label` on a plain
+    `<div>` (not exposed as a labeled object without a role — added `role="group"`);
+    `CaseStudyCard`'s link (the only interactive element among its siblings) had no
+    `:focus-visible` rule at all, just the bare browser default; `ProcessStep`'s explicitly
+    numbered sequence used a plain `<div>` instead of `<ol>`/`<li>`, so the only place the sequence
+    existed for AT users was DOM order; `ImageCaption`'s `alt` prop defaulted to `''` with nothing
+    stopping a real screenshot from shipping as decorative once real images land (Phase 4E is
+    still pending them) — made `alt` required whenever `src` is passed via a discriminated union
+    type, not just a comment; the Contact page's copy-to-clipboard buttons swapped their own
+    visible label with no live-region announcement of the result.
+  - **ChatInput/Input focus indicators used the wrong contrast tier:** both routed their focus
+    treatment through `--color-interactive-border`/`--color-green-border` (~1.9:1) — the exact
+    token the guide's own Accessibility Patterns section says to never use for a focus indicator,
+    reserved for decorative use. `ChatInput` additionally couldn't distinguish "focused" from
+    "filled, not focused" at all, since both states shared the same `.active` class. Added a real
+    `.field:focus-within` ring on `--color-green-accent` (~10:1) to `ChatInput`, independent of
+    `.active`; repointed the shared `--chat-focus-border` token (used by `Input`) from
+    `--color-interactive-border` to `--color-green-accent`.
+  - **ChatInput's character counter over-announced:** `aria-live="polite"` on the counter fired on
+    every keystroke once multiline and filled — the field truncates at `MAX_CHARS` so it can't
+    silently overflow, so the live region was pure interruption with no informational payoff.
+    Dropped the live region; kept the counter as a plain visual element.
+  - **Enter-key convention undocumented for assistive tech:** this morning's `f488064` change
+    (plain Enter submits, Shift+Enter inserts a newline in multiline mode) reverses the prior
+    default and isn't discoverable from `aria-label="Ask a question"` alone — a screen reader or
+    dictation user composing a question by the native textarea convention (Enter = newline) could
+    fire an incomplete message. Added an `sr-only` hint wired via `aria-describedby`, matching the
+    file's own existing pattern for the loading-state live region.
+  - **ThemeToggle claimed a keyboard pattern it didn't implement:** `role="radiogroup"`/`"radio"`
+    imply the ARIA APG radiogroup keyboard model (roving tabindex, Arrow keys move *and* select),
+    but every option was an independent Tab stop with no Arrow key handling — a toolbar of buttons
+    wearing radio-group roles. Implemented the real pattern: `tabIndex={active ? 0 : -1}` plus
+    Arrow key selection between the two options, focus following the change.
+- What wasn't changed: the primitives audit found no issues in `Button.tsx`, `Tag.tsx`, or
+  `StatusIndicator.tsx`; the content-components audit found no issues in `NavBar.tsx`,
+  `RoleCallout.tsx`, or `StatBlock.tsx`. `ai-component-guide.md`'s `ImageCaption` and
+  `ThemeToggle` entries were updated to describe the new stricter type and the keyboard pattern,
+  respectively (the guide already *said* alt was "always required" in prose — the type just
+  didn't enforce it until now).
+- Verification: `npm run build`, `npm run lint`, and `npm run build-storybook` all clean on every
+  touched file (the same 18 pre-existing warnings remain, all in files this pass didn't touch).
+  No live browser/screen-reader test performed — no browser tooling in this environment; the
+  fixes are structural/attribute-level and match established, already-verified patterns elsewhere
+  in the codebase (the boot-sequence `inert` wrapper, the `role="status"` live-region pattern),
+  but a real screen-reader pass (VoiceOver/NVDA) on the mobile overlay and the two chat logs is
+  worth doing before launch.
+  Files: `src/pages/explorations/HomeV4Blend.tsx`, `src/pages/CaseStudyPage.tsx`,
+  `src/pages/NotFoundPage.tsx`, `src/components/MobileChatSurface.tsx`,
+  `src/components/ContactCard/ContactCard.tsx`, `src/components/CaseStudyHero/CaseStudyHero.tsx`,
+  `src/components/CaseStudyCard/CaseStudyCard.module.css`,
+  `src/components/ProcessStep/ProcessStep.tsx`, `src/components/ProcessStep/ProcessStep.module.css`,
+  `src/components/ImageCaption/ImageCaption.tsx`, `src/components/Contact/Contact.tsx`,
+  `src/components/ChatInput/ChatInput.tsx`, `src/components/ChatInput/ChatInput.module.css`,
+  `src/components/ThemeToggle/ThemeToggle.tsx`, `src/tokens/tokens.css`,
+  `docs/ai-component-guide.md`, `src/stories/components/ThemeToggle.mdx`.
+
+## 2026-07-29 — Unlist Sagent; write the Portfolio Rebuild case study ahead of Phase 7
+
+- Decision: Three linked calls.
+  1. **Sagent comes off the site entirely** until its content exists. The route is removed
+     from `App.tsx`, the card from `explorations/data.ts`, the entry from `sitemap.xml`, and
+     Upfluent's `nextCase` now skips to USAA. `/work/sagent` falls through to the 404.
+     `src/content/sagent.ts` is left untouched.
+  2. **The Portfolio Rebuild case study (01) is written now**, ahead of its Phase 7 slot,
+     from the material already in `docs/case-study/`.
+  3. **Displayed numbering compacts to 01–04** (USAA 04→03, Sabre 05→04).
+- Reasoning:
+  - Both 01 and 03 were shipping the literal string "Case study in progress." on a site that
+    is otherwise launch-ready at Lighthouse 96–100. On a portfolio whose whole argument is
+    craft and judgment, holding copy is the most expensive thing on the page. The two get
+    opposite treatments because the source material is opposite: Sagent has ~15 scattered
+    facts and no brain dump, so it can't be written honestly yet; Portfolio Rebuild has more
+    source material than any other case study (984-line decisions.md, 829-line
+    process-journal.md, key-insights.md) and is the lead case study.
+  - Unlisted-but-reachable was rejected: a placeholder page findable by URL is the exact
+    failure mode being removed. Nothing pre-launch links to it, so the 404 costs nothing.
+  - On numbering: Ben chose to compact rather than leave a 01, 02, 04, 05 gap, and to resync
+    every doc that states the order. **This is not a reordering decision.** Sagent remains
+    third in the strategic order for the reason given in CLAUDE.md (strongest Director-level
+    evidence) and reclaims 03 when it ships, pushing USAA and Sabre back down. Worded that
+    way in every doc so a future session doesn't read it as a demotion.
+- Content notes: The "What was hard" section blends three angles at Ben's direction — the AI
+  as a confident bad editor (it missed the NDA question, misjudged which case study showed
+  craft, offered boilerplate as strategy), the Version A/B draft override, and the recursive
+  credibility problem (the page is hosted on the thing it describes). All three are about
+  having to stay discerning while using AI, which is the trust signal the section exists for.
+  Outcomes deliberately say "launch-ready", not "Live — viewbens.work": the domain still
+  serves the old site, and claiming otherwise on the one case study about judgment would be
+  self-refuting.
+- Also shipped: a `figures` array on `CaseStudyContent` (see the 2026-07-29 entry below).
+- Open question: the `96–100` Lighthouse figure the page now claims is from the 2026-07-16
+  measurement, taken before the contact flow and mobile chat overlay shipped. Re-run
+  Lighthouse before launch; if it drifted, change the copy, not the number.
+
+## 2026-07-29 — Real image support for case studies (`figures`)
+
+- Decision: Added an optional `figures: CaseFigure[]` to `CaseStudyContent`, anchoring
+  captioned screenshots to a section (`problem | context | process | decision | hard`) and
+  numbering them automatically in array order. `keyDecision.artifactLabel` is kept working
+  for Upfluent, USAA, and Sabre, but `figures` is the mechanism for anything new; a page uses
+  one or the other, never both, since each numbers from 01.
+- Reasoning: `ImageCaption` has always been able to render a real `<img>` — `CaseStudyPage`
+  simply never passed `src`, so **every case study on the site was showing a dot-grid
+  placeholder**, and there was exactly one figure slot per page with a hardcoded "Fig. 01"
+  caption. Ben is adding screenshots next, so the wiring had to exist first. Omitting
+  `src`/`alt` still renders the placeholder, which means a page can ship with final captions
+  and positions and gain real images later by adding two fields — no component or page edits.
+- `CaseFigure` mirrors `ImageCaptionProps`' union so `alt` is required whenever `src` is set;
+  a real screenshot can't silently ship as decorative (WCAG 1.1.1). Role and Outcomes
+  deliberately can't hold a figure — they're already visual, so an image competes there.
+- Verified in a real browser, not by inspection: pointed a figure at a probe PNG in
+  `public/case/portfolio/`, confirmed a real `<img>` rendered with its `alt` intact while the
+  sibling figures stayed placeholders and captions stayed sequential, then reverted the probe.
+- Alternatives considered: extending `artifactLabel` to take a `src` (rejected — still one
+  figure per page, still locked to the Key Decision section).
+
+## 2026-07-29 — Collapse three duplicated case study arrays into one
+
+- Decision: `HomePage.tsx`, `CaseStudyPage.stories.tsx`, and `CaseStudyCard.stories.tsx` now
+  import real data (`CASE_STUDIES`, `usaaData`, `portfolioRebuildData`) instead of carrying
+  their own inline copies. Removed roughly 200 lines of duplicated content.
+- Reasoning: This duplication has already caused a real bug — Sabre went missing from the
+  homepage work grid in two places while being fully built (process-journal.md 2026-07-18).
+  Hiding Sagent meant editing the same list in four places, which surfaced how much the
+  copies had already drifted: `CaseStudyCard.stories.tsx` had Sabre as "Lead UX Designer"
+  (production says "UX Designer") with year `2014–17` (production says `2015–18`), and the
+  lead case study as year `2025–`. Storybook is deployed publicly as a portfolio artifact, so
+  it showing different copy than the site is a visible defect, not just tech debt.
+- Also fixed: the Portfolio Rebuild card's `tag` was `'Meta'`, which is not one of the five
+  canonical industry labels CLAUDE.md rule 4 defines. Now `'AI Collaboration'` — the
+  canonical label that exists for exactly this card.
+- The five canonical industry labels stay five. `Mortgage` is simply unused on the grid while
+  Sagent is unlisted; shrinking the set for a temporary state would be real drift.
+- Open question: **Sabre's date range disagrees across three files** — `2015–18` in
+  `explorations/data.ts`, `2014–18` on the Resume page, `2014–17` in a Storybook story. Not
+  caused by this pass and not guessed at; needs one answer from Ben.
+
+## 2026-07-29 — Drop the count from the work grid heading
+
+- Decision: "Four tools, four regulated industries" → "Expert tools, high-stakes industries"
+  on the production homepage (`HomeV4Blend.tsx`).
+- Reasoning: It was a countable claim that didn't count. Above five cards it was wrong; above
+  four it's wrong differently (three regulated industries plus one meta project — Portfolio
+  Rebuild isn't an industry). Echoing the positioning statement instead means it can't go
+  stale the next time the grid changes, which has now happened twice. On a portfolio arguing
+  that Ben catches this class of detail, a heading that fails its own arithmetic is the worst
+  place to leave one.
+
+## 2026-08-01 — The in-chat contact form is a transcript entry, not a footer
+
+- Decision: `useChatSession` no longer exposes the contact card as a boolean pinned to the end
+  of the log. It now carries `contactCardAfter: number | null` — the count of messages that
+  render *before* the card — set to `messagesRef.current.length + 2` at submit time (this
+  turn's user message plus its assistant reply). `HomeV4Blend.tsx` and `CaseStudyPage.tsx`
+  render the card at that position inside the message map instead of after it.
+- Reasoning: Ben hit the bug live. The card was a sibling rendered after `messages.map(...)`,
+  so it was stuck to the bottom of the log rather than holding a place in it — every follow-up
+  question and its reply were inserted *above* the form. The transcript stopped reading as a
+  conversation: the visitor's newest message appeared before a form that was offered several
+  turns earlier. The form belongs to the turn that surfaced it, so it has to be positioned
+  like a message, not appended like a footer.
+- **The anchor pins on first surface and never moves.** Re-detecting contact intent later
+  leaves an existing card where it is. This is load-bearing, not conservatism: the card's
+  position determines its slot in React's children array, so relocating it remounts
+  `ContactCard` and silently discards whatever the visitor had already typed. `dismissContactCard`
+  clears the anchor, so a declined card can legitimately reappear lower down later.
+- Verified in a real browser (Playwright against the dev server, `/api/chat` stubbed so no
+  Anthropic traffic), on both the homepage and `/work/usaa`. The fix was then stashed and the
+  same check re-run to confirm it reproduces the reported bug — card at index 4, below the
+  follow-up — so the check isn't vacuous. Drafts typed into all three mounted card instances
+  (hero panel, docked rail, always-mounted mobile overlay) survived the follow-up, confirming
+  no remount. All three "Contact card visible" Storybook stories still render one card.
+- Side effect, accepted: on case study pages the "Try asking" suggestion chips now render
+  *below* the card rather than above it. The two rarely coexist — chips clear on submit — and
+  when they do (navigating to another case study with a card still open) the bottom of the log
+  is the right place for them.
+- Alternatives considered: making the card a `role: 'contact'` entry in the `messages` array.
+  Cleaner conceptually, but it widens the `Message` type through every render site and every
+  Storybook story for the same result. Rejected as churn.
+- Note for future edits: `contactCardAfter` counts messages, so anything that appends to
+  `messages` outside `handleSubmit` — today only `setPageContext`'s one-time page-context
+  note — shifts positions after it. Both pages clamp with
+  `Math.min(contactCardAfter ?? messages.length, messages.length)`, which is also what makes
+  Storybook's `forceShowContactCard` (no anchor at all) still render at the end of a seeded log.
+
+## 2026-10-08 — "Over fifteen years" stays; Sabre dates are 2015–18
+- Decision: (Ben) The experience claim reads "over fifteen years" / "15+". It's true — Ben's
+  work history predates the earliest role listed (2014); the listed roles are a selection, not
+  the full record. About page copy updated ("Over fifteen years…", "Four industries, over
+  fifteen years."); Resume (`15+`) and `api/lib/system-prompt.ts` (`Fifteen-plus`) already
+  said this. (Ben) Sabre's dates are 2015–2018, propagated to the Resume page and the
+  CaseStudyCard stories; the homepage card and `src/content/sabre.ts` already said so.
+- Reasoning: Closes the two copy contradictions flagged 2026-07-29 before launch.
+- Open question: AT&T is listed as Mar–Oct 2015 and Sabre now starts in 2015 — read as
+  sequential, but worth a glance if anyone asks for exact months.
+
+## 2026-10-08 — OG images are generated placeholders, not hand-made art
+- Decision: Ship generated, on-theme OG images (dot-grid charcoal, `BM_` wordmark, Space
+  Mono/IBM Plex Mono, case study title + one-liner + canonical tag) instead of blocking
+  launch on bespoke art. `scripts/generate-og-images.mjs` renders them with Playwright from
+  `CASE_STUDIES` in `src/pages/explorations/data.ts`.
+- Reasoning: Phase 4E was the last launch blocker in Phase 4, and a broken preview image is
+  worse than a plain one. Reading from `CASE_STUDIES` means a title change is one command,
+  not five hand edits that drift — same lesson as decisions.md 2026-07-29.
+- Alternatives considered: hand-made Figma art per case study (still possible later — drop a
+  same-named PNG in `public/og/` and stop re-running the script).
+
+## 2026-10-08 — BM_ favicon replaces the Vite default
+- Decision: `public/favicon.svg` (still the default purple Vite logo at launch prep) replaced
+  with the `BM_` wordmark on page charcoal, plus `favicon-32.png` and `apple-touch-icon.png`
+  fallbacks wired in `index.html`. Generated by `scripts/generate-favicon.py`.
+- Reasoning: Browser tabs are the most-seen brand surface on the site. The mark is set in
+  Space Mono **Bold** rather than the NavBar's Regular, and tracked tighter, because at 16px
+  the Regular strokes disappear and three monospace glyphs at default spacing leave the square
+  mostly empty. Same colors and the green terminal-cursor underscore as the wordmark.
+- Alternatives considered: a two-letter `B_` mark (bigger glyphs, but no longer the wordmark).
+- Note: `public/icons.svg` (unreferenced Vite boilerplate) deleted in the same PR.
+
+## 2026-10-08 — ChatTranscript extracted as the one place chat messages render
+- Decision: (Ben) Extract the chat message log into `src/components/ChatTranscript/`, with
+  stories and an MDX doc. `HomeV4Blend` and `CaseStudyPage` both use it now. It owns message
+  styles, paragraph splitting, the streaming cursor, live-region switching, and where the
+  ContactCard sits. Each surface keeps its own container sizing (`className`) and suggestion
+  chips (`children`), because those really do differ between the hero, the rails, and the
+  overlay.
+- Reasoning: The two pages carried near-identical copies, and both chat rendering bugs so far
+  came from those copies drifting: paragraph splitting missing on Home (2026-07-19), and the
+  ContactCard ordering fix needing to be made twice (2026-08-01). It's also the most
+  important UI on the site and wasn't in the public Storybook. Documented component count goes
+  from 15 to 16 (case study and chat brief updated).
+- Unified in the process (Claude's call, flagged for review): the streaming cursor now shows
+  for the whole reply on both surfaces. Home previously showed it only before the first chunk
+  arrived. Reply indent is 16px on both (case study rail was 14px).
+- Alternatives considered: suggestion chips inside the component. Not done — the two surfaces
+  style them differently (size, hover nudge, Futuristic squaring), and unifying that is a
+  design call, not a refactor.
+
+## 2026-10-08 — Per-route static HTML so link previews show the right page
+- Decision: (Ben) Every route's head tags now come from one module, `src/seo/pageMeta.ts`.
+  A Vite plugin (`scripts/prerender-meta.ts`) writes a static
+  `dist/<route>/index.html` per route with those tags baked in. In the browser, `PageHead`
+  sets the same values, and `src/main.tsx` removes the static copies on boot.
+- Reasoning: Link-preview crawlers (LinkedIn, Slack, iMessage, X) don't run JavaScript, and
+  every URL served the same `index.html` — so a shared case study link previewed as the
+  homepage, and the per-case-study OG images from Phase 4E were never shown. Confirmed by
+  fetching the live `.vercel.app` deployment. Separately, browsers ended up with two of every
+  description and `og:*` tag (static first), and the `twitter:*` tags were never overridden at
+  all. One metadata module also means a page's tags can't drift between the two consumers.
+- It's a Vite plugin rather than a step in `npm run build` because Vercel's build command for
+  this project is plain `vite build` — the first version, a post-build npm step, deployed fine
+  but never ran on Vercel (caught on the preview deploy by fetching raw HTML per route).
+- No runtime cost: same JS bundle, ~4 KB of HTML per route, written at build time. The inline
+  theme script is byte-identical in every file, so the CSP hash in `vercel.json` still matches.
+- New copy (Claude's draft, flagged for review): `/contact` had no metadata before and now has
+  a title and description drawn from the page's "≤ 48h" promise.
+- Alternatives considered: pre-rendering whole pages (react-snap or an SSG plugin — heavier,
+  and fights the boot sequence and chat), edge middleware rewriting the head per request
+  (more moving parts for fixed values), moving to an SSR framework (far too big pre-launch).

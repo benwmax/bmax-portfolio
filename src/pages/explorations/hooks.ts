@@ -13,6 +13,28 @@
  */
 import { useEffect, useRef, useState } from 'react';
 
+/**
+ * True at the viewport width where the mobile chat overlay is the active
+ * surface. Mirrors the `max-width: 760px` breakpoint in
+ * MobileChatSurface.module.css — keep the two in sync. Reactive to resizes,
+ * so a mid-conversation resize across the breakpoint updates correctly.
+ */
+export function useIsMobileViewport(): boolean {
+  const query = '(max-width: 760px)';
+  // Lazy init reads the current match up front so there's no setState in the
+  // effect body — the effect only subscribes to later changes.
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== 'undefined' && 'matchMedia' in window ? window.matchMedia(query).matches : false,
+  );
+  useEffect(() => {
+    const mq = window.matchMedia(query);
+    const onChange = () => setIsMobile(mq.matches);
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
+  return isMobile;
+}
+
 /** True when the user has asked the OS to reduce motion. Reactive to changes. */
 export function usePrefersReducedMotion(): boolean {
   // Lazy init reads the current preference up front so there's no setState in the

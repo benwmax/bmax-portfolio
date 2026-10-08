@@ -83,6 +83,25 @@ throughout — not just in the opener.
 **Do not suggest reordering these without flagging it explicitly and explaining
 the strategic reason.**
 
+### Sagent is currently unlisted (2026-07-29)
+
+The order above is the **strategic** order and has not changed. But Sagent's content is
+still a placeholder (Phase 1C brain dump not started), so rather than shipping "Case study
+in progress." to visitors it has been taken off the site: route removed from `App.tsx`, card
+removed from `explorations/data.ts`, entry removed from `sitemap.xml`, and Upfluent's
+`nextCase` points to USAA. `/work/sagent` returns the 404 page.
+`src/content/sagent.ts` is intact and untouched.
+
+**Displayed numbering is therefore compacted to `01` Portfolio Rebuild, `02` Upfluent,
+`03` USAA, `04` Sabre.** Sagent reclaims `03` when it ships, pushing USAA and Sabre back
+down. Do not read the compaction as a demotion or as a reordering decision — it is a display
+consequence of the page being unlisted. See decisions.md 2026-07-29.
+
+Re-listing checklist when Phase 1C is done: restore the route and import in `App.tsx`, the
+card in `explorations/data.ts` (with `index: '03'`, renumbering USAA and Sabre), the
+`sitemap.xml` entry, Upfluent's `nextCase`, and Sagent's case study block in
+`api/lib/system-prompt.ts` (currently covered under "OTHER EXPERIENCE").
+
 ---
 
 ## NDA and Confidentiality Constraints
@@ -127,8 +146,12 @@ without password gates, anonymization, or confidentiality notes.
 │   ├── stories/                     ← Storybook stories
 │   ├── pages/                       ← page-level components
 │   ├── tokens/                      ← design tokens (CSS custom properties)
+│   ├── content/                     ← typed CaseStudyContent objects, one per case study
 │   └── styles/                      ← global styles, Tailwind config
 └── public/
+    ├── case/                        ← case study screenshots, per-project subdirs
+    │   └── portfolio/               ← wired to the `figures` slots in portfolio-rebuild.ts
+    └── og/                          ← 1200×630 OG images, rendered by `npm run og`
 ```
 
 ---
@@ -370,11 +393,18 @@ and things that were intentionally left out of scope.
 
 4. **The five canonical industry labels are: Travel, Fintech, Mortgage, Insurance, AI Collaboration.**
    Do not invent new industry labels. These are the only tags used across all case study cards
-   and Tag components.
+   and Tag components. `Mortgage` is currently unused on the grid because Sagent is unlisted —
+   the set stays five; it returns with the case study.
 
-5. **The case study order is finalized:** 01 Portfolio Rebuild, 02 Upfluent, 03 Sagent,
-   04 USAA, 05 Sabre. Index chips and meta must reflect this order. Do not reorder without
-   flagging it explicitly and explaining the strategic reason.
+5. **The displayed case study order is:** 01 Portfolio Rebuild, 02 Upfluent, 03 USAA,
+   04 Sabre. Index chips and meta must reflect this. Sagent is unlisted pending content and
+   reclaims 03 when it ships — see "Sagent is currently unlisted" above. Do not reorder
+   without flagging it explicitly and explaining the strategic reason.
+
+   The work grid renders from `CASE_STUDIES` in `src/pages/explorations/data.ts` — the single
+   source of truth, shared by the live homepage, the retired `HomePage.tsx`, and the Storybook
+   grid story. **Never hardcode the card list**; it existed in four hand-maintained copies and
+   drifted (see decisions.md 2026-07-29).
 
 6. **Components removed from scope are intentionally absent.** The following were cut and
    should not be built: Select, Icon wrapper, Link component, Avatar, Container/Section/Grid/
@@ -400,7 +430,18 @@ for the build checklist.
 - `api/lib/session.ts` — server-side session authority: conversation history
   and the session message cap live here (Redis, keyed by an HttpOnly
   cookie), never trusted from the client. See decisions.md (2026-07-17).
-- `src/components/MobileChatSurface.tsx` — the mobile-only "Ask Ben" entry
+- `api/lib/cors.ts` — the shared origin allowlist (`ALLOWED_ORIGINS`) and CORS
+  headers for *every* `/api/*` endpoint. Extracted from `api/chat.ts`
+  2026-07-20 so chat and contact can't drift and the temporary pre-launch
+  entry only needs removing once.
+- `api/contact.ts` — the in-chat "get in touch" endpoint: emails a visitor's
+  Name/Email/Message to Ben via Resend. Mirrors `api/chat.ts`'s abuse-prevention
+  shape but on its own budget. See decisions.md (2026-07-20).
+- `api/lib/contact-limit.ts` — per-IP hourly/daily rate limits and the global
+  daily cap for `api/contact.ts`, deliberately separate from chat's budget.
+- `src/components/ContactCard/` — the inline contact form rendered in the chat
+  log, including the honeypot field and minimum-fill-time anti-bot signals.
+- `src/components/MobileChatSurface.tsx` — the mobile-only "Ask about Ben" entry
   point (floating action button + full-screen overlay), shared by the homepage
   and case study pages so the mobile chat behaves identically on both. See
   decisions.md (2026-07-19).
@@ -415,13 +456,19 @@ for the build checklist.
   Workspace spend cap changes.
 - `api/lib/system-prompt.ts` is the assistant's brief and needs upkeep —
   update it whenever a case study moves from "in progress" to "published" so
-  the assistant doesn't undersell or misstate finished work. As of
-  2026-06-15, Upfluent, USAA, and Sabre have all been rewritten and the
-  system prompt's "still being finalized" language for those is now stale.
+  the assistant doesn't undersell or misstate finished work. As of 2026-07-29 all four
+  listed case studies (Portfolio Rebuild, Upfluent, USAA, Sabre) are published and described
+  in full; no "still being finalized" language remains.
   It also carries safety/anti-jailbreak instructions (persona-lock,
   anti-defamation, ignore-embedded-instructions, groundedness, no code
   execution) added 2026-07-17 — keep these when editing the case study
   content around them.
+- **The brief must never point a visitor at a page that doesn't exist.** Sagent's case study
+  block was replaced 2026-07-29 with an `OTHER EXPERIENCE (no case study page — do not offer
+  one)` section covering Sagent, Market Rebellion, and the early roles, because those appear
+  on About/Resume and visitors will ask about them. Its previous wording told the assistant to
+  "direct the visitor to the other case studies," which would now mean offering a 404. Restore
+  a real case study block when Sagent ships.
 - Conversation history and the session message cap are server-side
   authoritative (`api/lib/session.ts`), not client-supplied — the client only
   ever sends the newest message. Do not revert to trusting a client-supplied
@@ -436,17 +483,36 @@ for the build checklist.
   sanitization (e.g. DOMPurify) in the same commit, not as a follow-up.
 - The widget's visual styling depends on Phase 2/3 tokens; the backend does
   not and can proceed independently.
-- `ALLOWED_ORIGINS` in `api/chat.ts` temporarily includes `https://bmax-portfolio.vercel.app`
-  (added 2026-07-19, marked `TEMPORARY` in a code comment) so the widget is testable
-  pre-launch. Remove it once `viewbens.work` is cut over — see "Current Project Status" →
-  Immediate next steps.
+- `ALLOWED_ORIGINS` lives in `api/lib/cors.ts` (moved out of `api/chat.ts` 2026-07-20) and
+  is shared by every `/api/*` endpoint. It temporarily includes
+  `https://bmax-portfolio.vercel.app` (added 2026-07-19, marked `TEMPORARY` in a code
+  comment) so the widget is testable pre-launch. Remove it once `viewbens.work` is cut
+  over — one edit, one file. See "Current Project Status" → Immediate next steps.
+- The contact flow's intent detection (`detectContactIntent()` in
+  `src/hooks/useChatSession.ts`) is a client-side regex, not model tool-use — it runs
+  against both the visitor's message and the assistant's finished reply. If the system
+  prompt's wording about how visitors reach Ben changes, check that the phrase list still
+  matches; the two are coupled by convention, not by code. See decisions.md (2026-07-20).
+- `api/contact.ts` has its own rate limits and daily cap, separate from chat's, because an
+  email send is a different resource than an LLM token. Don't merge the two budgets.
+- **The inline ContactCard is a transcript entry, not a footer.** `useChatSession` exposes
+  `contactCardAfter` (the number of messages that render before the card), and
+  `ChatTranscript` renders the card at that position *inside* the message list, not after it —
+  appending it means every follow-up turn appears above the form. Pages pass the card and
+  `contactCardAfter` in; they don't place it themselves. The anchor pins on first surface and
+  never moves (relocating it remounts `ContactCard` and drops a half-typed draft). Fixed
+  2026-08-01 after shipping the wrong way on 2026-07-20; see decisions.md 2026-08-01.
 - The assistant's replies are rendered by `splitParagraphs()` (`src/hooks/useChatSession.ts`)
   into separate `<p>` blocks, and the system prompt's formatting section enforces short,
   frequent paragraph breaks as a hard rule (not a suggestion — Haiku doesn't reliably follow
-  soft formatting guidance). Any page that renders assistant messages must call
-  `splitParagraphs()` on the text, not render it as one block — `HomeV4Blend.tsx` shipped
-  without this for weeks before being caught 2026-07-19; see decisions.md 2026-07-19.
-- On mobile (<=760px) the chat is a floating "Ask Ben" button that opens a full-screen
+  soft formatting guidance). `ChatTranscript` does the splitting. Any page that renders chat
+  messages must use it rather than its own markup — `HomeV4Blend.tsx` shipped without
+  paragraph splitting for weeks before being caught 2026-07-19; see decisions.md 2026-07-19.
+- **`src/components/ChatTranscript/` is the only place chat messages are rendered** (extracted
+  2026-10-08). Home and CaseStudyPage each carried a copy before, and both bugs above came from
+  the copies drifting. Each surface passes its own container `className`, and its suggestion
+  chips as `children`. See decisions.md 2026-10-08.
+- On mobile (<=760px) the chat is a floating "Ask about Ben" button that opens a full-screen
   overlay, both in `src/components/MobileChatSurface.tsx` and shared by the homepage and
   case study pages. Two behaviors are load-bearing and easy to regress: (1) starting a chat
   from the homepage's inline container must OPEN the overlay (via `handleHeroSubmit` in
@@ -485,22 +551,57 @@ to check off?"*
 this prose summary had drifted out of sync with it as of 2026-07-17 and was
 resynced below): Phase 0 and 2 complete; Phase 3 (Storybook Foundation) complete
 as of 2026-07-16, including deployment to system.viewbens.work; Phase 4 (Site
-Assembly) in progress — 4A/4B/4C/4D/4F complete, 4E blocked on OG images (Ben);
+Assembly) complete as of 2026-10-08 (OG images shipped as generated placeholders);
 Phase 5 (QA and Pre-Launch) in progress; Phase 1 (Sagent content, 1C) still not
 started; Phases 6–7 not started. Per decisions.md 2026-07-16, launch is being
 prioritized ahead of the Sagent case study — Sagent ships with placeholder copy
 and gets a full pass post-launch.
 
-**Last updated:** 2026-07-20 (scoped the real-device Safari/mobile QA pass and added it to
-Immediate next steps below — it was previously only a bare, unchecked build-plan.md line
-with no detail on devices, target environment, or what to actually look for. Not started
-yet; it's Ben's task to run since Claude has no physical device access. Prior entry,
-2026-07-19: hardening pass verified against real infra; temporary `.vercel.app` origin
-allowlist added for pre-launch chat testing; chat widget readability fix — see decisions.md
-2026-07-19 entries and process-journal.md. Also resynced this section against build-plan.md:
-removed a stale "choose homepage direction" next-step that was actually decided 2026-06-22,
-and documented that `HomeV4Blend.tsx` — despite living under `src/pages/explorations/` — is
-the real production homepage, not a draft)
+**Last updated:** 2026-10-08 (Launch prep: "over fifteen years" copy settled and Sabre dates
+set to 2015–18 everywhere; OG images generated into `public/og/`; Lighthouse re-run — see
+"Immediate next steps". See decisions.md 2026-10-08.)
+
+**Also updated:** 2026-10-08 (Portfolio Rebuild case study refreshed against the current docs
+on the existing template: component count 12 → 15, stale "this month" fixed, the server-side
+chat-history fix, the env-pull and renumbering moments added, and sections trimmed back to the
+USAA length standard. The chat brief in `api/lib/system-prompt.ts` was synced to match.
+Lighthouse re-run in a cloud container gave performance 90–93 with everything else 100. That
+environment isn't comparable, so the `96–100` claim stands pending Ben's local re-run. See
+process-journal.md 2026-10-08.)
+
+**Previously updated:** 2026-08-01 (Ordering fix in the chat: the inline ContactCard was rendered
+after the whole message list, so a follow-up question and its reply appeared *above* the
+form. It's now anchored to the turn that surfaced it via `contactCardAfter` in
+`useChatSession`. Verified in a real browser on both the homepage and a case study page,
+including a stash-and-re-run to confirm the check reproduces the original bug. See
+decisions.md 2026-08-01 and the ContactCard entry under "AI Chat Feature" → Key constraints.)
+
+**Previously updated:** 2026-07-29 (Sagent unlisted from the site — route, card, and sitemap entry
+removed, `/work/sagent` now 404s, `src/content/sagent.ts` intact — and the Portfolio Rebuild
+case study written in full, ahead of its Phase 7 slot. Displayed numbering compacted to
+01–04 with the strategic order unchanged. Added a `figures` array to `CaseStudyContent` so
+case studies can hold real captioned screenshots — `ImageCaption` always supported `src`, but
+`CaseStudyPage` never passed it, so every case study had been rendering a placeholder frame.
+Collapsed four hand-maintained copies of the case study list into one. No holding copy
+remains anywhere on the site. See decisions.md 2026-07-29 for all five entries.)
+
+**Previously updated:** 2026-07-22 (contact flow is now live end to end — Ben created the Resend
+account, verified the `viewbens.work` sending domain, and added `RESEND_API_KEY` to Vercel.
+Verified by sending a real message through the deployed `/api/contact`: 200 response and the
+email was delivered to ben@viewbens.work with the correct visitor Reply-To. The Resend
+blocker is cleared. Added `scripts/verify-contact-email.mjs`.)
+
+**Previously updated:** 2026-07-20 (in-chat "get in touch" contact flow shipped via Resend —
+`api/contact.ts`, `api/lib/contact-limit.ts`, `api/lib/cors.ts`, `src/components/ContactCard/`;
+`ALLOWED_ORIGINS` moved to the shared `api/lib/cors.ts`. New Ben-blocked item: Resend account
++ `viewbens.work` sending-domain verification. See decisions.md 2026-07-20.)
+
+**Previously updated:** 2026-07-19 (hardening pass verified against real infra; temporary
+`.vercel.app` origin allowlist added for pre-launch chat testing; chat widget readability
+fix — see decisions.md 2026-07-19 entries and process-journal.md. Also resynced this
+section against build-plan.md: removed a stale "choose homepage direction" next-step that
+was actually decided 2026-06-22, and documented that `HomeV4Blend.tsx` — despite living
+under `src/pages/explorations/` — is the real production homepage, not a draft)
 
 **Completed:**
 - Domain confirmed: viewbens.work (existing site stays live until launch)
@@ -645,6 +746,31 @@ the real production homepage, not a draft)
   without a paragraph break), plus lowered `MAX_OUTPUT_TOKENS` (400 → 220) in `api/chat.ts`
   as a backstop. Verified against the real model by replaying the exact reported question.
   See decisions.md 2026-07-19.
+- In-chat "get in touch" contact flow (2026-07-20): the assistant now surfaces an inline
+  "SEND BEN A MESSAGE" form (Name optional, Email + Message required) in the chat log when
+  `detectContactIntent()` — a client-side regex over both the visitor's message and the
+  assistant's reply — matches. Submits to a new `api/contact.ts` Edge Function that emails
+  ben@viewbens.work via Resend. Mirrors chat's abuse-prevention shape (origin allowlist,
+  Redis rate limits, fail-closed 503) but on its own budget (`api/lib/contact-limit.ts`),
+  plus a honeypot field removed from the accessibility tree and a minimum-fill-time check;
+  both bot rejections return the same response a real send does, so a caller can't learn
+  which check tripped. Origin allowlist extracted to the shared `api/lib/cors.ts`. Chose a
+  structured form over conversational field collection, and a client-side regex over model
+  tool-use — see decisions.md 2026-07-20 for both trade-offs. Verified in a real browser via
+  Playwright; live email delivery verified end to end 2026-07-22 — a real send through the
+  deployed `/api/contact` reached ben@viewbens.work with the correct visitor Reply-To.
+
+- Sagent unlisted and Portfolio Rebuild case study written (2026-07-29). `/work/sagent` 404s;
+  `src/content/sagent.ts` is intact for a one-line re-wire after Phase 1C. Case study 01 is
+  now real content sourced from `docs/case-study/` — no placeholder copy anywhere on the site.
+  Displayed numbering compacted to 01–04 (strategic order unchanged). New `figures` array on
+  `CaseStudyContent` gives every case study captioned, positioned screenshot slots that render
+  the dot-grid placeholder until `src` + `alt` are added; verified in a browser with a probe
+  image. `HomePage.tsx`, `CaseStudyPage.stories.tsx`, and `CaseStudyCard.stories.tsx` now
+  import real data instead of carrying drifted inline copies. Work grid heading changed from
+  "Four tools, four regulated industries" to "Expert tools, high-stakes industries" — the count
+  was wrong before and after. Portfolio Rebuild's card tag corrected from the non-canonical
+  `'Meta'` to `'AI Collaboration'`. See decisions.md 2026-07-29.
 
 **Immediate next steps:**
 (Resynced 2026-07-19 — removed a stale "Ben to choose homepage direction" item: that was
@@ -656,54 +782,43 @@ both created 2026-07-16, and this session ran multiple verification scripts agai
 a new item below for removing the temporary `.vercel.app` origin allowlist entry at
 cutover, added 2026-07-19. build-plan.md's checkboxes are the source of truth if this
 drifts again.)
-- **Phase 1C:** Sagent brain dump — strongest Director-level case study, starts from zero
-- **Phase 4E:** OG images only — create 1200×630 PNGs in public/og/ before launch
-  (meta descriptions, sitemap.xml, robots.txt, and canonical tags are already done;
-  see build-plan.md 4E)
+- **Phase 1C:** Sagent brain dump — strongest Director-level case study, starts from zero.
+  As of 2026-07-29 this is what gates Sagent's return to the site (it's unlisted, not broken).
+- **Portfolio Rebuild screenshots (Ben):** three captioned figure slots are live and waiting in
+  `src/content/portfolio-rebuild.ts` — anchored to Process, Key decision, and What was hard.
+  Drop files in `public/case/portfolio/` and add `src` + `alt` to the matching entry. No
+  component or page edits needed; see docs/ai-component-guide.md → "Adding figures".
+- **Confirm Lighthouse before launch:** `/work/portfolio` claims `96–100` in its Outcomes.
+  Re-run 2026-10-08 in Claude's cloud environment measured mobile performance 88–91 — but the
+  2026-07-16 commit scored the same there, so it's environmental, not a regression. Confirm
+  with PageSpeed Insights on the deployed URL; if the numbers drifted, change the copy, not the
+  number.
+- **OG images:** done 2026-10-08 as generated placeholders — `public/og/*.png` from
+  `scripts/generate-og-images.mjs` (reads `CASE_STUDIES`). Re-run it after any card title/desc
+  change; when Sagent ships, re-running produces `sagent.png` automatically.
+- **Per-page head tags (2026-10-08):** every route's title, description, canonical, `og:*` and
+  `twitter:*` tags come from `src/seo/pageMeta.ts`. `PageHead` sets them in the browser, and
+  `scripts/prerender-meta.ts` (a Vite plugin, so it runs in Vercel's plain `vite build` too) writes a static
+  `dist/<route>/index.html` per route so link-preview crawlers, which don't run JavaScript, see
+  the right page. **A new route needs an entry in `ROUTE_META`** or its shared links preview as
+  the homepage. When Sagent re-lists, add `/work/sagent` there too. See decisions.md 2026-10-08.
+- **Real-device mobile testing:** the mobile chat overlay handoff, FAB behavior at 390px, and
+  the ContactCard inside the mobile overlay have all only been verified via browser resize
+  and Playwright — never on an actual device. Flagged in three consecutive journal entries
+  (2026-07-19, 2026-07-19 later, 2026-07-20); still open in build-plan.md Phase 5.
+  **The step-by-step pass is `docs/testing/mobile-safari-qa.md`** (written 2026-07-20,
+  refreshed 2026-10-08): real iPhone Safari + desktop Safari against the deployed site,
+  every listed page, then focused checks on the chat overlay, input zoom, theme persistence,
+  CSP, streaming, safe areas, rotation, the in-chat contact form, and link previews. Ben's
+  task — Claude has no physical device access.
 - **At the viewbens.work domain cutover:** remove the temporary `https://bmax-portfolio.vercel.app`
-  entry from `ALLOWED_ORIGINS` in `api/chat.ts` (added 2026-07-19 for pre-launch testing —
-  see the `TEMPORARY` code comment and decisions.md 2026-07-19)
-- **Real-device Safari/mobile QA pass** (scoped 2026-07-20, not yet started — this is the
-  detail behind build-plan.md Phase 5's unchecked "Mobile device testing" item; the
-  step-by-step runbook is `docs/testing/mobile-safari-qa.md` — read that when you're ready
-  to actually run this, the summary below is just the scope). The
-  2026-07-16 automated cross-browser sweep covered Chromium/Firefox/WebKit via Playwright,
-  but WebKit-the-engine isn't Safari-the-browser (no extensions, no iOS quirks, no real
-  device) — and the one real-device bug already found incidentally (2026-07-19 mobile chat
-  handoff) suggests more may be lurking. **This is Ben's task to run — Claude has no
-  physical device access.**
-  - **Devices:** a real iPhone (Safari — primary target, likely the largest single mobile
-    segment for this audience) and a real Mac (desktop Safari). Android/Chrome on a real
-    device is lower priority — Chromium via Playwright is a much closer proxy for it than
-    WebKit is for Safari.
-  - **Target:** the live `.vercel.app` preview deployment, not local dev — chat needs the
-    temporary origin allowlist above, and this is the only way to test the real backend,
-    enforced CSP, and Vercel's actual headers together.
-  - **Pages:** the same 9 routes as the automated sweep (Home, all 5 case studies, About,
-    Resume, Contact, 404).
-  - **Specific risk areas to focus on, not just a general click-through:**
-    - Mobile chat FAB/overlay handoff (`MobileChatSurface.tsx`) — start a chat from Home's
-      inline hero and confirm it hands off to the full-screen overlay; navigate Home →
-      case study → back and confirm the FAB stays revealed and history persists.
-    - iOS Safari's auto-zoom-on-focus for the chat input (there's an existing 16px
-      font-size fix for this specifically — confirm it still holds; see decisions.md).
-    - Theme toggle persistence (Retro/Futuristic) — Safari's localStorage/ITP behavior can
-      differ from Chromium, especially in private browsing.
-    - Enforced CSP (hash-based `script-src`, shipped 2026-07-18) — confirm zero console
-      violations on real Safari now that it's blocking, not just reporting.
-    - Chat response streaming renders smoothly, not buffered oddly.
-    - Safe-area insets (notch/home indicator) on the full-screen mobile chat overlay.
-    - Orientation change (portrait/landscape) doesn't break layout.
-  - **Output:** check off "Mobile device testing" in build-plan.md if clean, and log
-    findings in process-journal.md either way — useful case study material regardless of
-    outcome.
+  entry from `ALLOWED_ORIGINS` in `api/lib/cors.ts` (added 2026-07-19 for pre-launch testing,
+  moved out of `api/chat.ts` 2026-07-20 — see the `TEMPORARY` code comment and decisions.md
+  2026-07-19)
 
 **Decisions still open:**
 - Market Rebellion: referenced on About page as brief career arc item (decided 2026-06-20)
-- Sagent case study content (to be built from scratch)
-- "Fifteen years" / "15+ years" copy on About and Resume: career arc now starts May 2014,
-  which is ~12 years to 2026 — decide whether to update copy to "twelve years", "over a
-  decade", or leave it as a loose approximation
+- Sagent case study content (to be built from scratch) — now also gates its return to the site
 
 ---
 

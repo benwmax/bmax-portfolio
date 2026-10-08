@@ -46,6 +46,18 @@
   box-shadow: var(--shadow-green-glow);
 }
 
+/* Real focus indicator, independent of .active — .active also applies while
+   merely filled or loading, so it can't double as a focus ring (a filled,
+   blurred field would look identical to a focused one). :focus-within fires
+   only while the input/textarea genuinely has focus, using the same
+   --color-green-accent (~10:1 contrast) every other focus ring in this
+   system uses — never the low-contrast --color-green-border (~1.9:1). See
+   docs/ai-component-guide.md Accessibility Patterns. */
+.field:focus-within {
+  outline: 2px solid var(--color-green-accent);
+  outline-offset: 2px;
+}
+
 /* Multiline: prompt and ASK button top-align instead of center */
 .multiline {
   align-items: flex-start;

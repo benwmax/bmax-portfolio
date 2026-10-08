@@ -1,9 +1,16 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import type { ChatWidgetStatus } from '../components/ChatInput';
+import type { ContactFormStatus, ContactSubmission } from '../components/ContactCard';
 
 export interface Message {
   role: 'user' | 'assistant';
   text: string;
+  /**
+   * Set on the client-only "Reading about X" note a case study drops into the
+   * log (the company name). Lets the next case study replace an untouched note
+   * instead of stacking under it — see setPageContext.
+   */
+  contextNote?: string;
 }
 
 // Set by a page when the visitor lands on a case study, so the assistant can
@@ -24,6 +31,48 @@ export function splitParagraphs(text: string): string[] {
   const blocks = text.split(/\n\s*\n/).filter((p) => p.trim() !== '');
   if (blocks.length > 1) return blocks;
   return text.split(/\n/).filter((p) => p.trim() !== '');
+}
+
+// Client-side, deterministic trigger for the inline contact form — runs
+// against the visitor's own submitted text rather than depending on the
+// model to decide when to offer it (the Anthropic call in api/chat.ts
+// doesn't use tool-use at all). A false positive just surfaces a dismissible
+// card, so a broad-but-plausible phrase list is an acceptable trade for not
+// needing a second model round-trip.
+const CONTACT_INTENT_PATTERN =
+  /\b(get in touch|reach out|reach (you|ben|him)|contact (you|ben|him)|email (you|ben|him)|hire (you|ben|him)|work with (you|ben|him)|talk to (you|ben|him)|speak (with|to) (you|ben|him)|send (you|ben|him) a message|message (you|ben|him))\b/i;
+
+export function detectContactIntent(text: string): boolean {
+  return CONTACT_INTENT_PATTERN.test(text);
+}
+
+// Shown when an API error arrives without a visitor-facing message from the
+// server. Deliberately no status code — "(502)" means nothing to a visitor and
+// reads as broken. The server's own `error` text, when present, still wins.
+const CHAT_FALLBACK_ERROR = 'Something went wrong on my end. Try again in a moment.';
+const CONTACT_FALLBACK_ERROR = "Couldn't send your message. Try again, or email ben@viewbens.work directly.";
+
+// Mirrors streamChat's error-handling shape below, but for the single-shot
+// (non-streaming) /api/contact endpoint.
+async function postContact(fields: ContactSubmission): Promise<{ ok: boolean; errorText?: string }> {
+  try {
+    const res = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(fields),
+    });
+
+    if (res.ok) return { ok: true };
+
+    try {
+      const json = (await res.json()) as { error?: string };
+      return { ok: false, errorText: json.error ?? CONTACT_FALLBACK_ERROR };
+    } catch {
+      return { ok: false, errorText: CONTACT_FALLBACK_ERROR };
+    }
+  } catch {
+    return { ok: false, errorText: "Couldn't send your message — check your connection and try again." };
+  }
 }
 
 // How long to wait for the stream to make progress before giving up. Guards
@@ -66,9 +115,9 @@ async function streamChat(
     if (!res.ok) {
       try {
         const json = (await res.json()) as { error?: string };
-        return { errorText: json.error ?? `Something went wrong (${res.status}).` };
+        return { errorText: json.error ?? CHAT_FALLBACK_ERROR };
       } catch {
-        return { errorText: `Something went wrong (${res.status}).` };
+        return { errorText: CHAT_FALLBACK_ERROR };
       }
     }
 
@@ -107,7 +156,7 @@ export interface UseChatSession {
   /** Call on mount to tell the assistant what page the visitor is on; pass `null` from pages with no case-study context of their own (e.g. Home) so it doesn't linger from whatever was viewed previously. */
   setPageContext: (context: PageContext | null) => void;
   /**
-   * Whether the mobile "Ask Ben" FAB entry point has been unlocked this
+   * Whether the mobile "Ask about Ben" FAB entry point has been unlocked this
    * session. Starts false so the FAB is hidden until the visitor either starts
    * a chat or lands on a case study page. Once true it stays true — the shared
    * session lives above the router (ChatProvider), so it persists across
@@ -122,6 +171,23 @@ export interface UseChatSession {
    * 1100px). Idempotent.
    */
   revealFab: () => void;
+  /** Whether the inline ContactCard should render in the message log at all. */
+  showContactCard: boolean;
+  /**
+   * Where the card sits in the log, as the number of messages that render
+   * before it — the card belongs to the turn that surfaced it, not to the
+   * bottom of the transcript. Pages must render it at this position rather
+   * than after the whole list, or a follow-up question and its reply appear
+   * *above* the form instead of below it. null whenever no card is showing.
+   */
+  contactCardAfter: number | null;
+  contactFormStatus: ContactFormStatus;
+  /** Server-side error message from the last failed /api/contact attempt, if any. */
+  contactErrorText?: string;
+  /** Submit the contact form fields to /api/contact. */
+  submitContactForm: (fields: ContactSubmission) => Promise<void>;
+  /** Hide the ContactCard without submitting — the visitor declined. */
+  dismissContactCard: () => void;
 }
 
 export function useChatSession({
@@ -133,10 +199,42 @@ export function useChatSession({
   const [activeSuggestions, setActiveSuggestions] = useState<string[]>([]);
   const [fabRevealed, setFabRevealed] = useState(false);
   const revealFab = useCallback(() => setFabRevealed(true), []);
+  // The contact card's position in the transcript, stored as the number of
+  // messages that precede it rather than as a plain boolean: it's an entry in
+  // the message log, not a footer stuck to the bottom of it. Anchoring it means
+  // later turns render below the form instead of jumping above it.
+  const [contactCardAfter, setContactCardAfter] = useState<number | null>(null);
+  const showContactCard = contactCardAfter !== null;
+  const [contactFormStatus, setContactFormStatus] = useState<ContactFormStatus>('idle');
+  const [contactErrorText, setContactErrorText] = useState<string | undefined>(undefined);
+
+  const dismissContactCard = useCallback(() => setContactCardAfter(null), []);
+
+  const submitContactForm = useCallback(async (fields: ContactSubmission) => {
+    setContactFormStatus('sending');
+    setContactErrorText(undefined);
+    const { ok, errorText } = await postContact(fields);
+    if (ok) {
+      setContactFormStatus('sent');
+    } else {
+      setContactFormStatus('error');
+      setContactErrorText(errorText);
+    }
+  }, []);
 
   // Refs, not state — read at submit time, shouldn't themselves trigger renders.
   const pageContextRef = useRef<string | null>(null);
   const announcedRef = useRef<Set<string>>(new Set());
+  // Mirrors `messages` so handleSubmit can work out where the contact card
+  // should land without closing over the array — depending on it would rebuild
+  // the callback on every streamed chunk. Synced after commit, which is
+  // current at submit time: a submit can't begin while one is in flight
+  // (submittingRef below), and nothing else appends between the click and this
+  // read.
+  const messagesRef = useRef<Message[]>(initialMessages);
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
   // Synchronous submit lock: `chatStatus` is React state and updates on the
   // next render, so a fast double-trigger (e.g. Enter then a stray click)
   // before that render could otherwise pass the isLoading check twice and
@@ -166,9 +264,21 @@ export function useChatSession({
     // src/pages/explorations/HomeV4Blend.tsx), which already clears
     // activeSuggestions before the revisit's "already announced" branch is
     // ever reached.
+    //
+    // If the previous case study's note is still the last thing in the log —
+    // the visitor read it but never asked anything — it's replaced rather than
+    // stacked: a pile of "Reading about…" lines for pages already left says
+    // nothing. Once a conversation follows a note, it stays as the header for
+    // that stretch of the transcript. The replaced company is un-announced so
+    // going back to it shows its note again.
     if (!announcedRef.current.has(context.company)) {
       announcedRef.current.add(context.company);
-      setMessages((prev) => [...prev, { role: 'assistant', text: context.note }]);
+      const staleNote = messagesRef.current[messagesRef.current.length - 1]?.contextNote;
+      if (staleNote) announcedRef.current.delete(staleNote);
+      const note: Message = { role: 'assistant', text: context.note, contextNote: context.company };
+      setMessages((prev) =>
+        prev[prev.length - 1]?.contextNote ? [...prev.slice(0, -1), note] : [...prev, note],
+      );
       setActiveSuggestions(context.suggestions ?? []);
     }
   }, []);
@@ -183,6 +293,27 @@ export function useChatSession({
       if (submittingRef.current) return;
       submittingRef.current = true;
 
+      // Anchor the card after this turn's user message and assistant reply —
+      // both appended just below — so it renders under the answer that
+      // prompted it and holds that spot as the conversation continues.
+      const anchorAfterThisTurn = messagesRef.current.length + 2;
+
+      // Pin on first surface only. Re-triggering later must not relocate a
+      // card the visitor may already be typing into: moving it in the log
+      // would remount it and silently drop the draft. Skipped once a message
+      // has been sent successfully this session, so a later unrelated
+      // "thanks, I'll reach out" doesn't reopen a form that already did its
+      // job.
+      const surfaceContactCard = () => {
+        if (contactFormStatus === 'sent') return;
+        setContactCardAfter((prev) => (prev === null ? anchorAfterThisTurn : prev));
+      };
+
+      // Surface immediately, alongside the streaming reply rather than waiting
+      // on it — the trigger is independent of what the assistant ends up
+      // saying.
+      if (detectContactIntent(text)) surfaceContactCard();
+
       setChatStatus('loading');
       setActiveSuggestions([]);
       // Append the user turn and an empty assistant slot immediately so the
@@ -196,8 +327,18 @@ export function useChatSession({
           return next;
         });
 
+      // Tracked alongside the streamed state updates so intent detection
+      // below can run against the assistant's finished reply without
+      // re-reading React state (which wouldn't be current inside this same
+      // async function). Covers the case where the visitor's own message
+      // didn't read as a contact request but the assistant's reply pointed
+      // them to get in touch anyway (e.g. an out-of-scope question redirected
+      // per the SCOPE section of the system prompt) — see system-prompt.ts.
+      let assistantText = '';
+
       try {
         const { errorText } = await streamChat(text, pageContextRef.current, (chunk) => {
+          assistantText += chunk;
           setMessages((prev) => {
             const next = [...prev];
             next[next.length - 1] = {
@@ -208,7 +349,11 @@ export function useChatSession({
           });
         });
 
-        if (errorText) replaceLastAssistant(errorText);
+        if (errorText) {
+          replaceLastAssistant(errorText);
+        } else if (detectContactIntent(assistantText)) {
+          surfaceContactCard();
+        }
       } catch {
         replaceLastAssistant("The assistant isn't available right now — try again in a moment.");
       } finally {
@@ -216,7 +361,7 @@ export function useChatSession({
         submittingRef.current = false;
       }
     },
-    [onSubmit],
+    [onSubmit, contactFormStatus],
   );
 
   return {
@@ -227,5 +372,11 @@ export function useChatSession({
     setPageContext,
     fabRevealed,
     revealFab,
+    showContactCard,
+    contactCardAfter,
+    contactFormStatus,
+    contactErrorText,
+    submitContactForm,
+    dismissContactCard,
   };
 }

@@ -1,0 +1,60 @@
+import { Meta, Canvas, ArgTypes } from '@storybook/addon-docs/blocks';
+import * as ThemeToggleStories from './ThemeToggle.stories';
+
+<Meta of={ThemeToggleStories} />
+
+# ThemeToggle
+
+The Retro / Futuristic segmented control that sits at the top right of every page, the right edge of the [NavBar](/docs/components-navbar--docs). A labeled two-option radiogroup — not an unlabeled icon switch — because the theme names are the feature and having both visible invites the flip.
+
+Theme state lives on `<html data-theme>` rather than in a React provider (see `src/hooks/useTheme.ts`). An inline script in `index.html` applies the saved theme before first paint, so this component only ever reads and writes the attribute — which is also why it works standalone here in Storybook exactly as it does in production, with no decorator required.
+
+Implements the full ARIA APG radiogroup keyboard pattern: only the checked option is a Tab stop (roving `tabIndex`), and ArrowLeft/ArrowUp/ArrowRight/ArrowDown move focus to — and select — the other option. Click still works independently of keyboard use.
+
+## Variants
+
+### Default — Retro active
+
+Retro is the default and starting state for a first-time visitor, or anyone without a saved preference.
+
+<Canvas of={ThemeToggleStories.Default} />
+
+### Futuristic active
+
+The control restyles per theme, not just recolors: sharp terminal chrome with a hairline divider in retro; a rounded pill with a solid green-filled active segment in futuristic. The toggle previews the aesthetic it switches into.
+
+<Canvas of={ThemeToggleStories.Futuristic} />
+
+### Narrow viewport — abbreviated labels
+
+Below 560px, "Retro"/"Futuristic" swap to "RET"/"FUT" so the NavBar still fits its three nav links at a 390px viewport. Both labels always render — one is `display:none` — so the visually-hidden `<span className="sr-only">` keeps screen readers on the full theme name regardless of viewport.
+
+<Canvas of={ThemeToggleStories.NarrowViewport} />
+
+## Do's
+
+- **Keep it in the NavBar's top-right corner.** That's its one fixed home across every page template.
+- **Use it standalone when you need to test theme switching** — no provider or wrapper required, unlike most stateful components in this system.
+
+## Don'ts
+
+- **Don't add a third option.** The component and its styling assume exactly two themes; a third needs a design pass, not just a new array entry.
+- **Don't replace the labels with icons.** The theme *names* are the point — see the component's own doc comment.
+- **Don't wire a third persistence layer.** `useTheme` already owns localStorage (`viewbens-theme` key) and the `data-theme` attribute — don't add a second source of truth.
+
+## AI guidance
+
+The Retro/Futuristic theme switch. Fixed home is the top-right of the NavBar — do not relocate it. It is a real radiogroup (`role="radiogroup"`, each option `role="radio"`), not a toggle switch, because there are exactly two named states and both should be visible at once.
+
+**Content rules**
+- Only two options ever: "Retro" and "Futuristic" (abbreviated RET/FUT under 560px). Do not add a third theme without checking with Ben.
+- Labels are the full theme names, not icons — the names are the feature.
+
+**Avoid**
+- Don't wrap this in a provider — theme state lives on `document.documentElement.dataset.theme`, read/written directly by `useTheme`.
+- Don't move it out of the NavBar's top-right corner.
+- Retro is always the default; only `"futuristic"` is ever written to the attribute or localStorage.
+
+## Props
+
+<ArgTypes of={ThemeToggleStories} />

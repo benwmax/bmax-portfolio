@@ -1,3 +1,5 @@
+import { useRef } from 'react';
+import type { KeyboardEvent } from 'react';
 import { useTheme } from '../../hooks/useTheme';
 import type { ThemeName } from '../../hooks/useTheme';
 import styles from './ThemeToggle.module.css';
@@ -20,6 +22,34 @@ export interface ThemeToggleProps {
  */
 export function ThemeToggle({ className = '' }: ThemeToggleProps) {
   const { theme, setTheme } = useTheme();
+  const buttonRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  // ARIA APG radiogroup pattern: only the checked radio is a tab stop
+  // (roving tabindex below), and Arrow keys both move focus AND change the
+  // selection — role="radio"/"radiogroup" implies this keyboard model, so
+  // without it the roles claim a behavior the component doesn't have
+  // (WCAG 4.1.2). With only two options, "next" and "previous" are the
+  // same button either way.
+  function selectByOffset(fromIndex: number, offset: number) {
+    const nextIndex = (fromIndex + offset + OPTIONS.length) % OPTIONS.length;
+    setTheme(OPTIONS[nextIndex].value);
+    buttonRefs.current[nextIndex]?.focus();
+  }
+
+  function handleKeyDown(e: KeyboardEvent<HTMLButtonElement>, index: number) {
+    switch (e.key) {
+      case 'ArrowRight':
+      case 'ArrowDown':
+        e.preventDefault();
+        selectByOffset(index, 1);
+        break;
+      case 'ArrowLeft':
+      case 'ArrowUp':
+        e.preventDefault();
+        selectByOffset(index, -1);
+        break;
+    }
+  }
 
   return (
     <div
@@ -27,16 +57,21 @@ export function ThemeToggle({ className = '' }: ThemeToggleProps) {
       role="radiogroup"
       aria-label="Interface theme"
     >
-      {OPTIONS.map(({ value, label, abbr }) => {
+      {OPTIONS.map(({ value, label, abbr }, index) => {
         const active = theme === value;
         return (
           <button
             key={value}
+            ref={(el) => {
+              buttonRefs.current[index] = el;
+            }}
             type="button"
             role="radio"
             aria-checked={active}
+            tabIndex={active ? 0 : -1}
             className={[styles.option, active ? styles.optionActive : ''].filter(Boolean).join(' ')}
             onClick={() => setTheme(value)}
+            onKeyDown={(e) => handleKeyDown(e, index)}
           >
             <span className={styles.labelFull} aria-hidden="true">
               {label}

@@ -1,4 +1,5 @@
-import { Helmet } from 'react-helmet-async';
+import { PageHead } from '../seo/PageHead';
+import { ABOUT_META } from '../seo/pageMeta';
 import { NavBar } from '../components/NavBar';
 import styles from './AboutPage.module.css';
 
@@ -62,20 +63,7 @@ const CAREER = [
 export function AboutPage() {
   return (
     <div className={styles.wrapper}>
-      <Helmet>
-        <title>About — Ben Maxwell | UX Design Leader</title>
-        <meta
-          name="description"
-          content="Senior UX designer with 12+ years building expert-level tools across fintech, travel, insurance, and mortgage. Currently seeking Design Director and UX Principal roles in Dallas, TX."
-        />
-        <link rel="canonical" href="https://viewbens.work/about" />
-        <meta property="og:title" content="About — Ben Maxwell" />
-        <meta
-          property="og:description"
-          content="Senior UX designer with 12+ years building expert-level tools across fintech, travel, insurance, and mortgage."
-        />
-        <meta property="og:url" content="https://viewbens.work/about" />
-      </Helmet>
+      <PageHead meta={ABOUT_META} />
       <a href="#main-content" className="skip-link">
         Skip to main content
       </a>
@@ -91,7 +79,7 @@ export function AboutPage() {
               <span className={styles.headingAccent}>learnable</span>.
             </h1>
             <p className={styles.lede}>
-              Fifteen years across travel, insurance, fintech, and mortgage — building tools
+              Over fifteen years across travel, insurance, fintech, and mortgage — building tools
               that experts actually adopt. The work is in the details: the decision that made
               onboarding six months faster, the research that redesigned how an industry works,
               the chatbot that let retail traders think like professionals.
@@ -153,7 +141,7 @@ export function AboutPage() {
             <div className={styles.sectionHeader}>
               <span className={styles.sectionKicker}>03 · Career arc</span>
               <h2 id="heading-career" className={styles.sectionHeading}>
-                Four industries, fifteen years.
+                Four industries, over fifteen years.
               </h2>
             </div>
             <ol className={styles.careerList} aria-label="Career history">
@@ -220,7 +208,7 @@ export function AboutPage() {
               ben@viewbens.work
             </a>
             <a
-              href="https://linkedin.com/in/benwmax"
+              href="https://www.linkedin.com/in/benjaminwmaxwell/"
               className={styles.footerLink}
               target="_blank"
               rel="noopener noreferrer"

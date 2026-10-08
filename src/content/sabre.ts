@@ -1,7 +1,7 @@
 import type { CaseStudyContent } from '../pages/CaseStudyPage';
 
 export const sabreData: CaseStudyContent = {
-  number: '05',
+  number: '04',
   dateRange: '2015–2018',
   company: 'Sabre',
   heroTitle: 'One tool, two users with opposite needs — and a $1B contract on the line.',

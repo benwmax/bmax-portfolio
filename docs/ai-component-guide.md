@@ -4,7 +4,7 @@
 Read this before building any new UI — it will save you from re-inventing components that already
 exist or using them wrong.*
 
-*Last updated: 2026-06-20*
+*Last updated: 2026-07-20*
 
 ---
 
@@ -12,8 +12,13 @@ exist or using them wrong.*
 
 1. Check the **Decision Tree** below to identify which component handles your use case.
 2. Read the component section — especially **Prop cheat sheet** and **Pitfalls**.
-3. Check the Storybook story for that component; every story has a `parameters.ai` block with
-   `guidance`, `contentRules`, and `avoid` fields.
+3. Check the Storybook story for that component; every *production* component/page story has a
+   `parameters.ai` block with `guidance`, `contentRules`, and `avoid` fields. **Exception:**
+   archival exploration stories (`Explorations/*` — Signal, Boot, Phosphor, Blend — plus
+   `Explorations/00 · Original Homepage`) are exempt. They document retired/comparison variants,
+   not living components a session might build against, so an `ai` block would just be guidance
+   for code nobody should extend. The production story that documents the *selected* design
+   (`Pages/Homepage`, covering `HomeV4Blend`) does carry the full `ai` block.
 4. When in doubt, look at how the component is used in existing page stories
    (`Pages/Homepage`, `Pages/Case Study`) before building something new.
 
@@ -35,14 +40,18 @@ value has a CSS custom property. They are documented in `Foundations/Colors` and
 | AI assistant availability signal | `StatusIndicator` |
 | Full AI chat widget (prompt + button + status) | `ChatInput` |
 | Generic form text field | `Input` |
+| Chat message log (any chat surface) | `ChatTranscript` |
+| Inline "send Ben a message" form in the chat log | `ContactCard` |
 | Site header / navigation | `NavBar` |
+| Retro/Futuristic theme switch | `ThemeToggle` |
+| Mobile "Ask about Ben" FAB + full-screen chat overlay | `MobileChatSurface` |
 | Work grid thumbnail + link | `CaseStudyCard` |
 | Case study page hero (title, meta grid) | `CaseStudyHero` |
 | Screenshot / artifact with caption | `ImageCaption` |
 | Explicit ownership rows | `RoleCallout` + `RoleCallouts` |
 | Numbered case study process steps | `ProcessStep` + `ProcessSteps` |
 | Outcome stat cell | `StatBlock` + `StatGrid` |
-| Full homepage | `HomePage` (page component) |
+| Full homepage | `HomeV4Blend` (page component, `Pages/Homepage` in Storybook — see note below) |
 | Full case study page | `CaseStudyPage` (page component) |
 | About page | `AboutPage` (page component) |
 | Resume page | `ResumePage` (page component) |
@@ -66,6 +75,20 @@ Two accent families: phosphor green (interactive) and warm amber (callouts, indu
 - **Text hierarchy:** primary (`#ccd4b0`) → secondary (`#8a9478`) → tertiary (`#6b7055`) → muted (`#5a6050`) → disabled (`#3d4035`).
 
 Never hardcode hex values. Always use `--color-*` CSS custom properties or Tailwind token classes.
+
+#### Futuristic theme (second, user-selectable theme)
+
+**Storybook:** every component and page-level story with a "Futuristic V2" variant; token tables in `Foundations/Colors` and `Foundations/Typography`.
+**File:** `src/tokens/tokens.css`, `[data-theme='futuristic']` override block.
+
+A second, light sci-fi theme toggled by `ThemeToggle` (top right of every `NavBar`) and persisted to `localStorage`. Retro is always the default. It's fully token-driven — most components need zero logic changes, only a CSS override block — with a few scoped effect swaps (cursor blink → soft pulse, block caret → insertion bar).
+
+- **Accent:** azure (replaces phosphor green as the interactive color) plus a warm gold secondary accent (replaces amber).
+- **Display type:** Space Grotesk (replaces Space Mono for display contexts under this theme).
+- **Surface texture:** a fine line-grid at ~5% opacity (replaces the dot grid), with a consistent azure hairline HUD accent language — top rails, tick marks, docked-rail edges, chamfered index chips.
+- Story variants are named **"Futuristic V2"** in Storybook — "V2" is a naming/iteration label carried over from a mid-build revision, not a second live theme; there is still only Retro and Futuristic. See `decisions.md` 2026-07-17 for the V1→V2 revision reasoning.
+
+Never add theme-conditional logic to a component — the whole system works by having components read theme-agnostic tokens (`--color-green-accent`, etc.) that resolve differently under `[data-theme='futuristic']`. If a component looks wrong under Futuristic, the fix is almost always in `tokens.css`, not the component.
 
 ---
 
@@ -215,7 +238,7 @@ The full AI chat widget — terminal `›` prompt indicator, input field, ASK bu
 | Prop | Type | Default | Notes |
 |---|---|---|---|
 | `status` | `"online" \| "loading" \| "offline"` | `"online"` | Controls field interactivity and loading animation |
-| `multiline` | `boolean` | `false` | Grows to 6 lines then scrolls. Cmd/Ctrl+Enter submits |
+| `multiline` | `boolean` | `false` | Grows to 6 lines then scrolls. Enter submits, Shift+Enter inserts a newline |
 | `showStatus` | `boolean` | `true` | Set false when the surrounding panel already has a StatusIndicator |
 | `placeholder` | `string` | `"ask about my work…"` | Lowercase, no period — matches the system default |
 | `forceFocused` | `boolean` | — | **Storybook-only.** Do not use in application code |
@@ -274,6 +297,98 @@ Bare terminal text field. Use for forms — not for the AI chat widget (use `Cha
 
 ---
 
+### ContactCard
+
+**File:** `src/components/ContactCard/ContactCard.tsx`
+**Storybook:** `Components/ContactCard`
+
+Structured Name/Email/Message form (built from `Input` + `Button`) that renders inline in the chat message log — Home and case study pages only, never the standalone `Contact` page. Appears when `useChatSession`'s client-side `detectContactIntent` check matches either the visitor's message or the assistant's reply; submits to `/api/contact`, which emails Ben via Resend.
+
+#### Props
+
+| Prop | Type | Notes |
+|---|---|---|
+| `status` | `'idle' \| 'sending' \| 'sent' \| 'error'` | Owned by `useChatSession` (`contactFormStatus`), not local state |
+| `errorText` | `string` | Server error message, passed through verbatim — don't rewrite it |
+| `onSubmit` | `(fields: ContactSubmission) => void` | Wire to `useChatSession`'s `submitContactForm` |
+| `onDismiss` | `() => void` | Wire to `useChatSession`'s `dismissContactCard` |
+
+#### Content rules
+
+- Header label: `SEND BEN A MESSAGE`
+- Send button: `SEND` idle, `SENDING…` in flight — no spinner icon
+- Confirmation copy: `Sent — Ben typically replies within 48 hours.`
+
+#### Pitfalls
+
+- Don't render on the `Contact` page — that page is intentionally form-free (see its section below)
+- Don't strip the hidden honeypot field or the `elapsedMs` timing signal — both are load-bearing for `/api/contact`'s spam prevention
+- Don't drop the "Not now" dismiss — the intent detection is a heuristic and can false-positive
+- Don't clear the fields on an error response — the visitor's draft should survive a retry
+
+---
+
+### ChatTranscript
+
+**File:** `src/components/ChatTranscript/ChatTranscript.tsx`
+**Storybook:** `Components/ChatTranscript`
+
+The chat message log shared by every chat surface: the homepage hero panel, the docked rails on Home and case study pages, and the mobile overlay. It renders visitor messages and paragraph-split assistant replies, shows the streaming cursor, switches the live region off while streaming, and places the inline `ContactCard` after the turn that surfaced it. Extracted 2026-10-08 from duplicated copies in `HomeV4Blend` and `CaseStudyPage`. Two shipped bugs came from those copies drifting (2026-07-19, 2026-08-01).
+
+#### Props
+
+| Prop | Type | Notes |
+|---|---|---|
+| `messages` | `Message[]` | From `useChat()` |
+| `streaming` | `boolean` | `chatStatus === 'loading'` — drives the cursor and `aria-live` |
+| `contactCard` | `ReactNode` | The `ContactCard` element when it should show, otherwise null/false |
+| `contactCardAfter` | `number \| null` | From `useChatSession` — messages rendered before the card. Null pins it to the end |
+| `greeting` | `string` | Homepage only — shown while the log is empty |
+| `children` | `ReactNode` | Rendered last — suggestion chips, styled by each surface |
+| `className` | `string` | The surface's scrolling container (padding, gap, height) |
+| `ref` | `Ref<HTMLDivElement>` | The page scrolls this to the bottom on new messages |
+
+#### Pitfalls
+
+- Don't render chat messages outside this component — that duplication is what caused the two drift bugs
+- Don't append `ContactCard` after the transcript — pass it in so later turns render below it
+- Don't move `contactCardAfter` once set — that remounts `ContactCard` and drops a half-typed draft
+- Supporting markdown/HTML in replies must ship with output sanitization (e.g. DOMPurify) in the same commit
+
+---
+
+### MobileChatSurface
+
+**File:** `src/components/MobileChatSurface.tsx`
+**Storybook:** `Components/MobileChatSurface`
+
+The mobile-only "Ask about Ben" entry point — a floating action button that opens a full-screen chat overlay. Shared by `HomeV4Blend` and `CaseStudyPage` so mobile chat behaves identically on both. Desktop keeps its inline hero panel / docked rail instead — everything here is gated to `<=760px` by CSS and correctly renders nothing above that width.
+
+#### Props
+
+| Prop | Type | Notes |
+|---|---|---|
+| `visible` | `boolean` | Whether the FAB exists at all. Drive from `fabRevealed \|\| messages.length > 0` on Home, `true` on case study pages. |
+| `open` | `boolean` | Controlled open state of the overlay. |
+| `onOpenChange` | `(open: boolean) => void` | — |
+| `messageCount` | `number` | Drives the FAB badge and its `aria-label`. |
+| `chatStatus` | `ChatWidgetStatus` | Passed straight through to the overlay's `ChatInput`. |
+| `onSubmit` | `(text: string) => void` | — |
+| `renderLog` | `(ref, className) => ReactNode` | Render prop — the parent owns the log's content and per-page message styling; this component only supplies the ref (for autoscroll) and container class. |
+
+#### The two behaviors that are easy to regress
+
+- **FAB visibility formula:** `fabRevealed || messages.length > 0`, not message count alone. `fabRevealed` lives in the shared chat context and survives navigation, so a case-study visit reveals the FAB via `revealFab()` on mount even before a message is sent.
+- **Homepage submit must hand off to the overlay.** The homepage's inline hero chat wraps its submit handler (`handleHeroSubmit`) to open this overlay first — on mobile there is no docked rail for the reply to flow into, so skipping the hand-off streams the reply into a hidden, non-interactive panel. See `decisions.md` 2026-07-19.
+
+#### Pitfalls
+
+- Never fork a second FAB/overlay pair into a page file — both pages must import this one component
+- Never render it on About/Resume/Contact/404 — chat (and its mobile entry point) is scoped to Home + case study pages only (decisions.md 2026-07-18)
+- Don't remove the `inert` attribute on the closed overlay — it keeps the hidden log out of the tab order for keyboard/screen-reader users
+
+---
+
 ### NavBar
 
 **File:** `src/components/NavBar.tsx`
@@ -296,6 +411,34 @@ Site header. Present on every page. Three fixed nav links. Pass `activePath` fro
 #### Accessibility
 
 The BM_ wordmark link carries `aria-label="Ben Maxwell – Home"`. Do not remove this — "BM" alone is opaque to screen readers (WCAG 2.4.4 Link Purpose). The trailing underscore is `aria-hidden="true"` by design.
+
+---
+
+### ThemeToggle
+
+**File:** `src/components/ThemeToggle/ThemeToggle.tsx`
+**Storybook:** `Components/ThemeToggle`
+
+Retro/Futuristic segmented control, fixed to the top-right of `NavBar`. A real two-option radiogroup (`role="radiogroup"`), not an icon toggle — the theme names are the feature. Theme state lives on `<html data-theme>` via `src/hooks/useTheme.ts`, not a React provider, so this component is self-contained and works standalone in Storybook exactly as it does in production.
+
+Implements the full ARIA APG radiogroup keyboard pattern, not just the roles: roving `tabIndex` (only the checked option is a Tab stop) plus Arrow key navigation that both moves focus and changes the selection. Click still works independently. Don't add `role="radio"`/`radiogroup"` to a control that doesn't implement this — the roles alone create an accessibility-tree promise that native tab-per-button behavior breaks (WCAG 4.1.2).
+
+#### Props
+
+| Prop | Type | Notes |
+|---|---|---|
+| `className` | `string` | Optional. Layout hook only — no visual variants to configure. |
+
+#### Content rules
+
+- Exactly two options: "Retro" and "Futuristic," abbreviated "RET"/"FUT" below 560px so the NavBar still fits its three nav links at a 390px viewport.
+- Labels are full theme names, not icons.
+
+#### Pitfalls
+
+- Never relocate it out of the NavBar's top-right corner
+- Never add a third theme option without a design pass — the styling assumes exactly two
+- Don't wrap it in a provider or add a second persistence layer — `useTheme` already owns `localStorage` (`viewbens-theme`) and the `data-theme` attribute
 
 ---
 
@@ -334,9 +477,13 @@ The work-grid entry point. Always a link (`href` required). 16:9 thumbnail, inde
 |---|---|
 | 01 | Portfolio Rebuild |
 | 02 | Upfluent |
-| 03 | Sagent |
-| 04 | USAA |
-| 05 | Sabre |
+| 03 | USAA |
+| 04 | Sabre |
+
+Sagent is deliberately absent: its content is still a placeholder, so the page is unrouted
+and unlisted rather than shipping holding copy. It remains third in the strategic order and
+reclaims `03` when it ships, pushing USAA and Sabre back down. Don't treat the compacted
+numbering as a reordering decision. See decisions.md 2026-07-29.
 
 #### Pitfalls
 
@@ -379,7 +526,7 @@ The case study page header. H1 is always a problem statement. Accent meta values
 
 ### ImageCaption
 
-**File:** `src/components/ImageCaption.tsx`
+**File:** `src/components/ImageCaption/ImageCaption.tsx`
 **Storybook:** `Components/ImageCaption`
 
 Terminal-chrome frame for all case study screenshots. Never use a plain `<img>` tag for portfolio artifacts — always use `ImageCaption`.
@@ -388,8 +535,8 @@ Terminal-chrome frame for all case study screenshots. Never use a plain `<img>` 
 
 | Prop | Type | Notes |
 |---|---|---|
-| `src` | `string` | Image URL. Omit to show dot-grid placeholder |
-| `alt` | `string` | Always required for accessibility |
+| `src` | `string` | Image URL. Omit both `src` and `alt` to show the dot-grid placeholder instead. |
+| `alt` | `string` | **Required whenever `src` is set** — enforced at the type level (a discriminated union), not just a convention. There is no default that lets a real screenshot silently ship as decorative. |
 | `tabLabel` | `string` | Format: "project · artifact-type" |
 | `caption` | `string` | Format: "Fig. 01 — description." |
 
@@ -403,6 +550,10 @@ Terminal-chrome frame for all case study screenshots. Never use a plain `<img>` 
 
 - Never use a plain `<img>` tag for case study artifacts
 - Never use a grey box placeholder — the dot-grid treatment is the system default
+- Inside a case study, don't render `ImageCaption` directly — declare a `figures` entry on
+  the content object instead, so numbering and placement stay consistent. See
+  "Adding figures to a case study" under CaseStudyPage. When going through `figures`, the
+  caption omits the "Fig. 0N —" prefix; it's generated.
 
 ---
 
@@ -542,10 +693,17 @@ Outcome stat cell — phosphor green headline value, ALL CAPS label, optional on
 
 ### Homepage
 
-**File:** `src/pages/HomePage.tsx`
-**Storybook:** `Pages/Homepage`
+**File:** `src/pages/explorations/HomeV4Blend.tsx` — despite the `explorations/` path, this is the live
+production homepage, not a draft. It's the selected design from the three-way exploration phase
+(Signal/Boot/Phosphor); the retired original is `src/pages/HomePage.tsx` (see note below).
+**Storybook:** `Pages/Homepage` (also mirrored at `Explorations/04 · Blend` for exploration-history
+comparison — same component, two story titles)
 
-Split hero (identity left, chat right), work grid, stat rail, footer. When the user sends the first message, the hero chat panel fades out and the 400px docked rail slides in.
+Fast 3-line boot sequence (~1.5s, replays on reload), full-viewport green scanline, split hero (typewriter
+headline left, chat right), a 4-column staggered-reveal case study grid, and footer. When the visitor
+sends the first message, the hero chat panel fades out and the desktop docked rail slides in. On mobile
+(≤760px) chat instead hands off to `MobileChatSurface`'s full-screen overlay — see that component's
+section above.
 
 #### Props
 
@@ -553,18 +711,27 @@ Split hero (identity left, chat right), work grid, stat rail, footer. When the u
 |---|---|---|
 | `onChatSubmit` | `function` | Handler for chat message submission |
 | `initialMessages` | `Message[]` | Seed messages to pre-populate the conversation |
+| `skipBoot` | `boolean` | Skips the boot-sequence intro animation — useful for reviewing the assembled layout without waiting. Not Storybook-only; also used to skip the replay on client-side navigation back to `/`. |
 
 #### States
 
-- **Hero idle (Default):** No messages, greeting text and three suggestion chips shown, docked rail hidden
-- **Conversation started:** Hero panel faded, docked 400px rail visible, page acquires padding-right
-- **Mobile (≤768px):** Single column, docked rail hidden, hero chat panel is the only chat surface
+- **Full boot sequence (Default):** 3-line terminal boot, then the page assembles in. Hero shows greeting + suggestion chips, docked rail hidden.
+- **Assembled (skip intro):** `skipBoot={true}` — same idle layout, boot skipped.
+- **Conversation started:** Hero panel faded, docked 400px rail visible (desktop only), page acquires padding-right. A contact-intent message renders an inline `ContactCard` at the end of the log — see that component's section above.
+- **Mobile (≤760px):** Single column, docked rail hidden; chat is handled entirely by `MobileChatSurface`'s FAB + overlay, not the inline hero panel past the first submit.
 
 #### Pitfalls
 
 - Don't add content outside the existing hero layout — identity left, chat right
 - Don't try to keep the hero panel visible during a conversation
 - Don't show the docked rail on mobile — it's desktop-only
+- Don't change the work grid order — displayed as 01 Portfolio Rebuild, 02 Upfluent, 03 USAA, 04 Sabre (Sagent unlisted pending content, still third strategically)
+- Don't skip wiring the homepage's inline submit through `handleHeroSubmit` on mobile — it must open `MobileChatSurface`'s overlay before submitting, or the reply streams into the faded, non-interactive hero panel (decisions.md 2026-07-19)
+- `forceShowContactCard` is Storybook-only — never wire it to application state; `showContactCard` from `useChat()` is the real production signal
+
+**A note on `src/pages/HomePage.tsx`:** this is the retired original homepage design, kept only as a
+Storybook comparison artifact under `Explorations/00 · Original Homepage`. It is not routed in `App.tsx`
+and should not be built against — if you're updating "the homepage," that's `HomeV4Blend.tsx`.
 
 ---
 
@@ -593,10 +760,41 @@ interface CaseStudyContent {
   whatWasHard: Section;     // { paragraphs[] }
   outcomes: StatItem[];     // [{ value, label, body? }] — maps to StatBlock
   whatIdDoDifferently: Section; // { paragraphs[] }
+  figures?: CaseFigure[];       // Captioned screenshots — see "Adding figures" below
   chatSuggestions?: string[];   // 2–3 conversation starters for the docked chat
   nextCase?: { title, href };   // Link to next case study
 }
 ```
+
+#### Adding figures to a case study
+
+Two mechanisms exist. **Use `figures` for anything new.**
+
+`figures` anchors captioned screenshots to a section and numbers them automatically in
+array order, so captions read Fig. 01, 02, 03 down the page:
+
+```ts
+figures: [
+  {
+    section: 'process',                        // problem | context | process | decision | hard
+    tabLabel: 'portfolio rebuild · storybook', // "project · artifact-type"
+    caption: 'The component library, documented as a public artifact.', // no "Fig. 0N —" prefix
+    // src + alt are optional, but only together:
+    src: '/case/portfolio/storybook.png',
+    alt: 'Storybook docs page for the Button component, showing all five states.',
+  },
+],
+```
+
+Omitting `src`/`alt` renders the dot-grid placeholder. That's the intended way to ship a
+page before its screenshots exist — the captions and positions are already right, and
+gaining a real image later means adding two fields and nothing else.
+
+`keyDecision.artifactLabel` is the older single-figure mechanism, still used by Upfluent,
+USAA, and Sabre. **Never set both on one page** — each numbers its figures from 01.
+
+Role and Outcomes deliberately can't hold a figure: they're already visual (callout rows,
+stat grid), so a screenshot competes with them rather than supporting the prose.
 
 #### Section order (mandatory)
 
@@ -627,6 +825,7 @@ All 8 sections are mandatory. The sidebar TOC is generated from them. Do not ski
 - Don't use `accent: true` for role, method, or non-numeric meta values
 - Don't write `heroTitle` as a project description — it must be a problem statement
 - Don't use `layout="linear"` as the default — sidebar + chat is the intended experience
+- `forceShowContactCard` is Storybook-only — never wire it to application state; `showContactCard` from `useChat()` is the real production signal
 
 ---
 
@@ -678,14 +877,15 @@ Contact page — two channel cards (email + LinkedIn) with copy-to-clipboard act
 
 **Content:**
 - Email: ben@viewbens.work
-- LinkedIn: linkedin.com/in/benwmax
+- LinkedIn: linkedin.com/in/benjaminwmaxwell
 - Receipt strip: "REPLY WITHIN ≤ 48 hrs" · "TIMEZONE Dallas · UTC-5" · "STATUS Available"
 
 **Update content:** edit `Contact.tsx` directly. No props.
 
 **Pitfalls:**
-- No contact form — two channel cards are the contact method
+- No contact form on this page — two channel cards are the contact method here
 - Don't change email address or timezone without checking with Ben
+- Don't confuse this with `ContactCard` — that's a separate, chat-only form that appears inline in the AI assistant on Home/case study pages, not on this page. See `ContactCard`'s section above.
 
 ---
 
@@ -713,6 +913,30 @@ Contact page — two channel cards (email + LinkedIn) with copy-to-clipboard act
   onSubmit={handleSubmit}
 />
 <StatusIndicator status={chatStatus} label="ONLINE · assistant ready" />
+```
+
+Both surfaces render their message log with `ChatTranscript`, which places `ContactCard` after the turn that surfaced it, not at the end of the log:
+
+```tsx
+<ChatTranscript
+  ref={logRef}
+  className={styles.chatLog}
+  messages={messages}
+  streaming={chatStatus === 'loading'}
+  contactCardAfter={contactCardAfter}
+  contactCard={
+    showContactCard && (
+      <ContactCard
+        status={contactFormStatus}
+        errorText={contactErrorText}
+        onSubmit={submitContactForm}
+        onDismiss={dismissContactCard}
+      />
+    )
+  }
+>
+  {/* suggestion chips, styled per surface */}
+</ChatTranscript>
 ```
 
 ### Case Study Process Section
@@ -748,14 +972,22 @@ Contact page — two channel cards (email + LinkedIn) with copy-to-clipboard act
 
 ### Work Grid (Homepage)
 
+Don't hand-write the cards. The grid renders from the `CASE_STUDIES` array in
+`src/pages/explorations/data.ts`, which is the single source of truth shared by the live
+homepage, the retired `HomePage.tsx`, and the Storybook grid story. Hardcoded copies of
+this list drifted three separate times — add or reorder cards in `data.ts`.
+
 ```tsx
-{/* 2×2 grid — all five case studies */}
-<CaseStudyCard index="01" title="Portfolio Rebuild" desc="..." tag="AI Collaboration" href="/work/portfolio" ... />
-<CaseStudyCard index="02" title="Upfluent" desc="..." tag="Fintech" href="/work/upfluent" ... />
-<CaseStudyCard index="03" title="Sagent" desc="..." tag="Mortgage" href="/work/sagent" ... />
-<CaseStudyCard index="04" title="USAA" desc="..." tag="Insurance" href="/work/usaa" ... />
-<CaseStudyCard index="05" title="Sabre" desc="..." tag="Travel" href="/work/sabre" ... />
+import { CASE_STUDIES } from './explorations/data';
+
+{
+  CASE_STUDIES.map((cs) => <CaseStudyCard key={cs.index} {...cs} />);
+}
 ```
+
+Current displayed order: `01` Portfolio Rebuild, `02` Upfluent, `03` USAA, `04` Sabre.
+Sagent is unlisted while its content is a placeholder — it remains strategically third
+and reclaims `03` when it ships. See decisions.md 2026-07-29.
 
 ---
 
@@ -810,7 +1042,7 @@ When a page has more than one `<nav>`, each must have a distinct `aria-label`:
 Any link with `target="_blank"` needs a screen-reader announcement. Add sr-only text inside the link:
 
 ```tsx
-<a href="https://linkedin.com/in/benwmax" target="_blank" rel="noopener noreferrer">
+<a href="https://www.linkedin.com/in/benjaminwmaxwell/" target="_blank" rel="noopener noreferrer">
   LinkedIn
   <span className="sr-only"> (opens in new tab)</span>
 </a>
@@ -861,10 +1093,16 @@ Do not build them unless Ben explicitly re-adds them to the plan.
 See the questions report (delivered 2026-06-20) for items needing decisions before the guide
 can be fully finalized. Key open items:
 
-1. **Case study index mismatch in CaseStudyCard.stories.tsx** — Grid story doesn't match finalized order
+1. ~~**Case study index mismatch in CaseStudyCard.stories.tsx**~~ — resolved 2026-07-29: the
+   Grid story now renders from the real `CASE_STUDIES` array, so it can't mismatch.
 2. **`@storybook/addon-mcp` parameter schema** — confirm it uses `parameters.ai` or different namespace
 3. **CaseStudyContent field-by-field docs** — full TypeScript interface in this guide, or link to source?
 4. **"Fifteen years" copy** — career arc starts May 2014 (~12 years); decide copy update
-5. **Sagent CaseStudyHero story** — add placeholder now or wait for content?
-6. **Portfolio Rebuild case study** — add placeholder CaseStudyCard now or wait?
+5. **Sagent CaseStudyHero story** — the story still exists with placeholder args that don't
+   match `src/content/sagent.ts`. Harmless while the page is unlisted; reconcile when the
+   case study ships.
+6. ~~**Portfolio Rebuild case study**~~ — resolved 2026-07-29: written in full
+   (`src/content/portfolio-rebuild.ts`), card live, page story added.
 7. **Contact page classification** — "Page Templates" section (current) or separate section?
+8. **Sabre's date range disagrees across files** — `2015–18` in `explorations/data.ts`,
+   `2014–18` on the Resume page, `2014–17` in `CaseStudyCard.stories.tsx`. Needs one answer.

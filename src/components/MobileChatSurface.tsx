@@ -1,8 +1,17 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { ReactNode, RefObject } from 'react';
 import { ChatInput } from './ChatInput';
 import type { ChatWidgetStatus } from './ChatInput';
 import styles from './MobileChatSurface.module.css';
+
+// How close to the bottom (in px) still counts as "at the bottom" — small
+// scroll jitter or sub-pixel rounding shouldn't flip the scroll-to-bottom
+// button on and off.
+const SCROLL_BOTTOM_THRESHOLD_PX = 96;
+
+function isNearBottom(el: HTMLDivElement) {
+  return el.scrollHeight - el.scrollTop - el.clientHeight <= SCROLL_BOTTOM_THRESHOLD_PX;
+}
 
 export interface MobileChatSurfaceProps {
   /**
@@ -29,7 +38,7 @@ export interface MobileChatSurfaceProps {
 }
 
 /**
- * The mobile-only "Ask Ben" entry point: a floating action button that opens a
+ * The mobile-only "Ask about Ben" entry point: a floating action button that opens a
  * full-screen chat overlay. Shared by the homepage and case study pages so the
  * mobile chat behaves identically on both. Desktop keeps its inline/docked
  * panels — everything here is suppressed above 760px by the stylesheet.
@@ -51,17 +60,67 @@ export function MobileChatSurface({
 }: MobileChatSurfaceProps) {
   const fabRef = useRef<HTMLButtonElement | null>(null);
   const logRef = useRef<HTMLDivElement | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
 
-  // Keep the overlay log pinned to the newest message as the reply streams in.
+  // Whether the visitor is currently scrolled to (near) the bottom of the
+  // log. Read by the auto-scroll effect below so an in-progress reply
+  // doesn't yank someone back down mid-reread; written by the scroll
+  // listener further down, and reset whenever the overlay opens fresh.
+  const isNearBottomRef = useRef(true);
+  const prevOpenForScrollRef = useRef(open);
+  const [showScrollToBottom, setShowScrollToBottom] = useState(false);
+
+  // Keep the overlay log pinned to the newest message as the reply streams
+  // in — but only while the visitor hasn't scrolled up to reread earlier
+  // messages. Opening the overlay always jumps to the latest message and
+  // resets scroll tracking, regardless of where it was left last time.
   useEffect(() => {
-    if (open && logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight;
+    const el = logRef.current;
+    if (!open || !el) return;
+    const justOpened = !prevOpenForScrollRef.current;
+    if (justOpened) {
+      isNearBottomRef.current = true;
+      setShowScrollToBottom(false);
+    }
+    if (justOpened || isNearBottomRef.current) {
+      el.scrollTop = el.scrollHeight;
+    }
+    prevOpenForScrollRef.current = open;
   }, [messageCount, open]);
 
-  // Return focus to the FAB when the overlay closes (WCAG 2.4.3 focus order).
-  // Tracks the previous open state so focus only moves on an actual close, not
-  // on every render while closed.
+  // Track whether the visitor has scrolled away from the bottom, to show/hide
+  // the scroll-to-bottom button and to gate the auto-scroll effect above.
+  // The log container is always mounted (see the overlay comment below), so
+  // this only needs to attach once.
+  useEffect(() => {
+    const el = logRef.current;
+    if (!el) return;
+    const handleScroll = () => {
+      const nearBottom = isNearBottom(el);
+      isNearBottomRef.current = nearBottom;
+      setShowScrollToBottom(!nearBottom);
+    };
+    el.addEventListener('scroll', handleScroll, { passive: true });
+    return () => el.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  function handleScrollToBottom() {
+    const el = logRef.current;
+    if (!el) return;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    el.scrollTo({ top: el.scrollHeight, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+    isNearBottomRef.current = true;
+    setShowScrollToBottom(false);
+  }
+
+  // Move focus into the dialog when it opens, and return it to the FAB when
+  // it closes (WCAG 2.4.3 focus order) — without this, opening the overlay
+  // leaves keyboard/AT focus wherever it was on the page behind it. Tracks
+  // the previous open state so focus only moves on an actual transition, not
+  // on every render while open/closed.
   const wasOpen = useRef(open);
   useEffect(() => {
+    if (!wasOpen.current && open) closeButtonRef.current?.focus();
     if (wasOpen.current && !open) fabRef.current?.focus();
     wasOpen.current = open;
   }, [open]);
@@ -83,7 +142,7 @@ export function MobileChatSurface({
           <span className={styles.fabPrompt} aria-hidden>
             ›
           </span>
-          Ask Ben
+          Ask about Ben
           {messageCount > 0 && (
             <span className={styles.fabBadge} aria-hidden>
               {messageCount}
@@ -100,18 +159,19 @@ export function MobileChatSurface({
           .join(' ')}
         role="dialog"
         aria-modal="true"
-        aria-label="Ask Ben — assistant"
+        aria-label="Ask about Ben — assistant"
         aria-hidden={!open}
         inert={!open ? true : undefined}
       >
         <div className={styles.mobileOverlayBar}>
-          <span className={styles.chatBarLabel}>Ask Ben</span>
+          <span className={styles.chatBarLabel}>Ask about Ben</span>
           <div className={styles.mobileOverlayBarRight}>
             <span className={styles.chatOnlineBadge}>
               <span className={`${styles.chatOnlineDot} cursor-blink`} aria-hidden />
               ONLINE
             </span>
             <button
+              ref={closeButtonRef}
               type="button"
               className={styles.mobileOverlayClose}
               onClick={() => onOpenChange(false)}
@@ -121,7 +181,19 @@ export function MobileChatSurface({
             </button>
           </div>
         </div>
-        {renderLog(logRef, styles.mobileOverlayLog)}
+        <div className={styles.mobileOverlayLogWrap}>
+          {renderLog(logRef, styles.mobileOverlayLog)}
+          {showScrollToBottom && (
+            <button
+              type="button"
+              className={styles.scrollToBottomBtn}
+              onClick={handleScrollToBottom}
+              aria-label="Scroll to latest message"
+            >
+              ↓
+            </button>
+          )}
+        </div>
         <div className={styles.chatInputWrap}>
           <ChatInput
             onSubmit={onSubmit}

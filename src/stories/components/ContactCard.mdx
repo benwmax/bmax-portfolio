@@ -1,0 +1,75 @@
+import { Meta, Canvas, ArgTypes } from '@storybook/addon-docs/blocks';
+import * as ContactCardStories from './ContactCard.stories';
+
+<Meta of={ContactCardStories} />
+
+# ContactCard
+
+Structured contact form rendered inline in the chat log, built from the bare [Input](/docs/components-input--docs) and [Button](/docs/components-button--docs) primitives. Appears when a visitor's chat message reads as "get in touch" intent, detected client-side in `useChatSession` — independent of the assistant's own reply. Submits to `/api/contact`, which emails Ben directly via Resend.
+
+This is **not** the same thing as the static Contact page (`src/components/Contact`), which stays intentionally form-free — two channel cards, `mailto:` + clipboard only. ContactCard only ever renders inside the chat widget, on Home and case study pages.
+
+## Variants
+
+### Idle
+
+Empty form, ready for input. Name is optional; Email and Message are required, with inline validation on submit.
+
+<Canvas of={ContactCardStories.Idle} />
+
+### Sending
+
+Fields disable, the Send button reads "SENDING…" — no separate spinner, matching ChatInput's own loading pattern of using the control itself as the affordance.
+
+<Canvas of={ContactCardStories.Sending} />
+
+### Sent / confirmation
+
+The form is replaced entirely by a one-line confirmation with a green checkmark — there's nothing left for the visitor to do.
+
+<Canvas of={ContactCardStories.Sent} />
+
+### Error
+
+A server-side failure (rate limit, upstream error). The form stays filled — nothing the visitor wrote is lost — with the server's own error text shown above the fields in status-error red.
+
+<Canvas of={ContactCardStories.Error} />
+
+## Anti-spam design
+
+Two invisible signals travel with every submission, both meaningful to `/api/contact`'s spam prevention, not decorative:
+
+- **Honeypot** — a `website` field hidden from sighted users, screen readers, and tab order alike (not just visually-hidden — fully removed from the accessibility tree, so it's never something a legitimate blind visitor's assistive tech could stumble into and fill). Any non-empty value on submit means an automated client filled every field, including ones no human ever saw.
+- **Fill time** — the card records its own mount time and reports elapsed milliseconds at submit. Submissions faster than a human could plausibly read and fill the form are treated the same as a honeypot hit.
+
+Both anti-bot paths return the same success response a real send would — the server never signals which check tripped, so an automated caller can't learn to route around them. See `api/contact.ts` and `api/lib/contact-limit.ts` for the full stack (origin allowlist, per-IP + global daily rate limits, fail-closed on Redis errors).
+
+## Do's
+
+- **Always pair with a dismiss.** Client-side intent detection (regex on the visitor's message) can false-positive — a low-friction "Not now" is required, not optional polish.
+- **Pass the server's error text through verbatim.** Don't rewrite or summarize it in `errorText` — it's already written to be visitor-appropriate.
+- **Keep it chat-only.** This is the wrong component for the static Contact page.
+
+## Don'ts
+
+- **Don't remove the honeypot or elapsedMs signal.** Both are load-bearing for spam prevention, not decorative form fields.
+- **Don't add a CAPTCHA/Turnstile step.** Deliberately deferred at this scale — see `docs/case-study/decisions.md`.
+- **Don't clear the fields on error.** The visitor already wrote a message; losing it on a transient failure is a real cost.
+
+## AI guidance
+
+Renders inline in the chat message log (Home and case study pages only) when contact intent is detected. A structured form, not a conversational back-and-forth — Name is optional, Email and Message are required. Always pairs with a "Not now" dismiss, since the client-side intent detection can false-positive.
+
+**Content rules**
+- Header label is ALL CAPS: `SEND BEN A MESSAGE`.
+- The Send button reads `SEND` idle, `SENDING…` while in flight — never a spinner icon.
+- Confirmation copy after a successful send: `Sent — Ben typically replies within 48 hours.` — matches the reply-time promise on the static Contact page.
+
+**Avoid**
+- Don't render this on the static Contact page — that page is intentionally form-free (mailto: + clipboard only). This component is chat-only.
+- Don't remove the honeypot field or the elapsedMs anti-bot signal — both are load-bearing for `/api/contact`'s spam prevention, not decorative.
+- Don't skip the dismiss action — regex-based intent detection can trigger on phrasing that wasn't actually asking to get in touch.
+
+## Props
+
+<ArgTypes of={ContactCardStories} />

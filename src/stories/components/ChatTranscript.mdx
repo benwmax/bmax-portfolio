@@ -1,0 +1,83 @@
+import { Meta, Canvas, ArgTypes } from '@storybook/addon-docs/blocks';
+import * as ChatTranscriptStories from './ChatTranscript.stories';
+
+<Meta of={ChatTranscriptStories} />
+
+# ChatTranscript
+
+The chat message log shared by every chat surface: the homepage hero panel, the docked rails on Home and case study pages, and the mobile overlay ([MobileChatSurface](/docs/components-mobilechatsurface--docs)). It renders visitor messages and assistant replies, shows the streaming cursor, controls how screen readers announce replies, and decides where the inline [ContactCard](/docs/components-contactcard--docs) sits in the conversation.
+
+**Why it exists.** Home and case study pages used to carry their own copies of this markup, and two shipped bugs came from the copies drifting apart. On 2026-07-19 the homepage was found never to have adopted paragraph splitting, so replies rendered as one dense block. On 2026-08-01 the contact form was fixed to stay with the turn that surfaced it, and the fix had to be made twice. One component means each of those rules lives in one place.
+
+## What the component owns, and what the page owns
+
+| The component owns | Each surface owns |
+|---|---|
+| Message styles: `›` prompt, 18px replies, green rule | The scrolling container: padding, gap, height, via `className` |
+| Splitting replies into paragraphs (`splitParagraphs`) | Scrolling the log to the bottom, via `ref` |
+| The streaming cursor and live-region switching | Suggestion chips, passed as `children` |
+| ContactCard position (`contactCardAfter`) | Building the ContactCard and its form state |
+
+## Variants
+
+### Conversation
+
+A finished exchange. Visitor messages lead with the green `›` prompt in primary text. Replies sit behind a green rule in secondary text at 18px, split into paragraphs on blank lines.
+
+<Canvas of={ChatTranscriptStories.Default} />
+
+### Empty with greeting
+
+The homepage hero before anyone has typed. The greeting shows only while the log is empty, with a blinking cursor so the panel reads as live. Case study pages pass no greeting, because their opener is a context note that lives in the transcript.
+
+<Canvas of={ChatTranscriptStories.Empty} />
+
+### Streaming
+
+A reply mid-stream. The cursor trails the newest message. The live region is switched off while streaming, so screen readers announce the finished reply once instead of reading every chunk.
+
+<Canvas of={ChatTranscriptStories.Streaming} />
+
+### With contact card
+
+The contact form is a transcript entry, not a footer. It stays after the turn that surfaced it, and later turns render below it.
+
+<Canvas of={ChatTranscriptStories.WithContactCard} />
+
+### Futuristic V2
+
+The blinking underscore becomes a soft pulsing dot in CSS. The markup is identical between themes.
+
+<Canvas of={ChatTranscriptStories.Futuristic} />
+
+## Do's
+
+- **Pass the raw reply text.** Paragraph splitting happens here. The system prompt enforces short, frequent breaks, and this is what turns them into readable blocks.
+- **Pin `contactCardAfter` when the card first shows.** It's the number of messages rendered before the card, and it comes from `useChatSession`.
+- **Set `streaming` from `chatStatus === 'loading'`.** It drives both the cursor and the live region.
+
+## Don'ts
+
+- **Don't render chat messages outside this component.** That's how the two drift bugs happened.
+- **Don't append the ContactCard after the transcript.** Every follow-up turn would then appear above the form.
+- **Don't move the card once it's placed.** Moving it remounts ContactCard and drops a half-typed draft.
+- **Don't render markdown or HTML in replies without sanitizing.** Text is interpolated as plain JSX today, which React escapes. Supporting markdown must ship with output sanitization (e.g. DOMPurify) in the same commit.
+- **Don't add chat to About, Resume, Contact, or 404.** Chat is scoped to Home and case study pages (decisions.md 2026-07-18).
+
+## AI guidance
+
+Use for any list of chat messages. Pages pass `messages` and `chatStatus` from `useChat()`, the ContactCard element when it should show, and `contactCardAfter` from the session. Suggestion chips go in as `children` because each surface styles them differently.
+
+**Content rules**
+- The greeting is the homepage opener only: `Howdy. Ask about any case study, what I'm looking for, or how I work with AI.`
+- Assistant text is rendered through `splitParagraphs`. Pass the raw reply, never pre-joined or pre-split text.
+
+**Avoid**
+- Don't render messages outside this component — two shipped bugs (2026-07-19, 2026-08-01) came from pages carrying their own copies.
+- Don't append the ContactCard after the transcript. Pass it in with `contactCardAfter` so follow-up turns render below it.
+- Don't move `contactCardAfter` once set — relocating the card remounts ContactCard and drops a half-typed draft.
+- Don't render chat on About, Resume, Contact, or 404 — chat is scoped to Home and case study pages (decisions.md 2026-07-18).
+
+## Props
+
+<ArgTypes of={ChatTranscriptStories} />

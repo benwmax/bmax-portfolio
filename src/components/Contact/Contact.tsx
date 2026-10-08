@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { NavBar } from '../NavBar';
 import { Button } from '../Button';
+import { PageHead } from '../../seo/PageHead';
+import { CONTACT_META } from '../../seo/pageMeta';
 import styles from './Contact.module.css';
 
 async function copyText(text: string, setter: (v: boolean) => void) {
@@ -17,8 +19,18 @@ export function Contact() {
   const [emailCopied, setEmailCopied] = useState(false);
   const [urlCopied, setUrlCopied] = useState(false);
 
+  // The buttons already swap their own visible label to "COPIED ✓", but that
+  // change is silent to screen readers with no live region watching it — this
+  // announces the same event out loud (WCAG 4.1.3).
+  const copyAnnouncement = emailCopied
+    ? 'Email address copied.'
+    : urlCopied
+      ? 'LinkedIn URL copied.'
+      : '';
+
   return (
     <div className={styles.wrapper}>
+      <PageHead meta={CONTACT_META} />
       <a href="#main-content" className="skip-link">
         Skip to main content
       </a>
@@ -30,6 +42,10 @@ export function Contact() {
         <h1 className={styles.heading}>
           Say <span className={styles.headingAmber}>hello</span>.
         </h1>
+
+        <p role="status" aria-live="polite" className="sr-only">
+          {copyAnnouncement}
+        </p>
 
         <div className={styles.cards}>
           {/* ── Email ── */}
@@ -47,8 +63,8 @@ export function Contact() {
             </a>
 
             <p className={styles.cardDesc}>
-              Briefs, role conversations, attachments. Land in my inbox and I'll reply within two
-              business days — usually the same one.
+              Briefs, role conversations, attachments. Land in my inbox and I'll reply within 48
+              hours — usually the same day.
             </p>
 
             <div className={styles.cardActions}>
@@ -75,13 +91,13 @@ export function Contact() {
             </div>
 
             <a
-              href="https://linkedin.com/in/benwmax"
+              href="https://www.linkedin.com/in/benjaminwmaxwell/"
               className={styles.cardAddress}
               target="_blank"
               rel="noopener noreferrer"
             >
               linkedin.com<span className={styles.addressSlash}>/</span>in
-              <span className={styles.addressSlash}>/</span>benwmax
+              <span className={styles.addressSlash}>/</span>benjaminwmaxwell
               <span className="sr-only"> (opens in new tab)</span>
             </a>
 
@@ -91,12 +107,12 @@ export function Contact() {
             </p>
 
             <div className={styles.cardActions}>
-              <Button variant="primary" href="https://linkedin.com/in/benwmax">
+              <Button variant="primary" href="https://www.linkedin.com/in/benjaminwmaxwell/">
                 OPEN PROFILE +<span className="sr-only"> (opens in new tab)</span>
               </Button>
               <Button
                 variant="secondary"
-                onClick={() => copyText('https://linkedin.com/in/benwmax', setUrlCopied)}
+                onClick={() => copyText('https://www.linkedin.com/in/benjaminwmaxwell/', setUrlCopied)}
               >
                 {urlCopied ? 'COPIED ✓' : 'COPY URL'}
               </Button>
@@ -127,7 +143,7 @@ export function Contact() {
       <footer className={styles.footer}>
         <div className={styles.footerFine}>
           <span>© 2026 Ben Maxwell · viewbens.work</span>
-          <span>ben@viewbens.work · linkedin/in/benwmax · ≤ 48h</span>
+          <span>ben@viewbens.work · linkedin/in/benjaminwmaxwell · ≤ 48h</span>
         </div>
       </footer>
     </div>

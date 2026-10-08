@@ -259,6 +259,59 @@ const SEMANTIC: SwatchRow[] = [
   { variable: '--color-callout-bg', hex: '#1a1005', description: 'Callout background' },
 ];
 
+// ─── Futuristic theme token data ───────────────────────────────────────────────
+// Same variable names, hue-shifted values under [data-theme='futuristic'] — see
+// src/tokens/tokens.css. "green-*"/"amber-*" naming is kept even though the hues
+// shift to azure/gold, so every component wired to them re-themes without edits.
+
+const FUTURISTIC_BACKGROUNDS: SwatchRow[] = [
+  { variable: '--color-bg-page', hex: '#f2f5f8', description: 'Page background — cool pale blue-gray' },
+  { variable: '--color-bg-surface', hex: '#fbfdfe', description: 'Cards, panels, elevated surfaces' },
+  { variable: '--color-bg-raised', hex: '#e9eef3', description: 'Inputs, hovers, slightly raised' },
+  { variable: '--color-bg-dot', hex: 'rgba(23,34,44,.05)', description: 'Fine line-grid, 5% slate' },
+  { variable: '--color-bg-overlay', hex: '#f2f5f8cc', description: 'Modals, overlays (80% opacity)' },
+];
+
+const FUTURISTIC_BORDERS: SwatchRow[] = [
+  { variable: '--color-border-subtle', hex: '#e2e8ee', description: 'Default card/panel borders' },
+  { variable: '--color-border-default', hex: '#c4d0da', description: 'Input borders, visible dividers' },
+  { variable: '--color-border-strong', hex: '#a3b1bd', description: 'Emphasized borders, hover states' },
+];
+
+const FUTURISTIC_TEXT: SwatchRow[] = [
+  { variable: '--color-text-primary', hex: '#17222c', description: 'Body copy, headings — ~15:1 on page bg' },
+  { variable: '--color-text-secondary', hex: '#43535f', description: 'Subheadings, labels — ~8:1' },
+  { variable: '--color-text-tertiary', hex: '#566677', description: 'Timestamps, captions — ~6:1, AA at all sizes' },
+  { variable: '--color-text-muted', hex: '#8494a3', description: 'Placeholder text, disabled states' },
+  { variable: '--color-text-disabled', hex: '#aab7c2', description: 'Truly inactive elements' },
+];
+
+const FUTURISTIC_ACCENT: SwatchRow[] = [
+  { variable: '--color-green-deepest', hex: '#e4f1fa', description: 'Palest tint — hover states' },
+  { variable: '--color-green-deep', hex: '#d3e9f8', description: 'Button backgrounds' },
+  { variable: '--color-green-border', hex: '#5b9fd1', description: 'Button borders, input focus rings' },
+  { variable: '--color-green-mid', hex: '#1f7ec2', description: 'Mid-range, progress fills' },
+  { variable: '--color-green-accent', hex: '#0467b3', description: 'Primary accent (azure) — 5.4:1 on page bg' },
+  {
+    variable: '--color-green-bright',
+    hex: '#044e99',
+    description: 'Max emphasis — darker/more saturated than accent (light-theme flip, ~6.7:1)',
+  },
+  { variable: '--color-green-light', hex: '#0b5aa0', description: 'Legible text color, not a pale tint (flipped)' },
+];
+
+const FUTURISTIC_SECONDARY: SwatchRow[] = [
+  { variable: '--color-amber-deepest', hex: '#faf3e3', description: 'Subtle gold bg tint' },
+  { variable: '--color-amber-deep', hex: '#e6d3a8', description: 'Gold borders, tag borders' },
+  { variable: '--color-amber-mid', hex: '#a97a14', description: 'Mid gold' },
+  { variable: '--color-amber-accent', hex: '#8f6400', description: 'Primary gold — tags, callouts, 5.4:1 on white' },
+  { variable: '--color-amber-bright', hex: '#6f4d00', description: 'Bright gold — emphasized values (flipped darker)' },
+];
+
+const FUTURISTIC_SEMANTIC: SwatchRow[] = [
+  { variable: '--color-status-error', hex: '#b3352f', description: 'Error — actual errors only' },
+];
+
 // ─── Story ────────────────────────────────────────────────────────────────────
 
 export const Reference: Story = {
@@ -288,6 +341,78 @@ export const Reference: Story = {
       <Group title="Green — Primary Accent" rows={GREEN} />
       <Group title="Amber — Secondary Accent" rows={AMBER} />
       <Group title="Semantic" rows={SEMANTIC} />
+    </div>
+  ),
+};
+
+export const FuturisticReference: Story = {
+  name: 'Color Reference — Futuristic V2',
+  parameters: {
+    theme: 'futuristic',
+    docs: {
+      description: {
+        story:
+          'The Futuristic theme\'s token palette — same variable names as Retro, hue-shifted ' +
+          'values under [data-theme=\'futuristic\'] (src/tokens/tokens.css). "green-*" ' +
+          'reads as "primary accent" (azure) and "amber-*" as "secondary accent" (gold) — the ' +
+          'scale names are kept so every component wired to them re-themes with zero code ' +
+          'changes. Bright/light tiers flip meaning on a light background: emphasis means ' +
+          'darker and more saturated, not paler.',
+      },
+    },
+    ai: {
+      guidance:
+        'The Futuristic theme\'s color tokens. Same --color-* variable names as Retro — never introduce a parallel --futuristic-* namespace. If a component looks wrong under this theme, fix tokens.css, not the component.',
+      contentRules: [
+        'Primary accent (green-* scale) is azure here, not phosphor green — still interactive-only.',
+        'Secondary accent (amber-* scale) is deep gold here — still callouts/tags only, never interactive.',
+        'Retro is always the default theme; this palette only applies under [data-theme="futuristic"].',
+      ],
+      avoid: [
+        "Don't hardcode these hex values anywhere — they're theme overrides of the same tokens Retro uses.",
+        "Don't add a third color scale for this theme — it reuses green-*/amber-* by design.",
+      ],
+    },
+  },
+  render: () => (
+    <div style={{ background: s.bg, padding: '48px', fontFamily: s.fontMono, minHeight: '100vh' }}>
+      <div style={{ marginBottom: 8 }}>
+        <div
+          style={{
+            fontFamily: s.fontDisplay,
+            fontSize: '0.625rem',
+            letterSpacing: '0.15em',
+            textTransform: 'uppercase' as const,
+            color: s.textTert,
+            fontWeight: 400,
+          }}
+        >
+          Foundations
+        </div>
+        <div
+          style={{
+            fontFamily: s.fontDisplay,
+            fontSize: '1.375rem',
+            letterSpacing: '-0.01em',
+            color: s.textPrimary,
+            fontWeight: 700,
+          }}
+        >
+          Colors — Futuristic V2
+        </div>
+        <div
+          style={{ fontFamily: s.fontSans, fontSize: '0.8125rem', color: s.textSecond, marginTop: 6 }}
+        >
+          The user-selectable light theme (toggle in the NavBar). Azure primary accent, deep gold
+          secondary — same token names as Retro, hue-shifted values.
+        </div>
+      </div>
+      <Group title="Backgrounds" rows={FUTURISTIC_BACKGROUNDS} />
+      <Group title="Borders" rows={FUTURISTIC_BORDERS} />
+      <Group title="Text" rows={FUTURISTIC_TEXT} />
+      <Group title="Azure — Primary Accent" rows={FUTURISTIC_ACCENT} />
+      <Group title="Gold — Secondary Accent" rows={FUTURISTIC_SECONDARY} />
+      <Group title="Semantic" rows={FUTURISTIC_SEMANTIC} />
     </div>
   ),
 };

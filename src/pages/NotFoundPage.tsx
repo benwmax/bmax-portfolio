@@ -1,20 +1,22 @@
-import { Helmet } from 'react-helmet-async';
+import { PageHead } from '../seo/PageHead';
+import { NOT_FOUND_META } from '../seo/pageMeta';
 import { NavBar } from '../components/NavBar';
 import styles from './NotFoundPage.module.css';
 
 export function NotFoundPage() {
   return (
     <div className={styles.wrapper}>
-      <Helmet>
-        <title>Page not found — Ben Maxwell | viewbens.work</title>
-        <meta name="robots" content="noindex" />
-      </Helmet>
+      <PageHead meta={NOT_FOUND_META} />
       <a href="#main-content" className="skip-link">
         Skip to main content
       </a>
       <NavBar />
 
       <main className={styles.main} id="main-content">
+        {/* No visible heading fits the terminal aesthetic without duplicating the
+            "Error 404: Not found" line below — sr-only so heading-navigation
+            users still land on a real page title. */}
+        <h1 className="sr-only">Page not found</h1>
         <div className={styles.terminal} aria-label="404 error terminal">
           <div className={styles.terminalBar} aria-hidden="true">
             <span className={styles.termDot} />

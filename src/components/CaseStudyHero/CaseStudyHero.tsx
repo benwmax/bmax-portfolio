@@ -28,7 +28,9 @@ export function CaseStudyHero({ number, dateRange, title, subtitle, meta }: Case
       </div>
       <h1 className={styles.title}>{title}</h1>
       <p className={styles.subtitle}>{subtitle}</p>
-      <div className={styles.metaGrid} aria-label="Project metadata">
+      {/* role="group": a plain div with aria-label isn't exposed as a labeled
+          object in the accessibility tree (WCAG 1.3.1) — group gives it one. */}
+      <div className={styles.metaGrid} role="group" aria-label="Project metadata">
         {meta.map((m) => (
           <span key={m.label} className={styles.metaCell}>
             <span className={styles.metaLabel}>{m.label}</span>

@@ -1,15 +1,23 @@
 import { useState, useEffect, useRef } from 'react';
 import type { RefObject } from 'react';
-import { Helmet } from 'react-helmet-async';
+import { PageHead } from '../../seo/PageHead';
+import { HOME_META } from '../../seo/pageMeta';
 import { NavBar } from '../../components/NavBar';
 import { CaseStudyCard } from '../../components/CaseStudyCard';
 import { ChatInput } from '../../components/ChatInput';
+import { ContactCard } from '../../components/ContactCard';
+import { ChatTranscript } from '../../components/ChatTranscript';
 import { MobileChatSurface } from '../../components/MobileChatSurface';
 import { useChat } from '../../context/useChat';
-import { splitParagraphs } from '../../hooks/useChatSession';
 import type { Message } from '../../hooks/useChatSession';
 import { CASE_STUDIES, SUGGESTIONS, HERO_STATS, SOCIAL_LINKS } from './data';
-import { useTypewriter, useInView, useCountUp, usePrefersReducedMotion } from './hooks';
+import {
+  useTypewriter,
+  useInView,
+  useCountUp,
+  usePrefersReducedMotion,
+  useIsMobileViewport,
+} from './hooks';
 import styles from './HomeV4Blend.module.css';
 
 export type { Message };
@@ -20,6 +28,13 @@ export interface HomeV4BlendProps {
   initialMessages?: Message[];
   /** Storybook only — skip the boot animation. */
   skipBoot?: boolean;
+  /**
+   * Storybook only — forces the inline ContactCard to render regardless of
+   * detectContactIntent, so its composed-in-page state can be previewed
+   * without typing a live contact-intent message. Never wire to application
+   * state; showContactCard from useChat() is the real signal in production.
+   */
+  forceShowContactCard?: boolean;
 }
 
 const BOOT_LINES = [
@@ -91,17 +106,42 @@ function HeroStat({ figure, label, start }: { figure: string; label: string; sta
   );
 }
 
+// The boot sequence should play once per visit, not on every return to the
+// homepage. This module-level flag is set the first time the boot completes and
+// read on mount so in-app navigation back to Home skips the loader and renders
+// instantly. It lives for the lifetime of the loaded app (the SPA session), so
+// a full browser refresh resets it and the boot plays again — a hard reload
+// counts as a fresh arrival. Intentionally not persisted to storage.
+let bootPlayed = false;
+
 export function HomeV4Blend({
   onChatSubmit,
   initialMessages = [],
   skipBoot = false,
+  forceShowContactCard = false,
 }: HomeV4BlendProps) {
-  const { messages, chatStatus, handleSubmit, setPageContext, fabRevealed } = useChat({
+  const {
+    messages,
+    chatStatus,
+    handleSubmit,
+    setPageContext,
+    fabRevealed,
+    showContactCard,
+    contactCardAfter,
+    contactFormStatus,
+    contactErrorText,
+    submitContactForm,
+    dismissContactCard,
+  } = useChat({
     onSubmit: onChatSubmit,
     initialMessages,
   });
   const reduced = usePrefersReducedMotion();
-  const [booted, setBooted] = useState(skipBoot);
+  const isMobile = useIsMobileViewport();
+  // Skip the boot overlay if Storybook forces it off, or if the boot already
+  // played earlier this session (returning to Home via in-app navigation). The
+  // typewriter/count-up intro still runs — only the loader is skipped.
+  const [booted, setBooted] = useState(skipBoot || bootPlayed);
   const [mobileChatOpen, setMobileChatOpen] = useState(false);
   const heroRef = useRef<HTMLElement | null>(null);
   const scanRef = useRef<HTMLDivElement | null>(null);
@@ -164,7 +204,7 @@ export function HomeV4Blend({
   // Shared panel chrome — rendered in hero panel, docked panel, and mobile overlay
   const chatBarJSX = (
     <div className={styles.chatBar}>
-      <span className={styles.chatBarLabel}>Ask Ben</span>
+      <span className={styles.chatBarLabel}>Ask about Ben</span>
       <span className={styles.chatOnlineBadge}>
         <span className={`${styles.chatOnlineDot} cursor-blink`} aria-hidden />
         ONLINE
@@ -174,62 +214,41 @@ export function HomeV4Blend({
 
   function renderLog(logRef: RefObject<HTMLDivElement | null>, className: string) {
     return (
-      <div className={className} ref={logRef}>
-        {messages.length === 0 ? (
-          <>
-            <p className={styles.msgAssistant}>
-              Howdy. Ask about any case study, what I'm looking for, or how I work with AI.{' '}
-              <span className={`${styles.msgCursor} cursor-blink`} aria-hidden>
-                _
-              </span>
-            </p>
-            {/* role="group" gives AT users the context that these are related options */}
-            <div className={styles.chatSuggestions} role="group" aria-label="Suggested questions">
-              <span className={styles.chatSuggestLabel}>Try asking</span>
-              {SUGGESTIONS.map((s) => (
-                <button
-                  key={s}
-                  type="button"
-                  className={styles.chatSuggestBtn}
-                  onClick={() => handleHeroSubmit(s)}
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-          </>
-        ) : (
-          messages.map((m, i) =>
-            m.role === 'user' ? (
-              <p key={i} className={styles.msgUser}>
-                <span className={styles.msgUserPrompt} aria-hidden>
-                  {'› '}
-                </span>
-                {m.text}
-              </p>
-            ) : (
-              <div key={i} className={styles.msgAssistant}>
-                {(() => {
-                  const paras = splitParagraphs(m.text);
-                  const displayParas = paras.length > 0 ? paras : [''];
-                  return displayParas.map((para, pi) => (
-                    <p key={pi} className={styles.msgAssistantPara}>
-                      {para}
-                      {pi === displayParas.length - 1 &&
-                        i === messages.length - 1 &&
-                        m.text === '' && (
-                          <span className={`${styles.msgCursor} cursor-blink`} aria-hidden>
-                            _
-                          </span>
-                        )}
-                    </p>
-                  ));
-                })()}
-              </div>
-            ),
+      <ChatTranscript
+        ref={logRef}
+        className={className}
+        messages={messages}
+        streaming={chatStatus === 'loading'}
+        greeting="Howdy. Ask about any case study, what I'm looking for, or how I work with AI."
+        contactCardAfter={contactCardAfter}
+        contactCard={
+          (forceShowContactCard || showContactCard) && (
+            <ContactCard
+              status={contactFormStatus}
+              errorText={contactErrorText}
+              onSubmit={submitContactForm}
+              onDismiss={dismissContactCard}
+            />
           )
+        }
+      >
+        {messages.length === 0 && (
+          // role="group" gives AT users the context that these are related options
+          <div className={styles.chatSuggestions} role="group" aria-label="Suggested questions">
+            <span className={styles.chatSuggestLabel}>Try asking</span>
+            {SUGGESTIONS.map((s) => (
+              <button
+                key={s}
+                type="button"
+                className={styles.chatSuggestBtn}
+                onClick={() => handleHeroSubmit(s)}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
         )}
-      </div>
+      </ChatTranscript>
     );
   }
 
@@ -237,21 +256,7 @@ export function HomeV4Blend({
 
   return (
     <div className={styles.wrapper}>
-      <Helmet>
-        <title>Ben Maxwell — UX Design Leader</title>
-        <meta
-          name="description"
-          content="Portfolio of Ben Maxwell — a Design Leader who builds expert-level tools for fintech, insurance, travel, and mortgage. Ask the AI assistant anything about the work."
-        />
-        <link rel="canonical" href="https://viewbens.work" />
-        <meta property="og:title" content="Ben Maxwell — UX Design Leader" />
-        <meta
-          property="og:description"
-          content="Portfolio of Ben Maxwell — a Design Leader who builds expert-level tools for fintech, insurance, travel, and mortgage."
-        />
-        <meta property="og:url" content="https://viewbens.work" />
-        <meta property="og:image" content="https://viewbens.work/og/home.png" />
-      </Helmet>
+      <PageHead meta={HOME_META} />
 
       {/* Boot overlay — decorative/status, outside the inert wrapper so it stays visible */}
       {!skipBoot && (
@@ -259,7 +264,14 @@ export function HomeV4Blend({
           className={[styles.boot, booted ? styles.bootHidden : ''].filter(Boolean).join(' ')}
           aria-hidden={booted}
         >
-          {!booted && <BootSequence onDone={() => setBooted(true)} />}
+          {!booted && (
+            <BootSequence
+              onDone={() => {
+                bootPlayed = true;
+                setBooted(true);
+              }}
+            />
+          )}
         </div>
       )}
 
@@ -271,8 +283,22 @@ export function HomeV4Blend({
        * All interactive page content lives inside this wrapper.
        * aria-hidden + inert during boot prevents keyboard users from tabbing
        * through invisible content behind the boot overlay (WCAG 1.3.1, 4.1.2).
+       * Also inert while the mobile chat overlay is open, for the same
+       * reason — otherwise a keyboard/AT user could reach the NavBar, hero,
+       * and work grid behind the full-screen overlay (WCAG 2.4.3, 4.1.2).
+       *
+       * The mobile-overlay case is gated on `isMobile`: on desktop the overlay
+       * is display:none, but `mobileChatOpen` is still set true on first hero
+       * submit (see handleHeroSubmit) so the reply can flow to the docked rail.
+       * Without the viewport guard, that flag would make the entire desktop
+       * page inert — nothing clickable or focusable. Gating on the same
+       * `max-width: 760px` breakpoint the overlay uses keeps inert tied to the
+       * overlay actually being on screen.
        */}
-      <div aria-hidden={bootActive ? true : undefined} inert={bootActive ? true : undefined}>
+      <div
+        aria-hidden={bootActive || (mobileChatOpen && isMobile) ? true : undefined}
+        inert={bootActive || (mobileChatOpen && isMobile) ? true : undefined}
+      >
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>
@@ -337,7 +363,7 @@ export function HomeV4Blend({
                   className={[styles.chatPanel, isDocked ? styles.chatPanelHidden : '']
                     .filter(Boolean)
                     .join(' ')}
-                  aria-label="Ask Ben — assistant"
+                  aria-label="Ask about Ben — assistant"
                   aria-hidden={isDocked}
                   inert={isDocked ? true : undefined}
                 >
@@ -351,7 +377,6 @@ export function HomeV4Blend({
                       multiline
                       showStatus={false}
                     />
-                    <p className={styles.chatFootnote}>ONLINE · assistant ready · ~2s response</p>
                   </div>
                 </aside>
               </div>
@@ -370,7 +395,11 @@ export function HomeV4Blend({
               <div className={styles.workHead}>
                 <div>
                   <div className={styles.workKicker}>Selected work · 2014–2026</div>
-                  <h2 className={styles.workTitle}>Four tools, four regulated industries</h2>
+                  {/* Deliberately uncounted. This heading previously read "Four tools,
+                      four regulated industries" — a countable claim that was wrong above
+                      five cards and wrong differently above four. Echoing the positioning
+                      statement instead means it can't go stale as the grid changes. */}
+                  <h2 className={styles.workTitle}>Expert tools, high-stakes industries</h2>
                 </div>
               </div>
 
@@ -386,41 +415,44 @@ export function HomeV4Blend({
                 ))}
               </div>
             </section>
-
-            {/* ——— FOOTER ——— */}
-            <footer className={styles.footer}>
-              <div className={styles.footerTop}>
-                {/* h2 not <p> so screen reader heading navigation finds the footer CTA */}
-                <h2 className={styles.footerHeading}>
-                  Building something experts can't get wrong
-                  <span className={styles.footerQuestion}>?</span>
-                </h2>
-                <div className={styles.footerLinks}>
-                  {SOCIAL_LINKS.map((l) => {
-                    const isExternal = l.href.startsWith('http');
-                    return (
-                      <a
-                        key={l.label}
-                        href={l.href}
-                        className={styles.footerLink}
-                        {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                      >
-                        {l.label}
-                        {/* Informs AT users the link opens in a new tab */}
-                        {isExternal && <span className="sr-only"> (opens in new tab)</span>}
-                      </a>
-                    );
-                  })}
-                </div>
-              </div>
-              <div className={styles.footerFine}>
-                <span>© 2026 Ben Maxwell · viewbens.work</span>
-                <span>
-                  Built with Claude — directed, not autopiloted. The process is the case study.
-                </span>
-              </div>
-            </footer>
           </main>
+
+          {/* footer is intentionally a sibling of <main>, not nested inside it —
+              nesting it there strips the contentinfo landmark role. See
+              docs/ai-component-guide.md Accessibility Patterns → Footer
+              landmark placement. */}
+          <footer className={styles.footer}>
+            <div className={styles.footerTop}>
+              {/* h2 not <p> so screen reader heading navigation finds the footer CTA */}
+              <h2 className={styles.footerHeading}>
+                Building something experts can't get wrong
+                <span className={styles.footerQuestion}>?</span>
+              </h2>
+              <div className={styles.footerLinks}>
+                {SOCIAL_LINKS.map((l) => {
+                  const isExternal = l.href.startsWith('http');
+                  return (
+                    <a
+                      key={l.label}
+                      href={l.href}
+                      className={styles.footerLink}
+                      {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                    >
+                      {l.label}
+                      {/* Informs AT users the link opens in a new tab */}
+                      {isExternal && <span className="sr-only"> (opens in new tab)</span>}
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
+            <div className={styles.footerFine}>
+              <span>© 2026 Ben Maxwell · viewbens.work</span>
+              <span>
+                Built with Claude — directed, not autopiloted. The process is the case study.
+              </span>
+            </div>
+          </footer>
         </div>
 
         {/* ——— DOCKED PANEL (fixed right rail, desktop only) ——— */}
@@ -428,7 +460,7 @@ export function HomeV4Blend({
           className={[styles.dockedPanel, isDocked ? '' : styles.dockedPanelHidden]
             .filter(Boolean)
             .join(' ')}
-          aria-label="Ask Ben — assistant"
+          aria-label="Ask about Ben — assistant"
           aria-hidden={!isDocked}
           inert={!isDocked ? true : undefined}
         >
@@ -444,23 +476,25 @@ export function HomeV4Blend({
             />
           </div>
         </aside>
-
-        {/* ——— MOBILE FAB + CHAT OVERLAY ———
-            The FAB appears once a conversation has started (isDocked) or the
-            entry point was unlocked on a case study page (fabRevealed, which
-            persists back to Home per the shared session). Hidden before either,
-            per the mobile flow decided 2026-07-19. */}
-        <MobileChatSurface
-          visible={isDocked || fabRevealed}
-          open={mobileChatOpen}
-          onOpenChange={setMobileChatOpen}
-          messageCount={messages.length}
-          chatStatus={chatStatus}
-          onSubmit={handleSubmit}
-          renderLog={renderLog}
-        />
       </div>
-      {/* end interactive content wrapper */}
+      {/* end interactive content wrapper — MobileChatSurface renders outside it
+          (below) so the wrapper's inert state can hide the rest of the page
+          behind the mobile overlay without also hiding the overlay itself. */}
+
+      {/* ——— MOBILE FAB + CHAT OVERLAY ———
+          The FAB appears once a conversation has started (isDocked) or the
+          entry point was unlocked on a case study page (fabRevealed, which
+          persists back to Home per the shared session). Hidden before either,
+          per the mobile flow decided 2026-07-19. */}
+      <MobileChatSurface
+        visible={isDocked || fabRevealed}
+        open={mobileChatOpen}
+        onOpenChange={setMobileChatOpen}
+        messageCount={messages.length}
+        chatStatus={chatStatus}
+        onSubmit={handleSubmit}
+        renderLog={renderLog}
+      />
     </div>
   );
 }

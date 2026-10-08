@@ -6,7 +6,7 @@ export const upfluentData: CaseStudyContent = {
   company: 'Upfluent',
   heroTitle: "Retail traders needed expert tools without an expert's learning curve.",
   heroSubtitle:
-    "Upfluent was building a trading platform and advisor marketplace from scratch — mobile-first, AI-native, for users who wanted to trade options like professionals without spending years learning to think like one.",
+    'Upfluent was building a trading platform and advisor marketplace from scratch — mobile-first, AI-native, for users who wanted to trade options like professionals without spending years learning to think like one.',
   meta: [
     { label: 'My role', value: 'Lead UX Designer' },
     { label: 'Method', value: 'Card sort · Tree test · AI prototype' },
@@ -16,15 +16,15 @@ export const upfluentData: CaseStudyContent = {
   problem: {
     heading: 'Two bad choices for retail traders',
     paragraphs: [
-      "Retail options traders were stuck: learn a dense professional toolset built for power users, or trade at a disadvantage without it. No platform was closing that gap from the ground up.",
-      "Upfluent set out to build one — a trading platform and educator marketplace designed to meet traders at their level and grow with them, without dumbing down the tools serious traders actually need.",
+      'Retail options traders were stuck: learn a dense professional toolset built for power users, or trade at a disadvantage without it. No platform was closing that gap from the ground up.',
+      'Upfluent set out to build one — a trading platform and educator marketplace designed to meet traders at their level and grow with them, without dumbing down the tools serious traders actually need.',
     ],
   },
   role: [
     {
       label: 'Owned',
       content:
-        "Led the AI chatbot design effort end to end. Owned the major platform experiences individually: signup, account management, and core modules including Risk Analysis — a visual approach to showing how options spreads shift with adjustments to time horizons and downside risk.",
+        'Led the AI chatbot design effort end to end. Owned the major platform experiences individually: signup, account management, and core modules including Risk Analysis — a visual approach to showing how options spreads shift with adjustments to time horizons and downside risk.',
     },
     {
       label: 'Team effort',
@@ -35,7 +35,7 @@ export const upfluentData: CaseStudyContent = {
   userContext: {
     paragraphs: [
       "Our users were retail traders who wanted to trade options like professionals but didn't have the time or background to learn a Bloomberg-style interface.",
-      "They needed a platform that could meet them at their level of experience and grow with them — without removing the depth that serious traders actually depend on.",
+      'They needed a platform that could meet them at their level of experience and grow with them — without removing the depth that serious traders actually depend on.',
     ],
   },
   process: [
@@ -54,14 +54,14 @@ export const upfluentData: CaseStudyContent = {
     {
       phase: 'Prototype',
       title: 'Working AI chatbot',
-      body: "Built a working prototype using early ChatGPT models — before function calling, before any of the tooling that makes this easy now. Contributed both code and design to work around the structured output problem.",
+      body: 'Built a working prototype using early ChatGPT models — before function calling, before any of the tooling that makes this easy now. Contributed both code and design to work around the structured output problem.',
       artifact: 'AI prototype · Engineering collaboration',
     },
   ],
   keyDecision: {
     heading: 'Hybrid: conversational AI with structured controls inline',
     paragraphs: [
-      "The chatbot could have gone two ways: pure conversational interface, or a structured menu system with AI polish. I pushed for a hybrid — the bot handles free-flowing conversation, but when a user wants to act on something, it surfaces structured controls inline.",
+      'The chatbot could have gone two ways: pure conversational interface, or a structured menu system with AI polish. I pushed for a hybrid — the bot handles free-flowing conversation, but when a user wants to act on something, it surfaces structured controls inline.',
       "The user gets the flexibility of talking to an advisor and the precision of a real interface, without choosing between them. Early models made this harder than it sounds — getting reliable structured output from a model that wasn't built for it was its own design problem.",
     ],
     artifactLabel: 'Hybrid NLP + structured UI',
@@ -69,7 +69,7 @@ export const upfluentData: CaseStudyContent = {
   whatWasHard: {
     paragraphs: [
       "Stakeholders wanted a full-featured desktop trading platform on par with ThinkorSwim, and they wanted that same depth on mobile. Options trading is genuinely complex — multi-leg spreads, Greeks, risk visualizations — and most of that complexity doesn't translate to a phone screen without breaking.",
-      'I spent a lot of time in hard conversations about what to cut, what to simplify, and what just couldn\'t live on mobile the same way.',
+      "I spent a lot of time in hard conversations about what to cut, what to simplify, and what just couldn't live on mobile the same way.",
     ],
   },
   outcomes: [
@@ -91,12 +91,12 @@ export const upfluentData: CaseStudyContent = {
     {
       value: 'Early AI',
       label: 'Pre-function-calling work',
-      body: "Hands-on AI product work before the tooling existed to make it easy.",
+      body: 'Hands-on AI product work before the tooling existed to make it easy.',
     },
   ],
   whatIdDoDifferently: {
     paragraphs: [
-      "Push harder, earlier, for a way to test the chatbot with real traders — even a closed beta — instead of relying on internal prototype reviews. The hybrid concept was the right call, but I never got to see how it held up against someone actually trying to manage a live position under pressure.",
+      'Push harder, earlier, for a way to test the chatbot with real traders — even a closed beta — instead of relying on internal prototype reviews. The hybrid concept was the right call, but I never got to see how it held up against someone actually trying to manage a live position under pressure.',
     ],
   },
   chatSuggestions: [
@@ -104,5 +104,7 @@ export const upfluentData: CaseStudyContent = {
     'What was the structured output problem?',
     'How did you validate the signup flow?',
   ],
-  nextCase: { title: 'Sagent', href: '/work/sagent' },
+  // Skips Sagent, which is unlisted while its content is a placeholder — linking
+  // there would dead-end on the 404. Restore to Sagent when it ships.
+  nextCase: { title: 'USAA', href: '/work/usaa' },
 };

@@ -14,7 +14,8 @@ const meta = {
           'populated, or loading. In the loading state the field is read-only: text ' +
           'truncates before a "thinking" label, a 1px phosphor sweep crosses the bottom ' +
           'border, and ASK drops to 55% opacity. The multiline mode upgrades to a ' +
-          'textarea that grows with content up to 6 lines; Cmd/Ctrl+Enter submits. ' +
+          'textarea that grows with content up to 6 lines; Enter submits and ' +
+          'Shift+Enter inserts a newline. ' +
           'The status indicator is always visible below — online (blinking green dot) ' +
           'or offline (static grey dot).',
       },
@@ -171,15 +172,16 @@ export const Multiline: Story = {
           'Textarea mode: field grows with content up to 6 lines, then enables vertical ' +
           'scroll. The › prompt locks to the first line (top-aligned). ASK stretches to ' +
           'match the full composer height. Character counter sits bottom-right inside ' +
-          'the field. Submit via Cmd+Enter (Mac) or Ctrl+Enter (Win/Linux) — plain ' +
-          'Enter inserts a newline.',
+          'the field. Enter submits; Shift+Enter inserts a newline — the chat convention, ' +
+          'since sending is the common action and a multi-line question is the rare one. ' +
+          'Cmd/Ctrl+Enter also submits.',
       },
     },
     ai: {
       guidance:
         'Use multiline={true} when the composer is the main input surface — the full case study right rail or an expanded chat panel. Grows to 6 lines, then scrolls.',
       contentRules: [
-        'Cmd+Enter (Mac) or Ctrl+Enter (Win/Linux) submits. Plain Enter inserts a newline.',
+        'Enter submits. Shift+Enter inserts a newline. Cmd/Ctrl+Enter also submits. Enter pressed mid-IME-composition does not submit.',
       ],
     },
   },

@@ -729,3 +729,264 @@ Prettier all clean.
 
 **Where I overrode or redirected Claude:**
 N/A — Claude asked before building and I picked the two options it recommended.
+
+## 2026-07-20 — in-chat "get in touch" contact flow
+*Reconstructed after the fact (2026-07-20) from decisions.md, build-plan.md, and commit
+`2fb5983` / PR #13 — this session's work was done in a separate Claude Code session and no
+journal entry was written at the time. Treat the "what I decided / uncertain about" notes
+here as less reliable than the in-the-moment entries above; the code and decision record are
+the trustworthy parts.*
+
+**What I did:**
+Asked for a seamless way for chat visitors to reach me without leaving the widget, with spam
+prevention built in.
+
+**What I decided:**
+A structured Name/Email/Message form rendered inline in the chat log, emailing me directly,
+rather than having the assistant collect the fields conversationally. Approved a client-side
+keyword check to decide when to show it instead of wiring up model tool-use. Approved giving
+the contact endpoint its own rate limits and daily cap rather than sharing chat's budget.
+
+**Why:**
+A form is reliable to validate and guarantees a usable reply-to address — free-text
+collection means parsing an email out of prose and is easy for a visitor to fumble
+turn-by-turn. On intent detection: `/api/chat` doesn't use tool-use at all today, and adding
+a second model round-trip just to decide "should I offer a form" is disproportionate for what
+is fundamentally a keyword match — and a false positive only costs a dismissible card. On the
+separate budget: an email send is a different kind of resource than an LLM token. It costs
+real money and it lands in my inbox, so it deserves its own ceiling.
+
+**What I'm uncertain about:**
+Whether the email actually arrives — the whole flow is untestable end to end until I create
+the Resend account and verify `viewbens.work` as a sending domain. Everything else was
+verified in a real browser; delivery is a complete unknown. Also unsure whether the
+`detectContactIntent()` phrase list is too broad or too narrow — that's a tune-against-real-
+traffic problem, not something I can reason my way to. And I still haven't seen the
+ContactCard on an actual phone, only at a resized viewport — same open item as the last two
+entries.
+
+**What Claude contributed:**
+Built the endpoint (`api/contact.ts`), its own budget module (`api/lib/contact-limit.ts`),
+the `ContactCard` component with Storybook story and MDX, and the `detectContactIntent()`
+wiring in `useChatSession`. Noticed on its own that the origin allowlist was about to exist
+in two endpoints and extracted it to `api/lib/cors.ts` first — which also means the temporary
+`.vercel.app` pre-launch entry now only has to be removed in one place at cutover, instead of
+being a thing to remember twice. Layered the spam prevention: honeypot field (removed from
+the accessibility tree, not just visually hidden, so it can't trap a screen-reader user),
+minimum-fill-time check, per-IP and global caps, fail-closed on Redis errors — and made both
+bot rejections return the same response a successful send does, so an automated caller can't
+learn which check tripped it.
+
+Found one real bug during its own browser verification: the email field had native HTML
+`type="email"` + `required` validation *and* custom JS validation with a styled error state.
+The browser's unstyled constraint tooltip fired first and pre-empted the custom error UI
+entirely — so the designed error state was dead code that would never have been seen. Fixed
+by adding `noValidate` and letting component state own validation end to end. Worth noting
+this was caught by actually driving the form in a browser, not by reading the code.
+
+**Where I overrode or redirected Claude:**
+N/A.
+
+## 2026-07-22
+**What I did:**
+Finished and verified the chat-triggered "get in touch" email flow. Ben had
+already created the Resend account, verified the `viewbens.work` sending domain,
+added `RESEND_API_KEY` to Vercel, and redeployed. Confirmed delivery end to end
+by POSTing a real message to the deployed `/api/contact` on the `.vercel.app`
+deployment — returned 200, and the email landed in ben@viewbens.work with the
+visitor address as Reply-To. Added `scripts/verify-contact-email.mjs` (mirrors
+`verify-chat-safeguards.mjs`) to exercise the guard paths plus a real send.
+Checked off build-plan.md's Resend task and cleared the "untested"/blocked
+language in CLAUDE.md.
+
+**What I decided:**
+Test against the deployed endpoint rather than locally. It's the more faithful
+test anyway (real Vercel env, real edge IP injection, real Resend), and it
+sidesteps needing secrets in `.env.local`.
+
+**Why:**
+The whole point was to confirm live delivery works. A 200 from the deployed
+endpoint distinguishes success from the failure modes on its own: 503 = missing
+key, 502 = Resend rejected the send. Domain-verified sending is not the same as
+receiving, so the real proof was the message actually arriving — which it did.
+
+**What I'm uncertain about:**
+Nothing on the contact flow itself now. Still open: the mobile ContactCard
+inside the overlay has only been tested via browser resize/Playwright, never a
+real device (tracked in Phase 5).
+
+**What Claude contributed:**
+Wrote the verification script, ran the live end-to-end test, and updated the
+docs.
+
+**Where I overrode or redirected Claude:**
+Claude ran `vercel env pull` to refresh `.env.local` before realizing the four
+API secrets are marked Sensitive in Vercel — the pull overwrote their real
+local values with `[SENSITIVE]` placeholders. No production impact (Vercel
+runtime still holds the real values), but the local file needs restoring from
+OneDrive version history to run the local scripts. Lesson: don't `vercel env
+pull` over a working `.env.local` when the vars are Sensitive; they can't be
+pulled back.
+
+## 2026-07-29
+**What I did:**
+Took the Sagent case study off the site and had Claude write the Portfolio Rebuild case
+study (01) from the material already in `docs/case-study/`. Asked for questions as it went,
+and for screenshots to be addable afterward.
+
+**What I decided:**
+Sagent fully hidden — route removed so `/work/sagent` 404s, not just delisted — since a
+placeholder page reachable by URL is exactly the thing worth removing. Renumber the
+remaining case studies to 01–04 and resync every doc that states the order, rather than
+leaving a 01/02/04/05 gap. And for "What was hard," blend all three angles Claude offered
+instead of picking one: the confident-but-wrong first AI audit, the Version A/B override,
+and the recursive credibility problem. They're all the same point — using AI while staying
+discerning about it — and that's the section that has to earn trust.
+
+**Why:**
+Both 01 and 03 were showing "Case study in progress." on a site that's otherwise
+launch-ready. Sagent can't be written honestly yet (no brain dump), but 01 has more source
+material than anything else in the project and it's the lead case study, so it was the
+expensive one to leave broken.
+
+**What I'm uncertain about:**
+The Lighthouse `96–100` figure the new page claims is from the 2026-07-16 run, before the
+contact flow and mobile chat shipped — needs a re-run before launch. Sabre's date range
+still disagrees across three files and I haven't picked one. And the mobile ContactCard on
+a real device is still untested, same as the last three entries.
+
+**What Claude contributed:**
+Read the ask as ambiguous and asked before writing anything — "hide Sagent, then write a
+page for it" could have meant either case study, and it argued for Portfolio Rebuild from
+evidence (the empty `screenshots/` directory, the volume of material in `docs/case-study/`)
+rather than guessing. Found that `ImageCaption` could already render a real `<img>` and that
+`CaseStudyPage` simply never passed `src` — meaning every case study on the site has been
+showing a placeholder frame this whole time — and wired a `figures` array through instead of
+just unblocking the one existing slot. Proved that path in a browser with a probe image
+rather than declaring it done, then reverted the probe.
+
+Also caught two things I didn't ask about: the Portfolio Rebuild card was tagged `'Meta'`,
+which isn't one of the five canonical industry labels; and the work grid heading "Four
+tools, four regulated industries" was a countable claim that didn't count either before or
+after the change. Noticed the case study list existed in four hand-maintained copies that
+had already drifted (Sabre's role and dates differed between Storybook and production) and
+collapsed them to one — which is the same duplication that lost Sabre from the grid back on
+2026-07-18. Matched the straight-apostrophe convention in the content files after checking
+rather than assuming, having first written the file with typographic ones.
+
+**Where I overrode or redirected Claude:**
+It recommended keeping the 01/02/04/05 gap to avoid churn when Sagent returns. I chose the
+renumber with full doc resync instead — the gap reads as a missing case study to anyone
+looking, and this portfolio's whole argument is that I notice that kind of thing. It took
+the redirect and added the "strategic order unchanged, display numbers compacted" framing
+to every doc so the next session doesn't misread the compaction as demoting Sagent.
+
+## 2026-08-01
+**What I did:**
+Found a bug by using my own site: with the contact form open in the chat, typing a follow-up
+put my message and the assistant's reply *above* the form instead of below it. Sent Claude a
+screenshot of it and had it fixed.
+
+**What I decided:**
+Fix it as a positioning problem, not a display problem. The form belongs to the turn that
+offered it, so it should sit in the transcript at that point and stay there — not float to
+the bottom, and not chase the newest message either.
+
+**Why:**
+Small bug, bad signal. The chat is the most-demoed thing on this site and one of the loudest
+claims the portfolio makes; a transcript that doesn't read in order undercuts it more than
+the actual severity warrants. Anyone evaluating me is going to type into that box.
+
+**What I'm uncertain about:**
+Nothing new here. The standing three are unchanged: Lighthouse needs a re-run before launch,
+Sabre's dates still disagree across three files, and the mobile ContactCard still hasn't been
+opened on a real device — four entries running now.
+
+**What Claude contributed:**
+Read the actual cause instead of the symptom — the card was rendered as a sibling after
+`messages.map(...)`, so it was never *in* the log, just under it. Caught a consequence I
+hadn't thought about: because a component's position determines its identity in React's tree,
+letting the card follow the newest message would remount it and wipe whatever the visitor had
+half-typed. So the anchor pins on first surface and deliberately doesn't move.
+
+Then it proved the fix rather than asserting it — drove both the homepage and a case study
+page in a real browser with the API stubbed, and, when the first probe produced a confusing
+result, said so and rebuilt the probe instead of reporting the number it got. Best part: it
+stashed the fix and re-ran the same check to confirm the test actually reproduces my bug, so
+a passing result means something. Also flagged that Prettier fails on all three files on
+clean `main` and left formatting alone rather than burying a 40-line fix in a reformat.
+
+**Where I overrode or redirected Claude:**
+Nothing to redirect on the fix itself. It stopped after the code and asked whether to write
+the docs up rather than assuming — right call generally, though on a fix this documented I'd
+have been fine with it just doing it.
+
+## 2026-10-08
+**What I did:** Asked what's left before launch. Resolved the two open copy questions
+(experience years, Sabre dates), re-ran Lighthouse, and had Claude generate OG images.
+**What I decided:** "Over fifteen years" — my history goes back further than the listed
+roles. Sabre is 2015–2018. Placeholder OG images are good enough to launch.
+**Why:** Both copy questions were the kind of contradiction a recruiter would catch; OG
+images were the last Phase 4 blocker.
+**What I'm uncertain about:** Lighthouse mobile performance measured 88–91 in Claude's
+environment vs. the 96–98 recorded in July and claimed on the Portfolio Rebuild page.
+**What Claude contributed:** Rebuilt the 2026-07-16 commit and measured it side by side —
+it also scored 89–91 there, so the gap is the measurement environment, not a regression.
+Generated the OG images from the shared case-study data rather than hardcoding the copy.
+**Where I overrode or redirected Claude:** Claude had framed the years claim as likely
+wrong (career arc starts 2014); the listed roles aren't the whole history.
+
+## 2026-10-08 (later — Portfolio Rebuild refresh)
+**What I did:**
+Refreshed the Portfolio Rebuild case study (`src/content/portfolio-rebuild.ts`) against the
+docs as they stand now, not as they stood on 2026-07-29 when it was first written. Kept the
+shared 8-section template rather than building a custom page.
+
+**What I decided:**
+Refresh, not rebuild. Claude asked up front whether "build the case study page from the docs"
+meant a new custom page, a content refresh, or template extras, because the page already
+existed. I chose the refresh.
+
+**Why:**
+The page was mostly right but had drifted. The component count said 12 when Storybook now
+documents 15. "This is from this month" stopped being true in August. Some of the best material
+in the journal postdated the page entirely. User context and What was hard had also crept past
+the USAA 2–4 sentence standard.
+
+**What changed:**
+- Ship step now names the concrete security finding (the browser-supplied chat history that
+  could fake a broken-character reply, moved to the server) instead of listing safeguards.
+- What was hard adds two real moments: the `vercel env pull` that overwrote local API keys
+  (2026-07-22), and the 01/02/04/05 renumbering override (2026-07-29).
+- What I'd do differently reframes the real-phone point as "the one check I can't delegate"
+  instead of asserting which bug emulation missed.
+- User context cut from three paragraphs to two; the hero subtitle was tightened.
+- `api/lib/system-prompt.ts` was synced so the assistant tells the same story (15 components,
+  the server-side history fix, the env-pull and renumber moments).
+
+**What I'm uncertain about:**
+- **Lighthouse.** Claude re-ran it on the production build in its cloud container. Performance
+  came out 90–93, not 96–98. Accessibility, best practices, and SEO were 100 on all 8
+  indexable routes. CLS and TBT were both ~0, so this isn't a layout regression. The gap is FCP
+  and Speed Index under simulated throttling, measured on a different machine and network than
+  the 2026-07-16 run, so it isn't a clean comparison. The `96–100` claim stays until I re-run
+  it locally. If my run also lands below 96, change the copy.
+- **404 page.** The same run flagged a 4.43:1 contrast failure on the 404's `shell — 80×24`
+  label. It's the same tertiary-on-raised pattern fixed in ChatInput on 2026-07-16. It's out
+  of scope here; fixed later the same day. The label now uses `--color-text-secondary`
+  (5.23:1 Retro, 6.81:1 Futuristic), and Lighthouse accessibility on the 404 is back to 100.
+- **Whether to publish the env-pull story.** It's honest, and it's the kind of failure the
+  "what Claude couldn't do" section exists for. It's also the most unflattering line about the
+  tooling on the page. Cut it if it reads as a gripe rather than a lesson.
+  **Resolved same day: cut.** Removed from the page and from the chat brief; the incident stays
+  recorded in the 2026-07-22 entry.
+
+**What Claude contributed:**
+Asked which of three readings I meant before writing anything. Audited the live copy against
+the journal and the current repo, and found the stale count by counting the MDX files rather
+than trusting the docs. Re-ran Lighthouse rather than carrying the old number forward, and
+reported the result without either quietly changing the claim or quietly keeping it. Verified
+the page in a browser at 1440 and 390.
+
+**Where I overrode or redirected Claude:**
+N/A. It offered the three directions and I picked one.

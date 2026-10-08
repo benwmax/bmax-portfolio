@@ -57,7 +57,9 @@
 .termLabel {
   font-family: var(--font-mono-ui);
   font-size: var(--text-xs);
-  color: var(--color-text-tertiary);
+  /* Secondary, not tertiary: this sits on the raised title bar, where tertiary
+     measures 4.43:1 — just under AA. Same fix as ChatInput's counter (2026-07-16). */
+  color: var(--color-text-secondary);
   letter-spacing: var(--tracking-wide);
   margin-left: auto;
 }

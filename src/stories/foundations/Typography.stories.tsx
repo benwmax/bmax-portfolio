@@ -127,6 +127,18 @@ const LEADING = [
 const PROSE_SAMPLE =
   "I've worked across travel, insurance, fintech, and mortgage — building tools that experts actually adopt. The work is in the details: the decision that made onboarding 6 months faster.";
 
+// Futuristic swaps only --font-mono-display (Space Mono → Space Grotesk); IBM Plex Mono,
+// system sans, the type scale, tracking, and leading are all unchanged between themes.
+const FUTURISTIC_FONTS = [
+  {
+    ...FONTS[0],
+    name: 'Space Grotesk',
+    sample: 'Space Grotesk — wordmark, nav, buttons, tags, ALL CAPS labels',
+  },
+  FONTS[1],
+  FONTS[2],
+];
+
 // ─── Story ────────────────────────────────────────────────────────────────────
 
 export const Reference: Story = {
@@ -330,6 +342,113 @@ export const Reference: Story = {
           </span>
         </div>
       ))}
+    </div>
+  ),
+};
+
+export const FuturisticReference: Story = {
+  name: 'Typography Reference — Futuristic V2',
+  parameters: {
+    theme: 'futuristic',
+    docs: {
+      description: {
+        story:
+          'Only --font-mono-display changes under the Futuristic theme: Space Mono is replaced ' +
+          'by Space Grotesk for the wordmark, nav, buttons, tags, and ALL CAPS labels. IBM Plex ' +
+          'Mono, system sans, the type scale, letter spacing, and line height are all identical ' +
+          'to Retro — this story reuses the same data, just rendered under [data-theme=\'futuristic\'].',
+      },
+    },
+    ai: {
+      guidance:
+        'The Futuristic theme swaps the display font only — Space Grotesk in place of Space Mono. Every other type token (IBM Plex Mono, system sans, scale, tracking, leading) is unchanged between themes.',
+      contentRules: [
+        'Space Grotesk fills the same role Space Mono has in Retro: wordmark, nav, buttons, tags, ALL CAPS labels.',
+        'Never introduce a third display font — the swap is theme-scoped to --font-mono-display, nothing else.',
+      ],
+    },
+  },
+  render: () => (
+    <div style={{ background: s.bg, padding: '48px', fontFamily: s.fontMono, minHeight: '100vh' }}>
+      <div style={{ marginBottom: 8 }}>
+        <div
+          style={{
+            fontFamily: s.fontDisplay,
+            fontSize: '0.625rem',
+            letterSpacing: '0.15em',
+            textTransform: 'uppercase',
+            color: s.textTert,
+            fontWeight: 400,
+          }}
+        >
+          Foundations
+        </div>
+        <div
+          style={{
+            fontFamily: s.fontDisplay,
+            fontSize: '1.375rem',
+            letterSpacing: '-0.01em',
+            color: s.textPrimary,
+            fontWeight: 700,
+          }}
+        >
+          Typography — Futuristic V2
+        </div>
+        <div
+          style={{
+            fontFamily: s.fontSans,
+            fontSize: '0.8125rem',
+            color: s.textSecond,
+            marginTop: 6,
+          }}
+        >
+          Space Grotesk replaces Space Mono for display/chrome under this theme. IBM Plex Mono
+          stays for data and metadata, so both themes share a technical thread.
+        </div>
+      </div>
+
+      <SectionTitle>Font Families</SectionTitle>
+      {FUTURISTIC_FONTS.map(({ token, family, sample, size, weight, tracking }) => (
+        <div key={token} style={{ padding: '12px 0', borderBottom: s.borderSubtle }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '200px 1fr',
+              gap: '0 16px',
+              alignItems: 'baseline',
+            }}
+          >
+            <span style={{ fontFamily: s.fontMono, fontSize: '0.6875rem', color: s.textTert }}>
+              {token}
+            </span>
+            <span
+              style={{
+                fontFamily: family,
+                fontSize: size,
+                fontWeight: weight,
+                letterSpacing: tracking,
+                color: s.textPrimary,
+              }}
+            >
+              {sample}
+            </span>
+          </div>
+        </div>
+      ))}
+
+      <SectionTitle>Unchanged from Retro</SectionTitle>
+      <div
+        style={{
+          fontFamily: s.fontSans,
+          fontSize: '0.8125rem',
+          color: s.textSecond,
+          padding: '12px 0',
+        }}
+      >
+        Type scale, letter spacing, and line height tokens are identical between themes — see the
+        Retro <code style={{ fontFamily: s.fontMono }}>Typography Reference</code> story above for
+        the full tables.
+      </div>
     </div>
   ),
 };

@@ -20,7 +20,7 @@ const meta = {
       guidance:
         'Contact page — two channel cards (email + LinkedIn) with copy-to-clipboard actions and a receipt strip. All content is hardcoded; update Contact.tsx directly.',
       contentRules: [
-        'Email: ben@viewbens.work. LinkedIn: linkedin.com/in/benwmax.',
+        'Email: ben@viewbens.work. LinkedIn: linkedin.com/in/benjaminwmaxwell.',
         'Receipt strip values: "REPLY WITHIN ≤ 48 hrs", "TIMEZONE Dallas · UTC-5", "STATUS Available".',
         'Two contact methods only: email and LinkedIn. No contact form.',
       ],

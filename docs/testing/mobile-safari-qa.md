@@ -6,6 +6,10 @@ iOS quirks, no real touch input, no real device. This runbook is the manual pass
 closes that gap. See `CLAUDE.md` → "Immediate next steps" for the full rationale and
 `build-plan.md`'s "Mobile device testing" item for how this fits into Phase 5.
 
+*Written 2026-07-20. Refreshed 2026-10-08: Sagent is unlisted (now a 404), the allowlist
+moved to `api/lib/cors.ts`, and two checks were added — the in-chat contact form (B8) and
+per-page link previews (B9).*
+
 **Who runs this:** Ben, by hand, on real devices. Claude has no physical device access, so
 this can't be delegated the way `docs/testing/hardening-verification.md` was — that one had
 Claude drive a terminal; this one needs eyes and fingers on an actual iPhone and Mac.
@@ -17,11 +21,12 @@ Claude drive a terminal; this one needs eyes and fingers on an actual iPhone and
 - Android/Chrome on a real device is lower priority — Chromium via Playwright already
   proxies it reasonably well, unlike WebKit-vs-Safari
 
-**Target URL:** `https://bmax-portfolio.vercel.app` — **not** local dev (`npm run dev`) and
-not `viewbens.work` (still the old site). The chat widget's origin allowlist, the enforced
-CSP, and Vercel's real headers only exist on a real deployment, and this is currently the
-only public one. (This is the temporary origin — see the `TEMPORARY` comment in
-`api/chat.ts` and `decisions.md` 2026-07-19.)
+**Target URL:** `https://bmax-portfolio.vercel.app` until the domain cutover, then
+`https://viewbens.work` — **not** local dev (`npm run dev`) and not a branch preview URL.
+The chat widget's origin allowlist, the enforced CSP, and Vercel's real headers only exist
+on a real deployment, and branch previews sit behind a Vercel login and aren't on the chat
+allowlist. (`bmax-portfolio.vercel.app` is the temporary allowed origin — see the
+`TEMPORARY` comment in `api/lib/cors.ts` and `decisions.md` 2026-07-19.)
 
 ---
 
@@ -41,7 +46,7 @@ visible on the device itself. Set this up once:
 
 ---
 
-## Part A — Quick sanity sweep (all 9 pages, both devices)
+## Part A — Quick sanity sweep (every page, both devices)
 
 Load each page on the iPhone and on desktop Safari. For each, check the box only if **all**
 of the following hold: page loads (no blank screen / error), dark theme background renders
@@ -53,13 +58,13 @@ font), nav links work, console is clean (see Setup above for the iPhone).
 | Home | `/` | ☐ | ☐ |
 | Portfolio Rebuild | `/work/portfolio` | ☐ | ☐ |
 | Upfluent | `/work/upfluent` | ☐ | ☐ |
-| Sagent | `/work/sagent` | ☐ | ☐ |
 | USAA | `/work/usaa` | ☐ | ☐ |
 | Sabre | `/work/sabre` | ☐ | ☐ |
 | About | `/about` | ☐ | ☐ |
 | Resume | `/resume` | ☐ | ☐ |
 | Contact | `/contact` | ☐ | ☐ |
-| 404 (bonus) | `/anything-fake` | ☐ | ☐ |
+| 404 | `/anything-fake` | ☐ | ☐ |
+| Sagent (should 404 while unlisted) | `/work/sagent` | ☐ | ☐ |
 
 If any box fails, note the page, device, and what went wrong before moving on — don't try
 to debug live, just log it (see "Reporting results" at the bottom).
@@ -84,7 +89,7 @@ already found once, 2026-07-19)*
      visibly happens.
 2. Close the overlay, navigate to a case study (e.g. `/work/sabre`) via the nav or a work
    grid card.
-   - **Expect:** an "Ask Ben" floating button (FAB) is visible.
+   - **Expect:** an "Ask about Ben" floating button (FAB) is visible.
 3. Tap the FAB.
    - **Expect:** the overlay opens showing your prior conversation, still intact.
 4. Navigate back to Home.
@@ -112,19 +117,22 @@ already found once, 2026-07-19)*
 
 ### B4. Enforced CSP — zero console violations
 
-Using the Web Inspector setup from above, load each of the 9 pages from Part A and watch
-the console.
+Using the Web Inspector setup from above, load each page from Part A and watch the
+console.
 - **Expect:** no red errors mentioning "Content Security Policy," "Refused to...," or
   "violates the following Content Security Policy directive."
 - **Fail:** note the exact page and the exact directive/resource named in the violation —
   this would mean something (a script, a style, a font, an image) isn't covered by
   `vercel.json`'s CSP and needs a source added.
+- **Ignore:** violations for `vercel.live` scripts. That's Vercel's feedback toolbar, which
+  only appears on preview deployments and is correctly blocked.
 
 ### B5. Chat response streaming
 
 1. Ask a real question and watch the reply render.
    - **Expect:** text streams in progressively — visible chunks arriving over time, not one
-     delayed dump. Paragraph breaks render as separate blocks, not one dense wall of text.
+     delayed dump — with a blinking cursor at the end until the reply finishes. Paragraph
+     breaks render as separate blocks, not one dense wall of text.
    - **Fail:** reply appears all at once after a long pause, or renders as a single unbroken
      paragraph regardless of length.
 
@@ -144,11 +152,39 @@ the console.
    - **Expect:** layout reflows cleanly each time, no horizontal scroll, no overlapping
      elements, chat stays usable throughout.
 
+### B8. In-chat contact form inside the mobile overlay
+*(`src/components/ContactCard/` — only ever tested via browser resize and Playwright)*
+
+1. In the full-screen overlay, ask something like "How can I get in touch with Ben?"
+   - **Expect:** a "SEND BEN A MESSAGE" form appears in the conversation, right after that
+     reply.
+2. Tap into each field (Name, Email, Message).
+   - **Expect:** no zoom on focus (same rule as B2), and the keyboard doesn't permanently
+     hide the field you're typing in — the overlay scrolls so it stays visible.
+3. Without sending, ask one more question.
+   - **Expect:** the new question and its reply appear **below** the form, and anything
+     you'd typed in the form is still there.
+4. Optional: send it. This sends a real email to ben@viewbens.work.
+   - **Expect:** the form is replaced by "Sent — Ben typically replies within 48 hours."
+     and the email arrives with your address as Reply-To.
+5. Tap "Not now" on a fresh form.
+   - **Expect:** it disappears cleanly.
+
+### B9. Link previews (iMessage)
+*(per-page preview tags, shipped 2026-10-08 — see `decisions.md`)*
+
+1. In iMessage, send yourself (or a test contact) the links to `/` and `/work/sabre`.
+   - **Expect:** each preview shows its own page's title — "Sabre — Ben Maxwell" for the
+     case study, not the homepage title.
+   - **Image:** preview images point at `viewbens.work`, so they only appear after the domain
+     cutover. Before cutover, a missing image is expected; a homepage title on the Sabre link
+     is a fail.
+
 ---
 
 ## Reporting results
 
-When done, come back and tell Claude what you found — pass/fail per section (A and B1–B7)
+When done, come back and tell Claude what you found — pass/fail per section (A and B1–B9)
 is enough, plus specifics for anything that failed (page, device, what you saw, ideally a
 screenshot). From there:
 - If everything passed: check off "Mobile device testing" in `build-plan.md`, and Claude

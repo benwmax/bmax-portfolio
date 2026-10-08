@@ -1,3 +1,4 @@
+import { corsHeaders, isOriginAllowed } from './lib/cors';
 import { checkRateLimit } from './lib/rate-limit';
 import { SYSTEM_PROMPT } from './lib/system-prompt';
 import {
@@ -31,33 +32,17 @@ const GLOBAL_DAILY_MESSAGE_CAP = 500;
 // request body here is a few hundred bytes at most.
 const MAX_REQUEST_BYTES = 8 * 1024;
 
-// TEMPORARY (added 2026-07-19, see decisions.md): the .vercel.app entry is
-// pre-launch-only, for testing the deployed site before viewbens.work is cut
-// over to this project. Remove it once the domain cutover happens.
-const ALLOWED_ORIGINS = [
-  'https://viewbens.work',
-  'https://bmax-portfolio.vercel.app',
-  'http://localhost:5173',
-  'http://localhost:4173',
-];
-
 // The only values the client-supplied `pageContext` field may take — must
 // match the `company` field in each src/content/*.ts file. Anything else is
 // silently ignored rather than rejecting the request, since this only
 // affects answer quality, not security. Deliberately not string-interpolated
 // from arbitrary client input into the system prompt — see the allowlist
 // check below.
+//
+// 'Sagent' is retained deliberately even though its page is currently unrouted
+// (see decisions.md 2026-07-29): no client can send it today, an extra entry
+// costs nothing, and it's needed again the moment the case study ships.
 const ALLOWED_PAGE_CONTEXTS = new Set(['Portfolio Rebuild', 'Upfluent', 'Sagent', 'USAA', 'Sabre']);
-
-function corsHeaders(origin: string | null): Record<string, string> {
-  const allowed = origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
-  return {
-    'Access-Control-Allow-Origin': allowed,
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Credentials': 'true',
-  };
-}
 
 // Structured, single-line JSON logs — Vercel captures stdout as Function
 // Logs, so this needs no new logging vendor. Metadata only by default
@@ -66,15 +51,26 @@ function logEvent(event: Record<string, unknown>): void {
   console.log(JSON.stringify({ ts: new Date().toISOString(), ...event }));
 }
 
-function jsonResponse(status: number, body: Record<string, unknown>, cors: Record<string, string>): Response {
-  return new Response(JSON.stringify(body), { status, headers: { ...cors, 'Content-Type': 'application/json' } });
+function jsonResponse(
+  status: number,
+  body: Record<string, unknown>,
+  cors: Record<string, string>,
+): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...cors, 'Content-Type': 'application/json' },
+  });
 }
 
 // Used whenever a Redis-backed check (rate limit or either cap reservation)
 // throws. Fails closed: chat goes down for the outage's duration rather
 // than letting rate limiting or the spend breaker run unenforced.
 function unavailableResponse(cors: Record<string, string>): Response {
-  return jsonResponse(503, { error: 'Chat is temporarily unavailable — please try again shortly.' }, cors);
+  return jsonResponse(
+    503,
+    { error: 'Chat is temporarily unavailable — please try again shortly.' },
+    cors,
+  );
 }
 
 export default async function handler(req: Request): Promise<Response> {
@@ -93,7 +89,7 @@ export default async function handler(req: Request): Promise<Response> {
   // non-browser callers (curl, scripts) — they don't send a trustworthy
   // Origin header — but it does stop other sites' pages from riding a
   // visitor's browser to call this endpoint.
-  if (origin && !ALLOWED_ORIGINS.includes(origin)) {
+  if (!isOriginAllowed(origin)) {
     logEvent({ event: 'blocked', reason: 'origin', origin });
     return jsonResponse(403, { error: 'Origin not allowed.' }, cors);
   }
@@ -129,7 +125,11 @@ export default async function handler(req: Request): Promise<Response> {
   }
   if (!rateLimitOk) {
     logEvent({ event: 'blocked', reason: 'rate-limit', ip });
-    return jsonResponse(429, { error: `Rate limit reached. Maximum ${MAX_MESSAGES_PER_HOUR} messages per hour.` }, cors);
+    return jsonResponse(
+      429,
+      { error: `Rate limit reached. Maximum ${MAX_MESSAGES_PER_HOUR} messages per hour.` },
+      cors,
+    );
   }
 
   let body: { message?: unknown; pageContext?: unknown };
@@ -145,7 +145,10 @@ export default async function handler(req: Request): Promise<Response> {
     logEvent({ event: 'blocked', reason: 'invalid-message', ip });
     return jsonResponse(400, { error: 'message must be a non-empty string.' }, cors);
   }
-  const userMessage: StoredMessage = { role: 'user', content: rawMessage.slice(0, MAX_MESSAGE_LENGTH) };
+  const userMessage: StoredMessage = {
+    role: 'user',
+    content: rawMessage.slice(0, MAX_MESSAGE_LENGTH),
+  };
 
   // Which case study page the visitor is currently on, if any — allowlisted
   // rather than trusted as free text, since it's client-supplied and gets
@@ -181,7 +184,9 @@ export default async function handler(req: Request): Promise<Response> {
     logEvent({ event: 'blocked', reason: 'session-cap', ip });
     return jsonResponse(
       429,
-      { error: `Session limit reached (${SESSION_MESSAGE_CAP} messages). Refresh the page to start a new session.` },
+      {
+        error: `Session limit reached (${SESSION_MESSAGE_CAP} messages). Refresh the page to start a new session.`,
+      },
       cors,
     );
   }
@@ -198,7 +203,11 @@ export default async function handler(req: Request): Promise<Response> {
     await releaseSessionMessage(sid);
     await releaseGlobalMessage();
     logEvent({ event: 'blocked', reason: 'global-budget', globalUsage: globalCount });
-    return jsonResponse(503, { error: 'Chat is temporarily at capacity — please check back later.' }, cors);
+    return jsonResponse(
+      503,
+      { error: 'Chat is temporarily at capacity — please check back later.' },
+      cors,
+    );
   }
 
   // History load is best-effort/fail-open (see session.ts) — it only

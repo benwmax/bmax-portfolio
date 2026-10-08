@@ -1,0 +1,74 @@
+/* Inline card rendered in the chat log — narrower and quieter than the
+   standalone Contact page cards (Contact.module.css), since it's one
+   message among many, not the page's main content. */
+.card {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  margin: var(--space-2) 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.headerLabel {
+  font-family: var(--font-mono-display);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--color-green-accent);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.formError {
+  font-family: var(--font-mono-ui);
+  font-size: var(--text-xs);
+  color: var(--color-status-error);
+  margin: 0;
+}
+
+/* Fully hidden from sighted users, screen readers, and tab order — see the
+   comment in ContactCard.tsx. Not just visually-hidden/sr-only, since that
+   would still expose it to assistive tech (and any AT-driven autofill). */
+.honeypot {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  left: -9999px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.confirmation {
+  font-family: var(--font-mono-ui);
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.confirmIcon {
+  color: var(--color-green-accent);
+  font-family: var(--font-mono-display);
+}
