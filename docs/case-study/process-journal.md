@@ -1026,7 +1026,8 @@ and both chat rendering bugs so far (2026-07-19, 2026-08-01) came from those cop
   confirmed both later the same day): the typing cursor now shows for the whole streamed reply on both surfaces (the
   homepage used to show it only until the first words arrived), and the reply indent is 16px
   everywhere (the case study rail was 14px).
-- The Contact page's new search description is Claude's draft. That page never had one.
+- The Contact page's new search description is Claude's draft. That page never had one. (I
+  approved it as written later the same day.)
 - Link-preview images point at viewbens.work, which still serves the old site. Shared links
   have the right title but no image until the domain cutover.
 - The simplified QA pass can't catch a JavaScript error that only happens on iOS.
