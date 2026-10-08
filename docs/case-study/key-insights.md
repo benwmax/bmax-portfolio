@@ -4,6 +4,7 @@ Curated from the initial Claude portfolio audit. These are the moments worth kee
 1. The Central Strategic Diagnosis: Evidence Without Argument
 What emerged:
 The first AI assessment identified tactical problems (weak homepage, unclear roles, broken links). The adversarial review reframed the whole thing: the portfolio doesn't have an argument, it has evidence. A pile of strong outcomes with no through-line forcing the reader to make the case themselves — and they won't.
+*Correction (2026-10-08, per Ben): the "broken links" weren't broken. They were password gates on NDA case studies, which the first assessment misread as 401 errors without asking. The case study now says so; the list above is kept as the assessment's own wording.*
 Why it matters for the case study:
 This is the insight that motivated the entire rebuild. Not "fix the 401" or "add a contact form" — but a fundamental reframe of what the portfolio was failing to do strategically. This is the kind of diagnosis that separates a design director from a designer, and it came from critically stacking two rounds of AI analysis against each other.
 The quote worth keeping:
