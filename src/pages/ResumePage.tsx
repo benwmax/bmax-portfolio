@@ -1,4 +1,5 @@
-import { Helmet } from 'react-helmet-async';
+import { PageHead } from '../seo/PageHead';
+import { RESUME_META } from '../seo/pageMeta';
 import { NavBar } from '../components/NavBar';
 import styles from './ResumePage.module.css';
 
@@ -104,20 +105,7 @@ const SKILLS = [
 export function ResumePage() {
   return (
     <div className={styles.wrapper}>
-      <Helmet>
-        <title>Resume — Ben Maxwell | UX Design Leader</title>
-        <meta
-          name="description"
-          content="Résumé for Ben Maxwell — UX Design Leader with 15+ years building expert tools in regulated industries including fintech, travel, insurance, and mortgage."
-        />
-        <link rel="canonical" href="https://viewbens.work/resume" />
-        <meta property="og:title" content="Resume — Ben Maxwell" />
-        <meta
-          property="og:description"
-          content="Résumé for Ben Maxwell — UX Design Leader with 15+ years experience in fintech, travel, insurance, and mortgage."
-        />
-        <meta property="og:url" content="https://viewbens.work/resume" />
-      </Helmet>
+      <PageHead meta={RESUME_META} />
       <a href="#main-content" className="skip-link">
         Skip to main content
       </a>
