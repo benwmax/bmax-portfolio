@@ -5,6 +5,12 @@ import type { ContactFormStatus, ContactSubmission } from '../components/Contact
 export interface Message {
   role: 'user' | 'assistant';
   text: string;
+  /**
+   * Set on the client-only "Reading about X" note a case study drops into the
+   * log (the company name). Lets the next case study replace an untouched note
+   * instead of stacking under it — see setPageContext.
+   */
+  contextNote?: string;
 }
 
 // Set by a page when the visitor lands on a case study, so the assistant can
@@ -252,9 +258,21 @@ export function useChatSession({
     // src/pages/explorations/HomeV4Blend.tsx), which already clears
     // activeSuggestions before the revisit's "already announced" branch is
     // ever reached.
+    //
+    // If the previous case study's note is still the last thing in the log —
+    // the visitor read it but never asked anything — it's replaced rather than
+    // stacked: a pile of "Reading about…" lines for pages already left says
+    // nothing. Once a conversation follows a note, it stays as the header for
+    // that stretch of the transcript. The replaced company is un-announced so
+    // going back to it shows its note again.
     if (!announcedRef.current.has(context.company)) {
       announcedRef.current.add(context.company);
-      setMessages((prev) => [...prev, { role: 'assistant', text: context.note }]);
+      const staleNote = messagesRef.current[messagesRef.current.length - 1]?.contextNote;
+      if (staleNote) announcedRef.current.delete(staleNote);
+      const note: Message = { role: 'assistant', text: context.note, contextNote: context.company };
+      setMessages((prev) =>
+        prev[prev.length - 1]?.contextNote ? [...prev.slice(0, -1), note] : [...prev, note],
+      );
       setActiveSuggestions(context.suggestions ?? []);
     }
   }, []);
