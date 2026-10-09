@@ -397,9 +397,11 @@ independently; only the widget's visual styling depends on those.*
       real contact email.
 - [x] Daily keep-alive cron so the free-tier database isn't deleted again (2026-10-08) —
       `api/keepalive.ts` + a `crons` entry in `vercel.json`, gated by `CRON_SECRET`. See
-      decisions.md, 2026-10-08.
+      decisions.md, 2026-10-08. **Removed later the same day (Ben's call)** — the cron was
+      also registering on the Storybook project, which shares `vercel.json`. The database is
+      unprotected against idle deletion again; see decisions.md 2026-10-08.
 - [ ] Confirm the keep-alive runs in production (Vercel → Settings → Cron Jobs → Run; logs
-      show `{"event":"keepalive"}`)
+      show `{"event":"keepalive"}`) — *obsolete: cron removed 2026-10-08*
 - [ ] Log the real error in the Redis `catch` blocks in `api/chat.ts`, `api/lib/session.ts`,
       and `api/contact.ts` — today they record only `redis-unavailable`, so the deletion
       had to be diagnosed by elimination
