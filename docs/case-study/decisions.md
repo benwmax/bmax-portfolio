@@ -1226,6 +1226,39 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
   twelve teams, and nobody running design strategy. Someone had to." is framing, not a new
   claim) — Ben to review.
 
+## 2026-10-08 — The public Storybook gets a place on the homepage
+- Decision: (Ben asked for it; the form is Claude's call, Ben to review) A full-width "Design
+  system" strip sits directly below the work grid on the homepage, linking to
+  `system.viewbens.work` in a new tab, plus a "Design system" link in the footer next to
+  email, LinkedIn, and GitHub. The URL is one constant, `STORYBOOK_URL` in
+  `src/pages/explorations/data.ts`.
+- Reasoning: The Storybook is a portfolio artifact (CLAUDE.md → Storybook Conventions) but
+  nothing on the site linked to it. It's not a fifth card because cards are numbered case
+  studies carrying one of the five canonical industry tags — a design system is neither, and
+  a card would read as a fifth case study. The strip uses the cards' surface and border so it
+  belongs to the work section, and its copy is uncounted ("every component, state, and token")
+  for the same reason as the work heading: counts go stale.
+- Alternatives considered: a sixth-tag card on the grid; a NavBar link (the nav holds three
+  links that fit at 390px — a fourth risks the no-MobileMenu decision of 2026-06-20).
+
+## 2026-10-08 — Storybook gets its own headers; it had been blank since July
+- Decision: `vercel.json` now sends two header sets, chosen by hostname. The main site keeps
+  its strict headers unchanged. Storybook hosts (`system.viewbens.work` and
+  `bmax-portfolio-storybook*.vercel.app`) get the same basic protections and HSTS, but
+  `X-Frame-Options: SAMEORIGIN` and no Content-Security-Policy.
+- Reasoning: The Storybook is a separate Vercel project built from this same repo, so it reads
+  the same `vercel.json`. Once the CSP was enforced on 2026-07-18 (hash-only `script-src`),
+  every inline script Storybook depends on was blocked, and `X-Frame-Options: DENY` /
+  `frame-ancestors 'none'` would also block the frame Storybook renders each story in.
+  `system.viewbens.work` has served a blank page since then. Every check after that tested
+  Storybook locally, where Vercel's headers don't apply — found 2026-10-08 only because the
+  homepage was about to link to it.
+- Alternatives considered: changing the Storybook project's Vercel settings (Root Directory
+  with its own `vercel.json`) — needs dashboard access and moves config out of the repo; or
+  writing a Storybook-specific CSP — Storybook's inline scripts aren't stable enough to hash.
+- Follow-up: after any change to `vercel.json`, check the deployed Storybook, not just the
+  site.
+
 ## 2026-10-08 — Daily keep-alive cron for the free-tier Upstash database
 - Decision: (Ben) Stay on Upstash's free tier and keep the database active with a daily
   Vercel cron, rather than upgrading to pay-as-you-go or accepting the risk.

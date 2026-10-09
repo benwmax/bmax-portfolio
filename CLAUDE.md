@@ -378,6 +378,11 @@ surface, motion, shadow, layout widths, and per-component font/color/tracking to
 - Storybook is hosted publicly as a portfolio artifact, not just a dev tool
 - Storybook deployed to a separate Vercel project on a subdomain
   (e.g. system.viewbens.work)
+- **That project builds from this repo, so it reads the same `vercel.json`.** Headers are
+  split by hostname: the main site's strict CSP and `X-Frame-Options: DENY` apply everywhere
+  *except* Storybook hosts, which get a lighter set (no CSP, `SAMEORIGIN`). Without that split
+  Storybook renders a blank page — it did from 2026-07-18 to 2026-10-08 unnoticed. After any
+  `vercel.json` change, check the deployed Storybook too. See decisions.md 2026-10-08.
 
 ---
 

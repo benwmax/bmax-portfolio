@@ -10,7 +10,7 @@ import { ChatTranscript } from '../../components/ChatTranscript';
 import { MobileChatSurface } from '../../components/MobileChatSurface';
 import { useChat } from '../../context/useChat';
 import type { Message } from '../../hooks/useChatSession';
-import { CASE_STUDIES, SUGGESTIONS, HERO_STATS, SOCIAL_LINKS } from './data';
+import { CASE_STUDIES, SUGGESTIONS, HERO_STATS, SOCIAL_LINKS, STORYBOOK_URL } from './data';
 import {
   useTypewriter,
   useInView,
@@ -414,6 +414,32 @@ export function HomeV4Blend({
                   </div>
                 ))}
               </div>
+
+              {/* The public Storybook, shown as the system behind the site rather than as a
+                  fifth card: cards are numbered case studies with one of the five canonical
+                  industry tags, and a design system is neither. Copy is deliberately
+                  uncounted (no "16 components") for the same reason as the heading above —
+                  counts go stale. See decisions.md 2026-10-08. */}
+              <aside className={styles.systemStrip} aria-labelledby="system-strip-title">
+                <div className={styles.systemStripText}>
+                  <div className={styles.workKicker}>Design system</div>
+                  <h3 id="system-strip-title" className={styles.systemStripTitle}>
+                    The component library behind this site
+                  </h3>
+                  <p className={styles.systemStripBody}>
+                    Every component, state, and token — with the reasoning behind each — documented
+                    in a public Storybook. Two complete themes, one token layer apart.
+                  </p>
+                </div>
+                <a
+                  href={STORYBOOK_URL}
+                  className={styles.systemStripLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Browse the library ↗<span className="sr-only"> (opens in new tab)</span>
+                </a>
+              </aside>
             </section>
           </main>
 
