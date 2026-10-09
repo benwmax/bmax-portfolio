@@ -313,8 +313,9 @@ export function CaseStudyPage({
       }
     >
       {activeSuggestions.length > 0 && (
-        <div className={styles.chatSuggestions}>
-          <span className={styles.chatSuggestLabel}>Try asking</span>
+        // The group label replaces the visible "Try asking" label (removed 2026-10-09)
+        // so screen readers still hear what these buttons are.
+        <div className={styles.chatSuggestions} role="group" aria-label="Suggested questions">
           {activeSuggestions.map((s) => (
             <button
               key={s}

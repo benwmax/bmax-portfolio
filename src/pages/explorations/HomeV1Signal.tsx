@@ -132,8 +132,11 @@ export function HomeV1Signal({ onChatSubmit, initialMessages = [] }: HomeV1Signa
                         _
                       </span>
                     </p>
-                    <div className={styles.chatSuggestions}>
-                      <span className={styles.chatSuggestLabel}>Try asking</span>
+                    <div
+                      className={styles.chatSuggestions}
+                      role="group"
+                      aria-label="Suggested questions"
+                    >
                       {SUGGESTIONS.map((s) => (
                         <button
                           key={s}
