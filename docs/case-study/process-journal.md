@@ -1094,3 +1094,37 @@ picking one. Over the day, three separate Lighthouse runs gave three different h
 
 **Where I overrode or redirected Claude:**
 N/A. Claude recommended `94–100` and I agreed.
+
+## 2026-10-08 (night — Upstash outage)
+**What I did:**
+Noticed chat wasn't working. Claude probed the live endpoint, and an empty request came
+back 503 "temporarily unavailable" instead of a validation error. That placed the failure
+at the Redis rate-limit check, before the model is ever called. I found Upstash had deleted
+the free-tier database, recreated it, and updated the Vercel env vars. Claude confirmed
+recovery: a live chat reply about USAA, and a test message through the contact form that
+reached my inbox. Then I added a daily keep-alive cron (PR #42).
+
+**What I decided:**
+Keep-alive on the free tier, instead of paying for Upstash or accepting the risk.
+
+**Why:**
+It's a pre-launch site with almost no traffic, which is exactly the condition that got the
+database deleted.
+
+**What I'm uncertain about:**
+- Whether the cron is actually running. It can't be checked until it's merged and run once
+  in production.
+- Nothing alerts if the keep-alive itself breaks. I'd find out the same way I did today.
+
+**What Claude contributed:**
+Diagnosed it by elimination. The `catch` swallows the real Redis error, so the logs only
+said `redis-unavailable`, but the response message and the order of checks narrowed it to
+Redis without touching the model. Ruled out the uncommitted Sagent teaser work as a cause.
+Asked before sending a real email through the contact form. Chose a Vercel cron over a
+GitHub Action so a recreated database never needs a second secret updated.
+
+**Where I overrode or redirected Claude:**
+Claude recommended pay-as-you-go. I chose the keep-alive instead.
+
+The fail-closed design from 2026-07-18 did its job: the site said "temporarily
+unavailable" instead of running with no rate limits.
