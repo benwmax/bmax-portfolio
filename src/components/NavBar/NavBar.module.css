@@ -36,6 +36,11 @@
   color: var(--color-text-primary);
   text-decoration: none;
   line-height: 1;
+  /* Keep the mark on one line. On a narrow phone the header squeezes the
+     wordmark, and the trailing span (the Futuristic diamond in particular)
+     wrapped under "BM". The links shrink instead. */
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 /* The trailing underscore — bolder, phosphor green, terminal cursor convention */
@@ -146,5 +151,19 @@
 @media (max-width: 480px) {
   .header {
     padding: 0 20px;
+  }
+  /* The header has to fit the wordmark, three links, and the theme toggle on
+     one row (no MobileMenu — decisions.md 2026-06-20). Narrower link padding
+     and gap buy the room; links keep their 44px tap height. */
+  .right {
+    gap: 8px;
+  }
+  .link {
+    padding: 10px 8px;
+  }
+  /* Futuristic's wide link tracking is what pushed the row past 390px and
+     wrapped the wordmark's diamond under "BM" (2026-10-08). */
+  :global([data-theme='futuristic']) .link {
+    letter-spacing: 0.06em;
   }
 }
