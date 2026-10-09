@@ -1258,3 +1258,25 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
   writing a Storybook-specific CSP — Storybook's inline scripts aren't stable enough to hash.
 - Follow-up: after any change to `vercel.json`, check the deployed Storybook, not just the
   site.
+
+## 2026-10-08 — Daily keep-alive cron for the free-tier Upstash database
+- Decision: (Ben) Stay on Upstash's free tier and keep the database active with a daily
+  Vercel cron, rather than upgrading to pay-as-you-go or accepting the risk.
+  `api/keepalive.ts` writes `bmax:keepalive` (7-day TTL) once a day at 12:00 UTC, the most
+  frequent schedule the Hobby plan allows. It requires Vercel's `CRON_SECRET` bearer token
+  and rejects every request if the secret isn't set, so it can't become a public endpoint
+  that writes to Redis.
+- Reasoning: Upstash deleted the original database for inactivity on 2026-10-08. Chat and
+  the contact form both fail closed without Redis (decided 2026-07-18), so both returned
+  503 until Ben recreated the database. A pre-launch portfolio can go weeks without a
+  visitor, so it would happen again.
+- Why a Vercel cron and not a GitHub Action (Claude): the cron runs in the same deployment
+  and reads the same `UPSTASH_*` env vars as the site. If the database is ever recreated,
+  updating Vercel's env vars is still the only step, and no Redis credentials need copying
+  into GitHub secrets.
+- Alternatives considered: pay-as-you-go (Claude's recommendation: no code, and the
+  database stops being eligible for deletion), and accepting the risk and recreating the
+  database if it happens again.
+- Open question: the keep-alive fails quietly. If the cron stops running, nothing alerts,
+  and the database is at risk again. Its failures do log the real Redis error, but the
+  chat and contact `catch` blocks still don't (build-plan.md 4F).
