@@ -10,7 +10,7 @@ const EXPERIENCE = [
     dates: '2026',
     sector: 'Meta',
     outcomes: [
-      'Directed a full portfolio rebuild using Claude as AI collaborator — the build process is the lead case study.',
+      'Directed a full portfolio rebuild using Claude as AI collaborator.',
       'Designed and built the component system, page templates, and AI chat feature using React, Tailwind, and Storybook 8.',
     ],
   },

@@ -56,7 +56,7 @@ const CAREER = [
     company: 'Portfolio Rebuild',
     role: 'Principal UX Designer',
     sector: 'Meta · Self-directed',
-    outcomes: ['AI-directed build process', 'Public case study', 'This site'],
+    outcomes: ['AI-directed build process', 'Public Storybook', 'This site'],
   },
 ] as const;
 

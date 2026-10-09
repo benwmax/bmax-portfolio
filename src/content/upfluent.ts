@@ -1,7 +1,7 @@
 import type { CaseStudyContent } from '../pages/CaseStudyPage';
 
 export const upfluentData: CaseStudyContent = {
-  number: '02',
+  number: '01',
   dateRange: '2023–24',
   company: 'Upfluent',
   heroTitle: "Retail traders needed expert tools without an expert's learning curve.",
@@ -106,5 +106,5 @@ export const upfluentData: CaseStudyContent = {
   ],
   // Skips Sagent, which is unlisted while its content is a placeholder — linking
   // there would dead-end on the 404. Restore to Sagent when it ships.
-  nextCase: { title: 'USAA', href: '/work/usaa' },
+  nextCase: { title: 'Sagent', href: '/work/sagent' },
 };

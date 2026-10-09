@@ -27,13 +27,12 @@ export interface ExplorationCaseStudy {
 /**
  * The homepage work grid, in portfolio order.
  *
- * Sagent is deliberately absent, not lost: its case study content is still a
- * placeholder pending the Phase 1C brain dump, so it's unlisted (and unrouted)
- * rather than shipping holding copy. The *strategic* order is unchanged —
- * Sagent still belongs third and reclaims '03' when it ships, pushing USAA and
- * Sabre back down. `index` here is only the displayed chip, compacted to 01–04
- * so the grid doesn't read as though a case study is missing.
- * See decisions.md 2026-07-29.
+ * Portfolio Rebuild is deliberately absent, not lost: Ben hid it on 2026-10-08
+ * (its content in src/content/portfolio-rebuild.ts is intact), and Sagent is
+ * listed as a short teaser page until its full case study is written. `index`
+ * is only the displayed chip, compacted to 01–04 so the grid doesn't read as
+ * though a case study is missing. Restoring Portfolio Rebuild puts it back at
+ * '01' and pushes the rest down one. See decisions.md 2026-10-08.
  *
  * `tag` must be one of the five canonical industry labels (Travel, Fintech,
  * Mortgage, Insurance, AI Collaboration) — see CLAUDE.md Component Usage rule 4.
@@ -41,16 +40,6 @@ export interface ExplorationCaseStudy {
 export const CASE_STUDIES: ExplorationCaseStudy[] = [
   {
     index: '01',
-    title: 'Portfolio Rebuild with Claude',
-    desc: 'Directing an AI to build a portfolio — and making the process the case study.',
-    tag: 'AI Collaboration',
-    href: '/work/portfolio',
-    role: 'Principal UX Designer',
-    year: '2026',
-    sector: 'Product Design',
-  },
-  {
-    index: '02',
     title: 'Upfluent',
     desc: 'A hybrid AI chatbot: talk like an advisor, act with real controls.',
     tag: 'Fintech',
@@ -58,6 +47,16 @@ export const CASE_STUDIES: ExplorationCaseStudy[] = [
     role: 'Lead UX Designer',
     year: '2023–24',
     sector: 'Fintech',
+  },
+  {
+    index: '02',
+    title: 'Sagent',
+    desc: 'Leading design on a mortgage platform rebuild after the director left.',
+    tag: 'Mortgage',
+    href: '/work/sagent',
+    role: 'Principal UX Designer',
+    year: '2021–22',
+    sector: 'Mortgage',
   },
   {
     index: '03',

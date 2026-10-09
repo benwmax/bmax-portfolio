@@ -475,15 +475,14 @@ The work-grid entry point. Always a link (`href` required). 16:9 thumbnail, inde
 
 | Index | Case Study |
 |---|---|
-| 01 | Portfolio Rebuild |
-| 02 | Upfluent |
+| 01 | Upfluent |
+| 02 | Sagent (teaser page) |
 | 03 | USAA |
 | 04 | Sabre |
 
-Sagent is deliberately absent: its content is still a placeholder, so the page is unrouted
-and unlisted rather than shipping holding copy. It remains third in the strategic order and
-reclaims `03` when it ships, pushing USAA and Sabre back down. Don't treat the compacted
-numbering as a reordering decision. See decisions.md 2026-07-29.
+Portfolio Rebuild is hidden for now (Ben, 2026-10-08) — its content is intact. Sagent is a
+short teaser page via `teaser` on `CaseStudyContent` until its full case study is written.
+Don't treat the numbering as a reordering decision. See decisions.md 2026-10-08.
 
 #### Pitfalls
 
@@ -725,7 +724,7 @@ section above.
 - Don't add content outside the existing hero layout — identity left, chat right
 - Don't try to keep the hero panel visible during a conversation
 - Don't show the docked rail on mobile — it's desktop-only
-- Don't change the work grid order — displayed as 01 Portfolio Rebuild, 02 Upfluent, 03 USAA, 04 Sabre (Sagent unlisted pending content, still third strategically)
+- Don't change the work grid order — displayed as 01 Upfluent, 02 Sagent (teaser), 03 USAA, 04 Sabre (Portfolio Rebuild hidden for now, still first strategically)
 - Don't skip wiring the homepage's inline submit through `handleHeroSubmit` on mobile — it must open `MobileChatSurface`'s overlay before submitting, or the reply streams into the faded, non-interactive hero panel (decisions.md 2026-07-19)
 - `forceShowContactCard` is Storybook-only — never wire it to application state; `showContactCard` from `useChat()` is the real production signal
 
@@ -985,9 +984,8 @@ import { CASE_STUDIES } from './explorations/data';
 }
 ```
 
-Current displayed order: `01` Portfolio Rebuild, `02` Upfluent, `03` USAA, `04` Sabre.
-Sagent is unlisted while its content is a placeholder — it remains strategically third
-and reclaims `03` when it ships. See decisions.md 2026-07-29.
+Current displayed order: `01` Upfluent, `02` Sagent (teaser), `03` USAA, `04` Sabre.
+Portfolio Rebuild is hidden for now. See decisions.md 2026-10-08.
 
 ---
 

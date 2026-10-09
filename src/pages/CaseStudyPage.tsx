@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import type { RefObject } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { PageHead } from '../seo/PageHead';
@@ -93,6 +93,14 @@ export interface CaseStudyContent {
   figures?: CaseFigure[];
   chatSuggestions?: string[];
   nextCase?: { title: string; href: string };
+  /**
+   * Set while the full case study isn't written yet. The page then renders
+   * only Problem, Role, and Outcomes — the sections that can be honest without
+   * the full story — followed by this note. The other section fields are still
+   * required by the type but aren't shown. Remove `teaser` when the case study
+   * ships. See decisions.md 2026-10-08.
+   */
+  teaser?: string;
 }
 
 /**
@@ -156,6 +164,9 @@ const NAV_SECTIONS = [
   { id: 'reflection', label: "What I'd do differently", num: '08' },
 ] as const;
 
+/** The sections a teaser page shows — see `teaser` on CaseStudyContent. */
+const TEASER_SECTIONS: readonly string[] = ['problem', 'role', 'outcomes'];
+
 export function CaseStudyPage({
   number,
   dateRange,
@@ -174,6 +185,7 @@ export function CaseStudyPage({
   figures,
   chatSuggestions = [],
   nextCase,
+  teaser,
   layout = 'sidebar',
   showChat = true,
   onChatSubmit,
@@ -199,6 +211,13 @@ export function CaseStudyPage({
     initialMessages,
   });
   const [activeSection, setActiveSection] = useState('problem');
+  // A teaser shows fewer sections, numbered 01–03 rather than keeping gaps.
+  const sections = useMemo(
+    () => (teaser ? NAV_SECTIONS.filter((s) => TEASER_SECTIONS.includes(s.id)) : NAV_SECTIONS),
+    [teaser],
+  );
+  const sectionNum = (id: string) =>
+    String(sections.findIndex((s) => s.id === id) + 1).padStart(2, '0');
   const [mobileChatOpen, setMobileChatOpen] = useState(false);
   const chatLogRef = useRef<HTMLDivElement>(null);
   const progressBarRef = useRef<HTMLDivElement>(null);
@@ -217,7 +236,7 @@ export function CaseStudyPage({
           progressBarRef.current.style.width = `${(pct * 100).toFixed(3)}%`;
         }
         let active = 'problem';
-        for (const { id } of NAV_SECTIONS) {
+        for (const { id } of sections) {
           const el = document.getElementById(`sec-${id}`);
           if (el && el.getBoundingClientRect().top <= 100) active = id;
         }
@@ -229,7 +248,7 @@ export function CaseStudyPage({
       window.removeEventListener('scroll', onScroll);
       cancelAnimationFrame(rafRef.current);
     };
-  }, []);
+  }, [sections]);
 
   // Scroll chat log to bottom on new messages
   useEffect(() => {
@@ -349,7 +368,7 @@ export function CaseStudyPage({
               <aside className={styles.sidebar} aria-label="Contents">
                 <div className={styles.sidebarLabel}>Contents</div>
                 <nav aria-label="Case study contents">
-                  {NAV_SECTIONS.map(({ id, label, num }) => (
+                  {sections.map(({ id, label }) => (
                     <a
                       key={id}
                       href={`#sec-${id}`}
@@ -373,7 +392,7 @@ export function CaseStudyPage({
                           .filter(Boolean)
                           .join(' ')}
                       >
-                        {num}
+                        {sectionNum(id)}
                       </span>
                       <span>{label}</span>
                     </a>
@@ -399,7 +418,7 @@ export function CaseStudyPage({
                 className={styles.section}
                 aria-labelledby="heading-problem"
               >
-                <span className={styles.sectionKicker}>01 · Problem</span>
+                <span className={styles.sectionKicker}>{sectionNum('problem')} · Problem</span>
                 <h2 id="heading-problem" className={styles.sectionHeading}>
                   {problem.heading}
                 </h2>
@@ -413,7 +432,7 @@ export function CaseStudyPage({
 
               {/* 02 · ROLE */}
               <section id="sec-role" className={styles.section} aria-labelledby="heading-role">
-                <span className={styles.sectionKicker}>02 · Role</span>
+                <span className={styles.sectionKicker}>{sectionNum('role')} · Role</span>
                 <h2 id="heading-role" className="sr-only">
                   Role
                 </h2>
@@ -424,86 +443,90 @@ export function CaseStudyPage({
                 </RoleCallouts>
               </section>
 
-              {/* 03 · USER CONTEXT */}
-              <section
-                id="sec-context"
-                className={styles.section}
-                aria-labelledby="heading-context"
-              >
-                <span className={styles.sectionKicker}>03 · User context</span>
-                <h2 id="heading-context" className="sr-only">
-                  User context
-                </h2>
-                <div className={styles.prose}>
-                  {userContext.paragraphs.map((p, i) => (
-                    <p key={i}>{p}</p>
-                  ))}
-                </div>
-                <SectionFigures figures={figures} section="context" />
-              </section>
+              {!teaser && (
+                <>
+                  {/* 03 · USER CONTEXT */}
+                  <section
+                    id="sec-context"
+                    className={styles.section}
+                    aria-labelledby="heading-context"
+                  >
+                    <span className={styles.sectionKicker}>03 · User context</span>
+                    <h2 id="heading-context" className="sr-only">
+                      User context
+                    </h2>
+                    <div className={styles.prose}>
+                      {userContext.paragraphs.map((p, i) => (
+                        <p key={i}>{p}</p>
+                      ))}
+                    </div>
+                    <SectionFigures figures={figures} section="context" />
+                  </section>
 
-              {/* 04 · PROCESS */}
-              <section
-                id="sec-process"
-                className={styles.section}
-                aria-labelledby="heading-process"
-              >
-                <span className={styles.sectionKicker}>04 · Process</span>
-                <h2 id="heading-process" className="sr-only">
-                  Process
-                </h2>
-                <ProcessSteps>
-                  {process.map((step, i) => (
-                    <ProcessStep
-                      key={i}
-                      num={i + 1}
-                      phase={step.phase}
-                      title={step.title}
-                      body={step.body}
-                      artifact={step.artifact}
-                    />
-                  ))}
-                </ProcessSteps>
-                <SectionFigures figures={figures} section="process" />
-              </section>
+                  {/* 04 · PROCESS */}
+                  <section
+                    id="sec-process"
+                    className={styles.section}
+                    aria-labelledby="heading-process"
+                  >
+                    <span className={styles.sectionKicker}>04 · Process</span>
+                    <h2 id="heading-process" className="sr-only">
+                      Process
+                    </h2>
+                    <ProcessSteps>
+                      {process.map((step, i) => (
+                        <ProcessStep
+                          key={i}
+                          num={i + 1}
+                          phase={step.phase}
+                          title={step.title}
+                          body={step.body}
+                          artifact={step.artifact}
+                        />
+                      ))}
+                    </ProcessSteps>
+                    <SectionFigures figures={figures} section="process" />
+                  </section>
 
-              {/* 05 · KEY DECISION */}
-              <section
-                id="sec-decision"
-                className={styles.section}
-                aria-labelledby="heading-decision"
-              >
-                <span className={styles.sectionKicker}>05 · Key decision</span>
-                <h2 id="heading-decision" className={styles.sectionHeading}>
-                  {keyDecision.heading}
-                </h2>
-                <div className={styles.prose}>
-                  {keyDecision.paragraphs.map((p, i) => (
-                    <p key={i}>{p}</p>
-                  ))}
-                </div>
-                {keyDecision.artifactLabel && (
-                  <ImageCaption
-                    tabLabel={`${company.toLowerCase()} · ${keyDecision.artifactLabel}`}
-                    caption={`Fig. 01 — ${keyDecision.artifactLabel}.`}
-                  />
-                )}
-                <SectionFigures figures={figures} section="decision" />
-              </section>
+                  {/* 05 · KEY DECISION */}
+                  <section
+                    id="sec-decision"
+                    className={styles.section}
+                    aria-labelledby="heading-decision"
+                  >
+                    <span className={styles.sectionKicker}>05 · Key decision</span>
+                    <h2 id="heading-decision" className={styles.sectionHeading}>
+                      {keyDecision.heading}
+                    </h2>
+                    <div className={styles.prose}>
+                      {keyDecision.paragraphs.map((p, i) => (
+                        <p key={i}>{p}</p>
+                      ))}
+                    </div>
+                    {keyDecision.artifactLabel && (
+                      <ImageCaption
+                        tabLabel={`${company.toLowerCase()} · ${keyDecision.artifactLabel}`}
+                        caption={`Fig. 01 — ${keyDecision.artifactLabel}.`}
+                      />
+                    )}
+                    <SectionFigures figures={figures} section="decision" />
+                  </section>
 
-              {/* 06 · WHAT WAS HARD */}
-              <section id="sec-hard" className={styles.section} aria-labelledby="heading-hard">
-                <span className={styles.sectionKicker}>06 · What was hard</span>
-                <h2 id="heading-hard" className="sr-only">
-                  What was hard
-                </h2>
-                <div className={styles.prose}>
-                  {whatWasHard.paragraphs.map((p, i) => (
-                    <p key={i}>{p}</p>
-                  ))}
-                </div>
-                <SectionFigures figures={figures} section="hard" />
-              </section>
+                  {/* 06 · WHAT WAS HARD */}
+                  <section id="sec-hard" className={styles.section} aria-labelledby="heading-hard">
+                    <span className={styles.sectionKicker}>06 · What was hard</span>
+                    <h2 id="heading-hard" className="sr-only">
+                      What was hard
+                    </h2>
+                    <div className={styles.prose}>
+                      {whatWasHard.paragraphs.map((p, i) => (
+                        <p key={i}>{p}</p>
+                      ))}
+                    </div>
+                    <SectionFigures figures={figures} section="hard" />
+                  </section>
+                </>
+              )}
 
               {/* 07 · OUTCOMES */}
               <section
@@ -511,7 +534,7 @@ export function CaseStudyPage({
                 className={styles.section}
                 aria-labelledby="heading-outcomes"
               >
-                <span className={styles.sectionKicker}>07 · Outcomes</span>
+                <span className={styles.sectionKicker}>{sectionNum('outcomes')} · Outcomes</span>
                 <h2 id="heading-outcomes" className="sr-only">
                   Outcomes
                 </h2>
@@ -522,26 +545,40 @@ export function CaseStudyPage({
                 </StatGrid>
               </section>
 
-              {/* 08 · WHAT I'D DO DIFFERENTLY */}
-              <section
-                id="sec-reflection"
-                className={styles.section}
-                aria-labelledby="heading-reflection"
-              >
-                <span className={styles.sectionKicker}>08 · What I'd do differently</span>
-                <h2 id="heading-reflection" className="sr-only">
-                  What I'd do differently
-                </h2>
-                <div className={styles.prose}>
-                  {whatIdDoDifferently.paragraphs.map((p, i) => (
-                    <p key={i}>{p}</p>
-                  ))}
-                </div>
-              </section>
+              {/* 08 · WHAT I'D DO DIFFERENTLY — or, on a teaser, the in-progress note */}
+              {teaser ? (
+                <section className={styles.section} aria-labelledby="heading-teaser">
+                  <span className={styles.sectionKicker}>In progress</span>
+                  <h2 id="heading-teaser" className="sr-only">
+                    Full case study in progress
+                  </h2>
+                  <div className={styles.prose}>
+                    <p>{teaser}</p>
+                  </div>
+                </section>
+              ) : (
+                <section
+                  id="sec-reflection"
+                  className={styles.section}
+                  aria-labelledby="heading-reflection"
+                >
+                  <span className={styles.sectionKicker}>08 · What I'd do differently</span>
+                  <h2 id="heading-reflection" className="sr-only">
+                    What I'd do differently
+                  </h2>
+                  <div className={styles.prose}>
+                    {whatIdDoDifferently.paragraphs.map((p, i) => (
+                      <p key={i}>{p}</p>
+                    ))}
+                  </div>
+                </section>
+              )}
 
               {/* END TICK */}
               <div className={styles.endTick}>
-                <span className={styles.endTickLabel}>End of case study</span>
+                <span className={styles.endTickLabel}>
+                  {teaser ? 'End of preview' : 'End of case study'}
+                </span>
                 <span className={styles.endTickLine} aria-hidden="true" />
                 {nextCase && (
                   <Link to={nextCase.href} className={styles.endTickNext}>
