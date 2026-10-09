@@ -719,10 +719,12 @@
   pointer-events: none;
 }
 
-/* ——— MOBILE: docked rail suppressed ———
-   The mobile FAB + full-screen chat overlay live in MobileChatSurface now
-   (moved out of this file 2026-07-19 so case study pages can share them). */
-@media (max-width: 760px) {
+/* ——— PHONE AND TABLET: docked rail suppressed ———
+   The FAB + full-screen chat overlay live in MobileChatSurface (moved out of
+   this file 2026-07-19 so case study pages can share them). Below 1100px the
+   rail is replaced by that overlay — at 761–1100px a 400px rail left the page
+   about 600px wide (2026-10-09). */
+@media (max-width: 1100px) {
   /* Docked panel is suppressed on mobile — offset class has no effect. */
   .pageContentDocked {
     padding-right: 0;

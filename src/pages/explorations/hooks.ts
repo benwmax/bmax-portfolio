@@ -15,12 +15,12 @@ import { useEffect, useRef, useState } from 'react';
 
 /**
  * True at the viewport width where the mobile chat overlay is the active
- * surface. Mirrors the `max-width: 760px` breakpoint in
+ * surface. Mirrors the `max-width: 1100px` breakpoint in
  * MobileChatSurface.module.css — keep the two in sync. Reactive to resizes,
  * so a mid-conversation resize across the breakpoint updates correctly.
  */
 export function useIsMobileViewport(): boolean {
-  const query = '(max-width: 760px)';
+  const query = '(max-width: 1100px)';
   // Lazy init reads the current match up front so there's no setState in the
   // effect body — the effect only subscribes to later changes.
   const [isMobile, setIsMobile] = useState(() =>

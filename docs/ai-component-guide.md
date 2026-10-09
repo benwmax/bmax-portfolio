@@ -362,7 +362,7 @@ The chat message log shared by every chat surface: the homepage hero panel, the 
 **File:** `src/components/MobileChatSurface.tsx`
 **Storybook:** `Components/MobileChatSurface`
 
-The mobile-only "Ask about Ben" entry point — a floating action button that opens a full-screen chat overlay. Shared by `HomeV4Blend` and `CaseStudyPage` so mobile chat behaves identically on both. Desktop keeps its inline hero panel / docked rail instead — everything here is gated to `<=760px` by CSS and correctly renders nothing above that width.
+The mobile-only "Ask about Ben" entry point — a floating action button that opens a full-screen chat overlay. Shared by `HomeV4Blend` and `CaseStudyPage` so mobile chat behaves identically on both. Desktop keeps its inline hero panel / docked rail instead — everything here is gated to `<=1100px` by CSS and correctly renders nothing above that width.
 
 #### Props
 
@@ -700,8 +700,8 @@ comparison — same component, two story titles)
 
 Fast 3-line boot sequence (~1.5s, replays on reload), full-viewport green scanline, split hero (typewriter
 headline left, chat right), a 4-column staggered-reveal case study grid, and footer. When the visitor
-sends the first message, the hero chat panel fades out and the desktop docked rail slides in. On mobile
-(≤760px) chat instead hands off to `MobileChatSurface`'s full-screen overlay — see that component's
+sends the first message, the hero chat panel fades out and the desktop docked rail slides in. On phones and
+tablets (≤1100px) chat instead hands off to `MobileChatSurface`'s full-screen overlay — see that component's
 section above.
 
 #### Props
@@ -717,7 +717,7 @@ section above.
 - **Full boot sequence (Default):** 3-line terminal boot, then the page assembles in. Hero shows greeting + suggestion chips, docked rail hidden.
 - **Assembled (skip intro):** `skipBoot={true}` — same idle layout, boot skipped.
 - **Conversation started:** Hero panel faded, docked 400px rail visible (desktop only), page acquires padding-right. A contact-intent message renders an inline `ContactCard` at the end of the log — see that component's section above.
-- **Mobile (≤760px):** Single column, docked rail hidden; chat is handled entirely by `MobileChatSurface`'s FAB + overlay, not the inline hero panel past the first submit.
+- **Phone and tablet (≤1100px):** Single column, docked rail hidden; chat is handled entirely by `MobileChatSurface`'s FAB + overlay, not the inline hero panel past the first submit.
 
 #### Pitfalls
 
