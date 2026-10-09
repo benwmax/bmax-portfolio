@@ -41,7 +41,7 @@ export interface MobileChatSurfaceProps {
  * The mobile-only "Ask about Ben" entry point: a floating action button that opens a
  * full-screen chat overlay. Shared by the homepage and case study pages so the
  * mobile chat behaves identically on both. Desktop keeps its inline/docked
- * panels — everything here is suppressed above 760px by the stylesheet.
+ * panels — everything here is suppressed above 1100px by the stylesheet.
  *
  * Why this exists: on mobile the homepage's inline chat panel collapses the
  * moment a conversation starts (it's built to slide into the desktop docked

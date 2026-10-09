@@ -39,7 +39,7 @@ const meta = {
           'The mobile-only "Ask about Ben" entry point — a floating action button that opens a ' +
           'full-screen chat overlay. Shared by the homepage and case study pages so mobile ' +
           'chat behaves identically on both; desktop keeps its inline/docked panels instead. ' +
-          'Every part of this component is gated to <=760px by CSS (see ' +
+          'Every part of this component is gated to <=1100px by CSS (see ' +
           'MobileChatSurface.module.css) — these stories render at the Mobile 390 viewport so ' +
           'the FAB and overlay are actually visible; viewing them at a desktop width in the ' +
           'Storybook canvas will correctly show nothing, matching production.',
@@ -54,7 +54,7 @@ const meta = {
         'The scroll-to-bottom button only appears once the visitor has scrolled away from the bottom of the log — it is not a persistent affordance.',
       ],
       avoid: [
-        "Don't render this component above the 760px breakpoint — it's CSS-gated to mobile and will render nothing (correctly) on a desktop viewport.",
+        "Don't render this component above the 1100px breakpoint — it's CSS-gated to mobile and will render nothing (correctly) on a desktop viewport.",
         "Don't duplicate the FAB/overlay markup in a page file — both Home and case study pages must import this one component so the mobile chat experience can't drift between pages.",
         "Don't hide the FAB while a conversation exists just because the overlay is closed — visible should stay true once fabRevealed or messages.length > 0, only open toggles the overlay.",
       ],

@@ -1298,3 +1298,21 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
   that doesn't live in the shared `vercel.json`.
 - Cleanup for Ben: `CRON_SECRET` in the site project's Vercel env vars is now unused and can
   be deleted.
+
+## 2026-10-09 — Phone-style chat up to 1100px
+- Decision: (Ben) Between 761px and 1100px wide, chat now works the way it does on phones: an
+  "Ask about Ben" floating button that opens a full-screen overlay. The docked 400px rail only
+  appears above 1100px. One breakpoint changed in four places: `MobileChatSurface.module.css`
+  (two queries), `useIsMobileViewport` in `src/pages/explorations/hooks.ts`, and the
+  homepage's rail-suppression query in `HomeV4Blend.module.css`.
+- Reasoning: Ben noticed the homepage looked odd at a tablet-ish width. Two things were wrong
+  in that range. On the homepage, once a conversation started, the hero chat stayed visible
+  next to the 400px rail — the same conversation twice, with about 600px left for the page.
+  (On desktop the hero chat only hides because its grid column collapses to 0; its fade-out
+  never wins against the fade-in animation, and below 1100px there's no column to collapse.)
+  And on case study pages, the docked chat panel already switched off below 1100px while the
+  FAB only switched on below 761px, so there was no chat at all in between.
+- Alternatives considered: hiding only the duplicate hero chat (kept the cramped rail), and a
+  narrower ~320px rail at those widths.
+- Note: the overlay is full-width at tablet sizes, so reply lines run long on a ~1000px
+  screen. Constrain its content width if that reads badly.

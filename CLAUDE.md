@@ -527,7 +527,7 @@ for the build checklist.
   2026-10-08). Home and CaseStudyPage each carried a copy before, and both bugs above came from
   the copies drifting. Each surface passes its own container `className`, and its suggestion
   chips as `children`. See decisions.md 2026-10-08.
-- On mobile (<=760px) the chat is a floating "Ask about Ben" button that opens a full-screen
+- On phones and tablets (<=1100px; was <=760px until 2026-10-09) the chat is a floating "Ask about Ben" button that opens a full-screen
   overlay, both in `src/components/MobileChatSurface.tsx` and shared by the homepage and
   case study pages. Two behaviors are load-bearing and easy to regress: (1) starting a chat
   from the homepage's inline container must OPEN the overlay (via `handleHeroSubmit` in

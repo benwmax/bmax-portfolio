@@ -291,7 +291,7 @@ export function HomeV4Blend({
        * submit (see handleHeroSubmit) so the reply can flow to the docked rail.
        * Without the viewport guard, that flag would make the entire desktop
        * page inert — nothing clickable or focusable. Gating on the same
-       * `max-width: 760px` breakpoint the overlay uses keeps inert tied to the
+       * `max-width: 1100px` breakpoint the overlay uses keeps inert tied to the
        * overlay actually being on screen.
        */}
       <div
