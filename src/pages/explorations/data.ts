@@ -101,8 +101,12 @@ export const TELEMETRY = [
   { k: 'status', v: 'available — Design Leader roles' },
 ] as const;
 
+/** The public Storybook — shown on the homepage below the work grid and in the footer. */
+export const STORYBOOK_URL = 'https://system.viewbens.work';
+
 export const SOCIAL_LINKS = [
   { label: 'ben@viewbens.work', href: 'mailto:ben@viewbens.work' },
   { label: 'LinkedIn', href: 'https://www.linkedin.com/in/benjaminwmaxwell/' },
   { label: 'GitHub', href: 'https://github.com/benwmax' },
+  { label: 'Design system', href: STORYBOOK_URL },
 ] as const;

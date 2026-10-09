@@ -839,3 +839,68 @@
 :global([data-theme='futuristic']) .scrollCue {
   letter-spacing: 0.3em;
 }
+
+/* ——— DESIGN SYSTEM STRIP (below the work grid) ———
+   A full-width row, not a fifth card: it's the system behind the site, not a
+   case study. Same surface and border as the cards so it reads as part of the
+   work section; the link mirrors the footer links' bordered treatment. */
+.systemStrip {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  padding: 24px 28px;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+}
+.systemStripText {
+  flex: 1 1 360px;
+  min-width: 0;
+}
+.systemStripTitle {
+  font-family: var(--font-mono-display);
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: -0.01em;
+  color: var(--color-text-primary);
+  margin: 8px 0 6px;
+}
+.systemStripBody {
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  margin: 0;
+  max-width: 62ch;
+}
+.systemStripLink {
+  flex: none;
+  font-family: var(--font-mono-display);
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-green-accent);
+  text-decoration: none;
+  padding: 11px 18px;
+  border: 1px solid var(--color-green-border);
+  border-radius: var(--radius-md);
+  transition:
+    color var(--duration-base) var(--ease-default),
+    border-color var(--duration-base) var(--ease-default);
+}
+.systemStripLink:hover {
+  color: var(--color-green-bright);
+  border-color: var(--color-green-accent);
+}
+.systemStripLink:focus-visible {
+  outline: 2px solid var(--color-green-accent);
+  outline-offset: 3px;
+}
+@media (max-width: 600px) {
+  .systemStrip {
+    padding: 20px;
+  }
+}
