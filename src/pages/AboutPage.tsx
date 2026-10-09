@@ -229,7 +229,6 @@ export function AboutPage() {
         </div>
         <div className={styles.footerFine}>
           <span>© 2026 Ben Maxwell · viewbens.work</span>
-          <span>Built with Claude — directed, not autopiloted.</span>
         </div>
       </footer>
     </div>
