@@ -1316,3 +1316,17 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
   narrower ~320px rail at those widths.
 - Note: the overlay is full-width at tablet sizes, so reply lines run long on a ~1000px
   screen. Constrain its content width if that reads badly.
+
+## 2026-10-09 — Launch without the real-device QA pass
+- Decision: (Ben) Skip the real-device QA checklist (`docs/testing/mobile-safari-qa.md`) and
+  go straight to the viewbens.work domain cutover.
+- Risk accepted: the phone chat flow — the homepage hand-off to the full-screen overlay, and
+  the contact form inside it — has only ever been verified in browser emulation and
+  Playwright, never on a physical device. Flagged in journal entries on 2026-07-19 and
+  2026-07-20. Everything else on the checklist is covered elsewhere: the automated
+  cross-browser sweep (2026-07-16), Lighthouse, the accessibility audit, and the 2026-10-08/09
+  in-browser checks at phone and tablet widths.
+- Partial cover: Ben's own iPhone already caught one real-device bug (the Futuristic
+  wordmark wrapping, fixed in #44), so casual use is some check — just not a systematic one.
+- Left as-is: the build-plan item stays unchecked and marked skipped; the checklist file stays
+  in the repo (two lines are stale since Portfolio Rebuild was hidden).

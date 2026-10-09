@@ -46,7 +46,7 @@ See decisions.md 2026-07-29.
 | 2 | Visual Identity | Complete (2026-06-17) | — |
 | 3 | Storybook Foundation | Complete (2026-07-16) | — |
 | 4 | Site Assembly | Complete (2026-10-08) — OG images shipped as generated placeholders | — |
-| 5 | QA and Pre-Launch | In progress — Lighthouse/cross-browser/a11y/links/console/typography/dark-mode all complete; real-device testing and image checks (blocked on Phase 1E) remain | — |
+| 5 | QA and Pre-Launch | In progress — Lighthouse/cross-browser/a11y/links/console/typography/dark-mode all complete; real-device testing skipped by Ben for launch (2026-10-09); image checks blocked on Phase 1E | — |
 | 6 | Launch | Not started | Phase 5 |
 | 7 | Meta Case Study | In progress — case study written 2026-07-29; hidden from the site 2026-10-08 (Ben's call, content intact); screenshots and before/after remain (Lighthouse re-check done 2026-10-08) | — |
 
@@ -445,6 +445,8 @@ independently; only the widget's visual styling depends on those.*
       ~25-minute phone-only pass, with console checks on desktop Safari). Ben's task
       to run — Claude has no physical device access. Check this box and log results in
       process-journal.md once done.
+      **Skipped by Ben, 2026-10-09** — launching without the real-device pass. Left
+      unchecked because it wasn't done. See decisions.md 2026-10-09.
 - [ ] Image optimization: WebP format, lazy loading, proper srcset — blocked: no real case study
       images exist in content yet (all five `src/content/*.ts` files have zero image refs) —
       this is really gated on Phase 1E (image audit), not a QA task

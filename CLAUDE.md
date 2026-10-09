@@ -849,7 +849,9 @@ drifts again.)
   ~25-minute pass with no cable): console and theme checks in desktop Safari on the Mac, then
   six phone-only checks on the iPhone — pages, chat handoff, input zoom and safe areas, the
   in-chat contact form, rotation, and an iMessage link preview. Ben's task — Claude has no
-  physical device access.
+  physical device access. **Skipped by Ben for launch (2026-10-09)** — see decisions.md; the
+  checklist stays available, but two lines are stale since Portfolio Rebuild was hidden
+  (`/work/portfolio` now 404s, `/work/sagent` is the teaser).
 - **At the viewbens.work domain cutover:** remove the temporary `https://bmax-portfolio.vercel.app`
   entry from `ALLOWED_ORIGINS` in `api/lib/cors.ts` (added 2026-07-19 for pre-launch testing,
   moved out of `api/chat.ts` 2026-07-20 — see the `TEMPORARY` code comment and decisions.md
