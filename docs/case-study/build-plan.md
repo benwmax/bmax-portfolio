@@ -48,7 +48,7 @@ See decisions.md 2026-07-29.
 | 4 | Site Assembly | Complete (2026-10-08) — OG images shipped as generated placeholders | — |
 | 5 | QA and Pre-Launch | In progress — Lighthouse/cross-browser/a11y/links/console/typography/dark-mode all complete; real-device testing and image checks (blocked on Phase 1E) remain | — |
 | 6 | Launch | Not started | Phase 5 |
-| 7 | Meta Case Study | In progress — case study written and published 2026-07-29, ahead of Phase 6; screenshots and before/after remain (Lighthouse re-check done 2026-10-08) | — |
+| 7 | Meta Case Study | In progress — case study written 2026-07-29; hidden from the site 2026-10-08 (Ben's call, content intact); screenshots and before/after remain (Lighthouse re-check done 2026-10-08) | — |
 
 ---
 

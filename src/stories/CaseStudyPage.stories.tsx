@@ -7,6 +7,7 @@ import { CaseStudyPage } from '../pages/CaseStudyPage';
 // showing different copy than the site is a visible defect, not just debt.
 import { usaaData } from '../content/usaa';
 import { portfolioRebuildData } from '../content/portfolio-rebuild';
+import { sagentData } from '../content/sagent';
 
 const meta = {
   title: 'Pages/Case Study',
@@ -99,12 +100,13 @@ export const Default: Story = {
 };
 
 export const PortfolioRebuild: Story = {
-  name: 'Portfolio Rebuild — with figures',
+  name: 'Portfolio Rebuild — with figures (hidden on the site)',
   parameters: {
     docs: {
       description: {
         story:
-          'The lead case study, and the only one using the `figures` array rather than ' +
+          'Hidden from the live site since 2026-10-08 (content intact), and still the only ' +
+          'case study using the `figures` array rather than ' +
           'keyDecision.artifactLabel. Figures are anchored per section and numbered in array ' +
           'order, so captions read Fig. 01–03 down the page regardless of which section each ' +
           'belongs to. All three render the dot-grid placeholder here because no `src` is set ' +
@@ -127,6 +129,35 @@ export const PortfolioRebuild: Story = {
   },
   args: {
     ...PORTFOLIO_REBUILD,
+    layout: 'sidebar',
+    showChat: true,
+    onChatSubmit: fn(),
+  },
+};
+
+export const Teaser: Story = {
+  name: 'Teaser — Sagent preview',
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'A case study whose full write-up is not done yet. Setting `teaser` renders only ' +
+          'Problem, Role, and Outcomes — the sections that can be honest without the full ' +
+          'story — renumbered 01–03, followed by the in-progress note. The sidebar lists only ' +
+          'those sections, and the end tick reads "End of preview".',
+      },
+    },
+    ai: {
+      guidance:
+        'Use `teaser` only while a case study is genuinely unwritten. Fill problem, role, and outcomes with facts already published elsewhere on the site; leave the other sections empty so no holding copy can leak. Remove `teaser` when the full case study ships.',
+      avoid: [
+        'Don\'t put "Case study in progress" text into rendered sections — that\'s what the teaser note is for.',
+        "Don't claim anything in a teaser that the Resume or About page doesn't already say.",
+      ],
+    },
+  },
+  args: {
+    ...sagentData,
     layout: 'sidebar',
     showChat: true,
     onChatSubmit: fn(),

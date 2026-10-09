@@ -7,8 +7,8 @@ import { NotFoundPage } from './pages/NotFoundPage';
 import { Contact } from './components/Contact';
 import { ScrollToTop } from './components/ScrollToTop';
 import { ChatProvider } from './context/ChatContext';
-import { portfolioRebuildData } from './content/portfolio-rebuild';
 import { upfluentData } from './content/upfluent';
+import { sagentData } from './content/sagent';
 import { usaaData } from './content/usaa';
 import { sabreData } from './content/sabre';
 
@@ -22,13 +22,13 @@ function App() {
         <Routes>
           <Route path="/" element={<HomeV4Blend />} />
           <Route path="/work" element={<HomeV4Blend />} />
-          <Route path="/work/portfolio" element={<CaseStudyPage {...portfolioRebuildData} />} />
+          {/* Portfolio Rebuild is hidden for now (Ben, 2026-10-08) — its content in
+              src/content/portfolio-rebuild.ts is intact, so restoring it is this
+              route plus its card in explorations/data.ts. See decisions.md 2026-10-08. */}
           <Route path="/work/upfluent" element={<CaseStudyPage {...upfluentData} />} />
-          {/* Sagent is intentionally unrouted: its content is still a placeholder
-              (Phase 1C brain dump not done), so /work/sagent falls through to the
-              404 rather than shipping "Case study in progress." to a visitor.
-              src/content/sagent.ts is kept intact — re-listing it is this route
-              plus its card in explorations/data.ts. See decisions.md 2026-07-29. */}
+          {/* Sagent is a short teaser page (`teaser` in src/content/sagent.ts) until
+              the Phase 1C case study is written. */}
+          <Route path="/work/sagent" element={<CaseStudyPage {...sagentData} />} />
           <Route path="/work/usaa" element={<CaseStudyPage {...usaaData} />} />
           <Route path="/work/sabre" element={<CaseStudyPage {...sabreData} />} />
           <Route path="/about" element={<AboutPage />} />

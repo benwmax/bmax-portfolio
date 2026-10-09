@@ -83,24 +83,32 @@ throughout — not just in the opener.
 **Do not suggest reordering these without flagging it explicitly and explaining
 the strategic reason.**
 
-### Sagent is currently unlisted (2026-07-29)
+### Portfolio Rebuild hidden, Sagent shown as a teaser (2026-10-08)
 
-The order above is the **strategic** order and has not changed. But Sagent's content is
-still a placeholder (Phase 1C brain dump not started), so rather than shipping "Case study
-in progress." to visitors it has been taken off the site: route removed from `App.tsx`, card
-removed from `explorations/data.ts`, entry removed from `sitemap.xml`, and Upfluent's
-`nextCase` points to USAA. `/work/sagent` returns the 404 page.
-`src/content/sagent.ts` is intact and untouched.
+The order above is the **strategic** order and has not changed. Ben's call on 2026-10-08:
+hide Portfolio Rebuild from the site for now, and list Sagent as a short teaser page instead
+of leaving it unlisted (it had been unlisted since 2026-07-29 so visitors wouldn't land on
+"Case study in progress.").
 
-**Displayed numbering is therefore compacted to `01` Portfolio Rebuild, `02` Upfluent,
-`03` USAA, `04` Sabre.** Sagent reclaims `03` when it ships, pushing USAA and Sabre back
-down. Do not read the compaction as a demotion or as a reordering decision — it is a display
-consequence of the page being unlisted. See decisions.md 2026-07-29.
+- **Portfolio Rebuild:** route removed from `App.tsx`, card removed from
+  `explorations/data.ts`, sitemap entry and `ROUTE_META` entry removed, and moved under
+  "OTHER EXPERIENCE" in `api/lib/system-prompt.ts` (visitors still ask how the site was built;
+  the assistant must not offer a page). `/work/portfolio` returns the 404 page.
+  `src/content/portfolio-rebuild.ts` and `public/og/portfolio.png` are intact.
+- **Sagent:** routed at `/work/sagent` with `teaser` set in `src/content/sagent.ts`, so the
+  page shows only Problem, Role, and Outcomes (numbered 01–03) plus an in-progress note. Every
+  line restates facts already on the Resume and About pages. Full case study still gated on
+  Phase 1C.
 
-Re-listing checklist when Phase 1C is done: restore the route and import in `App.tsx`, the
-card in `explorations/data.ts` (with `index: '03'`, renumbering USAA and Sabre), the
-`sitemap.xml` entry, Upfluent's `nextCase`, and Sagent's case study block in
-`api/lib/system-prompt.ts` (currently covered under "OTHER EXPERIENCE").
+**Displayed numbering: `01` Upfluent, `02` Sagent, `03` USAA, `04` Sabre.** Do not read this as
+a reordering decision — it's the strategic order with Portfolio Rebuild hidden. See
+decisions.md 2026-10-08.
+
+Restoring Portfolio Rebuild: put back the route and import in `App.tsx`, the card in
+`explorations/data.ts` (`index: '01'`, renumbering the rest and each content file's `number`),
+the `sitemap.xml` and `ROUTE_META` entries, Upfluent stays before Sagent, and move its block
+in `api/lib/system-prompt.ts` back to CASE STUDIES. Re-run the OG image script. Shipping the
+full Sagent case study: remove `teaser` and fill the remaining sections.
 
 ---
 
@@ -394,13 +402,13 @@ and things that were intentionally left out of scope.
 
 4. **The five canonical industry labels are: Travel, Fintech, Mortgage, Insurance, AI Collaboration.**
    Do not invent new industry labels. These are the only tags used across all case study cards
-   and Tag components. `Mortgage` is currently unused on the grid because Sagent is unlisted —
-   the set stays five; it returns with the case study.
+   and Tag components. `AI Collaboration` is currently unused on the grid because Portfolio
+   Rebuild is hidden — the set stays five; it returns with the case study.
 
-5. **The displayed case study order is:** 01 Portfolio Rebuild, 02 Upfluent, 03 USAA,
-   04 Sabre. Index chips and meta must reflect this. Sagent is unlisted pending content and
-   reclaims 03 when it ships — see "Sagent is currently unlisted" above. Do not reorder
-   without flagging it explicitly and explaining the strategic reason.
+5. **The displayed case study order is:** 01 Upfluent, 02 Sagent (teaser), 03 USAA,
+   04 Sabre. Index chips and meta must reflect this. Portfolio Rebuild is hidden for now —
+   see "Portfolio Rebuild hidden, Sagent shown as a teaser" above. Do not reorder without
+   flagging it explicitly and explaining the strategic reason.
 
    The work grid renders from `CASE_STUDIES` in `src/pages/explorations/data.ts` — the single
    source of truth, shared by the live homepage, the retired `HomePage.tsx`, and the Storybook
@@ -459,19 +467,18 @@ for the build checklist.
   Workspace spend cap changes.
 - `api/lib/system-prompt.ts` is the assistant's brief and needs upkeep —
   update it whenever a case study moves from "in progress" to "published" so
-  the assistant doesn't undersell or misstate finished work. As of 2026-07-29 all four
-  listed case studies (Portfolio Rebuild, Upfluent, USAA, Sabre) are published and described
-  in full; no "still being finalized" language remains.
+  the assistant doesn't undersell or misstate finished work. As of 2026-10-08 the brief
+  describes Upfluent, USAA, and Sabre in full, Sagent as a short preview page, and Portfolio
+  Rebuild under OTHER EXPERIENCE (page hidden, but visitors ask how the site was built).
   It also carries safety/anti-jailbreak instructions (persona-lock,
   anti-defamation, ignore-embedded-instructions, groundedness, no code
   execution) added 2026-07-17 — keep these when editing the case study
   content around them.
-- **The brief must never point a visitor at a page that doesn't exist.** Sagent's case study
-  block was replaced 2026-07-29 with an `OTHER EXPERIENCE (no case study page — do not offer
-  one)` section covering Sagent, Market Rebellion, and the early roles, because those appear
-  on About/Resume and visitors will ask about them. Its previous wording told the assistant to
-  "direct the visitor to the other case studies," which would now mean offering a 404. Restore
-  a real case study block when Sagent ships.
+- **The brief must never point a visitor at a page that doesn't exist.** Its `OTHER EXPERIENCE
+  (no case study page — do not offer one)` section covers roles that appear on About/Resume
+  without a page. Sagent moved out of it into CASE STUDIES as a preview page on 2026-10-08, and
+  Portfolio Rebuild moved into it the same day when its page was hidden. Whenever a page is
+  hidden or restored, move its block too — otherwise the assistant offers a 404.
 - Conversation history and the session message cap are server-side
   authoritative (`api/lib/session.ts`), not client-supplied — the client only
   ever sends the newest message. Do not revert to trusting a client-supplied
@@ -814,8 +821,9 @@ a new item below for removing the temporary `.vercel.app` origin allowlist entry
 cutover, added 2026-07-19. build-plan.md's checkboxes are the source of truth if this
 drifts again.)
 - **Phase 1C:** Sagent brain dump — strongest Director-level case study, starts from zero.
-  As of 2026-07-29 this is what gates Sagent's return to the site (it's unlisted, not broken).
-- **Portfolio Rebuild screenshots (Ben):** three captioned figure slots are live and waiting in
+  As of 2026-10-08 Sagent is listed as a short teaser page; the full write-up replaces it.
+- **Portfolio Rebuild screenshots (Ben):** the page is hidden for now (2026-10-08), but its three
+  captioned figure slots are still waiting in
   `src/content/portfolio-rebuild.ts` — anchored to Process, Key decision, and What was hard.
   Drop files in `public/case/portfolio/` and add `src` + `alt` to the matching entry. No
   component or page edits needed; see docs/ai-component-guide.md → "Adding figures".

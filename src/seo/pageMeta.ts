@@ -13,8 +13,8 @@
 // decisions.md 2026-10-08.
 
 import type { CaseStudyContent } from '../pages/CaseStudyPage';
-import { portfolioRebuildData } from '../content/portfolio-rebuild';
 import { upfluentData } from '../content/upfluent';
+import { sagentData } from '../content/sagent';
 import { usaaData } from '../content/usaa';
 import { sabreData } from '../content/sabre';
 
@@ -100,10 +100,13 @@ export const NOT_FOUND_META: PageMeta = {
  */
 export function caseStudyMeta(
   slug: string,
-  { company, heroTitle, heroSubtitle }: Pick<CaseStudyContent, 'company' | 'heroTitle' | 'heroSubtitle'>,
+  {
+    company,
+    heroTitle,
+    heroSubtitle,
+  }: Pick<CaseStudyContent, 'company' | 'heroTitle' | 'heroSubtitle'>,
 ): PageMeta {
-  const description =
-    heroSubtitle.length > 155 ? heroSubtitle.slice(0, 152) + '...' : heroSubtitle;
+  const description = heroSubtitle.length > 155 ? heroSubtitle.slice(0, 152) + '...' : heroSubtitle;
   return {
     title: `${company} · ${heroTitle.replace(/\.$/, '')} — Ben Maxwell`,
     description,
@@ -122,8 +125,8 @@ export function caseStudyMeta(
 export const ROUTE_META: Record<string, PageMeta> = {
   '/': HOME_META,
   '/work': HOME_META,
-  '/work/portfolio': caseStudyMeta('portfolio', portfolioRebuildData),
   '/work/upfluent': caseStudyMeta('upfluent', upfluentData),
+  '/work/sagent': caseStudyMeta('sagent', sagentData),
   '/work/usaa': caseStudyMeta('usaa', usaaData),
   '/work/sabre': caseStudyMeta('sabre', sabreData),
   '/about': ABOUT_META,

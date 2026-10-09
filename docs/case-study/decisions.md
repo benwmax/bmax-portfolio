@@ -1201,3 +1201,27 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
   SEO were 100 on every run.
 - Alternatives considered: waiting for PageSpeed Insights to come back, and shortening the
   boot intro to win the points back. Neither was chosen.
+
+## 2026-10-08 — Portfolio Rebuild hidden; Sagent listed as a teaser page
+- Decision: (Ben) Hide the Portfolio Rebuild case study from the site for now, and list Sagent
+  as a short teaser page in its place. Displayed order is now 01 Upfluent, 02 Sagent, 03 USAA,
+  04 Sabre. The strategic order in CLAUDE.md is unchanged.
+- How: a new optional `teaser` field on `CaseStudyContent` makes `CaseStudyPage` render only
+  Problem, Role, and Outcomes (renumbered 01–03, sidebar to match) plus an in-progress note,
+  with "End of preview" at the bottom. Sagent's teaser restates only facts already on the
+  Resume and About pages, and its unrendered sections are empty so no holding copy can leak.
+  Portfolio Rebuild's route, card, sitemap and metadata entries are removed;
+  `src/content/portfolio-rebuild.ts` and `public/og/portfolio.png` are kept for restoring it.
+  The chat brief moves Portfolio Rebuild to OTHER EXPERIENCE (no page to offer) and gives
+  Sagent a case study block that says it's a preview. About ("Public case study" → "Public
+  Storybook") and Resume ("the build process is the lead case study" removed) were corrected
+  so neither describes a page that's hidden. OG images re-rendered for the new numbering, plus
+  a new `sagent.png`.
+- Conflicts flagged before proceeding (Claude): Portfolio Rebuild was the lead case study and
+  the main evidence for how Ben works now and directs AI; and Sagent was unlisted on
+  2026-07-29 specifically so visitors wouldn't land on placeholder copy. Ben's call either way.
+- Alternatives considered: a non-clickable "coming soon" Sagent card (no page at all), or
+  re-listing the existing "Case study in progress" page.
+- Open question: Sagent teaser copy is Claude's draft from existing facts ("Four designers,
+  twelve teams, and nobody running design strategy. Someone had to." is framing, not a new
+  claim) — Ben to review.
