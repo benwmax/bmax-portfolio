@@ -297,14 +297,6 @@
   margin-top: 8px;
 }
 
-.chatSuggestLabel {
-  font-family: var(--font-mono-display);
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-text-tertiary);
-}
-
 .chatSuggestBtn {
   font-family: var(--font-mono-ui);
   font-size: 12px;

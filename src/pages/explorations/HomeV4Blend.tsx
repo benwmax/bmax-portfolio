@@ -235,7 +235,6 @@ export function HomeV4Blend({
         {messages.length === 0 && (
           // role="group" gives AT users the context that these are related options
           <div className={styles.chatSuggestions} role="group" aria-label="Suggested questions">
-            <span className={styles.chatSuggestLabel}>Try asking</span>
             {SUGGESTIONS.map((s) => (
               <button
                 key={s}
