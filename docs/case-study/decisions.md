@@ -1280,3 +1280,21 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
 - Open question: the keep-alive fails quietly. If the cron stops running, nothing alerts,
   and the database is at risk again. Its failures do log the real Redis error, but the
   chat and contact `catch` blocks still don't (build-plan.md 4F).
+
+## 2026-10-08 — Keep-alive cron removed
+- Decision: (Ben) Remove the daily keep-alive cron added in PR #42 earlier the same day:
+  the `crons` entry in `vercel.json` and `api/keepalive.ts`.
+- Context: `vercel.json` is shared by the site and the Storybook project, so the cron also
+  registered on the Storybook project (Settings → Cron Jobs showed `/api/keepalive`). There it
+  would have run daily and returned 401, because that project has no environment variables.
+  It was harmless — no Redis write, no cost — but it was clutter. Claude recommended keeping the
+  site's cron and switching cron jobs off in the Storybook project's dashboard; Ben chose to
+  remove it everywhere.
+- Risk accepted: the free-tier Upstash database is again unprotected against deletion for
+  inactivity — the failure that took chat and contact down on 2026-10-08. If it happens again
+  the symptom is the same: both return 503 until the database is recreated and the
+  `UPSTASH_*` env vars are updated in Vercel.
+- Alternatives still open: Upstash pay-as-you-go (no idle deletion), or an external pinger
+  that doesn't live in the shared `vercel.json`.
+- Cleanup for Ben: `CRON_SECRET` in the site project's Vercel env vars is now unused and can
+  be deleted.
