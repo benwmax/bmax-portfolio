@@ -264,9 +264,7 @@ export function HomeV3Phosphor({ onChatSubmit, initialMessages = [] }: HomeV3Pho
                 </a>
               ))}
             </div>
-            <span className={styles.footerFine}>
-              © 2026 Ben Maxwell · viewbens.work — built with Claude, directed not autopiloted.
-            </span>
+            <span className={styles.footerFine}>© 2026 Ben Maxwell · viewbens.work</span>
           </footer>
         </main>
       </div>

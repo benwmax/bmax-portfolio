@@ -304,9 +304,6 @@ export function HomeV2Terminal({
             </div>
             <div className={styles.footerFine}>
               <span>© 2026 Ben Maxwell · viewbens.work</span>
-              <span>
-                Built with Claude — directed, not autopiloted. The process is the case study.
-              </span>
             </div>
           </footer>
         </main>
