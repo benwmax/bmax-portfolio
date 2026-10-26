@@ -47,7 +47,7 @@ See decisions.md 2026-07-29.
 | 3 | Storybook Foundation | Complete (2026-07-16) | — |
 | 4 | Site Assembly | Complete (2026-10-08) — OG images shipped as generated placeholders | — |
 | 5 | QA and Pre-Launch | In progress — Lighthouse/cross-browser/a11y/links/console/typography/dark-mode all complete; real-device testing skipped by Ben for launch (2026-10-09); image checks blocked on Phase 1E | — |
-| 6 | Launch | Not started | Phase 5 |
+| 6 | Launch | Live 2026-10-26 — viewbens.work cut over and verified; sitemap submission (Ben) and launch journal entry remain | — |
 | 7 | Meta Case Study | In progress — case study written 2026-07-29; hidden from the site 2026-10-08 (Ben's call, content intact); screenshots and before/after remain (Lighthouse re-check done 2026-10-08) | — |
 
 ---
@@ -491,11 +491,18 @@ independently; only the widget's visual styling depends on those.*
 
 ## Phase 6 — Launch
 
-- [ ] Re-point viewbens.work DNS to new Vercel project
-- [ ] Verify SSL certificate is active
-- [ ] Verify all routes resolve (no 404s on direct URL access)
-- [ ] Smoke test every page and case study
-- [ ] Verify Storybook subdomain is live
+- [x] Re-point viewbens.work DNS to new Vercel project (2026-10-26 — Ben, at GoDaddy: four
+      Squarespace A records replaced with Vercel's, `www` CNAME moved off Squarespace; mail,
+      Resend, and `system` records untouched. Vercel's primary domain flipped from `www` to
+      the apex, which the chat allowlist and canonical URLs require.)
+- [x] Verify SSL certificate is active (2026-10-26 — Let's Encrypt certs for both
+      `viewbens.work` and `www.viewbens.work`)
+- [x] Verify all routes resolve (no 404s on direct URL access) (2026-10-26 — all 8 routes,
+      sitemap, robots, OG images, and favicon return 200 with per-page preview tags)
+- [x] Smoke test every page and case study (2026-10-26 — plus a live chat reply on
+      viewbens.work and the contact endpoint passing origin and Redis checks)
+- [x] Verify Storybook subdomain is live (2026-10-26 — `system.viewbens.work` 200 with its
+      own headers)
 - [ ] Submit sitemap to Google Search Console
 - [ ] Write process-journal.md launch entry
 

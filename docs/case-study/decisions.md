@@ -1330,3 +1330,21 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
   wordmark wrapping, fixed in #44), so casual use is some check — just not a systematic one.
 - Left as-is: the build-plan item stays unchecked and marked skipped; the checklist file stays
   in the repo (two lines are stale since Portfolio Rebuild was hidden).
+
+## 2026-10-26 — viewbens.work cut over to the new site
+- Decision: (Ben) Point `viewbens.work` at the Vercel project, replacing the Squarespace site.
+  Done at GoDaddy (DNS stays there): the four Squarespace A records on `@` replaced with
+  Vercel's, and the `www` CNAME moved from `ext-cust.squarespace.com` to Vercel. Mail
+  (`secureserver` MX + SPF), Resend (`send`, `resend._domainkey`), the `D9439098` TXT, and
+  `system` (Storybook) were left untouched and verified afterwards.
+- Caught mid-cutover (Claude): Vercel had `www` as the primary domain, so the apex
+  redirected to `www` — which still pointed at Squarespace, sending visitors to a Squarespace
+  404. Once `www` was fixed, the site loaded there, but the chat and contact form rejected it
+  (403: `ALLOWED_ORIGINS` only lists the apex). Ben flipped Vercel's primary to the apex with
+  `www` redirecting to it, matching the canonical URLs, sitemap, and preview tags.
+- Verified on the live domain: all routes, sitemap, robots, OG images, favicon; security
+  headers; a real streamed chat reply; contact endpoint past origin and Redis checks;
+  Storybook unaffected.
+- Follow-up done the same day: the temporary `bmax-portfolio.vercel.app` entry removed from
+  `ALLOWED_ORIGINS`. Remaining for Ben: submit the sitemap in Google Search Console, and
+  disconnect the domain in Squarespace.

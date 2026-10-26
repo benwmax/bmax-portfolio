@@ -499,10 +499,9 @@ for the build checklist.
 - The widget's visual styling depends on Phase 2/3 tokens; the backend does
   not and can proceed independently.
 - `ALLOWED_ORIGINS` lives in `api/lib/cors.ts` (moved out of `api/chat.ts` 2026-07-20) and
-  is shared by every `/api/*` endpoint. It temporarily includes
-  `https://bmax-portfolio.vercel.app` (added 2026-07-19, marked `TEMPORARY` in a code
-  comment) so the widget is testable pre-launch. Remove it once `viewbens.work` is cut
-  over — one edit, one file. See "Current Project Status" → Immediate next steps.
+  is shared by every `/api/*` endpoint. Since the 2026-10-26 cutover it allows only
+  `https://viewbens.work` (plus localhost for dev). `www` must keep redirecting to the apex
+  in Vercel — if it ever serves pages itself, chat and contact break there with 403s.
 - The contact flow's intent detection (`detectContactIntent()` in
   `src/hooks/useChatSession.ts`) is a client-side regex, not model tool-use — it runs
   against both the visitor's message and the assistant's finished reply. If the system
@@ -852,12 +851,11 @@ drifts again.)
   physical device access. **Skipped by Ben for launch (2026-10-09)** — see decisions.md; the
   checklist stays available, but two lines are stale since Portfolio Rebuild was hidden
   (`/work/portfolio` now 404s, `/work/sagent` is the teaser).
-- **At the viewbens.work domain cutover:** remove the temporary `https://bmax-portfolio.vercel.app`
-  entry from `ALLOWED_ORIGINS` in `api/lib/cors.ts` (added 2026-07-19 for pre-launch testing,
-  moved out of `api/chat.ts` 2026-07-20 — see the `TEMPORARY` code comment and decisions.md
-  2026-07-19). Link-preview images start working at the same moment: `og:image` URLs point at
-  `viewbens.work`, so until it serves this site, shared links show the right title but no
-  image.
+- **Launched 2026-10-26:** `viewbens.work` serves this site (Vercel, apex primary, `www`
+  redirects to it). The temporary `bmax-portfolio.vercel.app` entry is gone from
+  `ALLOWED_ORIGINS`, so chat and contact only work on `viewbens.work` now. Remaining: Ben
+  submits `https://viewbens.work/sitemap.xml` in Google Search Console, and disconnects the
+  domain in Squarespace.
 
 **Decisions still open:**
 - Market Rebellion: referenced on About page as brief career arc item (decided 2026-06-20)
