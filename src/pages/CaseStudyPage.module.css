@@ -412,3 +412,12 @@
 :global([data-theme='futuristic']) .chatPanel {
   border-left: 2px solid var(--color-green-accent);
 }
+
+/* Futuristic: a text-only link has no box to fill, so hover adds a thick underline
+   and the darkest azure — a color shift alone was too subtle (2026-10-26). */
+:global([data-theme='futuristic']) .endTickNext:hover {
+  color: var(--color-green-bright);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 5px;
+}

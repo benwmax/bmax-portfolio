@@ -459,9 +459,11 @@
   --btn-primary-bg: var(--color-green-accent);
   --btn-primary-text: #ffffff;
   --btn-primary-border: var(--color-green-accent);
-  --btn-primary-hover-bg: var(--color-green-mid);
+  /* Hover goes DARKER, not lighter: the old green-mid was only a few shades off the
+     resting azure and read as no change (2026-10-26). */
+  --btn-primary-hover-bg: #021d3a;
   --btn-primary-hover-text: #ffffff;
-  --btn-primary-hover-border: var(--color-green-mid);
+  --btn-primary-hover-border: #021d3a;
 }
 
 /* ============================================================

@@ -305,3 +305,12 @@
   border-color: var(--color-green-accent);
   clip-path: polygon(0 0, 100% 0, 100% 100%, 6px 100%, 0 calc(100% - 6px));
 }
+
+/* Futuristic: a text-only link has no box to fill, so hover adds a thick underline
+   and the darkest azure — a color shift alone was too subtle (2026-10-26). */
+:global([data-theme='futuristic']) .cardAddress:hover {
+  color: var(--color-green-bright);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 5px;
+}
