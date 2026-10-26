@@ -4,6 +4,28 @@
   background: var(--color-bg-page);
   color: var(--color-text-primary);
   font-family: var(--font-mono-ui);
+  position: relative;
+}
+
+/* Decorative backdrop: the card's line art across the top of the page, fading out
+   with scroll distance. Sits under .content (z-index 1) and never takes pointer events.
+   No overflow clipping here — an overflow on an ancestor would break the sticky sidebar. */
+.pageArt {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 640px;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.45;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.5) 45%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.5) 45%, transparent 100%);
+}
+
+.content {
+  position: relative;
+  z-index: 1;
 }
 
 /* ——— SCROLL PROGRESS ——— */

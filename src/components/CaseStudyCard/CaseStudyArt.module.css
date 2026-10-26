@@ -25,7 +25,7 @@
 /* Futuristic is a light theme with a visible line-grid, so the same low-opacity
    hairlines get lost in it (the grid read stronger than the art). Push the lines
    up and wash the grid back behind them — retro is untouched. */
-:global([data-theme='futuristic']) .art {
+:global([data-theme='futuristic']) .wash {
   background: color-mix(in srgb, var(--color-bg-surface) 55%, transparent);
 }
 :global([data-theme='futuristic']) .line,

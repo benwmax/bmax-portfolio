@@ -94,13 +94,21 @@ const GEOMETRY: Record<CaseStudyArtVariant, Line[]> = {
   route: route(),
 };
 
-export function CaseStudyArt({ variant }: { variant: CaseStudyArtVariant }) {
+export function CaseStudyArt({
+  variant,
+  wash = true,
+}: {
+  variant: CaseStudyArtVariant;
+  /** Futuristic only: dim the page's line-grid behind the art. On for cards (the grid
+   *  fought the lines); off for the case study page backdrop, which should show the grid. */
+  wash?: boolean;
+}) {
   // useId output contains colons, which are legal in an id but not inside url(#…)
   // on every parser — strip them.
   const id = useId().replace(/:/g, '');
   return (
     <svg
-      className={styles.art}
+      className={wash ? `${styles.art} ${styles.wash}` : styles.art}
       viewBox={`0 0 ${W} ${H}`}
       preserveAspectRatio="xMidYMid slice"
       aria-hidden="true"

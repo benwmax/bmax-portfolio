@@ -15,6 +15,8 @@ import { ProcessStep, ProcessSteps } from '../components/ProcessStep';
 import { StatBlock, StatGrid } from '../components/StatBlock';
 import { RoleCallout, RoleCallouts } from '../components/RoleCallout';
 import { ImageCaption } from '../components/ImageCaption';
+import { CaseStudyArt } from '../components/CaseStudyCard/CaseStudyArt';
+import { CASE_STUDIES } from './explorations/data';
 import styles from './CaseStudyPage.module.css';
 
 export type { CsMessage };
@@ -333,6 +335,8 @@ export function CaseStudyPage({
 
   // The last URL segment names the case study's OG image (public/og/{slug}.png).
   const companySlug = pathname.split('/').pop() ?? 'work';
+  // Same art as the work-grid card for this page, so the card and the page read as one thing.
+  const art = CASE_STUDIES.find((c) => c.href === pathname)?.art;
 
   return (
     <div className={styles.wrapper}>
@@ -342,7 +346,13 @@ export function CaseStudyPage({
           wrapper, so it can be made inert while the overlay is open —
           otherwise a keyboard/AT user could reach the NavBar, sidebar, and
           page content behind the full-screen overlay (WCAG 2.4.3, 4.1.2). */}
+      {art && (
+        <div className={styles.pageArt} aria-hidden="true">
+          <CaseStudyArt variant={art} wash={false} />
+        </div>
+      )}
       <div
+        className={styles.content}
         aria-hidden={mobileChatOpen ? true : undefined}
         inert={mobileChatOpen ? true : undefined}
       >
