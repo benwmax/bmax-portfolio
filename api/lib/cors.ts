@@ -4,12 +4,12 @@
 // below) only ever needs removing in one place, and so a new endpoint can't
 // accidentally drift from the chat endpoint's allowlist.
 
-// TEMPORARY (added 2026-07-19, see decisions.md): the .vercel.app entry is
-// pre-launch-only, for testing the deployed site before viewbens.work is cut
-// over to this project. Remove it once the domain cutover happens.
+// Only the canonical domain is allowed in production. www.viewbens.work
+// redirects to it, so it never sends requests itself. The pre-launch
+// bmax-portfolio.vercel.app entry was removed at the domain cutover
+// (2026-10-26, see decisions.md).
 export const ALLOWED_ORIGINS = [
   'https://viewbens.work',
-  'https://bmax-portfolio.vercel.app',
   'http://localhost:5173',
   'http://localhost:4173',
 ];
