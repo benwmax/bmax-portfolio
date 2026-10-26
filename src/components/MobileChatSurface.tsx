@@ -23,8 +23,6 @@ export interface MobileChatSurfaceProps {
   /** Controlled open state of the full-screen overlay. */
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  /** Re-runs the log's scroll-to-bottom when a message lands. */
-  messageCount: number;
   chatStatus: ChatWidgetStatus;
   onSubmit: (text: string) => void;
   /**
@@ -53,7 +51,6 @@ export function MobileChatSurface({
   visible,
   open,
   onOpenChange,
-  messageCount,
   chatStatus,
   onSubmit,
   renderLog,
@@ -62,43 +59,19 @@ export function MobileChatSurface({
   const logRef = useRef<HTMLDivElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
 
-  // Whether the visitor is currently scrolled to (near) the bottom of the
-  // log. Read by the auto-scroll effect below so an in-progress reply
-  // doesn't yank someone back down mid-reread; written by the scroll
-  // listener further down, and reset whenever the overlay opens fresh.
-  const isNearBottomRef = useRef(true);
-  const prevOpenForScrollRef = useRef(open);
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
 
-  // Keep the overlay log pinned to the newest message as the reply streams
-  // in — but only while the visitor hasn't scrolled up to reread earlier
-  // messages. Opening the overlay always jumps to the latest message and
-  // resets scroll tracking, regardless of where it was left last time.
-  useEffect(() => {
-    const el = logRef.current;
-    if (!open || !el) return;
-    const justOpened = !prevOpenForScrollRef.current;
-    if (justOpened) {
-      isNearBottomRef.current = true;
-      setShowScrollToBottom(false);
-    }
-    if (justOpened || isNearBottomRef.current) {
-      el.scrollTop = el.scrollHeight;
-    }
-    prevOpenForScrollRef.current = open;
-  }, [messageCount, open]);
-
   // Track whether the visitor has scrolled away from the bottom, to show/hide
-  // the scroll-to-bottom button and to gate the auto-scroll effect above.
+  // the scroll-to-bottom button. Nothing auto-scrolls to the bottom any more — the
+  // newest prompt pins to the top instead (see ChatTranscript) — so while a long
+  // reply is below the fold this button is the way to jump to its end.
   // The log container is always mounted (see the overlay comment below), so
   // this only needs to attach once.
   useEffect(() => {
     const el = logRef.current;
     if (!el) return;
     const handleScroll = () => {
-      const nearBottom = isNearBottom(el);
-      isNearBottomRef.current = nearBottom;
-      setShowScrollToBottom(!nearBottom);
+      setShowScrollToBottom(!isNearBottom(el));
     };
     el.addEventListener('scroll', handleScroll, { passive: true });
     return () => el.removeEventListener('scroll', handleScroll);
@@ -109,7 +82,6 @@ export function MobileChatSurface({
     if (!el) return;
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     el.scrollTo({ top: el.scrollHeight, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
-    isNearBottomRef.current = true;
     setShowScrollToBottom(false);
   }
 

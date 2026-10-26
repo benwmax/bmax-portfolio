@@ -346,7 +346,8 @@ The chat message log shared by every chat surface: the homepage hero panel, the 
 | `greeting` | `string` | Homepage only — shown while the log is empty |
 | `children` | `ReactNode` | Rendered last — suggestion chips, styled by each surface |
 | `className` | `string` | The surface's scrolling container (padding, gap, height) |
-| `ref` | `Ref<HTMLDivElement>` | The page scrolls this to the bottom on new messages |
+| `ref` | `Ref<HTMLDivElement>` | The scrolling container, if a page needs it. Scrolling is built in: a sent prompt slides to the top of the log and the reply loads below it; nothing auto-scrolls after that (2026-10-26) |
+| `pinToTop` | `boolean` | Default `true`. Reserves trailing space so a short reply still lets the prompt reach the top. Turn off for a log that sizes to its content (homepage hero panel) |
 
 #### Pitfalls
 
@@ -371,10 +372,9 @@ The mobile-only "Ask about Ben" entry point — a floating action button that op
 | `visible` | `boolean` | Whether the FAB exists at all. Drive from `fabRevealed \|\| messages.length > 0` on Home, `true` on case study pages. |
 | `open` | `boolean` | Controlled open state of the overlay. |
 | `onOpenChange` | `(open: boolean) => void` | — |
-| `messageCount` | `number` | Re-triggers the log's scroll-to-bottom. The FAB has no count badge (removed 2026-10-26). |
 | `chatStatus` | `ChatWidgetStatus` | Passed straight through to the overlay's `ChatInput`. |
 | `onSubmit` | `(text: string) => void` | — |
-| `renderLog` | `(ref, className) => ReactNode` | Render prop — the parent owns the log's content and per-page message styling; this component only supplies the ref (for autoscroll) and container class. |
+| `renderLog` | `(ref, className) => ReactNode` | Render prop — the parent owns the log's content and per-page message styling; this component only supplies the ref (for the scroll-to-bottom button) and container class. |
 
 #### The two behaviors that are easy to regress
 

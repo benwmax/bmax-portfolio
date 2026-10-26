@@ -59,3 +59,10 @@
     font-size: var(--text-lg);
   }
 }
+
+/* Trailing room that lets the newest prompt pin to the top while the reply is short.
+   Height is set from JS; flex-none so the column's gap/shrink never touches it. */
+.spacer {
+  flex: none;
+  height: 0;
+}

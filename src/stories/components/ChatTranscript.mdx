@@ -14,7 +14,8 @@ The chat message log shared by every chat surface: the homepage hero panel, the 
 | The component owns | Each surface owns |
 |---|---|
 | Message styles: `›` prompt, 18px replies, green rule | The scrolling container: padding, gap, height, via `className` |
-| Splitting replies into paragraphs (`splitParagraphs`) | Scrolling the log to the bottom, via `ref` |
+| Splitting replies into paragraphs (`splitParagraphs`) | Whether to reserve pin space (`pinToTop`) — off only for a log that sizes to its content |
+| Scrolling: a sent prompt pins to the top, the reply loads below, no auto-scroll after | |
 | The streaming cursor and live-region switching | Suggestion chips, passed as `children` |
 | ContactCard position (`contactCardAfter`) | Building the ContactCard and its form state |
 
