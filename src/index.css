@@ -42,9 +42,20 @@ body {
 [data-theme='futuristic'] [data-variant='secondary'] {
   border-color: var(--color-border-default);
 }
+/* Hover states are deliberately loud in this theme — a hairline border shift on a
+   white page was too subtle to notice (2026-10-26). Flat color changes only: no
+   shadows, glows, or lift — depth effects don't fit this interface (Ben, 2026-10-26).
+   Primary drops to a near-black navy via the --btn-primary-hover-* tokens; secondary
+   fills solid azure with white text (the primary's resting look), so the hover reads
+   as the button "switching on" rather than a tint shift. Ghost gets a tinted fill. */
 [data-theme='futuristic'] [data-variant='secondary']:hover {
-  border-color: var(--color-green-border);
-  color: var(--color-green-accent);
+  background-color: var(--color-green-accent);
+  border-color: var(--color-green-accent);
+  color: #ffffff;
+}
+[data-theme='futuristic'] [data-variant='ghost']:hover {
+  background-color: var(--color-green-deepest);
+  color: var(--color-green-bright);
 }
 
 /* Visually hidden — screen reader accessible, not visible */

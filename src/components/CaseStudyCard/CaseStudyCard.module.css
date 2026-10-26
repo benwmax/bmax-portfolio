@@ -198,14 +198,20 @@
   border-top: 2px solid var(--color-border-default);
   transition:
     border-color var(--duration-base) var(--ease-default),
-    box-shadow var(--duration-base) var(--ease-default);
+    background-color var(--duration-base) var(--ease-default);
 }
 
+/* Loud on purpose (2026-10-26), and flat: a full azure outline (including the 2px
+   top rule) and an azure-tinted card face. No shadow or lift — depth effects don't
+   fit this theme. Border widths stay constant so nothing shifts on hover. */
 :global([data-theme='futuristic']) .card:hover,
 :global([data-theme='futuristic']) .hover {
-  border-color: var(--color-border-default);
-  border-top-color: var(--color-green-accent);
-  box-shadow: 0 -1px 0 0 var(--color-green-accent);
+  border-color: var(--color-green-accent);
+  background: var(--color-green-deepest);
+}
+:global([data-theme='futuristic']) .card:hover .title,
+:global([data-theme='futuristic']) .hover .title {
+  color: var(--color-green-accent);
 }
 
 /* Solid azure block, white number, corner chamfered off the bottom-left */
