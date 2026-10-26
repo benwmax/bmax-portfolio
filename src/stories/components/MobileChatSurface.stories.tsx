@@ -50,7 +50,7 @@ const meta = {
         'The shared mobile chat surface for Home and case study pages — never fork a second copy of this FAB/overlay pair into a page file. Behaviors here are load-bearing and easy to regress (see decisions.md 2026-07-19): (1) FAB visibility must be driven by `fabRevealed || messages.length > 0`, not just message count alone — case study pages call revealFab() on mount so the entry point exists even before a conversation starts; (2) the homepage inline hero chat collapses to a dead, non-interactive surface once a conversation starts on mobile (it is built to slide into the desktop docked rail, which does not exist on mobile) — the first submit must hand off to this overlay via a wrapper like handleHeroSubmit, or the reply streams into a hidden panel; (3) auto-scroll-to-newest-message only fires while the visitor is near the bottom of the log (tracked via a scroll listener) — scrolling up to reread pauses it and surfaces a scroll-to-bottom button instead of yanking their position on the next reply.',
       contentRules: [
         'FAB label is fixed: "Ask about Ben" with a › prompt glyph — do not reword it.',
-        'No count badge on the FAB — it was removed 2026-10-26. messageCount only re-triggers the log\'s scroll-to-bottom.',
+        'No count badge on the FAB — it was removed 2026-10-26.',
         'The scroll-to-bottom button only appears once the visitor has scrolled away from the bottom of the log — it is not a persistent affordance.',
       ],
       avoid: [
@@ -90,7 +90,6 @@ export const FabHidden: Story = {
   args: {
     visible: false,
     open: false,
-    messageCount: 0,
   },
 };
 
@@ -112,7 +111,6 @@ export const FabVisible: Story = {
   args: {
     visible: true,
     open: false,
-    messageCount: 0,
   },
 };
 
@@ -135,7 +133,6 @@ export const FabWithBadge: Story = {
   args: {
     visible: true,
     open: false,
-    messageCount: 3,
   },
 };
 
@@ -162,7 +159,6 @@ export const OverlayOpen: Story = {
   args: {
     visible: true,
     open: true,
-    messageCount: 3,
   },
 };
 
@@ -192,6 +188,5 @@ export const Interactive: Story = {
   args: {
     visible: true,
     open: false,
-    messageCount: 2,
   },
 };

@@ -152,13 +152,6 @@ export function HomeV4Blend({
   const [statsRef, statsIn] = useInView<HTMLDivElement>();
   const [gridRef, gridIn] = useInView<HTMLDivElement>();
 
-  // Scroll the hero + docked logs to bottom when messages change. The mobile
-  // overlay's own log is scrolled by MobileChatSurface.
-  useEffect(() => {
-    if (heroLogRef.current) heroLogRef.current.scrollTop = heroLogRef.current.scrollHeight;
-    if (dockedLogRef.current) dockedLogRef.current.scrollTop = dockedLogRef.current.scrollHeight;
-  }, [messages]);
-
   // Clear any case-study context left over from a previous page — Home has
   // no case-study framing of its own, and the chat session is shared across
   // navigation (see src/context/ChatContext.tsx).
@@ -212,11 +205,16 @@ export function HomeV4Blend({
     </div>
   );
 
-  function renderLog(logRef: RefObject<HTMLDivElement | null>, className: string) {
+  function renderLog(
+    logRef: RefObject<HTMLDivElement | null>,
+    className: string,
+    pinToTop = true,
+  ) {
     return (
       <ChatTranscript
         ref={logRef}
         className={className}
+        pinToTop={pinToTop}
         messages={messages}
         streaming={chatStatus === 'loading'}
         greeting="Howdy. Ask about any case study, what I'm looking for, or how I work with AI."
@@ -367,7 +365,8 @@ export function HomeV4Blend({
                   inert={isDocked ? true : undefined}
                 >
                   {chatBarJSX}
-                  {renderLog(heroLogRef, styles.chatLog)}
+                  {/* Sizes to its content (max 360px), so no reserved pin space — see ChatTranscript. */}
+                  {renderLog(heroLogRef, styles.chatLog, false)}
                   <div className={styles.chatInputWrap}>
                     <ChatInput
                       onSubmit={handleHeroSubmit}
@@ -512,7 +511,6 @@ export function HomeV4Blend({
         visible={isDocked || fabRevealed}
         open={mobileChatOpen}
         onOpenChange={setMobileChatOpen}
-        messageCount={messages.length}
         chatStatus={chatStatus}
         onSubmit={handleSubmit}
         renderLog={renderLog}

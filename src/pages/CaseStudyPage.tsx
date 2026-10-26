@@ -252,13 +252,6 @@ export function CaseStudyPage({
     };
   }, [sections]);
 
-  // Scroll chat log to bottom on new messages
-  useEffect(() => {
-    if (chatLogRef.current) {
-      chatLogRef.current.scrollTop = chatLogRef.current.scrollHeight;
-    }
-  }, [messages]);
-
   // Tell the shared chat session what case study is now in view. The first
   // time this company is seen this session, a context note is appended to
   // the (persistent, cross-page) transcript; revisits stay silent but still
@@ -637,7 +630,6 @@ export function CaseStudyPage({
           visible
           open={mobileChatOpen}
           onOpenChange={setMobileChatOpen}
-          messageCount={messages.length}
           chatStatus={chatStatus}
           onSubmit={handleSubmit}
           renderLog={renderChatLog}
