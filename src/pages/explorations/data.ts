@@ -12,6 +12,7 @@
 // Re-exported so exploration stories can import the chat message type alongside
 // the content from a single module.
 export type { Message } from '../../hooks/useChatSession';
+import type { CaseStudyArtVariant } from '../../components/CaseStudyCard/CaseStudyArt';
 
 export interface ExplorationCaseStudy {
   index: string;
@@ -22,6 +23,8 @@ export interface ExplorationCaseStudy {
   role: string;
   year: string;
   sector: string;
+  /** Decorative cover art variant — see CaseStudyCard/CaseStudyArt.tsx. */
+  art: CaseStudyArtVariant;
 }
 
 /**
@@ -47,6 +50,7 @@ export const CASE_STUDIES: ExplorationCaseStudy[] = [
     role: 'Lead UX Designer',
     year: '2023–24',
     sector: 'Fintech',
+    art: 'contour',
   },
   {
     index: '02',
@@ -57,6 +61,7 @@ export const CASE_STUDIES: ExplorationCaseStudy[] = [
     role: 'Principal UX Designer',
     year: '2021–22',
     sector: 'Mortgage',
+    art: 'converge',
   },
   {
     index: '03',
@@ -67,6 +72,7 @@ export const CASE_STUDIES: ExplorationCaseStudy[] = [
     role: 'Senior UX Designer',
     year: '2018–20',
     sector: 'Insurance',
+    art: 'ripple',
   },
   {
     index: '04',
@@ -77,6 +83,7 @@ export const CASE_STUDIES: ExplorationCaseStudy[] = [
     role: 'UX Designer',
     year: '2015–18',
     sector: 'Travel',
+    art: 'route',
   },
 ];
 
@@ -86,10 +93,9 @@ export const SUGGESTIONS = [
   'What are you looking for next?',
 ] as const;
 
-/** Hero stat trio — shared across variants. `figure` is animatable where it parses to a number. */
+/** Hero stat pair — shared across variants. `figure` is animatable where it parses to a number. */
 export const HERO_STATS = [
   { figure: '15+ yrs', label: '4 regulated industries' },
-  { figure: '$1B · +23%', label: 'contract · revenue · Sabre' },
   { figure: 'now', label: 'seeking Design Leader roles' },
 ] as const;
 

@@ -1,0 +1,37 @@
+/* Sits above the dot-grid background and below the chips (z-index 1 on .media img
+   is the same layer; the chips are later in the DOM). Never intercepts the card click. */
+.art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.line,
+.accent {
+  fill: none;
+  stroke-width: 1;
+  opacity: var(--o);
+}
+.line {
+  stroke: var(--color-green-accent);
+}
+.accent {
+  stroke: var(--color-amber-accent);
+  stroke-width: 1.4;
+}
+
+/* Futuristic is a light theme with a visible line-grid, so the same low-opacity
+   hairlines get lost in it (the grid read stronger than the art). Push the lines
+   up and wash the grid back behind them — retro is untouched. */
+:global([data-theme='futuristic']) .art {
+  background: color-mix(in srgb, var(--color-bg-surface) 55%, transparent);
+}
+:global([data-theme='futuristic']) .line,
+:global([data-theme='futuristic']) .accent {
+  opacity: min(1, calc(var(--o) * 2.4));
+}
+:global([data-theme='futuristic']) .line {
+  stroke-width: 1.2;
+}

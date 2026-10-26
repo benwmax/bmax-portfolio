@@ -1,6 +1,7 @@
 import type { HTMLAttributes, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { Tag } from '../Tag';
+import { CaseStudyArt, type CaseStudyArtVariant } from './CaseStudyArt';
 import styles from './CaseStudyCard.module.css';
 
 export interface CaseStudyCardProps extends Omit<HTMLAttributes<HTMLElement>, 'title' | 'role'> {
@@ -14,6 +15,8 @@ export interface CaseStudyCardProps extends Omit<HTMLAttributes<HTMLElement>, 't
   outcome?: ReactNode;
   /** Cover image URL — falls back to the dot-grid placeholder. */
   image?: string;
+  /** Decorative generated line art shown when there is no `image`. */
+  art?: CaseStudyArtVariant;
   /** Destination — makes the card a link. */
   href?: string;
   /** Amber sector tag shown on the thumbnail. */
@@ -40,6 +43,7 @@ export function CaseStudyCard({
   desc,
   outcome,
   image,
+  art,
   href,
   tag,
   tags,
@@ -63,7 +67,7 @@ export function CaseStudyCard({
   const content = (
     <>
       <div className={styles.media}>
-        {image && <img src={image} alt="" />}
+        {image ? <img src={image} alt="" /> : art && <CaseStudyArt variant={art} />}
         {index != null && (
           <span className={styles.chip} aria-hidden="true">
             {index}
