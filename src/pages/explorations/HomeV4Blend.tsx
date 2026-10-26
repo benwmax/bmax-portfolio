@@ -148,7 +148,7 @@ export function HomeV4Blend({
   const heroLogRef = useRef<HTMLDivElement | null>(null);
   const dockedLogRef = useRef<HTMLDivElement | null>(null);
 
-  const { out: headline, done } = useTypewriter('I make expert tools learnable.', booted);
+  const { out: headline, done } = useTypewriter('I make expert tools learnable', booted);
   const [statsRef, statsIn] = useInView<HTMLDivElement>();
   const [gridRef, gridIn] = useInView<HTMLDivElement>();
 
@@ -205,11 +205,7 @@ export function HomeV4Blend({
     </div>
   );
 
-  function renderLog(
-    logRef: RefObject<HTMLDivElement | null>,
-    className: string,
-    pinToTop = true,
-  ) {
+  function renderLog(logRef: RefObject<HTMLDivElement | null>, className: string, pinToTop = true) {
     return (
       <ChatTranscript
         ref={logRef}
@@ -327,9 +323,9 @@ export function HomeV4Blend({
                 {/* Status badge — no blinking dot */}
                 <div className={styles.statusBadge}>Available for Design Leader roles</div>
 
-                <h1 className={styles.heroH1} aria-label="I make expert tools learnable.">
+                <h1 className={styles.heroH1} aria-label="I make expert tools learnable">
                   <span className={styles.heroH1Ghost} aria-hidden>
-                    I make expert tools <span className={styles.heroAmber}>learnable</span>.
+                    I make expert tools <span className={styles.heroAmber}>learnable</span>
                   </span>
                   <span className={styles.heroH1Visible} aria-hidden>
                     {beforeLearnable}
