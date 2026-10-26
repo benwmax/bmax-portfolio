@@ -1348,3 +1348,22 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
 - Follow-up done the same day: the temporary `bmax-portfolio.vercel.app` entry removed from
   `ALLOWED_ORIGINS`. Remaining for Ben: submit the sitemap in Google Search Console, and
   disconnect the domain in Squarespace.
+
+## 2026-10-26 — Chat pins the latest prompt to the top; no auto-scroll
+- Decision: When a visitor sends a message, that prompt slides up and pins to the top of the
+  chat log and the reply loads below it. Nothing scrolls automatically after that, so a reply
+  longer than the log is read from its first line instead of being chased to its last. Applies
+  to every chat surface (homepage hero and rail, case study rail, mobile overlay).
+- Reasoning: Scroll-to-bottom made a long reply fly past while it streamed, and the reader had
+  to scroll back up to where it began. Pinning the question gives the reply a stable place to
+  start. The "↓ scroll to latest" button in the mobile overlay stays, and now earns its keep.
+- Built once, in `ChatTranscript`, not per page: the old scroll-to-bottom effect existed in
+  four places, the same drift that caused the 2026-07-19 and 2026-08-01 bugs. A trailing
+  spacer fills the room under a short reply so the prompt can still reach the top, and shrinks
+  as the reply grows. The homepage hero log sizes to its content, so it opts out with
+  `pinToTop={false}`. The unused `messageCount` prop on `MobileChatSurface` was removed.
+- Tested: mobile overlay with a stubbed stream (short and long replies; scroll position held
+  steady while a long reply streamed). Not yet tested: the desktop docked rail and the hero.
+- Alternatives considered: pin only when the reply overflows (inconsistent: a short reply
+  would sit mid-log); keep scroll-to-bottom with a "stop following" toggle (more UI, same
+  problem by default).
