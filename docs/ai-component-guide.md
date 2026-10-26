@@ -371,7 +371,7 @@ The mobile-only "Ask about Ben" entry point — a floating action button that op
 | `visible` | `boolean` | Whether the FAB exists at all. Drive from `fabRevealed \|\| messages.length > 0` on Home, `true` on case study pages. |
 | `open` | `boolean` | Controlled open state of the overlay. |
 | `onOpenChange` | `(open: boolean) => void` | — |
-| `messageCount` | `number` | Drives the FAB badge and its `aria-label`. |
+| `messageCount` | `number` | Re-triggers the log's scroll-to-bottom. The FAB has no count badge (removed 2026-10-26). |
 | `chatStatus` | `ChatWidgetStatus` | Passed straight through to the overlay's `ChatInput`. |
 | `onSubmit` | `(text: string) => void` | — |
 | `renderLog` | `(ref, className) => ReactNode` | Render prop — the parent owns the log's content and per-page message styling; this component only supplies the ref (for autoscroll) and container class. |

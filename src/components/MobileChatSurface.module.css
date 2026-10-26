@@ -69,21 +69,6 @@
   color: var(--color-bg-page);
 }
 
-.fabBadge {
-  background: var(--color-bg-page);
-  color: var(--color-green-accent);
-  font-family: var(--font-mono-ui);
-  font-size: 11px;
-  font-weight: 700;
-  border-radius: var(--radius-full);
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
 /* ——— MOBILE CHAT OVERLAY — full screen sheet ——— */
 .mobileOverlay {
   display: none;
