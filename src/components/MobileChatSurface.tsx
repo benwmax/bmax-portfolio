@@ -23,7 +23,7 @@ export interface MobileChatSurfaceProps {
   /** Controlled open state of the full-screen overlay. */
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  /** Drives the FAB badge count and its aria-label. */
+  /** Re-runs the log's scroll-to-bottom when a message lands. */
   messageCount: number;
   chatStatus: ChatWidgetStatus;
   onSubmit: (text: string) => void;
@@ -135,19 +135,12 @@ export function MobileChatSurface({
           type="button"
           className={styles.fab}
           onClick={() => onOpenChange(true)}
-          aria-label={`Open chat${
-            messageCount > 0 ? ` — ${messageCount} message${messageCount !== 1 ? 's' : ''}` : ''
-          }`}
+          aria-label="Open chat"
         >
           <span className={styles.fabPrompt} aria-hidden>
             ›
           </span>
           Ask about Ben
-          {messageCount > 0 && (
-            <span className={styles.fabBadge} aria-hidden>
-              {messageCount}
-            </span>
-          )}
         </button>
       )}
 
