@@ -52,6 +52,21 @@
   vertical-align: middle;
 }
 
+/* The greeting's cursor opts back out of the dot: same "_" as Retro, in the theme's
+   azure (--color-green-accent) instead of the darker "bright" blue the dot uses.
+   Placed after the rule above with the same specificity so it wins. */
+:global([data-theme='futuristic']) .cursorUnderscore {
+  font-size: inherit;
+  display: inline;
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  background: none;
+  margin-left: 0;
+  vertical-align: baseline;
+  color: var(--color-green-accent);
+}
+
 /* Mobile: conversations happen in the full-screen overlay (MobileChatSurface),
    so visitor messages go up one type-scale step for the smaller viewport. */
 @media (max-width: 760px) {

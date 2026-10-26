@@ -56,7 +56,8 @@ function usePinLatestPrompt(
   const prevUserCount = useRef(0);
   const lastHeight = useRef(0);
 
-  const getPrompt = () => logRef.current?.querySelector<HTMLElement>('[data-latest-prompt]') ?? null;
+  const getPrompt = () =>
+    logRef.current?.querySelector<HTMLElement>('[data-latest-prompt]') ?? null;
 
   const fitSpacer = useCallback(() => {
     const log = logRef.current;
@@ -82,7 +83,10 @@ function usePinLatestPrompt(
     // Sit just under the top edge, tighter than the log's padding so the tail of the
     // previous message (one flex gap above) is scrolled fully out of view.
     const top =
-      log.scrollTop + prompt.getBoundingClientRect().top - log.getBoundingClientRect().top - PIN_INSET_PX;
+      log.scrollTop +
+      prompt.getBoundingClientRect().top -
+      log.getBoundingClientRect().top -
+      PIN_INSET_PX;
     log.scrollTo({ top, behavior: smooth && !prefersReducedMotion() ? 'smooth' : 'auto' });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -162,6 +166,13 @@ export function ChatTranscript({
       _
     </span>
   );
+  // The opening greeting keeps the "_" glyph in every theme; only the streaming
+  // cursor above becomes a dot in Futuristic.
+  const greetingCursor = (
+    <span className={`${styles.cursor} ${styles.cursorUnderscore} cursor-blink`} aria-hidden="true">
+      _
+    </span>
+  );
 
   return (
     <div
@@ -176,7 +187,7 @@ export function ChatTranscript({
     >
       {messages.length === 0 && greeting && (
         <p className={styles.assistant}>
-          {greeting} {cursor}
+          {greeting} {greetingCursor}
         </p>
       )}
       {messages.map((m, i) => (
