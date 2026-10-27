@@ -19,6 +19,8 @@ import { Redis } from '@upstash/redis';
 const redis = Redis.fromEnv();
 
 const SESSION_COOKIE = 'bmax_chat_sid';
+// The assistant tells visitors their conversation is deleted within two hours of their
+// last message (PRIVACY in api/lib/system-prompt.ts). Change both together.
 const SESSION_TTL_SECONDS = 60 * 60 * 2; // 2 hours — generous for a single visit
 const GLOBAL_BUDGET_TTL_SECONDS = 60 * 60 * 26; // outlives a day so today's key always expires
 

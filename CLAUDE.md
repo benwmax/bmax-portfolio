@@ -489,6 +489,12 @@ for the build checklist.
   ever sends the newest message. Do not revert to trusting a client-supplied
   message array or session count; that was a real fabricated-history
   jailbreak vector, fixed 2026-07-17 (see decisions.md).
+- **No chat transcripts (Ben, 2026-10-27).** The site does not store chat logs, and the
+  brief's PRIVACY section tells visitors so — accurately: 2-hour session history for in-chat
+  memory only, logs without message text, messages processed by Anthropic, message-form
+  contents emailed to Ben. Never add message text to `logEvent()` or extend
+  `SESSION_TTL_SECONDS` without updating PRIVACY in the same commit; otherwise the assistant
+  misinforms visitors. See decisions.md 2026-10-27.
 - Safeguard values (rate limits, session message cap, output token cap,
   history length, message length cap, global daily message cap) live as
   named constants at the top of `api/chat.ts` — tune there, not inline.
