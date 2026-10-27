@@ -47,6 +47,9 @@ const ALLOWED_PAGE_CONTEXTS = new Set(['Portfolio Rebuild', 'Upfluent', 'Sagent'
 // Structured, single-line JSON logs — Vercel captures stdout as Function
 // Logs, so this needs no new logging vendor. Metadata only by default
 // (lengths, outcomes, reason codes), never full visitor message content.
+// Never put message text (visitor or assistant) in these logs: the assistant tells
+// visitors the site doesn't log chat content (PRIVACY in api/lib/system-prompt.ts),
+// and Ben has decided not to keep transcripts (decisions.md 2026-10-27).
 function logEvent(event: Record<string, unknown>): void {
   console.log(JSON.stringify({ ts: new Date().toISOString(), ...event }));
 }

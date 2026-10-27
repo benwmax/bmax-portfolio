@@ -1367,3 +1367,19 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
 - Alternatives considered: pin only when the reply overflows (inconsistent: a short reply
   would sit mid-log); keep scroll-to-bottom with a "stop following" toggle (more UI, same
   problem by default).
+
+## 2026-10-27 — No chat transcripts; the assistant says so accurately
+- Decision: (Ben) The site does not store chat logs, and won't. If a visitor asks whether
+  their chat is saved or whether Ben can read it, the assistant answers accurately — added a
+  PRIVACY section to `api/lib/system-prompt.ts` with the exact facts it may state.
+- What's actually true (and what the brief says): no transcripts are kept and Ben doesn't read
+  conversations; the conversation is held in Redis only for in-chat memory and expires 2 hours
+  after the last message (`SESSION_TTL_SECONDS`); operational logs carry timing, page and IP,
+  never message text; messages go to Anthropic to generate replies; the one exception is the
+  message form, whose contents are emailed to Ben by design.
+- Reasoning: Visitors type freely, and "nothing is stored" would have been false (the 2-hour
+  session history exists). Scoping the brief to verifiable facts keeps the answer honest.
+- Alternatives considered: persistent transcripts with a reader script and a privacy notice
+  (Claude's suggestion) — declined by Ben.
+- Coupling: the PRIVACY section is tied by convention to `SESSION_TTL_SECONDS` and to
+  `logEvent()` in `api/chat.ts`; comments at all three sites say to change them together.
