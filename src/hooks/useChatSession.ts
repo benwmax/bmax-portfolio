@@ -1,6 +1,10 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import type { ChatWidgetStatus } from '../components/ChatInput';
 import type { ContactFormStatus, ContactSubmission } from '../components/ContactCard';
+import { parseWidgetTags } from '../chat/widgetIds';
+import type { WidgetId } from '../chat/widgetIds';
+import { getTopic, topicForPrompt } from '../chat/topics';
+import type { FollowUp, TopicId } from '../chat/topics';
 
 export interface Message {
   role: 'user' | 'assistant';
@@ -11,12 +15,19 @@ export interface Message {
    * instead of stacking under it — see setPageContext.
    */
   contextNote?: string;
+  /**
+   * Widgets rendered under the text (src/chat/widgets). Set by topic tours, or
+   * parsed out of the model's [[show:<id>]] tags — always validated ids.
+   */
+  widgets?: WidgetId[];
 }
 
 // Set by a page when the visitor lands on a case study, so the assistant can
 // be told what they're looking at without the client re-sending history.
-// `company` must match one of api/chat.ts's ALLOWED_PAGE_CONTEXTS or the
-// server silently ignores it.
+// Chat-first experiment (2026-10-29): only CaseStudyPage calls this, and it is
+// no longer routed. The server now keys context by topic id (api/chat.ts's
+// TOPIC_CONTEXT), so a `company` value here is silently ignored. playTopic sets
+// the context for the chat homepage.
 export interface PageContext {
   company: string;
   /** Shown once per company per session as a client-only transcript note — never sent to the model. */
@@ -80,6 +91,14 @@ async function postContact(fields: ContactSubmission): Promise<{ ok: boolean; er
 // forever (readOnly input, no way to retry) — see ChatInput.tsx's isLoading
 // gating.
 const STREAM_TIMEOUT_MS = 30_000;
+
+// Pause between a tour's beats, so a tour reads as a reply arriving rather than
+// a page appearing all at once. Zero under prefers-reduced-motion.
+const BEAT_DELAY_MS = 450;
+
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+const reducedMotion = () =>
+  typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // The server holds conversation history and the session message count
 // (keyed by an HttpOnly cookie) — it never trusts client-supplied history or
@@ -188,6 +207,16 @@ export interface UseChatSession {
   submitContactForm: (fields: ContactSubmission) => Promise<void>;
   /** Hide the ContactCard without submitting — the visitor declined. */
   dismissContactCard: () => void;
+  /**
+   * Play a pre-built topic tour (src/chat/topics.ts): the prompt as the
+   * visitor's message, then each beat as an assistant message with its
+   * widgets. No model call. Ignored while a reply or another tour is running.
+   */
+  playTopic: (id: TopicId) => Promise<void>;
+  /** Chips to offer under the input after the latest tour or reply. */
+  followUps: FollowUp[];
+  /** Topic ids already played this session — menus use it to suggest what's left. */
+  playedTopics: ReadonlySet<string>;
 }
 
 export function useChatSession({
@@ -207,6 +236,8 @@ export function useChatSession({
   const showContactCard = contactCardAfter !== null;
   const [contactFormStatus, setContactFormStatus] = useState<ContactFormStatus>('idle');
   const [contactErrorText, setContactErrorText] = useState<string | undefined>(undefined);
+  const [followUps, setFollowUps] = useState<FollowUp[]>([]);
+  const [playedTopics, setPlayedTopics] = useState<ReadonlySet<string>>(() => new Set());
 
   const dismissContactCard = useCallback(() => setContactCardAfter(null), []);
 
@@ -240,6 +271,54 @@ export function useChatSession({
   // before that render could otherwise pass the isLoading check twice and
   // fire two requests for one interaction.
   const submittingRef = useRef(false);
+
+  // Pin the card on first surface only. Re-triggering later must not relocate a
+  // card the visitor may already be typing into: moving it in the log would
+  // remount it and silently drop the draft. Skipped once a message has been
+  // sent successfully this session, so a later unrelated "thanks, I'll reach
+  // out" doesn't reopen a form that already did its job.
+  const surfaceContactCardAt = useCallback(
+    (after: number) => {
+      if (contactFormStatus === 'sent') return;
+      setContactCardAfter((prev) => (prev === null ? after : prev));
+    },
+    [contactFormStatus],
+  );
+
+  const playTopic = useCallback(
+    async (id: TopicId) => {
+      const topic = getTopic(id);
+      if (!topic || submittingRef.current) return;
+      submittingRef.current = true;
+
+      // The model can't see a tour (it never ran through /api/chat), so tell it
+      // which one was just shown — a follow-up like "why did he do that?" then
+      // resolves to this topic. api/chat.ts maps the id to a sentence.
+      pageContextRef.current = topic.id;
+      setActiveSuggestions([]);
+      setFollowUps([]);
+      setPlayedTopics((prev) => new Set(prev).add(topic.id));
+      setChatStatus('loading');
+
+      const startLength = messagesRef.current.length;
+      setMessages((prev) => [...prev, { role: 'user', text: topic.prompt }]);
+
+      const delay = reducedMotion() ? 0 : BEAT_DELAY_MS;
+      for (const beat of topic.beats) {
+        await wait(delay);
+        setMessages((prev) => [
+          ...prev,
+          { role: 'assistant', text: beat.text ?? '', widgets: beat.widgets },
+        ]);
+      }
+
+      if (topic.contact) surfaceContactCardAt(startLength + 1 + topic.beats.length);
+      setFollowUps(topic.followUps);
+      setChatStatus('online');
+      submittingRef.current = false;
+    },
+    [surfaceContactCardAt],
+  );
 
   const setPageContext = useCallback((context: PageContext | null) => {
     pageContextRef.current = context?.company ?? null;
@@ -291,6 +370,15 @@ export function useChatSession({
       }
 
       if (submittingRef.current) return;
+
+      // Typing a starter prompt word for word plays its tour — same answer the
+      // chip gives, no model call.
+      const matched = topicForPrompt(text);
+      if (matched) {
+        await playTopic(matched.id);
+        return;
+      }
+
       submittingRef.current = true;
 
       // Anchor the card after this turn's user message and assistant reply —
@@ -298,16 +386,7 @@ export function useChatSession({
       // prompted it and holds that spot as the conversation continues.
       const anchorAfterThisTurn = messagesRef.current.length + 2;
 
-      // Pin on first surface only. Re-triggering later must not relocate a
-      // card the visitor may already be typing into: moving it in the log
-      // would remount it and silently drop the draft. Skipped once a message
-      // has been sent successfully this session, so a later unrelated
-      // "thanks, I'll reach out" doesn't reopen a form that already did its
-      // job.
-      const surfaceContactCard = () => {
-        if (contactFormStatus === 'sent') return;
-        setContactCardAfter((prev) => (prev === null ? anchorAfterThisTurn : prev));
-      };
+      const surfaceContactCard = () => surfaceContactCardAt(anchorAfterThisTurn);
 
       // Surface immediately, alongside the streaming reply rather than waiting
       // on it — the trigger is independent of what the assistant ends up
@@ -316,6 +395,7 @@ export function useChatSession({
 
       setChatStatus('loading');
       setActiveSuggestions([]);
+      setFollowUps([]);
       // Append the user turn and an empty assistant slot immediately so the
       // cursor appears right away.
       setMessages((prev) => [...prev, { role: 'user', text }, { role: 'assistant', text: '' }]);
@@ -334,16 +414,21 @@ export function useChatSession({
       // didn't read as a contact request but the assistant's reply pointed
       // them to get in touch anyway (e.g. an out-of-scope question redirected
       // per the SCOPE section of the system prompt) — see system-prompt.ts.
+      // Raw text includes any [[show:<id>]] widget tags; what's displayed has
+      // them stripped (parseWidgetTags), and a half-streamed tag stays hidden
+      // until it closes.
       let assistantText = '';
 
       try {
         const { errorText } = await streamChat(text, pageContextRef.current, (chunk) => {
           assistantText += chunk;
+          const { text: shown, widgets } = parseWidgetTags(assistantText);
           setMessages((prev) => {
             const next = [...prev];
             next[next.length - 1] = {
               role: 'assistant',
-              text: next[next.length - 1].text + chunk,
+              text: shown,
+              widgets: widgets.length > 0 ? widgets : undefined,
             };
             return next;
           });
@@ -351,7 +436,7 @@ export function useChatSession({
 
         if (errorText) {
           replaceLastAssistant(errorText);
-        } else if (detectContactIntent(assistantText)) {
+        } else if (detectContactIntent(parseWidgetTags(assistantText).text)) {
           surfaceContactCard();
         }
       } catch {
@@ -361,7 +446,7 @@ export function useChatSession({
         submittingRef.current = false;
       }
     },
-    [onSubmit, contactFormStatus],
+    [onSubmit, surfaceContactCardAt, playTopic],
   );
 
   return {
@@ -378,5 +463,8 @@ export function useChatSession({
     contactErrorText,
     submitContactForm,
     dismissContactCard,
+    playTopic,
+    followUps,
+    playedTopics,
   };
 }
