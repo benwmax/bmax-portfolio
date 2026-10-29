@@ -66,9 +66,19 @@ export function CaseWalkthrough({ study }: { study: StudyId }) {
         },
       ]
     : [
-        { key: 'problem', label: 'Problem', body: <Prose paragraphs={content.problem.paragraphs} /> },
+        // Six steps, not eight (review 2026-10-29): Problem and Users are one
+        // idea — who's struggling and why — and "Next time" is a coda to Results.
+        {
+          key: 'problem',
+          label: 'The problem',
+          body: (
+            <>
+              <h4 className={styles.subhead}>{content.problem.heading}</h4>
+              <Prose paragraphs={[...content.problem.paragraphs, ...content.userContext.paragraphs]} />
+            </>
+          ),
+        },
         { key: 'role', label: 'My role', body: role },
-        { key: 'users', label: 'Users', body: <Prose paragraphs={content.userContext.paragraphs} /> },
         {
           key: 'process',
           label: 'Process',
@@ -106,40 +116,37 @@ export function CaseWalkthrough({ study }: { study: StudyId }) {
               },
             ]
           : []),
-        { key: 'outcomes', label: 'Outcomes', body: outcomes },
-        // Dropped when empty, as CaseStudyPage does — Sagent has none (decisions.md 2026-10-29).
-        ...(content.whatIdDoDifferently.paragraphs.length > 0
-          ? [
-              {
-                key: 'next',
-                label: 'Next time',
-                body: <Prose paragraphs={content.whatIdDoDifferently.paragraphs} />,
-              },
-            ]
-          : []),
+        {
+          key: 'results',
+          label: 'Results',
+          body: (
+            <>
+              {outcomes}
+              {/* "What I'd do differently", folded in as a coda. Omitted when
+                  empty, as CaseStudyPage does — Sagent has none. */}
+              {content.whatIdDoDifferently.paragraphs.length > 0 && (
+                <>
+                  <h4 className={styles.subhead}>What I'd do differently</h4>
+                  <Prose paragraphs={content.whatIdDoDifferently.paragraphs} />
+                </>
+              )}
+            </>
+          ),
+        },
       ];
 
   const step = steps[index];
-  const pad = (n: number) => String(n).padStart(2, '0');
 
   return (
-    <Frame
-      wide
-      label={`${name} · Case study`}
-      meta={
-        <>
-          {tag} · {content.dateRange}
-        </>
-      }
-    >
-      {/* The project's cover art behind the title, as the case study page had it. */}
+    <Frame wide label={`${name} · Full case study`} meta={`${tag} · ${content.dateRange}`}>
+      {/* The project's cover art behind the title, as the case study page had it.
+          No "In Ben's words" kicker: the chat line above already says it. */}
       <div className={styles.walkHead}>
         {art && (
           <div className={styles.walkArt} aria-hidden="true">
             <CaseStudyArt variant={art} wash={false} />
           </div>
         )}
-        <p className={styles.kicker}>In Ben's words</p>
         <h3 className={styles.title}>{content.heroTitle}</h3>
       </div>
 
@@ -157,9 +164,6 @@ export function CaseWalkthrough({ study }: { study: StudyId }) {
             aria-controls={panelId}
             onClick={() => setIndex(i)}
           >
-            <span className={styles.stepNum} aria-hidden="true">
-              {pad(i + 1)}
-            </span>
             {s.label}
           </button>
         ))}
@@ -179,7 +183,7 @@ export function CaseWalkthrough({ study }: { study: StudyId }) {
           <span aria-hidden="true">←</span> {index > 0 ? steps[index - 1].label : 'Previous'}
         </button>
         <span className={styles.stepCount} aria-live="polite">
-          {pad(index + 1)} / {pad(steps.length)}
+          Step {index + 1} of {steps.length}
         </span>
         <button
           type="button"

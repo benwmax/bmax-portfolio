@@ -20,6 +20,8 @@ import styles from './Widgets.module.css';
  */
 export function StudyCover({ study }: { study: StudyId }) {
   const { content, name, tag, art, index, years } = STUDIES[study];
+  // The role is what a hiring manager scans for first (review 2026-10-29).
+  const role = content.meta.find((m) => m.label === 'My role')?.value;
   return (
     <section className={styles.cover} aria-label={`${name} case study`}>
       {art && (
@@ -36,17 +38,37 @@ export function StudyCover({ study }: { study: StudyId }) {
         </div>
         <h3 className={styles.coverName}>{name}</h3>
         <p className={styles.coverHeadline}>{content.heroTitle}</p>
+        {role && (
+          <p className={styles.coverRole}>
+            <span>Ben's role · </span>
+            {role}
+          </p>
+        )}
       </div>
     </section>
   );
 }
 
+/**
+ * The outcomes a skimmer will remember: up to three whose value contains a
+ * number, in the content's own order. Soft outcomes ("Scaled", "Picked up")
+ * diluted the hard ones when all four sat side by side (review 2026-10-29).
+ * The full case study still shows every outcome.
+ */
+function headlineOutcomes(study: StudyId) {
+  const all = STUDIES[study].content.outcomes;
+  const hard = all.filter((o) => /\d/.test(o.value)).slice(0, 3);
+  return hard.length > 0 ? hard : all.slice(0, 3);
+}
+
 export function StudyOutcomes({ study }: { study: StudyId }) {
-  const { content, name, tag } = STUDIES[study];
+  const { name } = STUDIES[study];
+  // No metadata in the bar: the cover just above already says the industry and
+  // years, and repeating it is something to read and discard.
   return (
-    <Frame wide label={`${name} · Outcomes`} meta={`${tag} · ${content.dateRange}`}>
+    <Frame wide label={`${name} · Results`}>
       <StatRow>
-        {content.outcomes.map((o) => (
+        {headlineOutcomes(study).map((o) => (
           <Stat key={o.label} {...o} />
         ))}
       </StatRow>

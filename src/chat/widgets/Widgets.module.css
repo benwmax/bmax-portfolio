@@ -27,12 +27,14 @@
   background: var(--color-bg-raised);
 }
 
+/* Review 2026-10-29 (docs/case-study/chat-widget-review.md): bar text was 11px
+   caps, and the metadata failed AA in Retro (4.43:1). Now 13px sentence case,
+   metadata in the secondary color. */
 .barLabel,
 .barMeta {
-  font-family: var(--font-mono-display);
-  font-size: var(--text-sm);
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
+  font-family: var(--font-mono-ui);
+  font-size: var(--text-base);
+  letter-spacing: var(--tracking-normal);
 }
 
 .barLabel {
@@ -40,7 +42,7 @@
 }
 
 .barMeta {
-  color: var(--color-text-tertiary);
+  color: var(--color-text-secondary);
   text-align: right;
 }
 
@@ -54,7 +56,7 @@
 .kicker {
   margin: 0;
   font-family: var(--font-mono-ui);
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   letter-spacing: var(--tracking-wider);
   text-transform: uppercase;
   color: var(--color-amber-accent);
@@ -129,19 +131,21 @@
   color: var(--color-green-accent);
 }
 
+/* What the number means — the thing a skimmer needs, so it's sentence case at
+   14px, not 11px caps (review 2026-10-29). */
 .statLabel {
-  font-family: var(--font-mono-display);
-  font-size: var(--text-sm);
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
-  color: var(--color-text-secondary);
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  font-weight: 600;
+  line-height: var(--leading-snug);
+  color: var(--color-text-primary);
 }
 
 .statBody {
   font-family: var(--font-sans);
   font-size: var(--text-md);
   line-height: var(--leading-normal);
-  color: var(--color-text-tertiary);
+  color: var(--color-text-secondary);
 }
 
 /* ——— Buttons & links ——— */
@@ -236,18 +240,13 @@
 }
 
 /* ——— Case walkthrough ——— */
+/* Wraps rather than scrolls: a clipped tab row hid the later steps
+   (review 2026-10-29). */
 .stepNav {
   display: flex;
-  gap: var(--space-1);
-  overflow-x: auto;
-  scrollbar-width: none;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
   border-bottom: 1px solid var(--color-border-subtle);
-  margin-inline: calc(var(--space-5) * -1);
-  padding-inline: var(--space-5);
-}
-
-.stepNav::-webkit-scrollbar {
-  display: none;
 }
 
 .stepBtn {
@@ -257,7 +256,7 @@
   gap: var(--space-2);
   font-family: var(--font-mono-ui);
   font-size: var(--text-base);
-  color: var(--color-text-tertiary);
+  color: var(--color-text-secondary);
   background: transparent;
   border: 0;
   border-bottom: 2px solid transparent;
@@ -273,12 +272,6 @@
 .stepBtnActive {
   color: var(--color-green-accent);
   border-bottom-color: var(--color-green-accent);
-}
-
-.stepNum {
-  font-family: var(--font-mono-display);
-  font-size: var(--text-xs);
-  color: var(--color-amber-accent);
 }
 
 .stepPanel {
@@ -313,9 +306,9 @@
 }
 
 .stepCount {
-  font-family: var(--font-mono-display);
-  font-size: var(--text-sm);
-  color: var(--color-text-tertiary);
+  font-family: var(--font-mono-ui);
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
 }
 
 .gallery {
@@ -374,14 +367,25 @@
   align-items: center;
   gap: var(--space-3);
   font-family: var(--font-mono-ui);
-  font-size: var(--text-sm);
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
+  font-size: var(--text-base);
   color: var(--color-amber-accent);
+}
+
+/* Ben's role on the project — the first thing a hiring manager looks for. */
+.coverRole {
+  margin: var(--space-1) 0 0;
+  font-family: var(--font-mono-ui);
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+}
+
+.coverRole span {
+  color: var(--color-text-secondary);
 }
 
 .coverIndex {
   font-family: var(--font-mono-display);
+  font-size: var(--text-base);
   color: var(--color-bg-page);
   background: var(--color-green-accent);
   padding: 2px 6px;
@@ -510,11 +514,10 @@
 .highlightStatLabel {
   grid-area: statLabel;
   align-self: start;
-  font-family: var(--font-mono-display);
-  font-size: var(--text-xs);
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
-  color: var(--color-text-tertiary);
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  line-height: var(--leading-snug);
+  color: var(--color-text-secondary);
 }
 
 .highlightMain {
@@ -536,9 +539,8 @@
 
 .highlightTag {
   font-family: var(--font-mono-ui);
-  font-size: var(--text-sm);
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
+  font-size: var(--text-base);
+  letter-spacing: var(--tracking-normal);
   color: var(--color-amber-accent);
 }
 
@@ -1002,11 +1004,6 @@
     bottom: auto;
     -webkit-mask-image: linear-gradient(to bottom, #000 30%, transparent 100%);
     mask-image: linear-gradient(to bottom, #000 30%, transparent 100%);
-  }
-
-  .stepNav {
-    margin-inline: calc(var(--space-4) * -1);
-    padding-inline: var(--space-4);
   }
 
   .title {

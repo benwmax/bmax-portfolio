@@ -115,3 +115,22 @@ Claude's recommendation, which Ben accepted by approving the plan.
   under reduced motion.
 - Conflicts with: Nothing in CLAUDE.md. The positioning statement (2026-06-02) is
   unchanged.
+
+## 2026-10-29 — Readability pass on the case study widgets (Ben asked; Claude's review)
+- Decision: Ben asked for an expert UX and visual design review followed by a fix.
+  Findings and plan are in `docs/case-study/chat-widget-review.md`. Changes made:
+  - **13px minimum** for labels that carry meaning. Stat labels are now sentence
+    case at 14px.
+  - **Title-bar metadata contrast fixed:** it was 4.43:1 in Retro, now 5.2:1. Every
+    measured label is now at least 5.0:1 in both themes.
+  - **Ben's role** is shown on each project's title card.
+  - **Results:** tours show up to three outcomes that contain a number. The full case
+    study still shows all of them.
+  - **Less repetition:** the results bar no longer repeats the industry and years the
+    title card just showed.
+  - **Full case study:** eight steps become six (The problem, My role, Process, Key
+    decision, What was hard, Results). The tabs wrap instead of clipping, and the
+    duplicate "In Ben's words" and per-tab numbers are gone.
+- Reasoning: The audience skims. Small all-caps labels were carrying the meaning,
+  soft outcomes diluted the strong ones, and the role, the first thing a hiring
+  manager looks for, wasn't on the card.
