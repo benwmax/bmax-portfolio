@@ -19,9 +19,16 @@ export interface NavBarProps {
    */
   activePath?: string;
   className?: string;
+  /**
+   * Show who this is beside the wordmark — "Ben Maxwell · UX Designer". On by
+   * default only on the chat homepage (Ben, 2026-10-29): with the work grid
+   * gone, nothing on that first screen said he's a designer. Other pages carry
+   * it in their own headings. Collapses to the role alone on phones.
+   */
+  showIdentity?: boolean;
 }
 
-export function NavBar({ activePath, className = '' }: NavBarProps) {
+export function NavBar({ activePath, className = '', showIdentity = false }: NavBarProps) {
   const pathname =
     activePath !== undefined
       ? activePath
@@ -31,12 +38,23 @@ export function NavBar({ activePath, className = '' }: NavBarProps) {
 
   return (
     <header className={[styles.header, className].filter(Boolean).join(' ')}>
-      <Link to="/" className={styles.wordmark} aria-label="BM_ — Ben Maxwell, Home">
-        BM
-        <span className={styles.underscore} aria-hidden="true">
-          _
-        </span>
-      </Link>
+      <div className={styles.brand}>
+        <Link to="/" className={styles.wordmark} aria-label="BM_ — Ben Maxwell, Home">
+          BM
+          <span className={styles.underscore} aria-hidden="true">
+            _
+          </span>
+        </Link>
+        {showIdentity && (
+          <span className={styles.identity}>
+            <span className={styles.identityName}>Ben Maxwell</span>
+            <span className={styles.identitySep} aria-hidden="true">
+              ·
+            </span>
+            <span className={styles.identityRole}>UX Designer</span>
+          </span>
+        )}
+      </div>
       <div className={styles.right}>
         <nav aria-label="Site navigation">
           <ul className={styles.links} role="list">

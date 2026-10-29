@@ -173,7 +173,7 @@ export function ChatHome({ topicSlug, onChatSubmit, initialMessages = [] }: Chat
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>
-        <NavBar activePath="/" />
+        <NavBar activePath="/" showIdentity />
 
         <main id="main-content" className={styles.main}>
           {started ? (
