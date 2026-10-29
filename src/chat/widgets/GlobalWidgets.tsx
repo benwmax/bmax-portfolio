@@ -58,8 +58,8 @@ const REASONS: { title: string; body: string; topic: TopicId; cta: string }[] = 
   {
     title: 'Outcomes in regulated industries',
     body: 'A $1B contract at Sabre. A 4–6% conversion lift at USAA. Tools that experts in travel, insurance, fintech, and mortgage actually adopted.',
-    topic: 'wins',
-    cta: 'See the wins',
+    topic: 'best-work',
+    cta: 'See the work',
   },
   {
     title: 'Leads before the title says so',
@@ -68,10 +68,10 @@ const REASONS: { title: string; body: string; topic: TopicId; cta: string }[] = 
     cta: 'How he leads',
   },
   {
-    title: 'Directs AI instead of handing work to it',
-    body: 'Rebuilt this site with Claude as a collaborator and made every judgment call. Designed an AI trading chatbot before function calling existed.',
+    title: 'Design judgment that holds up with AI in the loop',
+    body: 'Designed an AI trading advisor before function calling existed. Rebuilt this site with Claude as a collaborator — every design call stayed his.',
     topic: 'ai',
-    cta: 'How he uses AI',
+    cta: 'Design + AI',
   },
 ];
 
