@@ -1,0 +1,396 @@
+/* Key-decision sketches (Diagrams.tsx). Few words, big shapes: each one
+   illustrates the chat sentence above it. Token-only. */
+
+.figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.caption {
+  margin: 0;
+  max-width: 48ch;
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: var(--text-lg);
+  line-height: var(--leading-normal);
+  color: var(--color-text-secondary);
+}
+
+/* ——— Sabre: two doors, one booking ——— */
+.sabre {
+  width: 100%;
+  max-width: 560px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas:
+    'a b'
+    'join join'
+    'result result';
+  gap: var(--space-4);
+}
+
+.door {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-page);
+}
+
+.doorWho {
+  font-family: var(--font-mono-display);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-amber-accent);
+}
+
+.doorHow {
+  font-family: var(--font-sans);
+  font-size: var(--text-lg);
+  color: var(--color-text-primary);
+}
+
+.keys {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 64px;
+}
+
+.key {
+  width: 26px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono-display);
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-strong);
+  border-bottom-width: 3px;
+  border-radius: var(--radius-sm);
+}
+
+.caret {
+  width: 2px;
+  height: 22px;
+  margin-left: 4px;
+  background: var(--color-green-accent);
+}
+
+.form {
+  width: 100%;
+  max-width: 160px;
+  height: 64px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+}
+
+.field {
+  height: 12px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+}
+
+.button {
+  align-self: flex-end;
+  padding: 2px 10px;
+  font-family: var(--font-mono-ui);
+  font-size: var(--text-xs);
+  color: var(--color-bg-page);
+  background: var(--color-green-accent);
+  border-radius: var(--radius-sm);
+}
+
+/* Two lines converging on the result. */
+.join {
+  grid-area: join;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 28px;
+}
+
+.joinLine {
+  border-bottom: 2px solid var(--color-green-border);
+}
+
+.joinLine:first-child {
+  margin-left: 50%;
+  border-left: 2px solid var(--color-green-border);
+  border-bottom-left-radius: var(--radius-md);
+}
+
+.joinLine:last-child {
+  margin-right: 50%;
+  border-right: 2px solid var(--color-green-border);
+  border-bottom-right-radius: var(--radius-md);
+}
+
+.result {
+  grid-area: result;
+  justify-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  font-family: var(--font-mono-display);
+  font-size: var(--text-md);
+  color: var(--color-green-accent);
+  border: 1px solid var(--color-green-border);
+  border-radius: var(--radius-full);
+  background: var(--color-interactive-bg);
+}
+
+.resultIcon {
+  font-weight: 700;
+}
+
+/* ——— USAA: wins on the current site while the new one is built ——— */
+.usaa {
+  width: 100%;
+  max-width: 620px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.rowLabel {
+  font-family: var(--font-mono-display);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-primary);
+  text-align: right;
+}
+
+.lane {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: var(--space-2);
+  border-radius: var(--radius-full);
+  background: var(--color-bg-page);
+  border: 1px solid var(--color-border-default);
+}
+
+.win {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-bg-page);
+  background: var(--color-green-accent);
+  border-radius: var(--radius-full);
+}
+
+.laneBuild {
+  justify-content: flex-start;
+}
+
+/* One long build, finishing at the far end. */
+.buildBar {
+  width: 100%;
+  height: 10px;
+  border-radius: var(--radius-full);
+  background: repeating-linear-gradient(
+    90deg,
+    var(--color-amber-accent) 0 14px,
+    transparent 14px 22px
+  );
+  opacity: 0.8;
+}
+
+.feed {
+  display: flex;
+  justify-content: space-around;
+  margin-left: calc(120px + var(--space-4));
+  font-family: var(--font-mono-display);
+  font-size: var(--text-lg);
+  color: var(--color-text-tertiary);
+}
+
+.axis {
+  display: flex;
+  justify-content: space-between;
+  margin-left: calc(120px + var(--space-4));
+  padding-inline: var(--space-2);
+  font-family: var(--font-mono-ui);
+  font-size: var(--text-sm);
+  color: var(--color-text-tertiary);
+}
+
+/* ——— Upfluent: ask, then act, in one chat ——— */
+.upfluent {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.phone {
+  width: 100%;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-5) var(--space-4);
+  border: 1px solid var(--color-border-strong);
+  border-radius: 20px; /* a phone outline — the one rounded shape here on purpose */
+  background: var(--color-bg-page);
+}
+
+.step {
+  font-family: var(--font-mono-display);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--color-amber-accent);
+}
+
+.step + .bubbleUser {
+  margin-top: calc(var(--space-1) * -1);
+}
+
+.bubbleUser,
+.bubbleBot {
+  max-width: 85%;
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  line-height: var(--leading-snug);
+  border-radius: var(--radius-md);
+}
+
+.bubbleUser {
+  align-self: flex-end;
+  color: var(--color-bg-page);
+  background: var(--color-green-accent);
+}
+
+.bubbleBot {
+  align-self: flex-start;
+  color: var(--color-text-primary);
+  background: var(--color-bg-raised);
+  margin-bottom: var(--space-3);
+}
+
+.control {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--color-green-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-surface);
+}
+
+.slider {
+  position: relative;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--color-border-default);
+}
+
+.sliderFill {
+  position: absolute;
+  inset: 0 35% 0 0;
+  border-radius: inherit;
+  background: var(--color-green-accent);
+}
+
+.sliderKnob {
+  position: absolute;
+  left: 65%;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  transform: translate(-50%, -50%);
+  border-radius: var(--radius-full);
+  background: var(--color-text-primary);
+  border: 2px solid var(--color-green-accent);
+}
+
+.riskBars {
+  height: 40px;
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.riskBars span {
+  flex: 1;
+  border-radius: 2px 2px 0 0;
+  background: var(--color-amber-accent);
+  opacity: 0.75;
+}
+
+.apply {
+  align-self: stretch;
+  text-align: center;
+  padding: var(--space-2);
+  font-family: var(--font-mono-ui);
+  font-size: var(--text-sm);
+  color: var(--color-bg-page);
+  background: var(--color-green-accent);
+  border-radius: var(--radius-sm);
+}
+
+:global([data-theme='futuristic']) .door,
+:global([data-theme='futuristic']) .control {
+  border-radius: 0;
+}
+
+@media (max-width: 760px) {
+  .sabre {
+    gap: var(--space-3);
+  }
+
+  .door {
+    padding: var(--space-3);
+  }
+
+  .key {
+    width: 20px;
+    height: 24px;
+  }
+
+  .row {
+    grid-template-columns: 1fr;
+    gap: var(--space-1);
+  }
+
+  .rowLabel {
+    text-align: left;
+  }
+
+  .feed,
+  .axis {
+    margin-left: 0;
+  }
+
+  .lane {
+    height: 34px;
+  }
+
+  .win {
+    width: 20px;
+    height: 20px;
+  }
+}

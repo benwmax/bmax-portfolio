@@ -324,218 +324,13 @@
   gap: var(--space-4);
 }
 
-/* ——— Diagrams ——— */
-.diagram {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-
-.lanes2 {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  gap: var(--space-3);
-  align-items: stretch;
-}
-
-.node {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-4);
-  border: 1px solid var(--color-border-default);
-  border-radius: var(--radius-sm);
-  background: var(--color-bg-page);
-}
-
-.nodeAccent {
-  border-color: var(--color-amber-deep);
-}
-
+/* Small amber caps label inside a widget card (AI split, side projects). */
 .nodeKicker {
   font-family: var(--font-mono-display);
   font-size: var(--text-xs);
   letter-spacing: var(--tracking-widest);
   text-transform: uppercase;
   color: var(--color-amber-accent);
-}
-
-.nodeTitle {
-  font-family: var(--font-mono-display);
-  font-size: var(--text-xl);
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-text-primary);
-}
-
-.nodeBody {
-  font-family: var(--font-sans);
-  font-size: var(--text-md);
-  line-height: var(--leading-normal);
-  color: var(--color-text-secondary);
-}
-
-.swap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-mono-display);
-  font-size: var(--text-2xl);
-  color: var(--color-green-accent);
-}
-
-.diagramJoin {
-  margin: 0;
-  text-align: center;
-  font-family: var(--font-mono-ui);
-  font-size: var(--text-base);
-  letter-spacing: var(--tracking-wide);
-  color: var(--color-green-accent);
-}
-
-.codeBars {
-  font-family: var(--font-mono-ui);
-  font-size: var(--text-base);
-  color: var(--color-green-mid);
-  padding: var(--space-2) var(--space-3);
-  background: var(--color-bg-surface);
-  border: 1px solid var(--color-border-subtle);
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-.codeBars span {
-  color: var(--color-green-accent);
-}
-
-.formBars {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  padding: var(--space-2) var(--space-3);
-  background: var(--color-bg-surface);
-  border: 1px solid var(--color-border-subtle);
-}
-
-.formBars span {
-  height: 8px;
-  border-radius: var(--radius-sm);
-  background: var(--color-border-default);
-}
-
-.formBars .formBtn {
-  width: 40%;
-  align-self: flex-end;
-  background: var(--color-green-border);
-}
-
-.track {
-  display: grid;
-  grid-template-columns: 180px 1fr;
-  grid-template-areas:
-    'label line'
-    '. note';
-  gap: var(--space-1) var(--space-4);
-  align-items: center;
-}
-
-.trackLabel {
-  grid-area: label;
-  font-family: var(--font-mono-display);
-  font-size: var(--text-sm);
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
-  color: var(--color-text-primary);
-}
-
-.trackLine {
-  grid-area: line;
-  position: relative;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 18px;
-  border-bottom: 2px solid var(--color-green-accent);
-}
-
-.trackShip {
-  width: 10px;
-  height: 10px;
-  background: var(--color-green-accent);
-  border-radius: var(--radius-full);
-  transform: translateY(6px);
-}
-
-.trackLong {
-  border-bottom: 2px dashed var(--color-amber-accent);
-  justify-content: flex-end;
-}
-
-.trackEnd {
-  font-family: var(--font-mono-display);
-  font-size: var(--text-sm);
-  color: var(--color-amber-accent);
-  transform: translateY(-4px);
-}
-
-.trackNote {
-  grid-area: note;
-  font-family: var(--font-sans);
-  font-size: var(--text-md);
-  color: var(--color-text-tertiary);
-}
-
-.trackFeed {
-  display: flex;
-  justify-content: space-around;
-  margin-left: calc(180px + var(--space-4));
-  font-family: var(--font-mono-ui);
-  font-size: var(--text-sm);
-  color: var(--color-text-tertiary);
-}
-
-.mockChat,
-.mockControls {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-3);
-  background: var(--color-bg-surface);
-  border: 1px solid var(--color-border-subtle);
-  font-family: var(--font-sans);
-  font-size: var(--text-md);
-}
-
-.mockUser {
-  align-self: flex-end;
-  color: var(--color-text-primary);
-  background: var(--color-bg-raised);
-  padding: var(--space-1) var(--space-3);
-  border-radius: var(--radius-sm);
-}
-
-.mockBot {
-  color: var(--color-text-secondary);
-  border-left: 2px solid var(--color-green-border);
-  padding-left: var(--space-2);
-}
-
-.mockSlider {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: center;
-  gap: var(--space-3);
-  font-family: var(--font-mono-ui);
-  font-size: var(--text-sm);
-  color: var(--color-text-secondary);
-}
-
-.mockSlider span {
-  height: 4px;
-  background: linear-gradient(
-    to right,
-    var(--color-green-accent) 60%,
-    var(--color-border-default) 60%
-  );
 }
 
 /* ——— Highlights ——— */
@@ -1026,7 +821,6 @@
 /* ——— Futuristic theme: sharper geometry, same as the rest of the system ——— */
 :global([data-theme='futuristic']) .frame,
 :global([data-theme='futuristic']) .menuItem,
-:global([data-theme='futuristic']) .node,
 :global([data-theme='futuristic']) .reason,
 :global([data-theme='futuristic']) .splitCol,
 :global([data-theme='futuristic']) .topicBtn {
@@ -1073,26 +867,6 @@
   .menu {
     grid-template-columns: 1fr;
     gap: var(--space-5);
-  }
-
-  .lanes2 {
-    grid-template-columns: 1fr;
-  }
-
-  .swap {
-    transform: rotate(90deg);
-  }
-
-  .track {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      'label'
-      'line'
-      'note';
-  }
-
-  .trackFeed {
-    margin-left: 0;
   }
 
   /* The list already has its own border — on a phone, drop the frame's inner

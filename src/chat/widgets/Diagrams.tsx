@@ -1,121 +1,142 @@
 import { Frame } from './Frame';
-import styles from './Widgets.module.css';
+import styles from './Diagrams.module.css';
 
-// Each key decision drawn as a diagram, built from HTML rather than images so it
-// themes with the tokens and reads to a screen reader as text. These are
-// illustrations of the *pattern*, not product screens — the real screens go in
-// the gallery once Ben adds them (src/content/work-images.ts). Every label is
-// taken from the case study content; nothing here adds a fact.
+// Each key decision as a small picture that supports the sentence above it in
+// the chat. Built from HTML so it themes with the tokens.
+//
+// Rewritten 2026-10-29 (Ben: "confusing — less technical, more visual"): the
+// first versions labelled every box with jargon ("legacy stack · A/B tests",
+// "inline controls", "before function calling"). The reader is a recruiter or
+// hiring manager who just read one plain sentence; the picture should let them
+// *see* that sentence, not decode a second, more technical one. So: few words,
+// plain ones, and the visual does the explaining.
+//
+// These are sketches of the idea, not product screens — real screens go in the
+// gallery once Ben adds them (src/content/work-images.ts). No labels add facts
+// beyond the case study content. The sketches are aria-hidden; each figure's
+// caption carries the meaning for screen readers.
 
-/** Sabre: one booking, two front doors, switch freely. */
+/** Sabre: two ways in — typing for veterans, point-and-click for new agents — one booking. */
 export function SabreDiagram() {
   return (
-    <Frame wide label="Sabre · Key decision" meta="Hybrid, not migration">
-      <div className={styles.diagram}>
-        <div className={styles.lanes2}>
-          <div className={styles.node}>
-            <span className={styles.nodeKicker}>Veterans</span>
-            <span className={styles.nodeTitle}>Command line</span>
-            <span className={styles.codeBars} aria-hidden="true">
-              <span>›</span> ▮▮▮▮ ▮▮ ▮▮▮▮▮▮ ▮▮▮
-            </span>
-            <span className={styles.nodeBody}>Kept, and updated. Their speed was real.</span>
+    <Frame wide label="Sabre · The idea">
+      <figure className={styles.figure}>
+        <div className={styles.sabre} aria-hidden="true">
+          <div className={styles.door}>
+            <span className={styles.doorWho}>Veteran agents</span>
+            <div className={styles.keys}>
+              {['H', 'O', 'T', 'E', 'L'].map((k) => (
+                <span key={k} className={styles.key}>
+                  {k}
+                </span>
+              ))}
+              <span className={styles.caret} />
+            </div>
+            <span className={styles.doorHow}>Keep typing</span>
           </div>
-          <div className={styles.swap} aria-hidden="true">
-            <span>⇄</span>
+
+          <div className={styles.door}>
+            <span className={styles.doorWho}>New agents</span>
+            <div className={styles.form}>
+              <span className={styles.field} />
+              <span className={styles.field} />
+              <span className={styles.button}>Search</span>
+            </div>
+            <span className={styles.doorHow}>Point and click</span>
           </div>
-          <div className={styles.node}>
-            <span className={styles.nodeKicker}>New &amp; seasonal agents</span>
-            <span className={styles.nodeTitle}>Graphical mode</span>
-            <span className={styles.formBars} aria-hidden="true">
-              <span />
-              <span />
-              <span className={styles.formBtn} />
-            </span>
-            <span className={styles.nodeBody}>Fully graphical. No travel background needed.</span>
+
+          <div className={styles.join}>
+            <span className={styles.joinLine} />
+            <span className={styles.joinLine} />
+          </div>
+
+          <div className={styles.result}>
+            <span className={styles.resultIcon}>✓</span>
+            Same booking
           </div>
         </div>
-        <p className={styles.diagramJoin}>Switch freely — neither one is the backup option</p>
-        <div className={[styles.node, styles.nodeAccent].join(' ')}>
-          <span className={styles.nodeKicker}>Hotel, specifically</span>
-          <span className={styles.nodeBody}>
-            The Expedia layout agents already knew, with photos, rooms, maps, and neighborhood
-            context brought inside the tool — so nobody tabs out mid-call.
-          </span>
-        </div>
-      </div>
+        <figcaption className={styles.caption}>
+          Two ways into one tool. Agents switch whenever they like.
+        </figcaption>
+      </figure>
     </Frame>
   );
 }
 
-/** USAA: wins ship on the old stack while the redesign runs alongside and feeds them. */
+/** USAA: small wins shipped on the current site while the redesign was still being built. */
 export function UsaaDiagram() {
-  const ships = Array.from({ length: 9 });
+  const wins = Array.from({ length: 8 });
   return (
-    <Frame wide label="USAA · Key decision" meta="Two parallel tracks">
-      <div className={styles.diagram}>
-        <div className={styles.track}>
-          <span className={styles.trackLabel}>Legacy stack · A/B tests</span>
-          <div className={styles.trackLine}>
-            {ships.map((_, i) => (
-              <span key={i} className={styles.trackShip} aria-hidden="true" />
-            ))}
+    <Frame wide label="USAA · The idea">
+      <figure className={styles.figure}>
+        <div className={styles.usaa} aria-hidden="true">
+          <div className={styles.row}>
+            <span className={styles.rowLabel}>Current site</span>
+            <div className={styles.lane}>
+              {wins.map((_, i) => (
+                <span key={i} className={styles.win}>
+                  ✓
+                </span>
+              ))}
+            </div>
           </div>
-          <span className={styles.trackNote}>Wins in production from week one</span>
-        </div>
-        <div className={styles.trackFeed} aria-hidden="true">
-          <span>↑ insights</span>
-          <span>↑ insights</span>
-          <span>↑ insights</span>
-        </div>
-        <div className={styles.track}>
-          <span className={styles.trackLabel}>Full redesign</span>
-          <div className={[styles.trackLine, styles.trackLong].join(' ')}>
-            <span className={styles.trackEnd}>18 mo.</span>
+
+          <div className={styles.feed}>
+            <span>↑</span>
+            <span>↑</span>
+            <span>↑</span>
           </div>
-          <span className={styles.trackNote}>The big reveal nobody had to wait for</span>
+
+          <div className={styles.row}>
+            <span className={styles.rowLabel}>New design</span>
+            <div className={[styles.lane, styles.laneBuild].join(' ')}>
+              <span className={styles.buildBar} />
+            </div>
+          </div>
+
+          <div className={styles.axis}>
+            <span>Week 1</span>
+            <span>18 months</span>
+          </div>
         </div>
-      </div>
+        <figcaption className={styles.caption}>
+          Wins shipped from week one, using what the redesign was learning.
+        </figcaption>
+      </figure>
     </Frame>
   );
 }
 
-/** Upfluent: talk like an advisor, act with real controls — in the same thread. */
+/** Upfluent: ask the advisor in plain words, then act right there in the chat. */
 export function UpfluentDiagram() {
   return (
-    <Frame wide label="Upfluent · Key decision" meta="Illustration of the pattern">
-      <div className={styles.diagram}>
-        <div className={styles.lanes2}>
-          <div className={styles.node}>
-            <span className={styles.nodeKicker}>Talk</span>
-            <span className={styles.nodeTitle}>Conversation</span>
-            <div className={styles.mockChat} aria-hidden="true">
-              <span className={styles.mockUser}>What happens if I adjust this spread?</span>
-              <span className={styles.mockBot}>Here's how your risk shifts →</span>
+    <Frame wide label="Upfluent · The idea">
+      <figure className={styles.figure}>
+        <div className={styles.upfluent} aria-hidden="true">
+          <div className={styles.phone}>
+            <span className={styles.step}>1 · Ask</span>
+            <span className={styles.bubbleUser}>What if I give this trade more time?</span>
+            <span className={styles.bubbleBot}>Here's how your risk changes:</span>
+
+            <span className={styles.step}>2 · Act</span>
+            <div className={styles.control}>
+              <div className={styles.slider}>
+                <span className={styles.sliderFill} />
+                <span className={styles.sliderKnob} />
+              </div>
+              <div className={styles.riskBars}>
+                {[30, 45, 60, 50, 35].map((h, i) => (
+                  <span key={i} style={{ height: `${h}%` }} />
+                ))}
+              </div>
+              <span className={styles.apply}>Update trade</span>
             </div>
-            <span className={styles.nodeBody}>Free-flowing, like talking to an advisor.</span>
-          </div>
-          <div className={styles.swap} aria-hidden="true">
-            <span>→</span>
-          </div>
-          <div className={styles.node}>
-            <span className={styles.nodeKicker}>Act</span>
-            <span className={styles.nodeTitle}>Inline controls</span>
-            <div className={styles.mockControls} aria-hidden="true">
-              <span className={styles.mockSlider}>
-                Time horizon <span />
-              </span>
-              <span className={styles.mockSlider}>
-                Downside risk <span />
-              </span>
-            </div>
-            <span className={styles.nodeBody}>The precision of a real interface, in the same thread.</span>
           </div>
         </div>
-        <p className={styles.diagramJoin}>
-          Before function calling — reliable structured output took code and design together
-        </p>
-      </div>
+        <figcaption className={styles.caption}>
+          Talk it through like an advisor, then act without leaving the chat.
+        </figcaption>
+      </figure>
     </Frame>
   );
 }
