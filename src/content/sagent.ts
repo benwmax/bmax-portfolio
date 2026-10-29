@@ -8,7 +8,7 @@ import type { CaseStudyContent } from '../pages/CaseStudyPage';
 // can leak onto the page. See decisions.md 2026-10-08.
 export const sagentData: CaseStudyContent = {
   number: '02',
-  dateRange: '2021–22',
+  dateRange: '2024–present',
   company: 'Sagent',
   heroTitle: 'Leading design on a mortgage platform when the director disappeared.',
   heroSubtitle:

@@ -71,7 +71,7 @@ export type CaseFigure = {
 export interface CaseStudyContent {
   /** "03" — the displayed index chip, not a stable id */
   number: string;
-  /** "2018–2020" */
+  /** "2017–2021" */
   dateRange: string;
   /** "USAA" — shown in nav breadcrumb and chat context badge */
   company: string;

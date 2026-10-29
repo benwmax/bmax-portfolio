@@ -25,8 +25,8 @@ export interface HomePageProps {
 // study is a placeholder. See decisions.md 2026-07-29.
 const STAT_RAIL_DATA = [
   { date: 'Portfolio Rebuild · 2026', outcome: 'Principal · AI-directed process, public.' },
-  { date: 'Upfluent · 2023–24', outcome: 'Lead · AI chatbot, signup 30% shorter.' },
-  { date: 'USAA · 2018–20', outcome: 'Lead, P&C · conversion +4–6%.' },
+  { date: 'Upfluent · 2021–24', outcome: 'Lead · AI chatbot, signup 30% shorter.' },
+  { date: 'USAA · 2017–21', outcome: 'Lead, P&C · conversion +4–6%.' },
   { date: 'Sabre · 2015–18', outcome: 'IC, Hotel · $1B contract, +23% revenue.' },
 ] as const;
 
