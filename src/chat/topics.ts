@@ -264,19 +264,21 @@ const TOPIC_LIST: Topic[] = [
     prompt: 'What did Ben do at Sagent?',
     group: 'work',
     kicker: 'Mortgage · Co-lead',
+    // No gallery beat: the Sagent work is under NDA and no images can be shown
+    // (decisions.md 2026-10-29). The story carries itself in text and numbers.
     beats: [
       {
-        text: 'Sagent was mid-rebuild on its mortgage servicing platform when the design director left. Ben stepped up to co-lead the four-person design team across twelve business teams.',
-        widgets: ['sagent.outcomes'],
+        text: "At Sagent, ten designers supported fourteen business teams across three mortgage servicing products. A month after Ben joined, the design leader left and the company didn't backfill for almost nine months — Ben led the team through it.",
       },
-      ...galleryBeat('sagent', 'Some of the work:'),
       {
-        text: "The full case study is still being written — it's his strongest leadership story, so it's a good one to ask him about directly.",
+        text: 'Then he used AI to code a working Workflow builder on the real components and APIs. Developers had estimated three-plus sprints to rebuild his earlier prototype; working from his code, they finished it in two days.',
+        widgets: ['sagent.outcomes'],
       },
     ],
     followUps: [
+      { label: 'Full Sagent case study', topic: 'sagent-full' },
+      { label: 'How does AI fit his process?', topic: 'ai' },
       { label: 'How does he lead a team?', topic: 'leadership' },
-      { label: 'Ask Ben about Sagent', topic: 'contact' },
     ],
   },
   fullCaseStudy('sabre', 'Sabre'),
@@ -292,18 +294,17 @@ const TOPIC_LIST: Topic[] = [
     kicker: 'Design + AI',
     beats: [
       {
-        text: 'He designs with AI the way he designs anything for experts: the human stays in charge. At Upfluent, he designed an AI trading advisor before function calling existed — conversation to explore, real controls to act.',
-        widgets: ['upfluent.diagram'],
+        text: "He uses AI to get a design built, not just drawn. At Sagent, a Workflow builder he'd designed was shelved for lack of capacity — so he used AI to code a working one on the real components and APIs.",
+        widgets: ['sagent.decision'],
       },
       {
-        text: 'He also used Claude to rebuild this site. Claude wrote code and first drafts; positioning, what to cut, and every visual call were his.',
-        widgets: ['ai-split'],
+        text: "AI didn't finish it: developers fixed the data connections and added validations he'd missed. He also designed an AI trading advisor at Upfluent, and rebuilt this site with Claude — every design call stayed his.",
       },
     ],
     followUps: [
+      { label: 'Full Sagent case study', topic: 'sagent-full' },
       { label: 'Where did he overrule the AI?', topic: 'ai-limits' },
-      { label: "See the site's design system", topic: 'design-system' },
-      { label: 'The Upfluent story', topic: 'upfluent' },
+      { label: 'The Upfluent AI advisor', topic: 'upfluent' },
     ],
   },
   {
@@ -330,7 +331,7 @@ const TOPIC_LIST: Topic[] = [
     kicker: 'Leadership',
     beats: [
       {
-        text: 'At Sagent, the design director left mid-rebuild, and Ben stepped up to co-lead four designers across twelve business teams.',
+        text: "At Sagent, the design leader left a month after Ben joined, and the company didn't backfill for nine months. Ben wrote the team's ways of working and kept shipping as it shrank from ten designers to six.",
         widgets: ['sagent.role'],
       },
       {

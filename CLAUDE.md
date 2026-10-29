@@ -95,10 +95,8 @@ of leaving it unlisted (it had been unlisted since 2026-07-29 so visitors wouldn
   "OTHER EXPERIENCE" in `api/lib/system-prompt.ts` (visitors still ask how the site was built;
   the assistant must not offer a page). `/work/portfolio` returns the 404 page.
   `src/content/portfolio-rebuild.ts` and `public/og/portfolio.png` are intact.
-- **Sagent:** routed at `/work/sagent` with `teaser` set in `src/content/sagent.ts`, so the
-  page shows only Problem, Role, and Outcomes (numbered 01–03) plus an in-progress note. Every
-  line restates facts already on the Resume and About pages. Full case study still gated on
-  Phase 1C.
+- **Sagent:** was a teaser page; **the full case study shipped 2026-10-29** (see "Sagent case
+  study shipped" below). `teaser` is removed from `src/content/sagent.ts`.
 
 **Displayed numbering: `01` Upfluent, `02` Sagent, `03` USAA, `04` Sabre.** Do not read this as
 a reordering decision — it's the strategic order with Portfolio Rebuild hidden. See
@@ -108,7 +106,19 @@ Restoring Portfolio Rebuild: put back the route and import in `App.tsx`, the car
 `explorations/data.ts` (`index: '01'`, renumbering the rest and each content file's `number`),
 the `sitemap.xml` and `ROUTE_META` entries, Upfluent stays before Sagent, and move its block
 in `api/lib/system-prompt.ts` back to CASE STUDIES. Re-run the OG image script. Shipping the
-full Sagent case study: remove `teaser` and fill the remaining sections.
+full Sagent case study: done 2026-10-29.
+
+### Sagent case study shipped (2026-10-29)
+
+Written from Ben's own account: text and numbers only, **no images** (see NDA below). A
+nine-month leadership gap, a design team that shrank from 10 to 6 across 14 business teams and
+3 products, the Attorney Portal and its design system, and a Workflow builder Ben built with AI
+that developers finished in 2 days against a 3+ sprint estimate. Sagent is Ben's **current
+employer** (2024–present, per LinkedIn); the page and the chat brief name Dara, Tempo, Roots,
+and Workflow with Ben's approval. `CaseStudyPage` now drops the "What I'd do differently"
+section when its paragraphs are empty (Ben had nothing to add) — numbering is unaffected since
+it's last. The old "co-led a four-person team across twelve business teams" claim was wrong and
+has been replaced everywhere (Resume, About, chat brief, card). See decisions.md 2026-10-29.
 
 ---
 
@@ -120,7 +130,10 @@ without password gates, anonymization, or confidentiality notes.
 - **Sabre:** No NDA constraints.
 - **USAA:** No NDA constraints.
 - **Upfluent:** No NDA constraints.
-- **Sagent:** No NDA constraints.
+- **Sagent:** Ben's current employer. **Images of the work cannot be shown (NDA, 2026-10-29)** —
+  the case study is text-only, so do not add `figures` or screenshots for it, and do not
+  describe specific screens. Facts on the page are approved to publish. This is a narrow
+  exception to "no confidentiality flags": no password gate, no anonymization, no on-page notice.
 - **Market Rebellion:** No NDA constraints.
 
 ---
@@ -410,9 +423,9 @@ and things that were intentionally left out of scope.
    and Tag components. `AI Collaboration` is currently unused on the grid because Portfolio
    Rebuild is hidden — the set stays five; it returns with the case study.
 
-5. **The displayed case study order is:** 01 Upfluent, 02 Sagent (teaser), 03 USAA,
+5. **The displayed case study order is:** 01 Upfluent, 02 Sagent, 03 USAA,
    04 Sabre. Index chips and meta must reflect this. Portfolio Rebuild is hidden for now —
-   see "Portfolio Rebuild hidden, Sagent shown as a teaser" above. Do not reorder without
+   see "Portfolio Rebuild hidden, Sagent shown as a teaser" above (Sagent is now the full page). Do not reorder without
    flagging it explicitly and explaining the strategic reason.
 
    The work grid renders from `CASE_STUDIES` in `src/pages/explorations/data.ts` — the single
@@ -473,7 +486,7 @@ for the build checklist.
 - `api/lib/system-prompt.ts` is the assistant's brief and needs upkeep —
   update it whenever a case study moves from "in progress" to "published" so
   the assistant doesn't undersell or misstate finished work. As of 2026-10-08 the brief
-  describes Upfluent, USAA, and Sabre in full, Sagent as a short preview page, and Portfolio
+  describes Upfluent, Sagent (full, 2026-10-29), USAA, and Sabre in full, and Portfolio
   Rebuild under OTHER EXPERIENCE (page hidden, but visitors ask how the site was built).
   It also carries safety/anti-jailbreak instructions (persona-lock,
   anti-defamation, ignore-embedded-instructions, groundedness, no code
@@ -481,7 +494,7 @@ for the build checklist.
   content around them.
 - **The brief must never point a visitor at a page that doesn't exist.** Its `OTHER EXPERIENCE
   (no case study page — do not offer one)` section covers roles that appear on About/Resume
-  without a page. Sagent moved out of it into CASE STUDIES as a preview page on 2026-10-08, and
+  without a page. Sagent moved out of it into CASE STUDIES on 2026-10-08, and
   Portfolio Rebuild moved into it the same day when its page was hidden. Whenever a page is
   hidden or restored, move its block too — otherwise the assistant offers a 404.
 - Conversation history and the session message cap are server-side
@@ -572,11 +585,10 @@ this prose summary had drifted out of sync with it as of 2026-07-17 and was
 resynced below): Phase 0 and 2 complete; Phase 3 (Storybook Foundation) complete
 as of 2026-07-16, including deployment to system.viewbens.work; Phase 4 (Site
 Assembly) complete as of 2026-10-08 (OG images shipped as generated placeholders);
-Phase 5 (QA and Pre-Launch) in progress; Phase 1 (Sagent content, 1C) still not
-started; Phase 6 (Launch) not started; Phase 7 (Meta Case Study) in progress — written and
+Phase 5 (QA and Pre-Launch) in progress; Phase 1 (incl. Sagent 1C) complete as of
+2026-10-29; Phase 6 (Launch) not started; Phase 7 (Meta Case Study) in progress — written and
 published 2026-07-29, screenshots and before/after remaining. Per decisions.md 2026-07-16, launch is being
-prioritized ahead of the Sagent case study — Sagent ships with placeholder copy
-and gets a full pass post-launch.
+prioritized ahead of the Sagent case study — it has since shipped in full (2026-10-29).
 
 **Last updated:** 2026-10-08, evening. Ben closed the review items left from the third pass:
 kept both ChatTranscript behavior changes (#34) and approved the Contact page description
@@ -830,8 +842,9 @@ both created 2026-07-16, and this session ran multiple verification scripts agai
 a new item below for removing the temporary `.vercel.app` origin allowlist entry at
 cutover, added 2026-07-19. build-plan.md's checkboxes are the source of truth if this
 drifts again.)
-- **Phase 1C:** Sagent brain dump — strongest Director-level case study, starts from zero.
-  As of 2026-10-08 Sagent is listed as a short teaser page; the full write-up replaces it.
+- **Phase 1C:** done 2026-10-29 — the Sagent case study is live, text-only (NDA). Open: re-run
+  `scripts/generate-og-images.mjs` (Sagent, Upfluent and USAA OG images show old years/copy;
+  the script's Playwright browser failed to launch locally).
 - **Portfolio Rebuild screenshots (Ben):** the page is hidden for now (2026-10-08), but its three
   captioned figure slots are still waiting in
   `src/content/portfolio-rebuild.ts` — anchored to Process, Key decision, and What was hard.
@@ -865,7 +878,6 @@ drifts again.)
 
 **Decisions still open:**
 - Market Rebellion: referenced on About page as brief career arc item (decided 2026-06-20)
-- Sagent case study content (to be built from scratch) — now also gates its return to the site
 
 ---
 

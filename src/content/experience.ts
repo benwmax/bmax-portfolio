@@ -20,8 +20,8 @@ export const EXPERIENCE = [
     dates: '2024–present',
     sector: 'Mortgage technology',
     outcomes: [
-      'Co-led a 4-person design team coordinating across 12 business teams on a large-scale mortgage platform rebuild.',
-      'Stepped into a director-level gap when the design director departed unexpectedly — ran strategic planning and mentored junior designers.',
+      'Led a design team of 10 (now 6) supporting 14 business teams across 3 mortgage servicing products, through nine months with no design director; now co-lead.',
+      'Used AI to build a working Workflow builder on real components and APIs; developers finished it in 2 days against a 3+ sprint estimate. Built the Attorney Portal and its design system in under four months.',
     ],
   },
   {

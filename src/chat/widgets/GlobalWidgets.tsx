@@ -17,7 +17,7 @@ const REPO = 'https://github.com/benwmax/bmax-portfolio';
  * remember. Portfolio order (01–04), not sorted by size of outcome — the order
  * is a strategic decision (CLAUDE.md) and this widget doesn't get to overrule it.
  */
-const HEADLINE_OUTCOME: Record<string, number> = { upfluent: 0, sagent: 1, usaa: 0, sabre: 0 };
+const HEADLINE_OUTCOME: Record<string, number> = { upfluent: 0, sagent: 0, usaa: 0, sabre: 0 };
 
 export function Highlights() {
   const { playTopic } = useWidgetActions();
@@ -63,13 +63,13 @@ const REASONS: { title: string; body: string; topic: TopicId; cta: string }[] = 
   },
   {
     title: 'Leads before the title says so',
-    body: "Co-led Sagent's design team when the director left mid-rebuild, coordinating twelve business teams. Built USAA's service blueprint to run without him.",
+    body: "Led Sagent's design team through nine months without a director, across fourteen business teams. Built USAA's service blueprint to run without him.",
     topic: 'leadership',
     cta: 'How he leads',
   },
   {
     title: 'Design judgment that holds up with AI in the loop',
-    body: 'Designed an AI trading advisor before function calling existed. Rebuilt this site with Claude as a collaborator — every design call stayed his.',
+    body: 'Used AI to code a working Workflow builder at Sagent that developers finished in two days against a 3+ sprint estimate. Designed an AI trading advisor before function calling existed.',
     topic: 'ai',
     cta: 'Design + AI',
   },

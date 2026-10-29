@@ -106,11 +106,16 @@ export function CaseWalkthrough({ study }: { study: StudyId }) {
             ]
           : []),
         { key: 'outcomes', label: 'Outcomes', body: outcomes },
-        {
-          key: 'next',
-          label: 'Next time',
-          body: <Prose paragraphs={content.whatIdDoDifferently.paragraphs} />,
-        },
+        // Dropped when empty, as CaseStudyPage does — Sagent has none (decisions.md 2026-10-29).
+        ...(content.whatIdDoDifferently.paragraphs.length > 0
+          ? [
+              {
+                key: 'next',
+                label: 'Next time',
+                body: <Prose paragraphs={content.whatIdDoDifferently.paragraphs} />,
+              },
+            ]
+          : []),
       ];
 
   const step = steps[index];

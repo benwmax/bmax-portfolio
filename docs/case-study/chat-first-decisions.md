@@ -77,6 +77,18 @@ Claude's recommendation, which Ben accepted by approving the plan.
   channel," but the case study describes Hotel booking in Sabre Red Workspace. Ben to
   confirm which is accurate.
 
+## 2026-10-29 — Merge the full Sagent case study from main
+- Decision: Main shipped the full Sagent case study (PR #63) while this branch was open.
+  This branch takes main's facts everywhere: ten designers, fourteen business teams,
+  nine months without a director, and the Workflow builder finished in two days. Those
+  replace the old "four-person team, twelve business teams" teaser lines in the Sagent,
+  leadership, and design + AI tours, the "Why Ben" card, and `TOPIC_CONTEXT`.
+- Also: Sagent gets no gallery beat (the work is under NDA, so no images); the
+  walkthrough drops the empty "Next time" step, as `CaseStudyPage` does; and the
+  design + AI tour now leads with the Workflow builder, its strongest example. The
+  3+ sprint estimate is always stated as the estimate for rebuilding his earlier
+  prototype, per main's honesty guard.
+
 ## 2026-10-29 — Simplify the homepage; centered input that moves down on use (Ben)
 - Decision: The first screen is reduced to far less: the chat input sits centered
   vertically, the way most AI chat tools open a new session, and animates down to the

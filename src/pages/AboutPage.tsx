@@ -44,7 +44,7 @@ const CAREER = [
     company: 'Sagent',
     role: 'Principal UX Designer · Co-lead',
     sector: 'Mortgage technology',
-    outcomes: ['Led 4-person design team', 'Coordinated 12 business teams', 'Stepped up when director departed'],
+    outcomes: ['Led design team of 10 across 14 business teams', 'Shipped a workflow builder in 2 days with AI', 'Led through 9 months without a director'],
   },
   {
     company: 'Upfluent',
@@ -122,10 +122,10 @@ export function AboutPage() {
             </div>
             <div className={styles.prose}>
               <p>
-                At Sagent I co-led a four-person design team across twelve business teams
-                simultaneously — no design director, unexpected leadership departure, and a
-                mortgage platform mid-rebuild. I stepped up, ran strategic planning, mentored
-                junior designers, and kept the program coherent. That's when I learned the
+                At Sagent our design leader left a month after I joined, and the company
+                didn't backfill for almost nine months. I led a design team supporting
+                fourteen business teams across three products, wrote our ways of working, and
+                kept shipping as the team shrank from ten to six. That's when I learned the
                 difference between leading design and managing designers: the first one means
                 protecting the work from scope sprawl and organizational churn.
               </p>
