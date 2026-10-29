@@ -1383,3 +1383,23 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
   (Claude's suggestion) — declined by Ben.
 - Coupling: the PRIVACY section is tied by convention to `SESSION_TTL_SECONDS` and to
   `logEvent()` in `api/chat.ts`; comments at all three sites say to change them together.
+
+## 2026-10-29 — Sagent ships as a full, text-only case study
+- Decision: (Ben) Replace the Sagent teaser with the full case study, with **no images** — the
+  work is under NDA. Ben approved naming Dara, Tempo, Roots, and Workflow, and publishing about
+  his current employer. Dates follow LinkedIn: Sagent 2024–present, Upfluent 2021–24, Market
+  Rebellion 2021–22, USAA 2017–21 (all site dates updated, PR #61).
+- Reasoning: The old teaser claimed "co-led a four-person team across twelve business teams";
+  Ben's own account is ten designers across fourteen business teams and three products, a nine-month
+  leadership gap, and a Workflow builder built with AI and finished by developers in two days.
+  The facts changed the story, so the Resume, About page, card, and chat brief changed with it.
+- Claude's suggestions Ben accepted: AI Workflow build as the key decision (it carries the
+  2-day number and the AI positioning), shrinking-team triage as the "what was hard" beat, and
+  dropping "What I'd do differently" — Ben had nothing to add, so `CaseStudyPage` omits an empty
+  section instead of rendering one.
+- CLAUDE.md conflict, resolved: it said Sagent had no NDA constraints. Now it says images
+  cannot be shown, and nothing else changes (no gate, no anonymization, no on-page notice).
+- Honesty guard: the 2-day claim is stated against its baseline — the 3+ sprint estimate was for
+  rebuilding a prototype that wasn't on the real stack — and the page says what AI didn't do
+  (developers fixed API/data connections and added validations).
+- Open: OG images for Sagent, Upfluent and USAA need regenerating.

@@ -42,7 +42,7 @@ See decisions.md 2026-07-29.
 | Phase | Name | Status | Blocked By |
 |-------|------|--------|------------|
 | 0 | Setup | Complete (2026-06-20) | — |
-| 1 | Strategy and Content | In progress — 1A/1B/1D complete; 1C (Sagent) not started, and Sagent is now unlisted from the site until it is | — |
+| 1 | Strategy and Content | Complete — 1C (Sagent) shipped 2026-10-29 | — |
 | 2 | Visual Identity | Complete (2026-06-17) | — |
 | 3 | Storybook Foundation | Complete (2026-07-16) | — |
 | 4 | Site Assembly | Complete (2026-10-08) — OG images shipped as generated placeholders | — |
@@ -107,17 +107,17 @@ Each case study follows this structure:
       (2026-06-09)
 
 ### 1C. Sagent — build from scratch (parallel)
-*Blocking the case study's return to the site. As of 2026-07-29 Sagent is unlisted (route
+*Complete 2026-10-29: shipped as a full, text-only page (NDA). Previously blocking the case study's return to the site. As of 2026-07-29 Sagent is unlisted (route
 removed, card removed, sitemap entry removed) rather than shipping holding copy —
 `src/content/sagent.ts` is intact, so re-listing is one import + one route + one card once
 this section is done. See decisions.md 2026-07-29.*
-- [ ] Brain dump: problem, what you owned, what changed, what was hard
-- [ ] Identify what artifacts exist (screens, photos, diagrams, data)
-- [ ] Write problem statement
-- [ ] Write role clarity statement (co-lead story, unexpected leadership
+- [x] Brain dump: problem, what you owned, what changed, what was hard
+- [x] Identify what artifacts exist (screens, photos, diagrams, data)
+- [x] Write problem statement
+- [x] Write role clarity statement (co-lead story, unexpected leadership
       departure, junior designer mentorship, strategic planning)
-- [ ] Write full case study draft
-- [ ] Log artifact gaps — what needs to be created or recreated
+- [x] Write full case study draft
+- [x] Log artifact gaps — none to fill: the work is under NDA, so the page is text-only (2026-10-29)
 
 ### 1D. Meta case study outline
 *Superseded 2026-07-29 — the full case study was written ahead of Phase 7 rather than

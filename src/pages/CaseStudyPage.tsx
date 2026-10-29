@@ -213,10 +213,16 @@ export function CaseStudyPage({
     initialMessages,
   });
   const [activeSection, setActiveSection] = useState('problem');
-  // A teaser shows fewer sections, numbered 01–03 rather than keeping gaps.
+  // A teaser shows fewer sections, numbered 01–03 rather than keeping gaps. A full
+  // page with nothing to say under "What I'd do differently" drops that section
+  // rather than render an empty one (it's last, so no numbers shift).
+  const hasReflection = whatIdDoDifferently.paragraphs.length > 0;
   const sections = useMemo(
-    () => (teaser ? NAV_SECTIONS.filter((s) => TEASER_SECTIONS.includes(s.id)) : NAV_SECTIONS),
-    [teaser],
+    () =>
+      teaser
+        ? NAV_SECTIONS.filter((s) => TEASER_SECTIONS.includes(s.id))
+        : NAV_SECTIONS.filter((s) => s.id !== 'reflection' || hasReflection),
+    [teaser, hasReflection],
   );
   const sectionNum = (id: string) =>
     String(sections.findIndex((s) => s.id === id) + 1).padStart(2, '0');
@@ -560,7 +566,7 @@ export function CaseStudyPage({
                     <p>{teaser}</p>
                   </div>
                 </section>
-              ) : (
+              ) : hasReflection ? (
                 <section
                   id="sec-reflection"
                   className={styles.section}
@@ -576,7 +582,7 @@ export function CaseStudyPage({
                     ))}
                   </div>
                 </section>
-              )}
+              ) : null}
 
               {/* END TICK */}
               <div className={styles.endTick}>
