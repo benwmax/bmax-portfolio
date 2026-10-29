@@ -167,9 +167,11 @@ export function ChatTranscript({
     </span>
   );
   // The opening greeting keeps the "_" glyph in every theme; only the streaming
-  // cursor above becomes a dot in Futuristic.
+  // cursor above becomes a dot in Futuristic. It is static (2026-10-29): the
+  // ONLINE dot is the one blinking signal in the chat header, and the streaming
+  // cursor still blinks while a reply is being written.
   const greetingCursor = (
-    <span className={`${styles.cursor} ${styles.cursorUnderscore} cursor-blink`} aria-hidden="true">
+    <span className={`${styles.cursor} ${styles.cursorUnderscore}`} aria-hidden="true">
       _
     </span>
   );
