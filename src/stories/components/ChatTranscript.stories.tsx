@@ -111,7 +111,7 @@ export const Empty: Story = {
     docs: {
       description: {
         story:
-          'The homepage hero before anyone has typed. The greeting shows only while the log is empty, with a blinking cursor so the panel reads as live. Case study pages pass no greeting — their opener is a context note that lives in the transcript.',
+          'The homepage hero before anyone has typed. The greeting shows only while the log is empty, with a static trailing underscore (the ONLINE dot is the live signal). Case study pages pass no greeting — their opener is a context note that lives in the transcript.',
       },
     },
     ai: {
