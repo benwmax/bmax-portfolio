@@ -7,7 +7,7 @@ import * as NavBarStories from './NavBar.stories';
 
 Site header — wordmark left, three nav links right. Present on every page. Transparent: sits directly on the page background with only a 1px bottom rule. Wire `activePath` to the router pathname to mark the active link.
 
-The `BM_` wordmark with blinking underscore is a terminal cursor convention — do not modify the wordmark or remove the blink.
+The `BM_` wordmark with its trailing underscore is a terminal cursor convention — do not modify the wordmark. The underscore is static (it stopped blinking 2026-10-29); don't add the animation back.
 
 The Retro/Futuristic switch at the right edge is a separate documented component — see [ThemeToggle](/docs/components-themetoggle--docs) for its own states and guidance. NavBar's `Futuristic V2` story below renders it live.
 
@@ -42,7 +42,7 @@ Site header — present on every page. Three fixed nav links: Work, About, Conta
 
 **Content rules**
 - Nav links are fixed: Work (`/work`), About (`/about`), Contact (`/contact`). Do not add custom links.
-- The `BM_` wordmark with blinking underscore is the identity mark — do not modify it.
+- The `BM_` wordmark with its static underscore is the identity mark — do not modify it.
 - Active link gets green-accent color + `aria-current="page"`. No underline, no fill.
 - Wire `activePath` to the router pathname: `'/work'` on the homepage, `'/about'` on the About page, `'/contact'` on the Contact page.
 

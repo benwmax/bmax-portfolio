@@ -13,8 +13,8 @@ const meta = {
           'directly on --color-bg-page with only a 1px border-subtle rule at the ' +
           'bottom. No shadow, no fill, no backdrop-blur. ' +
           'The trailing underscore in BM_ is a terminal cursor convention — weight 700, ' +
-          'phosphor green #00e054, 1.1s step-end blink. It signals the site is actively ' +
-          'being built, which is true. The blink respects prefers-reduced-motion. ' +
+          'phosphor green #00e054. It is static — it stopped blinking 2026-10-29 because a ' +
+          'blink on every page competes with the content. ' +
           'Active state is determined by passing activePath; in production wire this to ' +
           'your router pathname. The active link gets green-accent color; no fill, no underline.',
       },
@@ -24,7 +24,7 @@ const meta = {
         'Site header — present on every page. Three fixed nav links: Work, About, Contact. Always wire activePath to the current router pathname.',
       contentRules: [
         'Nav links are fixed: Work (/work), About (/about), Contact (/contact). Do not add custom links.',
-        'The BM_ wordmark with blinking underscore is the identity mark — do not modify it.',
+        'The BM_ wordmark with its static underscore is the identity mark — do not modify it.',
         'Active link gets green-accent color + aria-current="page". No underline, no fill.',
       ],
       avoid: [
@@ -108,8 +108,8 @@ export const Futuristic: Story = {
     docs: {
       description: {
         story:
-          'The header under the Futuristic theme. The blinking terminal underscore becomes a ' +
-          'static azure diamond (BM◆ — same markup, reshaped in CSS), the wordmark bolds in ' +
+          'The header under the Futuristic theme. The terminal underscore becomes an ' +
+          'azure diamond (BM◆ — same markup, reshaped in CSS), the wordmark bolds in ' +
           'Space Grotesk, and the solid bar becomes a translucent frosted panel. The ' +
           'Retro/Futuristic toggle at the right edge is live in every story — it drives the ' +
           'same [data-theme] attribute the site uses.',
