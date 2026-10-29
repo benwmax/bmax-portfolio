@@ -48,7 +48,7 @@ export const Default: Story = {
   },
   args: {
     number: '04',
-    dateRange: '2018–2020',
+    dateRange: '2017–2021',
     title: 'Modernizing P&C insurance without losing the members who trusted it.',
     subtitle:
       "USAA's digital experience was showing its age. Mobile acquisition was leaking, members were calling support for things they should've done themselves, and fintech competitors were making insurance feel easy. We had the trust advantage. The experience wasn't holding up its end.",
@@ -111,7 +111,7 @@ export const TwoMetaCells: Story = {
   },
   args: {
     number: '02',
-    dateRange: '2023–2024',
+    dateRange: '2021–2024',
     title: 'A hybrid AI chatbot: talk like an advisor, act with real controls.',
     subtitle:
       'Retail traders needed professional-grade insight without needing to be professionals. The solution was a chatbot that could speak naturally and execute trades — without ever losing the guardrails.',
@@ -147,7 +147,7 @@ export const Sagent: Story = {
   },
   args: {
     number: '03',
-    dateRange: '2021–2022',
+    dateRange: '2024–present',
     title: 'Leading design on a mortgage platform after the director left.',
     subtitle:
       'Sagent was a complex enterprise mortgage platform mid-rebuild when the design director departed unexpectedly. What started as a senior IC role became something closer to director-level ownership — stakeholder management, IC mentorship, and product strategy without the title.',
@@ -176,7 +176,7 @@ export const Futuristic: Story = {
   },
   args: {
     number: '04',
-    dateRange: '2018–2020',
+    dateRange: '2017–2021',
     title: 'Modernizing P&C insurance without losing the members who trusted it.',
     subtitle:
       'USAA’s property & casualty flows were built for a generation of members who called on the phone. The redesign had to serve digital-first members without breaking trust with the ones who never asked for change.',

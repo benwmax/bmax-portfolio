@@ -15,19 +15,9 @@ const EXPERIENCE = [
     ],
   },
   {
-    role: 'Lead UX Designer',
-    company: 'Upfluent',
-    dates: '2023–24',
-    sector: 'Fintech',
-    outcomes: [
-      'Designed a hybrid AI chatbot that functions as a financial advisor: conversational interface with real control actions.',
-      'Reduced signup flow length by 30% through targeted research and iterative testing.',
-    ],
-  },
-  {
     role: 'Principal UX Designer · Co-lead',
     company: 'Sagent',
-    dates: '2021–22',
+    dates: '2024–present',
     sector: 'Mortgage technology',
     outcomes: [
       'Co-led a 4-person design team coordinating across 12 business teams on a large-scale mortgage platform rebuild.',
@@ -35,9 +25,19 @@ const EXPERIENCE = [
     ],
   },
   {
+    role: 'Lead UX Designer',
+    company: 'Upfluent',
+    dates: '2021–24',
+    sector: 'Fintech',
+    outcomes: [
+      'Designed a hybrid AI chatbot that functions as a financial advisor: conversational interface with real control actions.',
+      'Reduced signup flow length by 30% through targeted research and iterative testing.',
+    ],
+  },
+  {
     role: 'UX Designer',
     company: 'Market Rebellion',
-    dates: '2020–21',
+    dates: '2021–22',
     sector: 'Financial trading',
     outcomes: [
       'Designed retail-facing options trading tools for a platform co-founded by veteran traders — expert-to-novice translation at its hardest.',
@@ -46,7 +46,7 @@ const EXPERIENCE = [
   {
     role: 'Lead UX Designer — P&C',
     company: 'USAA',
-    dates: '2018–20',
+    dates: '2017–21',
     sector: 'Insurance',
     outcomes: [
       'Led UX for the P&C modernization initiative: heuristic review, design sprint, and iterative redesign of the core insurance experience.',

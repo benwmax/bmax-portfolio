@@ -10,7 +10,7 @@ export interface CaseStudyHeroMeta {
 export interface CaseStudyHeroProps {
   /** e.g. "04" */
   number: string;
-  /** e.g. "2018–2020" */
+  /** e.g. "2017–2021" */
   dateRange: string;
   /** The H1 — written as a problem statement, not a project description */
   title: string;

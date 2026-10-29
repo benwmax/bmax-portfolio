@@ -2,7 +2,7 @@ import type { CaseStudyContent } from '../pages/CaseStudyPage';
 
 export const upfluentData: CaseStudyContent = {
   number: '01',
-  dateRange: '2023–24',
+  dateRange: '2021–24',
   company: 'Upfluent',
   heroTitle: "Retail traders needed expert tools without an expert's learning curve.",
   heroSubtitle:
