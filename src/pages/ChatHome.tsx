@@ -196,12 +196,13 @@ export function ChatHome({ topicSlug, onChatSubmit, initialMessages = [] }: Chat
             />
           ) : (
             <div className={styles.hero}>
+              {/* Who's speaking (Ben, 2026-10-29): with the work grid gone, nothing
+                  on the first screen said he's a designer. Sits above the headline
+                  as an eyebrow, so the name comes before the claim. */}
+              <p className={styles.identity}>Ben Maxwell · UX Design Leader</p>
               <h1 className={styles.h1}>
                 I make expert tools <span className={styles.amber}>learnable</span>
               </h1>
-              {/* Who's speaking (Ben, 2026-10-29): with the work grid gone, nothing
-                  on the first screen said he's a designer. */}
-              <p className={styles.identity}>Ben Maxwell · UX Design Leader</p>
             </div>
           )}
         </main>

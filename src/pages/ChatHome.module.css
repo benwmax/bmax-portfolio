@@ -87,10 +87,10 @@
   color: var(--color-amber-accent);
 }
 
-/* Name and role under the headline — mono caps, so it reads as a byline to the
-   claim above it rather than a second headline. */
+/* Name and role above the headline — mono caps, so it reads as an eyebrow to
+   the claim below it rather than a second headline. */
 .identity {
-  margin: var(--space-4) 0 0;
+  margin: 0 0 var(--space-4);
   font-family: var(--font-mono-ui);
   font-size: var(--text-md);
   letter-spacing: var(--tracking-wider);
