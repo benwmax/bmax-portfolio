@@ -55,7 +55,7 @@ export const CASE_STUDIES: ExplorationCaseStudy[] = [
   {
     index: '02',
     title: 'Sagent',
-    desc: 'Leading design on a mortgage platform rebuild after the director left.',
+    desc: 'Leading a design team through nine months without a director, then shipping a workflow builder in two days.',
     tag: 'Mortgage',
     href: '/work/sagent',
     role: 'Principal UX Designer',
