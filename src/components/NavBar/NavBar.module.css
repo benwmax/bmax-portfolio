@@ -2,16 +2,6 @@
    Transparent — sits directly on var(--color-bg-page). No shadow, no fill.
    Only depth is the 1px border-subtle rule at the bottom edge. */
 
-@keyframes nav-underscore-blink {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0;
-  }
-}
-
 .header {
   display: flex;
   align-items: center;
@@ -27,7 +17,7 @@
   z-index: 40;
 }
 
-/* Wordmark — BM_ where the _ is a separate blinking span */
+/* Wordmark — BM_ where the _ is a separate span */
 .wordmark {
   font-family: var(--font-mono-display);
   font-weight: 400;
@@ -43,26 +33,20 @@
   flex-shrink: 0;
 }
 
-/* The trailing underscore — bolder, phosphor green, terminal cursor convention */
+/* The trailing underscore — bolder, phosphor green, terminal cursor convention.
+   Static on purpose (2026-10-29): the mark sits on every page, and a blink there
+   competes with the content. The chat's live cursors still blink. */
 .underscore {
   font-weight: 700;
   color: var(--color-green-accent);
-  animation: nav-underscore-blink 1.1s step-end infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .underscore {
-    animation: none;
-  }
 }
 
 /* ——— Futuristic theme ———
    The terminal cursor convention doesn't survive the theme switch: the
-   blinking underscore becomes a static azure diamond (BM◆), and the solid
+   underscore becomes an azure diamond (BM◆), and the solid
    header becomes a translucent frosted bar. font-size: 0 suppresses the
    "_" glyph so the span's box can be reshaped without a markup change. */
 :global([data-theme='futuristic']) .underscore {
-  animation: none;
   font-size: 0;
   display: inline-block;
   width: 7px;
