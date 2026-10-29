@@ -87,6 +87,17 @@
   color: var(--color-amber-accent);
 }
 
+/* Name and role under the headline — mono caps, so it reads as a byline to the
+   claim above it rather than a second headline. */
+.identity {
+  margin: var(--space-4) 0 0;
+  font-family: var(--font-mono-ui);
+  font-size: var(--text-md);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
 /* ——— Dock ——— */
 .dock {
   flex: none;

@@ -173,7 +173,7 @@ export function ChatHome({ topicSlug, onChatSubmit, initialMessages = [] }: Chat
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>
-        <NavBar activePath="/" showIdentity />
+        <NavBar activePath="/" />
 
         <main id="main-content" className={styles.main}>
           {started ? (
@@ -199,6 +199,9 @@ export function ChatHome({ topicSlug, onChatSubmit, initialMessages = [] }: Chat
               <h1 className={styles.h1}>
                 I make expert tools <span className={styles.amber}>learnable</span>
               </h1>
+              {/* Who's speaking (Ben, 2026-10-29): with the work grid gone, nothing
+                  on the first screen said he's a designer. */}
+              <p className={styles.identity}>Ben Maxwell · UX Design Leader</p>
             </div>
           )}
         </main>

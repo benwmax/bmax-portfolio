@@ -33,40 +33,6 @@
   flex-shrink: 0;
 }
 
-/* Wordmark plus the optional identity label (showIdentity). */
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  min-width: 0;
-}
-
-/* "Ben Maxwell · UX Designer" — set off from the mark by a hairline, so it
-   reads as a caption to BM_ rather than a fourth nav link. */
-.identity {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  padding-left: 16px;
-  border-left: 1px solid var(--color-border-default);
-  font-family: var(--font-mono-ui);
-  font-size: var(--text-base);
-  letter-spacing: var(--tracking-wide);
-  white-space: nowrap;
-}
-
-.identityName {
-  color: var(--color-text-primary);
-}
-
-.identitySep {
-  color: var(--color-text-tertiary);
-}
-
-.identityRole {
-  color: var(--color-amber-accent);
-}
-
 /* The trailing underscore — bolder, phosphor green, terminal cursor convention.
    Static on purpose (2026-10-29): the mark sits on every page, and a blink there
    competes with the content. The chat's live cursors still blink. */
@@ -164,31 +130,6 @@
   outline: 2px solid var(--color-green-accent);
   outline-offset: 3px;
   border-radius: 2px;
-}
-
-/* Mid widths: the name goes first; the role is the part that matters. */
-@media (max-width: 860px) {
-  .identityName,
-  .identitySep {
-    display: none;
-  }
-}
-
-/* Phones: no room beside the mark, so the role sits under it as a caption. */
-@media (max-width: 560px) {
-  .brand {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-  }
-
-  .identity {
-    padding-left: 0;
-    border-left: 0;
-    font-size: var(--text-xs);
-    letter-spacing: var(--tracking-wider);
-    text-transform: uppercase;
-  }
 }
 
 @media (max-width: 480px) {
