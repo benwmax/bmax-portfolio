@@ -4,6 +4,7 @@ import { RoleCallout, RoleCallouts } from '../../components/RoleCallout';
 import { ProcessStep, ProcessSteps } from '../../components/ProcessStep';
 import { ImageCaption } from '../../components/ImageCaption';
 import { imagesFor } from '../../content/work-images';
+import { CaseStudyArt } from '../../components/CaseStudyCard/CaseStudyArt';
 import { STUDIES } from '../studies';
 import type { StudyId } from '../widgetIds';
 import { Frame, Prose, Stat, StatRow } from './Frame';
@@ -29,7 +30,7 @@ interface Step {
  * readable and lets the visitor jump straight to Outcomes.
  */
 export function CaseWalkthrough({ study }: { study: StudyId }) {
-  const { content, name, tag } = STUDIES[study];
+  const { content, name, tag, art } = STUDIES[study];
   const [index, setIndex] = useState(0);
   const panelId = useId();
 
@@ -131,8 +132,16 @@ export function CaseWalkthrough({ study }: { study: StudyId }) {
         </>
       }
     >
-      <p className={styles.kicker}>In Ben's words</p>
-      <h3 className={styles.title}>{content.heroTitle}</h3>
+      {/* The project's cover art behind the title, as the case study page had it. */}
+      <div className={styles.walkHead}>
+        {art && (
+          <div className={styles.walkArt} aria-hidden="true">
+            <CaseStudyArt variant={art} wash={false} />
+          </div>
+        )}
+        <p className={styles.kicker}>In Ben's words</p>
+        <h3 className={styles.title}>{content.heroTitle}</h3>
+      </div>
 
       {/* A plain button row, not an ARIA tablist: each button is a "jump to
           section" control and the panel below announces nothing on change, so

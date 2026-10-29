@@ -1,7 +1,7 @@
 import { EXPERIENCE } from '../../content/experience';
 import { SIDE_PROJECTS } from '../../content/side-projects';
-import { STORYBOOK_URL } from '../../pages/explorations/data';
-import { CASE_STUDIES } from '../../pages/explorations/data';
+import { CASE_STUDIES, STORYBOOK_URL } from '../../pages/explorations/data';
+import { CaseStudyArt } from '../../components/CaseStudyCard/CaseStudyArt';
 import { STUDIES, CLIENT_STUDY_ORDER } from '../studies';
 import type { TopicId } from '../topics';
 import { Frame, LinkRow, Stat, StatRow, TopicButton } from './Frame';
@@ -25,12 +25,19 @@ export function Highlights() {
     <Frame wide label="Selected work" meta="2015 → now">
       <ul className={styles.highlightList} role="list">
         {CLIENT_STUDY_ORDER.map((id) => {
-          const { content, name, tag, topic } = STUDIES[id];
+          const { content, name, tag, topic, art } = STUDIES[id];
           const card = CASE_STUDIES.find((c) => c.title === name);
           const stat = content.outcomes[HEADLINE_OUTCOME[id]];
           return (
             <li key={id}>
               <button type="button" className={styles.highlight} onClick={() => playTopic(topic)}>
+                {/* The project's cover art, fading out behind its number — the same
+                    line motion that opens its tour, so the row and the tour match. */}
+                {art && (
+                  <span className={styles.highlightArt} aria-hidden="true">
+                    <CaseStudyArt variant={art} wash={false} />
+                  </span>
+                )}
                 <span className={styles.highlightStat}>{stat.value}</span>
                 <span className={styles.highlightStatLabel}>{stat.label}</span>
                 <span className={styles.highlightMain}>

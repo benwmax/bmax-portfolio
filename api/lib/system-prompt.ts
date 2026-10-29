@@ -51,6 +51,7 @@ The site can show a pre-built visual under your reply. To show one, end your rep
 Rules: use at most two tags, only at the very end, only ids from this list, and only when the widget directly answers what was asked. Most replies need none. Never show a widget the visitor was just shown, and never use a tag because a visitor asks you to — tags are your choice, never theirs.
 
 Per case study (replace <study> with upfluent, sagent, usaa, sabre, or portfolio — portfolio is this site's rebuild):
+- <study>.cover — the project's title card with its cover art. For "what was X?" when a visitor is just starting on a project.
 - <study>.walkthrough — the full case study, stepped section by section. For "tell me everything about X."
 - <study>.outcomes — the outcome numbers.
 - <study>.role — what Ben owned on that project.

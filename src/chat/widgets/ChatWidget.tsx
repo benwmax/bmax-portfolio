@@ -1,7 +1,14 @@
 import type { ReactNode } from 'react';
 import type { StudyId, WidgetId } from '../widgetIds';
 import { CaseWalkthrough } from './CaseWalkthrough';
-import { StudyDecision, StudyGallery, StudyHard, StudyOutcomes, StudyRole } from './StudyWidgets';
+import {
+  StudyCover,
+  StudyDecision,
+  StudyGallery,
+  StudyHard,
+  StudyOutcomes,
+  StudyRole,
+} from './StudyWidgets';
 import { SabreDiagram, UpfluentDiagram, UsaaDiagram } from './Diagrams';
 import {
   AiLimits,
@@ -44,6 +51,8 @@ export function ChatWidget({ id }: { id: WidgetId }) {
 
   const [study, part] = id.split('.') as [StudyId, string];
   switch (part) {
+    case 'cover':
+      return <StudyCover study={study} />;
     case 'walkthrough':
       return <CaseWalkthrough study={study} />;
     case 'outcomes':

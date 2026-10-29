@@ -15,7 +15,7 @@ export const STUDY_IDS = ['upfluent', 'sagent', 'usaa', 'sabre', 'portfolio'] as
 export type StudyId = (typeof STUDY_IDS)[number];
 
 /** Per-study widgets, as `<study>.<part>`. */
-export const STUDY_PARTS = ['walkthrough', 'outcomes', 'role', 'decision', 'hard', 'gallery'] as const;
+export const STUDY_PARTS = ['cover', 'walkthrough', 'outcomes', 'role', 'decision', 'hard', 'gallery'] as const;
 export type StudyPart = (typeof STUDY_PARTS)[number];
 
 /** Studies with a bespoke diagram of their key decision. */

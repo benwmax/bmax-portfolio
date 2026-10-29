@@ -199,6 +199,8 @@ const TOPIC_LIST: Topic[] = [
     group: 'work',
     kicker: 'Travel · $1B contract',
     beats: [
+      // Title card with the project's cover art (Ben, 2026-10-29).
+      { widgets: ['sabre.cover'] },
       {
         text: 'Sabre Red Workspace ran on a command line that took agents weeks to learn. Ben owned Hotel booking, and the team built a hybrid: command line for veterans, graphical mode for new hires, switch freely.',
         widgets: ['sabre.diagram'],
@@ -221,6 +223,8 @@ const TOPIC_LIST: Topic[] = [
     group: 'work',
     kicker: 'Insurance · +4–6% conversion',
     beats: [
+      // Title card with the project's cover art (Ben, 2026-10-29).
+      { widgets: ['usaa.cover'] },
       {
         text: "USAA's P&C products dated from the early 2000s. As lead designer, Ben ran two tracks: quick A/B tests on the old stack, fed by research from the full redesign running alongside.",
         widgets: ['usaa.diagram'],
@@ -243,6 +247,8 @@ const TOPIC_LIST: Topic[] = [
     group: 'work',
     kicker: 'Fintech · AI advisor',
     beats: [
+      // Title card with the project's cover art (Ben, 2026-10-29).
+      { widgets: ['upfluent.cover'] },
       {
         text: 'Upfluent was a mobile-first options trading platform for retail traders. Ben led design of its AI advisor: talk to it freely, then act through real controls it puts inline.',
         widgets: ['upfluent.diagram'],
@@ -267,6 +273,8 @@ const TOPIC_LIST: Topic[] = [
     // No gallery beat: the Sagent work is under NDA and no images can be shown
     // (decisions.md 2026-10-29). The story carries itself in text and numbers.
     beats: [
+      // Title card with the project's cover art (Ben, 2026-10-29).
+      { widgets: ['sagent.cover'] },
       {
         text: "At Sagent, ten designers supported fourteen business teams across three mortgage servicing products. A month after Ben joined, the design leader left and the company didn't backfill for almost nine months — Ben led the team through it.",
       },
