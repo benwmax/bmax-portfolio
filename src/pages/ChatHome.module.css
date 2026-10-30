@@ -110,9 +110,11 @@
 .idle .dock {
   flex: 1;
   align-items: flex-start;
-  padding-top: 0;
+  /* Room for the input's focus ring (2px outline, 2px offset). No overflow
+     clipping here: it cut the ring's top edge off (2026-10-30), and the
+     scrolling happens inside .prompts, so nothing needs clipping. */
+  padding-top: var(--space-2);
   min-height: 0;
-  overflow: hidden;
 }
 
 /* The expanded questions can outgrow the lower half of the screen. The input
