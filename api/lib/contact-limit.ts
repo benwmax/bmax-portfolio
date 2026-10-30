@@ -7,6 +7,7 @@
 
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
+import { rateLimitKey } from './ip';
 
 const redis = Redis.fromEnv();
 
@@ -33,7 +34,9 @@ const dailyLimit = new Ratelimit({
 // in a try/catch and fails closed (503) rather than letting an outage
 // disable rate limiting entirely.
 export async function checkContactRateLimit(ip: string): Promise<{ success: boolean }> {
-  const [hourly, daily] = await Promise.all([hourlyLimit.limit(ip), dailyLimit.limit(ip)]);
+  // Keyed per IPv6 /64, not per address — see ./ip.ts.
+  const key = rateLimitKey(ip);
+  const [hourly, daily] = await Promise.all([hourlyLimit.limit(key), dailyLimit.limit(key)]);
   return { success: hourly.success && daily.success };
 }
 

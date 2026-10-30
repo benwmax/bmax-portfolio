@@ -65,6 +65,7 @@ const TOPIC_CONTEXT: Record<string, string> = {
   'design-system': "the walkthrough on this site's design system",
   career: "Ben's career timeline",
   'looking-for': 'what Ben is looking for next',
+  'side-projects': "Ben's side projects (the joint bills planner, Sailing Sim, Sailing Study)",
 };
 
 // Structured, single-line JSON logs — Vercel captures stdout as Function
@@ -255,29 +256,37 @@ export default async function handler(req: Request): Promise<Response> {
 
   // Call Anthropic API directly — the SDK uses node:fs/node:path which the
   // Edge runtime doesn't support. fetch is available everywhere.
-  const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: MAX_OUTPUT_TOKENS,
-      system: systemPrompt,
-      messages: trimmed,
-      stream: true,
-    }),
-  });
+  // A network-level failure (DNS, reset, timeout) throws rather than returning
+  // a non-ok response. Caught so it takes the same release-and-502 path below
+  // instead of an unhandled 500 that leaks both reservations.
+  let anthropicRes: Response | null;
+  try {
+    anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: MAX_OUTPUT_TOKENS,
+        system: systemPrompt,
+        messages: trimmed,
+        stream: true,
+      }),
+    });
+  } catch {
+    anthropicRes = null;
+  }
 
-  if (!anthropicRes.ok || !anthropicRes.body) {
+  if (!anthropicRes || !anthropicRes.ok || !anthropicRes.body) {
     // The reservations above were for a message that never got a real
     // reply — release both so a failed attempt doesn't count against
     // either cap.
     await releaseSessionMessage(sid);
     await releaseGlobalMessage();
-    logEvent({ event: 'error', reason: 'upstream', status: anthropicRes.status });
+    logEvent({ event: 'error', reason: 'upstream', status: anthropicRes?.status ?? 'network' });
     return jsonResponse(502, { error: 'Upstream error.' }, cors);
   }
 
@@ -285,47 +294,73 @@ export default async function handler(req: Request): Promise<Response> {
   // and accumulate the full reply so it can be persisted as session history
   // once the stream completes.
   const sidForClosure = sid;
+  const upstreamBody = anthropicRes.body;
   const readable = new ReadableStream({
     async start(controller) {
-      const reader = anthropicRes.body!.getReader();
+      const reader = upstreamBody.getReader();
       const decoder = new TextDecoder();
       const encoder = new TextEncoder();
       let buffer = '';
       let fullText = '';
       let stopReason: string | null = null;
+      // Set by an SSE `error` event (e.g. overloaded_error mid-stream) or a
+      // dropped connection. Both used to be ignored, which ended the response
+      // with a 200 and whatever text had arrived — often none.
+      let streamError: string | null = null;
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
 
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split('\n');
-        buffer = lines.pop() ?? '';
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() ?? '';
 
-        for (const line of lines) {
-          if (!line.startsWith('data: ')) continue;
-          const data = line.slice(6).trim();
-          if (data === '[DONE]') continue;
+          for (const line of lines) {
+            if (!line.startsWith('data: ')) continue;
+            const data = line.slice(6).trim();
+            if (data === '[DONE]') continue;
 
-          try {
-            const event = JSON.parse(data) as {
-              type: string;
-              delta?: { type: string; text?: string; stop_reason?: string };
-            };
-            if (event.type === 'content_block_delta' && event.delta?.type === 'text_delta') {
-              const text = event.delta.text ?? '';
-              fullText += text;
-              controller.enqueue(encoder.encode(text));
-            } else if (event.type === 'message_delta' && event.delta?.stop_reason) {
-              stopReason = event.delta.stop_reason;
+            try {
+              const event = JSON.parse(data) as {
+                type: string;
+                delta?: { type: string; text?: string; stop_reason?: string };
+                error?: { type?: string };
+              };
+              if (event.type === 'content_block_delta' && event.delta?.type === 'text_delta') {
+                const text = event.delta.text ?? '';
+                fullText += text;
+                controller.enqueue(encoder.encode(text));
+              } else if (event.type === 'message_delta' && event.delta?.stop_reason) {
+                stopReason = event.delta.stop_reason;
+              } else if (event.type === 'error') {
+                streamError = event.error?.type ?? 'unknown';
+              }
+            } catch {
+              // ignore malformed SSE lines
             }
-          } catch {
-            // ignore malformed SSE lines
           }
+          if (streamError) break;
         }
+      } catch {
+        streamError = 'stream-read';
       }
 
       controller.close();
+
+      // Nothing reached the visitor: treat it like the non-ok path above.
+      // Release both reservations, and don't save the turn. An empty assistant
+      // message in history makes the Messages API reject every later request
+      // in this session, which broke chat for that visitor until the 2-hour
+      // session TTL ran out (found in the 2026-10-30 audit). The client shows
+      // its fallback error when the body is empty (useChatSession.ts).
+      if (fullText.trim() === '') {
+        await releaseSessionMessage(sidForClosure);
+        await releaseGlobalMessage();
+        logEvent({ event: 'error', reason: 'empty-reply', streamError, stopReason });
+        return;
+      }
 
       const assistantMessage: StoredMessage = { role: 'assistant', content: fullText };
       const newHistory: StoredMessage[] = [...session.history, userMessage, assistantMessage].slice(
@@ -339,6 +374,7 @@ export default async function handler(req: Request): Promise<Response> {
         latencyMs: Date.now() - requestStart,
         outputLength: fullText.length,
         stopReason,
+        streamError,
         pageContext,
       });
     },

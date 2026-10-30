@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useLayoutEffect, useRef } from 'react';
+import { Fragment, useCallback, useLayoutEffect, useRef, useState } from 'react';
 import type { ReactNode, Ref } from 'react';
 import { splitParagraphs } from '../../hooks/useChatSession';
 import type { Message } from '../../hooks/useChatSession';
@@ -7,7 +7,7 @@ import styles from './ChatTranscript.module.css';
 
 export interface ChatTranscriptProps {
   messages: Message[];
-  /** True while a reply is streaming — shows the cursor and quiets the live region. */
+  /** True while a reply is streaming or a tour is playing — shows the cursor; the finished turn is announced when it goes false. */
   streaming?: boolean;
   /**
    * The inline ContactCard, or null when it isn't showing. Passed in rather than
@@ -42,6 +42,22 @@ export interface ChatTranscriptProps {
 }
 
 const PIN_INSET_PX = 8;
+
+/**
+ * What a screen reader hears when a turn finishes: every assistant text since the
+ * visitor's latest prompt. A tour is several beats, so this joins them; a turn
+ * that is all widgets still gets a short cue.
+ */
+function finishedTurnText(messages: Message[]): string {
+  const lastUser = messages.reduce((acc, m, i) => (m.role === 'user' ? i : acc), -1);
+  const text = messages
+    .slice(lastUser + 1)
+    .filter((m) => m.role === 'assistant')
+    .map((m) => m.text.trim())
+    .filter(Boolean)
+    .join(' ');
+  return text || 'Reply shown below.';
+}
 
 const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -160,6 +176,21 @@ export function ChatTranscript({
   const userCount = messages.filter((m) => m.role === 'user').length;
   usePinLatestPrompt(logRef, spacerRef, userCount, pinToTop);
 
+  // Screen-reader announcement for a finished reply or tour (2026-10-30 audit).
+  // The log used to be the live region, switched 'off' while streaming and back
+  // to 'polite' afterwards. Every chunk and tour beat arrived while it was off,
+  // and flipping the attribute doesn't announce content that's already there, so
+  // nothing was ever read. Now the log is never live, and this separate status
+  // region gets the whole turn once, when streaming ends. Derived during render
+  // (not in an effect) so a tour's last beat and the end of streaming, which
+  // commit together, are both in `messages` here.
+  const [wasStreaming, setWasStreaming] = useState(streaming);
+  const [announcement, setAnnouncement] = useState('');
+  if (streaming !== wasStreaming) {
+    setWasStreaming(streaming);
+    setAnnouncement(streaming ? '' : finishedTurnText(messages));
+  }
+
   // The contact form is a transcript entry, not a footer: it renders after the
   // turn that surfaced it, so a follow-up question and its reply appear below
   // it rather than above it. The clamp covers Storybook's forced card (no anchor
@@ -185,70 +216,79 @@ export function ChatTranscript({
   );
 
   return (
-    <div
-      className={className}
-      ref={setRefs}
-      // 'off' while streaming: chunks append to the same message dozens of
-      // times per reply, and an always-on live region reads each partial
-      // fragment. Flips to 'polite' once the reply finishes so the whole
-      // thing gets announced once, not word-by-word.
-      aria-live={streaming ? 'off' : 'polite'}
-      aria-label="Chat messages"
-      data-variant={variant}
-    >
-      {messages.length === 0 && greeting && (
-        <p className={styles.assistant}>
-          {greeting} {greetingCursor}
-        </p>
-      )}
-      {messages.map((m, i) => (
-        <Fragment key={i}>
-          {m.role === 'user' ? (
-            <p className={styles.user} data-latest-prompt={i === lastUserIndex ? '' : undefined}>
-              <span className={styles.userPrompt} aria-hidden="true">
-                {'› '}
-              </span>
-              {m.text}
-            </p>
-          ) : (
-            // Assistant replies are split into short paragraphs — the system
-            // prompt enforces frequent breaks, and rendering them as one block
-            // was the 2026-07-19 readability bug. Widgets sit under the text,
-            // outside its left rule, so a wide widget isn't indented by it. A
-            // tour beat can be widgets only, with no text block at all.
-            <div className={styles.turn}>
-              {(m.text !== '' || !m.widgets?.length) && (
-                <div className={styles.assistant}>
-                  {(() => {
-                    const paras = splitParagraphs(m.text);
-                    const displayParas = paras.length > 0 ? paras : [''];
-                    return displayParas.map((para, pi) => (
-                      <p key={pi} className={styles.assistantPara}>
-                        {para}
-                        {streaming &&
-                          i === messages.length - 1 &&
-                          pi === displayParas.length - 1 &&
-                          cursor}
-                      </p>
-                    ));
-                  })()}
-                </div>
-              )}
-              {m.widgets?.map((id) => (
-                <div key={id} className={styles.widget}>
-                  <ChatWidget id={id} />
-                </div>
-              ))}
-            </div>
-          )}
-          {contactCardAt === i + 1 && contactCard}
-        </Fragment>
-      ))}
-      {/* Only reachable with an empty log (Storybook's forced card) — every
+    <>
+      <div
+        className={className}
+        ref={setRefs}
+        // role="log" so the label is announced and the log can be found as a
+        // landmark-like region. aria-live="off" overrides the role's implicit
+        // 'polite': chunks append to the same message dozens of times per reply,
+        // and a live log would read each partial fragment. The status region
+        // below announces the finished turn instead.
+        role="log"
+        aria-live="off"
+        aria-label="Chat messages"
+        data-variant={variant}
+      >
+        {messages.length === 0 && greeting && (
+          <p className={styles.assistant}>
+            {greeting} {greetingCursor}
+          </p>
+        )}
+        {messages.map((m, i) => (
+          <Fragment key={i}>
+            {m.role === 'user' ? (
+              <p className={styles.user} data-latest-prompt={i === lastUserIndex ? '' : undefined}>
+                <span className={styles.userPrompt} aria-hidden="true">
+                  {'› '}
+                </span>
+                {m.text}
+              </p>
+            ) : (
+              // Assistant replies are split into short paragraphs — the system
+              // prompt enforces frequent breaks, and rendering them as one block
+              // was the 2026-07-19 readability bug. Widgets sit under the text,
+              // outside its left rule, so a wide widget isn't indented by it. A
+              // tour beat can be widgets only, with no text block at all.
+              <div className={styles.turn}>
+                {(m.text !== '' || !m.widgets?.length) && (
+                  <div className={styles.assistant}>
+                    {(() => {
+                      const paras = splitParagraphs(m.text);
+                      const displayParas = paras.length > 0 ? paras : [''];
+                      return displayParas.map((para, pi) => (
+                        <p key={pi} className={styles.assistantPara}>
+                          {para}
+                          {streaming &&
+                            i === messages.length - 1 &&
+                            pi === displayParas.length - 1 &&
+                            cursor}
+                        </p>
+                      ));
+                    })()}
+                  </div>
+                )}
+                {m.widgets?.map((id) => (
+                  <div key={id} className={styles.widget}>
+                    <ChatWidget id={id} />
+                  </div>
+                ))}
+              </div>
+            )}
+            {contactCardAt === i + 1 && contactCard}
+          </Fragment>
+        ))}
+        {/* Only reachable with an empty log (Storybook's forced card) — every
           other position is rendered inside the map above. */}
-      {contactCardAt === 0 && contactCard}
-      {children}
-      <div ref={spacerRef} className={styles.spacer} aria-hidden="true" />
-    </div>
+        {contactCardAt === 0 && contactCard}
+        {children}
+        <div ref={spacerRef} className={styles.spacer} aria-hidden="true" />
+      </div>
+      {/* Outside the log so the log's aria-live="off" can't silence it, and
+        absolutely positioned (sr-only) so it doesn't join the parent's layout. */}
+      <p role="status" className="sr-only">
+        {announcement}
+      </p>
+    </>
   );
 }

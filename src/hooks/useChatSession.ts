@@ -61,11 +61,14 @@ export function detectContactIntent(text: string): boolean {
 // server. Deliberately no status code — "(502)" means nothing to a visitor and
 // reads as broken. The server's own `error` text, when present, still wins.
 const CHAT_FALLBACK_ERROR = 'Something went wrong on my end. Try again in a moment.';
-const CONTACT_FALLBACK_ERROR = "Couldn't send your message. Try again, or email ben@viewbens.work directly.";
+const CONTACT_FALLBACK_ERROR =
+  "Couldn't send your message. Try again, or email ben@viewbens.work directly.";
 
 // Mirrors streamChat's error-handling shape below, but for the single-shot
 // (non-streaming) /api/contact endpoint.
-async function postContact(fields: ContactSubmission): Promise<{ ok: boolean; errorText?: string }> {
+async function postContact(
+  fields: ContactSubmission,
+): Promise<{ ok: boolean; errorText?: string }> {
   try {
     const res = await fetch('/api/contact', {
       method: 'POST',
@@ -82,7 +85,10 @@ async function postContact(fields: ContactSubmission): Promise<{ ok: boolean; er
       return { ok: false, errorText: CONTACT_FALLBACK_ERROR };
     }
   } catch {
-    return { ok: false, errorText: "Couldn't send your message — check your connection and try again." };
+    return {
+      ok: false,
+      errorText: "Couldn't send your message — check your connection and try again.",
+    };
   }
 }
 
@@ -151,8 +157,12 @@ async function streamChat(
       const { done, value } = await reader.read();
       if (done) break;
       armTimeout();
-      onChunk(decoder.decode(value));
+      // stream: true holds back a multi-byte character split across two
+      // chunks (an em dash is 3 bytes) instead of rendering it as ��.
+      onChunk(decoder.decode(value, { stream: true }));
     }
+    const tail = decoder.decode();
+    if (tail) onChunk(tail);
 
     return {};
   } finally {
@@ -434,9 +444,18 @@ export function useChatSession({
           });
         });
 
+        // A 200 with nothing displayable: the server ends the stream empty when
+        // the model fails mid-reply (api/chat.ts, empty-reply), and a reply made
+        // only of unknown widget tags strips to nothing. Either way, show the
+        // fallback instead of leaving a blank bubble.
+        const finished = parseWidgetTags(assistantText);
+        const nothingShown = finished.text.trim() === '' && finished.widgets.length === 0;
+
         if (errorText) {
           replaceLastAssistant(errorText);
-        } else if (detectContactIntent(parseWidgetTags(assistantText).text)) {
+        } else if (nothingShown) {
+          replaceLastAssistant(CHAT_FALLBACK_ERROR);
+        } else if (detectContactIntent(finished.text)) {
           surfaceContactCard();
         }
       } catch {

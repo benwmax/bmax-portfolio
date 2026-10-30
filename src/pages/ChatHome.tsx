@@ -143,6 +143,28 @@ export function ChatHome({ topicSlug, onChatSubmit, initialMessages = [] }: Chat
     return [...base, { label: 'All topics', topic: 'menu' }];
   }, [started, busy, followUps, playedTopics]);
 
+  // Keyboard focus after a chip (2026-10-30 audit). Pressing a chip starts a
+  // tour, and the chip row is unmounted while it plays (and moves above the
+  // input on the first one), so focus falls to <body> and the next Tab starts
+  // over at the skip link. When the turn ends with focus lost, put it on the
+  // first new chip. Only when lost: a typed question keeps focus in the input,
+  // and a button inside a widget stays mounted, so those are left alone. A
+  // button rather than the input, so phones don't pop the keyboard.
+  const chipRowRef = useRef<HTMLDivElement | null>(null);
+  const wasBusy = useRef(busy);
+  useEffect(() => {
+    if (wasBusy.current && !busy) {
+      const active = document.activeElement;
+      if (!active || active === document.body) {
+        const target =
+          chipRowRef.current?.querySelector<HTMLElement>('button') ??
+          dockRef.current?.querySelector<HTMLElement>('textarea');
+        target?.focus({ preventScroll: true });
+      }
+    }
+    wasBusy.current = busy;
+  }, [busy]);
+
   const onChip = (chip: FollowUp) => {
     if (chip.topic) void playTopic(chip.topic);
     else void handleSubmit(chip.label);
@@ -155,6 +177,7 @@ export function ChatHome({ topicSlug, onChatSubmit, initialMessages = [] }: Chat
 
   const chipRow = chips.length > 0 && (
     <div
+      ref={chipRowRef}
       className={[styles.chips, started ? '' : styles.chipsStart].filter(Boolean).join(' ')}
       role="group"
       aria-label={started ? 'Suggested next questions' : 'Suggested questions'}
