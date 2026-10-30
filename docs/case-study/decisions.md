@@ -1403,3 +1403,14 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
   rebuilding a prototype that wasn't on the real stack — and the page says what AI didn't do
   (developers fixed API/data connections and added validations).
 - Open: OG images for Sagent, Upfluent and USAA need regenerating.
+
+## 2026-10-30 — Sabre copy corrected to match the case study
+- Decision: (Ben) The Resume and About pages no longer say "NDC channel redesign" or "$1B
+  government contract". They now say Ben owned Hotel booking in the Sabre Red Workspace redesign,
+  and the $1B win was the Flightcentre contract — both as stated in `src/content/sabre.ts`.
+  The ChatTranscript story's sample answer was corrected the same way.
+- Reasoning: Caught while checking a PDF export of the resume for job applications. Neither
+  "NDC" nor "government" appears in the Sabre case study, and Flightcentre is a travel agency,
+  so the site contradicted itself.
+- Note: the PDF resume (`exports/`, not committed) uses fuller Sabre, Sagent, Upfluent, and USAA
+  bullets than the Resume page.

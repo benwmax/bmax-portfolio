@@ -12,7 +12,7 @@ const CONVERSATION: Message[] = [
     role: 'assistant',
     text:
       'He made a command-line booking tool learnable without slowing down the veterans who already knew it.\n\n' +
-      'The work contributed to a $1B government contract win and a 23% revenue lift.',
+      'The work contributed to a $1B Flightcentre contract win and a 23% revenue lift.',
   },
 ];
 
