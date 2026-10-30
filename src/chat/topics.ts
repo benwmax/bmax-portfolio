@@ -92,6 +92,25 @@ export interface Topic {
  */
 export const STARTER_TOPICS: TopicId[] = ['best-work', 'experts', 'ai', 'looking-for'];
 
+/**
+ * Every other listed topic, grouped, for the "more questions" expander under
+ * the four starters (Ben, 2026-10-29: a way to explore if the first few chips
+ * aren't what someone wants). The work leads, because its first row is what
+ * shows in the collapsed peek, and the project names are the strongest hint
+ * of what's inside. Built from the topic list, so a new topic appears here
+ * automatically.
+ */
+export function moreStarterGroups(): { label: string; topics: Topic[] }[] {
+  const rest = (group: TopicGroup) =>
+    visibleTopics(group).filter((t) => !STARTER_TOPICS.includes(t.id));
+  return [
+    { label: 'The work', topics: rest('work') },
+    { label: 'How he works', topics: rest('how') },
+    { label: 'About Ben', topics: rest('start') },
+    { label: 'Next steps', topics: rest('next') },
+  ].filter((g) => g.topics.length > 0);
+}
+
 // A study's screenshots, once Ben adds them to src/content/work-images.ts.
 // Returns no beat at all until there's something to show.
 function galleryBeat(study: StudyId, text: string): Beat[] {

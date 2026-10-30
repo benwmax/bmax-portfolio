@@ -111,6 +111,96 @@
   flex: 1;
   align-items: flex-start;
   padding-top: 0;
+  /* The expanded "more questions" list can outgrow the lower half of the
+     screen; it scrolls here rather than pushing the headline off the top. */
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* ——— More questions (idle only) ——— */
+.more {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  animation: chipsIn var(--duration-slow) var(--ease-default) 0.25s both;
+}
+
+.moreList {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  /* Collapsed: one row peeks through a fade — enough to show more exist. */
+  max-height: 72px;
+  overflow: hidden;
+  opacity: 0.75;
+  -webkit-mask-image: linear-gradient(to bottom, #000 35%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 35%, transparent 100%);
+  transition:
+    max-height var(--duration-slow) var(--ease-default),
+    opacity var(--duration-base) var(--ease-default);
+}
+
+.moreListOpen {
+  max-height: 900px;
+  opacity: 1;
+  -webkit-mask-image: none;
+  mask-image: none;
+  padding-bottom: var(--space-2);
+}
+
+.moreGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.moreLabel {
+  font-family: var(--font-mono-ui);
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+}
+
+.moreChips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.moreToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-mono-ui);
+  font-size: var(--text-base);
+  color: var(--color-green-accent);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.moreToggle:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.moreToggle:focus-visible {
+  outline: 2px solid var(--color-green-accent);
+  outline-offset: 2px;
+}
+
+.moreChevron {
+  display: inline-block;
+  transition: transform var(--duration-base) var(--ease-default);
+}
+
+[aria-expanded='true'] > .moreChevron {
+  transform: rotate(180deg);
 }
 
 .started .dock {
@@ -212,8 +302,14 @@
 
 @media (prefers-reduced-motion: reduce) {
   .log,
-  .chipsStart {
+  .chipsStart,
+  .more {
     animation: none;
+  }
+
+  .moreList,
+  .moreChevron {
+    transition: none;
   }
 }
 
@@ -234,10 +330,21 @@
     align-items: stretch;
   }
 
-  .chipsStart .chip {
+  .chipsStart .chip,
+  .moreChips .chip {
     white-space: normal;
     text-align: left;
     border-radius: var(--radius-sm);
+  }
+
+  /* Same full-width stack as the starters, so the expanded list reads as more
+     of the same list. */
+  .moreGroup {
+    align-items: stretch;
+  }
+
+  .moreChips {
+    flex-direction: column;
   }
 
   .fineprint {

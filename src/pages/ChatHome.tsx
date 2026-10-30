@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
+import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { PageHead } from '../seo/PageHead';
 import { HOME_META, ROUTE_META } from '../seo/pageMeta';
 import { NavBar } from '../components/NavBar';
@@ -8,7 +8,13 @@ import { ChatTranscript } from '../components/ChatTranscript';
 import { useChat } from '../context/useChat';
 import type { Message } from '../hooks/useChatSession';
 import { WidgetActionsContext } from '../chat/widgets';
-import { DEEP_LINK_TOPICS, STARTER_TOPICS, TOPICS, suggestNextTopics } from '../chat/topics';
+import {
+  DEEP_LINK_TOPICS,
+  STARTER_TOPICS,
+  TOPICS,
+  moreStarterGroups,
+  suggestNextTopics,
+} from '../chat/topics';
 import type { FollowUp } from '../chat/topics';
 import { usePrefersReducedMotion } from './explorations/hooks';
 import styles from './ChatHome.module.css';
@@ -103,6 +109,10 @@ export function ChatHome({ topicSlug, onChatSubmit, initialMessages = [] }: Chat
 
   const reduced = usePrefersReducedMotion();
   const dockRef = useRef<HTMLDivElement | null>(null);
+  const [moreOpen, setMoreOpen] = useState(false);
+  const moreId = useId();
+  const moreGroups = useMemo(() => moreStarterGroups(), []);
+  const moreCount = moreGroups.reduce((n, g) => n + g.topics.length, 0);
   const deepLinkTopic = topicSlug ? DEEP_LINK_TOPICS[topicSlug] : undefined;
   const meta = (topicSlug && ROUTE_META[`/work/${topicSlug}`]) || HOME_META;
 
@@ -165,6 +175,51 @@ export function ChatHome({ topicSlug, onChatSubmit, initialMessages = [] }: Chat
     </div>
   );
 
+  // More questions, under the four starters (Ben, 2026-10-29). Collapsed, the
+  // first row peeks through a fade, so it's visible that more exist without
+  // the first screen getting busy again. The peek is inert until expanded:
+  // half-hidden buttons shouldn't take keyboard focus.
+  const moreQuestions = !started && moreCount > 0 && (
+    <div className={styles.more}>
+      <div
+        id={moreId}
+        className={[styles.moreList, moreOpen ? styles.moreListOpen : ''].filter(Boolean).join(' ')}
+        inert={!moreOpen ? true : undefined}
+        aria-hidden={!moreOpen ? true : undefined}
+      >
+        {moreGroups.map((g) => (
+          <div key={g.label} className={styles.moreGroup} role="group" aria-label={g.label}>
+            <span className={styles.moreLabel}>{g.label}</span>
+            <div className={styles.moreChips}>
+              {g.topics.map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  className={styles.chip}
+                  onClick={() => onChip({ label: t.prompt, topic: t.id })}
+                >
+                  {t.prompt}
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+      <button
+        type="button"
+        className={styles.moreToggle}
+        aria-expanded={moreOpen}
+        aria-controls={moreId}
+        onClick={() => setMoreOpen((o) => !o)}
+      >
+        {moreOpen ? 'Show fewer' : `Show ${moreCount} more questions`}
+        <span className={styles.moreChevron} aria-hidden="true">
+          ⌄
+        </span>
+      </button>
+    </div>
+  );
+
   return (
     <WidgetActionsContext.Provider value={actions}>
       <div className={[styles.page, started ? styles.started : styles.idle].join(' ')}>
@@ -222,6 +277,7 @@ export function ChatHome({ topicSlug, onChatSubmit, initialMessages = [] }: Chat
               className={styles.input}
             />
             {!started && chipRow}
+            {moreQuestions}
             {started && (
               <p className={styles.fineprint}>
                 Walkthroughs are written by Ben. Typed questions are answered by an AI model and can
