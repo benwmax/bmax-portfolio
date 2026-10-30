@@ -409,7 +409,10 @@ const TOPIC_LIST: Topic[] = [
     kicker: 'Side projects',
     available: () => SIDE_PROJECTS.length > 0,
     beats: [
-      { text: 'Projects he has built on his own time, outside client work:', widgets: ['side-projects'] },
+      {
+        text: 'Three things he built this year on his own time. They are fun, and they show how fast he can build with AI as a collaborator.',
+        widgets: ['side-projects'],
+      },
     ],
     followUps: [
       { label: 'How does AI fit his process?', topic: 'ai' },

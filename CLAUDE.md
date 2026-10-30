@@ -143,7 +143,8 @@ Storybook and rollback.
   About, Resume, Contact.
 - **Content hooks:** `src/content/work-images.ts` holds screenshots, which stay hidden until a
   `src` is set. Sagent never gets images (NDA). `src/content/side-projects.ts` holds side
-  projects, and that topic stays hidden until the list is non-empty. `src/content/experience.ts`
+  projects (three since 2026-10-30: joint bills planner, Sailing Sim, Sailing Study), mirrored
+  in the brief's SIDE PROJECTS section. The topic hides again if the list is ever emptied. `src/content/experience.ts`
   is shared by the Resume page and the career widget.
 - **Decisions and review:** `docs/case-study/chat-first-decisions.md` and
   `docs/case-study/chat-widget-review.md`. Storybook: `Chat/Widgets` (stories + MDX) and
