@@ -78,6 +78,7 @@ Shown in place of writing a URL into the reply.
 
 - **Gallery** (`<study>.gallery`) shows real screenshots from `src/content/work-images.ts` and renders nothing until an image has a `src`. Sagent never gets one, because its work is under NDA.
 - **Side projects** (`side-projects`) render nothing until `src/content/side-projects.ts` has an entry. Its starter question stays hidden until then too.
+- **Sim reel** (`sim-reel`) plays short silent loops of Sailing Sim from `src/content/sim-reel.ts` and renders nothing until a clip has an `mp4`, a `poster`, and `alt`. Loops play only while on screen, each has a visible pause button (WCAG 2.2.2), and nothing autoplays under reduced motion.
 
 ## Do's
 

@@ -1446,3 +1446,18 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
   (about 1,500 on the sim in 19 days) were left out because they go stale.
 - Open question: screenshots. Candidates: the study site's own PNGs, a sim render Ben picks,
   and a capture of the bills planner's demo household (made-up data).
+
+## 2026-10-30 — Sailing Sim showcase: loops first, then a reel (Ben)
+- Decision: (Ben) Showcase the sim with short silent loops on the site first, and a longer
+  reel later. Five loops are planned (wireframe to lit, the fleet, live physics, the
+  thunderstorm, night on the ship channel), played by a new `sim-reel` chat widget in the
+  side-projects tour. It stays hidden until a clip is ready. Shot list and encode settings:
+  `docs/side-projects/sim-reel.md`.
+- Reasoning: loops are the cheapest piece to make, they bring the side-projects card to
+  life, and they become the reel's raw footage. Self-hosted video needs no CSP change;
+  YouTube or Vimeo embeds would, so the future reel is linked instead.
+- How the widget behaves: clips play only while on screen, each has a visible pause button
+  (WCAG 2.2.2), nothing autoplays under reduced motion, and only the poster downloads until
+  a clip plays. Each card says whether it was rendered offline or captured live.
+- Open question: footage comes from the sailing-sim repo. First check that its physics and
+  weather step correctly under Movie Render Queue's fixed frame rate.

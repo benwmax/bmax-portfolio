@@ -866,6 +866,72 @@
   color: var(--color-amber-accent);
 }
 
+/* ——— Sim reel ——— */
+.reelGrid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-4);
+}
+
+.reelClip {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.reelMedia {
+  position: relative;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--color-bg-page);
+}
+
+/* 16:9 held before the poster loads, so the transcript doesn't jump. */
+.reelVideo {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+/* Always visible, not hover-only: it's the WCAG 2.2.2 pause control and has to work on touch. */
+.reelToggle {
+  position: absolute;
+  right: var(--space-2);
+  bottom: var(--space-2);
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  font-family: var(--font-mono-ui);
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  background: color-mix(in srgb, var(--color-bg-page) 75%, transparent);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.reelToggle:hover {
+  border-color: var(--color-green-accent);
+}
+
+.reelToggle:focus-visible {
+  outline: 2px solid var(--color-green-accent);
+  outline-offset: 2px;
+}
+
+.reelCaption {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
 /* ——— Topic menu ——— */
 .menu {
   display: grid;

@@ -22,6 +22,7 @@
 import type { StudyId, WidgetId } from './widgetIds';
 import { imagesFor } from '../content/work-images';
 import { SIDE_PROJECTS } from '../content/side-projects';
+import { readyClips } from '../content/sim-reel';
 
 export type TopicId =
   | 'overview'
@@ -115,6 +116,14 @@ export function moreStarterGroups(): { label: string; topics: Topic[] }[] {
 // Returns no beat at all until there's something to show.
 function galleryBeat(study: StudyId, text: string): Beat[] {
   return imagesFor(study).length > 0 ? [{ text, widgets: [`${study}.gallery`] }] : [];
+}
+
+// Sailing Sim's loops, once Ben adds them to src/content/sim-reel.ts. Same rule:
+// no beat until there's something to play.
+function simReelBeat(): Beat[] {
+  return readyClips().length > 0
+    ? [{ text: 'The sailing sim is the one to see in motion.', widgets: ['sim-reel'] }]
+    : [];
 }
 
 // The opt-in deep dive for a case study: just the stepped walkthrough.
@@ -413,6 +422,7 @@ const TOPIC_LIST: Topic[] = [
         text: 'Three things he built this year on his own time. They are fun, and they show how fast he can build with AI as a collaborator.',
         widgets: ['side-projects'],
       },
+      ...simReelBeat(),
     ],
     followUps: [
       { label: 'How does AI fit his process?', topic: 'ai' },

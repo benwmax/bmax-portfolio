@@ -31,6 +31,8 @@
 // offering them would leave a reply pointing at a blank space. side-projects
 // joined the list 2026-10-30 when SIDE_PROJECTS got its first entries; the
 // SIDE PROJECTS section below mirrors src/content/side-projects.ts.
+// sim-reel is left out the same way until src/content/sim-reel.ts has a ready
+// clip; add it to WIDGETS ("short loops of Sailing Sim in motion") then.
 
 export const SYSTEM_PROMPT = `You are a portfolio assistant for Ben Maxwell, a senior UX designer targeting UX Principal and Design Director roles. Your job is to help visitors understand Ben's work, experience, and approach to design.
 
