@@ -20,7 +20,9 @@ export const config = { runtime: 'edge' };
 // MAX_MESSAGES_PER_HOUR must match the value in api/lib/rate-limit.ts.
 const MAX_MESSAGES_PER_HOUR = 20;
 const SESSION_MESSAGE_CAP = 30;
-const MAX_OUTPUT_TOKENS = 220;
+// 260, up from 220 (2026-10-29): replies may end with up to two [[show:<id>]]
+// widget tags (~10 tokens each), and the tags shouldn't eat into the prose.
+const MAX_OUTPUT_TOKENS = 260;
 const MAX_HISTORY_MESSAGES = 20;
 const MAX_MESSAGE_LENGTH = 500;
 // Global circuit breaker across all visitors, sized well under the
@@ -32,17 +34,38 @@ const GLOBAL_DAILY_MESSAGE_CAP = 500;
 // request body here is a few hundred bytes at most.
 const MAX_REQUEST_BYTES = 8 * 1024;
 
-// The only values the client-supplied `pageContext` field may take — must
-// match the `company` field in each src/content/*.ts file. Anything else is
-// silently ignored rather than rejecting the request, since this only
-// affects answer quality, not security. Deliberately not string-interpolated
-// from arbitrary client input into the system prompt — see the allowlist
-// check below.
+// What the client-supplied `pageContext` may be, and the sentence each one adds
+// to the system prompt. Anything not in this map is silently ignored rather
+// than rejecting the request, since this only affects answer quality, not
+// security. The client's string is only ever used as a lookup key — never
+// interpolated into the prompt.
 //
-// 'Sagent' is retained deliberately even though its page is currently unrouted
-// (see decisions.md 2026-07-29): no client can send it today, an extra entry
-// costs nothing, and it's needed again the moment the case study ships.
-const ALLOWED_PAGE_CONTEXTS = new Set(['Portfolio Rebuild', 'Upfluent', 'Sagent', 'USAA', 'Sabre']);
+// Chat-first experiment (2026-10-29): the keys are topic ids from
+// src/chat/topics.ts. The client sends the id of the pre-built walkthrough it
+// just played, because the model never saw that walkthrough — it ran entirely
+// in the browser. Topics with no useful subject (menu, contact, resume) are
+// left out on purpose.
+const TOPIC_CONTEXT: Record<string, string> = {
+  sabre: 'the Sabre case study walkthrough',
+  usaa: 'the USAA case study walkthrough',
+  upfluent: 'the Upfluent case study walkthrough',
+  sagent: 'the Sagent case study walkthrough',
+  'sabre-full': 'the full Sabre case study',
+  'usaa-full': 'the full USAA case study',
+  'upfluent-full': 'the full Upfluent case study',
+  'sagent-full': 'the full Sagent case study',
+  ai: "the walkthrough on how AI fits Ben's design process (the Upfluent AI advisor and the Portfolio Rebuild)",
+  'ai-limits': 'where Ben overruled the AI during the Portfolio Rebuild',
+  experts: 'the walkthrough on how Ben designs for expert users (Sabre and Upfluent)',
+  'best-work': "the summary of Ben's best design work across all four case studies",
+  leadership: 'the walkthrough on how Ben leads design teams (Sagent and USAA)',
+  research: "the walkthrough on Ben's research methods (Sabre, USAA, Upfluent)",
+  overview: 'the 60-second overview of Ben',
+  'why-ben': 'the summary of why Ben fits a design leadership role',
+  'design-system': "the walkthrough on this site's design system",
+  career: "Ben's career timeline",
+  'looking-for': 'what Ben is looking for next',
+};
 
 // Structured, single-line JSON logs — Vercel captures stdout as Function
 // Logs, so this needs no new logging vendor. Metadata only by default
@@ -153,12 +176,13 @@ export default async function handler(req: Request): Promise<Response> {
     content: rawMessage.slice(0, MAX_MESSAGE_LENGTH),
   };
 
-  // Which case study page the visitor is currently on, if any — allowlisted
-  // rather than trusted as free text, since it's client-supplied and gets
-  // folded into the system prompt below. Invalid/tampered values are
-  // silently dropped, not rejected: this only affects answer quality.
+  // Which walkthrough the visitor just saw, if any — allowlisted rather than
+  // trusted as free text, since it's client-supplied and selects text folded
+  // into the system prompt below. Invalid/tampered values are silently
+  // dropped, not rejected: this only affects answer quality. Object.hasOwn so
+  // a key like "constructor" can't match an inherited property.
   const pageContext =
-    typeof body.pageContext === 'string' && ALLOWED_PAGE_CONTEXTS.has(body.pageContext)
+    typeof body.pageContext === 'string' && Object.hasOwn(TOPIC_CONTEXT, body.pageContext)
       ? body.pageContext
       : null;
 
@@ -224,7 +248,7 @@ export default async function handler(req: Request): Promise<Response> {
   // Ephemeral, per-call addendum — never written to session history, so it
   // can't accumulate or drift from whatever page the visitor is on right now.
   const systemPrompt = pageContext
-    ? `${SYSTEM_PROMPT}\n\n---\n\nCURRENT PAGE CONTEXT\n\nThe visitor is currently viewing the ${pageContext} case study page. If their question is ambiguous or refers to "this," "this project," or similar without naming a case study, assume they mean ${pageContext} unless they clearly indicate otherwise.`
+    ? `${SYSTEM_PROMPT}\n\n---\n\nCURRENT CONTEXT\n\nThe visitor was just shown ${TOPIC_CONTEXT[pageContext]}, as a pre-built walkthrough in this chat. You did not write it, but it used only facts from this brief. If their question is ambiguous or refers to "this," "that," or "this project" without naming one, assume they mean that topic unless they clearly indicate otherwise. Don't repeat the walkthrough back to them; add to it.`
     : SYSTEM_PROMPT;
 
   const requestStart = Date.now();

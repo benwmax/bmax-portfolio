@@ -1404,11 +1404,28 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
   (developers fixed API/data connections and added validations).
 - Open: OG images for Sagent, Upfluent and USAA need regenerating.
 
+## 2026-10-30 — Chat-first homepage replaces the grid site (Ben)
+- Decision: (Ben) Swap the chat-first redesign (PR #62) in for the live site. The homepage
+  becomes a full-screen chat with pre-built project walkthroughs and widgets. Case study
+  pages are removed, and `/work/<slug>` now opens that project's walkthrough. Resume, About,
+  and Contact stay as pages.
+- Saved for rollback: branch `archive/grid-site` and tag `v1-grid-site`, pointing at main
+  `ec06292`, the last commit of the grid site.
+- Reasoning and the decisions made along the way: `docs/case-study/chat-first-decisions.md`.
+  The readability review is in `docs/case-study/chat-widget-review.md`.
+- Supersedes: 2026-06-22 (HomeV4Blend as the production homepage), 2026-07-18 (chat only on
+  Home and case study pages), 2026-07-19 (mobile FAB and overlay), and 2026-07-29 (work grid
+  as the single source of truth for the card list; `CASE_STUDIES` still feeds the chat's
+  highlights and cover art).
+- Open question: typed chat questions had never been tested against the live model before
+  the merge (localhost has no `/api`, and the preview origin isn't allowlisted). Ben chose to
+  merge and test immediately on viewbens.work, with rollback ready.
+
 ## 2026-10-30 — Sabre copy corrected to match the case study
-- Decision: (Ben) The Resume and About pages no longer say "NDC channel redesign" or "$1B
-  government contract". They now say Ben owned Hotel booking in the Sabre Red Workspace redesign,
-  and the $1B win was the Flightcentre contract — both as stated in `src/content/sabre.ts`.
-  The ChatTranscript story's sample answer was corrected the same way.
+- Decision: (Ben) The Resume and About pages no longer say "NDC channel redesign". They now say
+  Ben owned Hotel booking in the Sabre Red Workspace redesign, as stated in
+  `src/content/sabre.ts`. (The "$1B government contract" wording had already been corrected to
+  Flightcentre on main by the time this merged.)
 - Reasoning: Caught while checking a PDF export of the resume for job applications. Neither
   "NDC" nor "government" appears in the Sabre case study, and Flightcentre is a travel agency,
   so the site contradicted itself.

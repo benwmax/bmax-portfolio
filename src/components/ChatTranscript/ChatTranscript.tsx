@@ -2,6 +2,7 @@ import { Fragment, useCallback, useLayoutEffect, useRef } from 'react';
 import type { ReactNode, Ref } from 'react';
 import { splitParagraphs } from '../../hooks/useChatSession';
 import type { Message } from '../../hooks/useChatSession';
+import { ChatWidget } from '../../chat/widgets';
 import styles from './ChatTranscript.module.css';
 
 export interface ChatTranscriptProps {
@@ -32,6 +33,12 @@ export interface ChatTranscriptProps {
    * panel) — there the reserved space would just grow the panel.
    */
   pinToTop?: boolean;
+  /**
+   * 'rail' (default) is the narrow docked/overlay chat. 'stage' is the
+   * full-screen chat homepage: larger type, a centered reading column, and
+   * widgets allowed to run wider than the text (2026-10-29).
+   */
+  variant?: 'rail' | 'stage';
 }
 
 const PIN_INSET_PX = 8;
@@ -137,6 +144,7 @@ export function ChatTranscript({
   className,
   ref,
   pinToTop = true,
+  variant = 'rail',
 }: ChatTranscriptProps) {
   const logRef = useRef<HTMLDivElement | null>(null);
   const spacerRef = useRef<HTMLDivElement | null>(null);
@@ -186,6 +194,7 @@ export function ChatTranscript({
       // thing gets announced once, not word-by-word.
       aria-live={streaming ? 'off' : 'polite'}
       aria-label="Chat messages"
+      data-variant={variant}
     >
       {messages.length === 0 && greeting && (
         <p className={styles.assistant}>
@@ -204,21 +213,32 @@ export function ChatTranscript({
           ) : (
             // Assistant replies are split into short paragraphs — the system
             // prompt enforces frequent breaks, and rendering them as one block
-            // was the 2026-07-19 readability bug.
-            <div className={styles.assistant}>
-              {(() => {
-                const paras = splitParagraphs(m.text);
-                const displayParas = paras.length > 0 ? paras : [''];
-                return displayParas.map((para, pi) => (
-                  <p key={pi} className={styles.assistantPara}>
-                    {para}
-                    {streaming &&
-                      i === messages.length - 1 &&
-                      pi === displayParas.length - 1 &&
-                      cursor}
-                  </p>
-                ));
-              })()}
+            // was the 2026-07-19 readability bug. Widgets sit under the text,
+            // outside its left rule, so a wide widget isn't indented by it. A
+            // tour beat can be widgets only, with no text block at all.
+            <div className={styles.turn}>
+              {(m.text !== '' || !m.widgets?.length) && (
+                <div className={styles.assistant}>
+                  {(() => {
+                    const paras = splitParagraphs(m.text);
+                    const displayParas = paras.length > 0 ? paras : [''];
+                    return displayParas.map((para, pi) => (
+                      <p key={pi} className={styles.assistantPara}>
+                        {para}
+                        {streaming &&
+                          i === messages.length - 1 &&
+                          pi === displayParas.length - 1 &&
+                          cursor}
+                      </p>
+                    ));
+                  })()}
+                </div>
+              )}
+              {m.widgets?.map((id) => (
+                <div key={id} className={styles.widget}>
+                  <ChatWidget id={id} />
+                </div>
+              ))}
             </div>
           )}
           {contactCardAt === i + 1 && contactCard}

@@ -1,36 +1,36 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { HomeV4Blend } from './pages/explorations/HomeV4Blend';
-import { CaseStudyPage } from './pages/CaseStudyPage';
+import { BrowserRouter, Routes, Route, useParams } from 'react-router-dom';
+import { ChatHome } from './pages/ChatHome';
 import { AboutPage } from './pages/AboutPage';
 import { ResumePage } from './pages/ResumePage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { Contact } from './components/Contact';
 import { ScrollToTop } from './components/ScrollToTop';
 import { ChatProvider } from './context/ChatContext';
-import { upfluentData } from './content/upfluent';
-import { sagentData } from './content/sagent';
-import { usaaData } from './content/usaa';
-import { sabreData } from './content/sabre';
+import { DEEP_LINK_TOPICS } from './chat/topics';
+
+// Chat-first experiment (2026-10-29): the case study pages are gone and their
+// URLs open the chat on that project's walkthrough instead, so links already
+// shared on LinkedIn and résumés keep working. Unknown slugs still 404.
+// HomeV4Blend and CaseStudyPage remain in the repo for Storybook and for
+// rolling back.
+function WorkTopic() {
+  const { slug = '' } = useParams();
+  if (!(slug in DEEP_LINK_TOPICS)) return <NotFoundPage />;
+  // Keyed so moving between two /work/<slug> URLs plays the new walkthrough.
+  return <ChatHome key={slug} topicSlug={slug} />;
+}
 
 function App() {
   return (
     <BrowserRouter>
-      {/* Shared above the routes so the conversation survives navigation
-          between Home and case study pages — see decisions.md 2026-07-18. */}
+      {/* Shared above the routes so the conversation survives a trip to
+          Resume or Contact and back — see decisions.md 2026-07-18. */}
       <ChatProvider>
         <ScrollToTop />
         <Routes>
-          <Route path="/" element={<HomeV4Blend />} />
-          <Route path="/work" element={<HomeV4Blend />} />
-          {/* Portfolio Rebuild is hidden for now (Ben, 2026-10-08) — its content in
-              src/content/portfolio-rebuild.ts is intact, so restoring it is this
-              route plus its card in explorations/data.ts. See decisions.md 2026-10-08. */}
-          <Route path="/work/upfluent" element={<CaseStudyPage {...upfluentData} />} />
-          {/* Sagent is a short teaser page (`teaser` in src/content/sagent.ts) until
-              the Phase 1C case study is written. */}
-          <Route path="/work/sagent" element={<CaseStudyPage {...sagentData} />} />
-          <Route path="/work/usaa" element={<CaseStudyPage {...usaaData} />} />
-          <Route path="/work/sabre" element={<CaseStudyPage {...sabreData} />} />
+          <Route path="/" element={<ChatHome />} />
+          <Route path="/work" element={<ChatHome />} />
+          <Route path="/work/:slug" element={<WorkTopic />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/resume" element={<ResumePage />} />
           <Route path="/contact" element={<Contact />} />

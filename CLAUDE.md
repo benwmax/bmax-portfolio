@@ -120,6 +120,35 @@ section when its paragraphs are empty (Ben had nothing to add) — numbering is 
 it's last. The old "co-led a four-person team across twelve business teams" claim was wrong and
 has been replaced everywhere (Resume, About, chat brief, card). See decisions.md 2026-10-29.
 
+### Chat-first homepage replaces the grid site (2026-10-30)
+
+Ben's call: the homepage is a full-screen chat (`src/pages/ChatHome.tsx`). The work grid and
+the case study pages are gone from the site. **This supersedes anything below that describes
+`HomeV4Blend` as the production homepage, case study pages with docked chat rails, or the
+mobile FAB/overlay (`MobileChatSurface`).** Those files remain in the repo, unrouted, for
+Storybook and rollback.
+
+- **The old site is saved** as branch `archive/grid-site` and tag `v1-grid-site` (main at
+  `ec06292`, before PR #62). To restore it, revert the PR #62 merge on main, or use Vercel's
+  instant rollback to the last pre-#62 deployment.
+- **How it works:** starter chips play pre-built tours (`src/chat/topics.ts`) made of short
+  beats plus widgets (`src/chat/widgets/`). These use no model call. Typed questions go to the
+  model, which can attach widgets by ending a reply with `[[show:<id>]]`. The client accepts
+  only ids from `src/chat/widgetIds.ts`, at most two per reply. **Coupled by convention:**
+  the WIDGETS list in `api/lib/system-prompt.ts` must stay a subset of `widgetIds.ts`, and
+  `TOPIC_CONTEXT` in `api/chat.ts` must have an entry for each topic that should give the
+  model context.
+- **URLs:** `/work/<slug>` still works for upfluent, sagent, usaa, and sabre. Each one opens
+  the chat and plays that project's tour, and its per-route OG meta is unchanged. The nav is
+  About, Resume, Contact.
+- **Content hooks:** `src/content/work-images.ts` holds screenshots, which stay hidden until a
+  `src` is set. Sagent never gets images (NDA). `src/content/side-projects.ts` holds side
+  projects, and that topic stays hidden until the list is non-empty. `src/content/experience.ts`
+  is shared by the Resume page and the career widget.
+- **Decisions and review:** `docs/case-study/chat-first-decisions.md` and
+  `docs/case-study/chat-widget-review.md`. Not done yet: Storybook stories for the new
+  widgets and `ChatHome`.
+
 ---
 
 ## NDA and Confidentiality Constraints

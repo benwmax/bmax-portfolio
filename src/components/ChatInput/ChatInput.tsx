@@ -65,9 +65,14 @@ export function ChatInput({
     setIsMultiRow(el.scrollHeight > singleRowHeight);
   }, []);
 
+  // isLoading is a dependency because the loading class changes the textarea's
+  // padding. Submitting sets loading and clears the value in the same render,
+  // so the height was measured with the loading padding — and never re-measured
+  // when loading ended, leaving the field ~10px too tall for the rest of the
+  // conversation (2026-10-30).
   useEffect(() => {
     if (multiline) autoResize();
-  }, [value, multiline, autoResize]);
+  }, [value, multiline, isLoading, autoResize]);
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();

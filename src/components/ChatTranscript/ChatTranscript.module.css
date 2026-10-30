@@ -81,3 +81,45 @@
   flex: none;
   height: 0;
 }
+
+/* One assistant turn: its text block, then any widgets under it. */
+.turn {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.widget {
+  display: flex;
+  min-width: 0;
+}
+
+/* ——— Stage variant: the full-screen chat homepage (2026-10-29) ———
+   The log fills the viewport, so type steps up from the rail's sizes and the
+   text holds a reading measure while widgets use the wider stage. */
+[data-variant='stage'] .user {
+  font-family: var(--font-mono-display);
+  font-size: var(--text-2xl);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-tight);
+  max-width: 34ch;
+  text-wrap: balance;
+}
+
+[data-variant='stage'] .assistant {
+  font-size: 20px; /* one step above the rail's 18px — the reading column is the whole screen now */
+  line-height: 1.65;
+  max-width: 68ch;
+  color: var(--color-text-primary);
+}
+
+@media (max-width: 760px) {
+  [data-variant='stage'] .user {
+    font-size: var(--text-xl);
+  }
+
+  [data-variant='stage'] .assistant {
+    font-size: 18px;
+    padding-left: var(--space-3);
+  }
+}
