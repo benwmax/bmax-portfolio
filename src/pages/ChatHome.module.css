@@ -58,6 +58,13 @@
   animation: logIn var(--duration-slow) var(--ease-default) both;
 }
 
+/* The log is a tab stop (so keyboard users can scroll it); inset ring so the
+   scroll container can't clip it. Keyboard focus only — not on click. */
+.log:focus-visible {
+  outline: 2px solid var(--color-green-accent);
+  outline-offset: -2px;
+}
+
 @keyframes logIn {
   from {
     opacity: 0;

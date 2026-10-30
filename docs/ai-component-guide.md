@@ -394,19 +394,19 @@ The mobile-only "Ask about Ben" entry point — a floating action button that op
 **File:** `src/components/NavBar.tsx`
 **Storybook:** `Components/NavBar`
 
-Site header. Present on every page. Three fixed nav links. Pass `activePath` from the router.
+Site header. Present on every page. Links: About, Resume, Contact, and Design system ↗ (external, new tab; added 2026-10-30). The homepage is reached by the wordmark. Pass `activePath` from the router.
 
 #### Props
 
 | Prop | Type | Notes |
 |---|---|---|
-| `activePath` | `string` | Wire to router pathname. One of: "/work", "/about", "/resume" |
+| `activePath` | `string` | Wire to router pathname: "/", "/about", "/resume", "/contact" |
 
 #### Pitfalls
 
 - Always wire `activePath` to the router pathname — never leave it undefined in production
-- Don't add custom nav links or a mobile hamburger — three links fit at 390px without collapsing
-- Don't add a fourth nav link without checking with Ben
+- Don't add custom nav links or a mobile hamburger — four links fit at 360px only because the Design system label shortens to "System" below 640px and the ThemeToggle becomes a compact switch below 560px
+- Don't add a fifth nav link without checking with Ben
 
 #### Accessibility
 
@@ -431,8 +431,8 @@ Implements the full ARIA APG radiogroup keyboard pattern, not just the roles: ro
 
 #### Content rules
 
-- Exactly two options: "Retro" and "Futuristic," abbreviated "RET"/"FUT" below 560px so the NavBar still fits its three nav links at a 390px viewport.
-- Labels are full theme names, not icons.
+- Exactly two options: "Retro" and "Futuristic." Below 560px the segmented control is replaced by a single ◐ switch (`role="switch"`, labelled "Futuristic theme") so the NavBar fits four links on one row (2026-10-30). Only one of the two controls is displayed at a time.
+- Labels are full theme names on desktop and tablet; the phone switch is the one icon-only exception, and its accessible name is the theme.
 
 #### Pitfalls
 
@@ -688,12 +688,52 @@ Outcome stat cell — phosphor green headline value, ALL CAPS label, optional on
 
 ---
 
+### Chat widgets
+
+**Files:** `src/chat/widgets/` (rendered by id through `ChatWidget`), ids in `src/chat/widgetIds.ts`
+**Storybook:** `Chat/Widgets` (one story per widget, plus Futuristic variants and an MDX doc)
+
+The visual answers the chat homepage shows under a reply: project cover, results, role, key
+decision, what was hard, the full stepped case study, key-decision sketches (Sabre, USAA,
+Upfluent), selected work, why Ben, career timeline, looking for, research methods, the AI split
+and overruled-the-AI cards, link cards, and the all-topics menu. Gallery and side projects render
+nothing until content exists.
+
+#### Rules
+
+- Render widgets only through `ChatWidget` with a registered id — never a one-off card in the transcript
+- A new widget needs: the component, an id in `widgetIds.ts`, a case in `ChatWidget`, a story in
+  `Chat/Widgets`, and (if the model may use it) a line in the WIDGETS section of `api/lib/system-prompt.ts`
+- Copy comes from `src/content/`; widgets never add a fact
+- Labels that carry meaning are 13px minimum (`docs/case-study/chat-widget-review.md`)
+- No placeholder frames, and no images for Sagent (NDA)
+
+---
+
 ## Page Templates
 
-### Homepage
+### Homepage (chat-first, live since 2026-10-30)
 
-**File:** `src/pages/explorations/HomeV4Blend.tsx` — despite the `explorations/` path, this is the live
-production homepage, not a draft. It's the selected design from the three-way exploration phase
+**File:** `src/pages/ChatHome.tsx`
+**Storybook:** `Pages/Homepage` (first screen, conversation, phone, Futuristic)
+
+A full-screen chat. First screen: name and role, the headline, a centered input, four starter chips
+(`STARTER_TOPICS`), and an expander for the rest. Starter chips play pre-built tours from
+`src/chat/topics.ts`; typed questions go to the model. Replies render widgets from `src/chat/widgets/`
+(see **Chat widgets** below). `/work/<slug>` opens the chat on that project's tour.
+
+#### Pitfalls
+
+- Don't put a work grid back on the first screen — it is deliberately sparse (Ben, 2026-10-29)
+- Keep the input fixed while the starters scroll; only the prompts region scrolls when expanded
+- Tours: two or three beats, one main widget; the full case study is opt-in
+- Don't render `MobileChatSurface` here — the page is already full-screen at every width
+
+### Homepage — grid (retired 2026-10-30)
+
+**File:** `src/pages/explorations/HomeV4Blend.tsx` — RETIRED. It was the production homepage until
+the chat-first redesign and is kept unrouted for Storybook (`Pages/Archive/Grid homepage (retired)`)
+and rollback (branch `archive/grid-site`, tag `v1-grid-site`). The notes below describe it as it was. It's the selected design from the three-way exploration phase
 (Signal/Boot/Phosphor); the retired original is `src/pages/HomePage.tsx` (see note below).
 **Storybook:** `Pages/Homepage` (also mirrored at `Explorations/04 · Blend` for exploration-history
 comparison — same component, two story titles)

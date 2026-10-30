@@ -5,7 +5,7 @@ import * as NavBarStories from './NavBar.stories';
 
 # NavBar
 
-Site header — wordmark left, three nav links right. Present on every page. Transparent: sits directly on the page background with only a 1px bottom rule. Wire `activePath` to the router pathname to mark the active link.
+Site header — wordmark left; About, Resume, Contact, and Design system ↗ right. Present on every page. Transparent: sits directly on the page background with only a 1px bottom rule. Wire `activePath` to the router pathname to mark the active link.
 
 The `BM_` wordmark with its trailing underscore is a terminal cursor convention — do not modify the wordmark. The underscore is static (it stopped blinking 2026-10-29); don't add the animation back.
 
@@ -13,9 +13,9 @@ The Retro/Futuristic switch at the right edge is a separate documented component
 
 ## States
 
-### Work active (homepage)
+### Resume active
 
-<Canvas of={NavBarStories.WorkActive} />
+<Canvas of={NavBarStories.ResumeActive} />
 
 ### About active
 
@@ -25,29 +25,35 @@ The Retro/Futuristic switch at the right edge is a separate documented component
 
 <Canvas of={NavBarStories.Default} />
 
+### Phone (390px)
+
+The Design system label shortens to "System" and the theme toggle becomes a single switch, so everything stays on one row.
+
+<Canvas of={NavBarStories.Phone} />
+
 ## Do's
 
 - **Wire `activePath` to the current router pathname** on every page.
-- **Use the three fixed links:** Work `/work`, About `/about`, Contact `/contact`.
+- **Use the fixed links:** About `/about`, Resume `/resume`, Contact `/contact`, and Design system (`system.viewbens.work`, opens in a new tab). The wordmark is the way home.
 
 ## Don'ts
 
 - **Don't leave `activePath` undefined in production.** All links render at disabled-text when no route matches.
-- **Don't add nav links or dropdown menus.** Three links fit at 390px without collapsing.
+- **Don't add nav links or dropdown menus.** Four links fit at 360px only because of the short label and the compact theme switch.
 - **Don't add a mobile hamburger.** The nav is intentionally always visible.
 
 ## AI guidance
 
-Site header — present on every page. Three fixed nav links: Work, About, Contact. Always wire `activePath` to the current router pathname.
+Site header — present on every page. Fixed links: About, Resume, Contact, plus the external Design system link. Always wire `activePath` to the current router pathname.
 
 **Content rules**
-- Nav links are fixed: Work (`/work`), About (`/about`), Contact (`/contact`). Do not add custom links.
+- Nav links are fixed: About (`/about`), Resume (`/resume`), Contact (`/contact`), Design system (external, new tab). Do not add custom links.
 - The `BM_` wordmark with its static underscore is the identity mark — do not modify it.
 - Active link gets green-accent color + `aria-current="page"`. No underline, no fill.
-- Wire `activePath` to the router pathname: `'/work'` on the homepage, `'/about'` on the About page, `'/contact'` on the Contact page.
+- Wire `activePath` to the router pathname: `'/'` on the homepage (no link is active there), `'/about'`, `'/resume'`, `'/contact'` on those pages.
 
 **Avoid**
-- Don't add a mobile hamburger — three links fit at 390px without collapsing.
+- Don't add a mobile hamburger — four links fit at 360px with the short label and compact theme switch.
 - Don't leave `activePath` undefined in production — all links render at disabled-text when no route matches.
 - Don't add extra nav links or dropdown menus.
 

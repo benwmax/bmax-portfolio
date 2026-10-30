@@ -73,7 +73,12 @@
   right: 0;
   bottom: -1px;
   height: 1px;
-  background: linear-gradient(90deg, rgba(4, 103, 179, 0.55), rgba(4, 103, 179, 0.12) 55%, transparent);
+  background: linear-gradient(
+    90deg,
+    rgba(4, 103, 179, 0.55),
+    rgba(4, 103, 179, 0.12) 55%,
+    transparent
+  );
 }
 
 :global([data-theme='futuristic']) .wordmark {
@@ -124,6 +129,26 @@
   color: var(--color-green-accent);
 }
 
+/* Design system link: external, so a ↗ after the label; the short label
+   only shows on phones. */
+.external {
+  margin-left: 4px;
+}
+
+.labelShort {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .labelFull {
+    display: none;
+  }
+
+  .labelShort {
+    display: inline;
+  }
+}
+
 /* Focus rings — keyboard navigation */
 .wordmark:focus-visible,
 .link:focus-visible {
@@ -134,7 +159,7 @@
 
 @media (max-width: 480px) {
   .header {
-    padding: 0 20px;
+    padding: 0 16px;
   }
   /* The header has to fit the wordmark, three links, and the theme toggle on
      one row (no MobileMenu — decisions.md 2026-06-20). Narrower link padding
@@ -142,8 +167,13 @@
   .right {
     gap: 8px;
   }
+  /* Four links since 2026-10-30 (Design system joined): 6px side padding
+     keeps the row on one line down to 360px. */
+  .links {
+    gap: 0;
+  }
   .link {
-    padding: 10px 8px;
+    padding: 10px 6px;
   }
   /* Futuristic's wide link tracking is what pushed the row past 390px and
      wrapped the wordmark's diamond under "BM" (2026-10-08). */
