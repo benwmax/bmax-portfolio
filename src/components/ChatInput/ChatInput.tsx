@@ -74,6 +74,24 @@ export function ChatInput({
     if (multiline) autoResize();
   }, [value, multiline, isLoading, autoResize]);
 
+  // Re-measure when the field's width changes (rotating a phone, resizing the
+  // window, the field first getting a real width). Height depends on how the
+  // text wraps, and the effect above only ran on value changes, so a field
+  // measured while narrow stayed several rows tall (2026-10-30 audit). Width
+  // only: autoResize changes the height, which would otherwise re-trigger this.
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!multiline || !el) return;
+    let lastWidth = el.clientWidth;
+    const ro = new ResizeObserver(() => {
+      if (el.clientWidth === lastWidth) return;
+      lastWidth = el.clientWidth;
+      autoResize();
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [multiline, autoResize]);
+
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
     const trimmed = value.trim();

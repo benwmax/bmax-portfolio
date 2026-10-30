@@ -1,6 +1,6 @@
 {
   "rewrites": [
-    { "source": "/(.*)", "destination": "/" }
+    { "source": "/((?!api/).*)", "destination": "/" }
   ],
   "headers": [
     {
@@ -20,7 +20,7 @@
         { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'sha256-8pwqoPF+Q1T4INtSXCLpmLGnCigBqWNE6RQ0nVV5qzE='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+          "value": "default-src 'self'; script-src 'self' 'sha256-8pwqoPF+Q1T4INtSXCLpmLGnCigBqWNE6RQ0nVV5qzE='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
         }
       ]
     },

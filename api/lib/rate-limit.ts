@@ -9,7 +9,9 @@ const redis = Redis.fromEnv();
 const hourlyLimit = new Ratelimit({
   redis,
   limiter: Ratelimit.slidingWindow(20, '1 h'),
-  analytics: true,
+  // Off (2026-10-30): analytics kept per-IP events in Upstash for 90 days, a
+  // second store of visitor IPs that nothing reads.
+  analytics: false,
   prefix: 'bmax:chat:hourly',
 });
 
@@ -21,7 +23,7 @@ const hourlyLimit = new Ratelimit({
 const dailyLimit = new Ratelimit({
   redis,
   limiter: Ratelimit.slidingWindow(60, '1 d'),
-  analytics: true,
+  analytics: false,
   prefix: 'bmax:chat:daily',
 });
 

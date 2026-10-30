@@ -13,7 +13,7 @@ import styles from './Widgets.module.css';
  * work itself sits in the middle in portfolio order.
  */
 export function TopicMenu({ headingLevel = 2 }: { headingLevel?: 2 | 3 }) {
-  const { playTopic } = useWidgetActions();
+  const { playTopic, busy } = useWidgetActions();
   const Heading = headingLevel === 2 ? 'h2' : 'h3';
   // The menu can render twice (empty state, then as a widget) — ids must stay unique.
   const idPrefix = useId();
@@ -30,7 +30,12 @@ export function TopicMenu({ headingLevel = 2 }: { headingLevel?: 2 | 3 }) {
             <ul className={styles.menuList} role="list">
               {topics.map((t) => (
                 <li key={t.id}>
-                  <button type="button" className={styles.menuItem} onClick={() => playTopic(t.id)}>
+                  <button
+                    type="button"
+                    className={styles.menuItem}
+                    onClick={() => playTopic(t.id)}
+                    disabled={busy}
+                  >
                     <span className={styles.menuKicker}>{t.kicker}</span>
                     <span className={styles.menuPrompt}>{t.prompt}</span>
                   </button>

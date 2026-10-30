@@ -1,3 +1,4 @@
+import { readJsonCapped } from './lib/body';
 import { corsHeaders, isOriginAllowed } from './lib/cors';
 import {
   checkContactRateLimit,
@@ -30,7 +31,10 @@ const CONTACT_TO_ADDRESS = 'ben@viewbens.work';
 // see .env.example. Until then Resend will reject sends from this address.
 const CONTACT_FROM_ADDRESS = 'Portfolio Contact <contact@viewbens.work>';
 
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// Local part limited to the characters real addresses use. The old pattern let
+// `"`, `<`, `>` and `,` through, which could make the Reply-To header or the
+// body's From line misleading (2026-10-30 audit). ContactCard uses the same one.
+const EMAIL_PATTERN = /^[A-Za-z0-9._%+-]+@[^\s@<>",]+\.[^\s@<>",]+$/;
 
 function logEvent(event: Record<string, unknown>): void {
   console.log(JSON.stringify({ ts: new Date().toISOString(), ...event }));
@@ -109,13 +113,16 @@ export default async function handler(req: Request): Promise<Response> {
     );
   }
 
-  let body: { name?: unknown; email?: unknown; message?: unknown; website?: unknown; elapsedMs?: unknown };
-  try {
-    body = await req.json();
-  } catch {
-    logEvent({ event: 'blocked', endpoint: 'contact', reason: 'invalid-json', ip });
-    return jsonResponse(400, { error: 'Invalid JSON.' }, cors);
+  // Capped while reading, since a chunked request skips the Content-Length check above.
+  const parsed = await readJsonCapped(req, MAX_REQUEST_BYTES);
+  if (!parsed.ok || typeof parsed.data !== 'object' || parsed.data === null) {
+    const reason = parsed.ok ? 'invalid-json' : parsed.reason;
+    logEvent({ event: 'blocked', endpoint: 'contact', reason, ip });
+    return reason === 'too-large'
+      ? jsonResponse(413, { error: 'Request too large.' }, cors)
+      : jsonResponse(400, { error: 'Invalid JSON.' }, cors);
   }
+  const body = parsed.data as { name?: unknown; email?: unknown; message?: unknown; website?: unknown; elapsedMs?: unknown };
 
   // Honeypot: a hidden field real visitors never see or fill. Any non-empty
   // value means a bot filled every field on the form, including ones no
@@ -150,7 +157,10 @@ export default async function handler(req: Request): Promise<Response> {
     );
   }
 
-  const rawName = typeof body.name === 'string' ? body.name.trim().slice(0, MAX_NAME_LENGTH) : '';
+  // Control characters (CR/LF included) become spaces: the name goes into the
+  // subject line, where a newline is a header-injection attempt.
+  // eslint-disable-next-line no-control-regex
+  const rawName = typeof body.name === 'string' ? body.name.replace(/[\x00-\x1F\x7F]/g, ' ').trim().slice(0, MAX_NAME_LENGTH) : '';
 
   // Reserved atomically, after all the checks above that can reject without
   // sending — a fake-success (honeypot/too-fast) response never consumes
@@ -158,14 +168,15 @@ export default async function handler(req: Request): Promise<Response> {
   // (unavailableResponse) rather than silently letting the cap go
   // unenforced. See api/lib/contact-limit.ts.
   let globalCount: number;
+  let globalKey: string;
   try {
-    globalCount = await reserveGlobalContactMessage();
+    ({ count: globalCount, key: globalKey } = await reserveGlobalContactMessage());
   } catch {
     logEvent({ event: 'error', endpoint: 'contact', reason: 'redis-unavailable', stage: 'global-reserve' });
     return unavailableResponse(cors);
   }
   if (globalCount > GLOBAL_DAILY_CONTACT_CAP) {
-    await releaseGlobalContactMessage();
+    await releaseGlobalContactMessage(globalKey);
     logEvent({ event: 'blocked', endpoint: 'contact', reason: 'global-budget', globalUsage: globalCount });
     return jsonResponse(
       503,
@@ -174,7 +185,10 @@ export default async function handler(req: Request): Promise<Response> {
     );
   }
 
-  const senderLabel = rawName ? `${rawName} <${rawEmail}>` : rawEmail;
+  // Both fields are typed by the visitor, so the email says so. Otherwise a name
+  // like "Resend Support <billing@resend.com>" reads as a real sender inside mail
+  // that genuinely arrives from contact@viewbens.work.
+  const senderLabel = `Name (unverified): ${rawName || '(not given)'}\nEmail (unverified): ${rawEmail}`;
 
   let resendRes: Response;
   try {
@@ -189,17 +203,17 @@ export default async function handler(req: Request): Promise<Response> {
         to: CONTACT_TO_ADDRESS,
         reply_to: rawEmail,
         subject: `Portfolio message from ${rawName || 'a visitor'}`,
-        text: `From: ${senderLabel}\n\n${rawMessage}`,
+        text: `${senderLabel}\n\n${rawMessage}`,
       }),
     });
   } catch {
-    await releaseGlobalContactMessage();
+    await releaseGlobalContactMessage(globalKey);
     logEvent({ event: 'error', endpoint: 'contact', reason: 'upstream-network' });
     return jsonResponse(502, { error: 'Could not send your message — please try again or email ben@viewbens.work directly.' }, cors);
   }
 
   if (!resendRes.ok) {
-    await releaseGlobalContactMessage();
+    await releaseGlobalContactMessage(globalKey);
     logEvent({ event: 'error', endpoint: 'contact', reason: 'upstream', status: resendRes.status });
     return jsonResponse(502, { error: 'Could not send your message — please try again or email ben@viewbens.work directly.' }, cors);
   }

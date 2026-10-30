@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import type { ChatWidgetStatus } from '../components/ChatInput';
-import type { ContactFormStatus, ContactSubmission } from '../components/ContactCard';
+import type { ContactDraft, ContactFormStatus, ContactSubmission } from '../components/ContactCard';
 import { parseWidgetTags } from '../chat/widgetIds';
 import type { WidgetId } from '../chat/widgetIds';
 import { getTopic, topicForPrompt } from '../chat/topics';
@@ -103,6 +103,10 @@ async function postContact(
 // forever (readOnly input, no way to retry) — see ChatInput.tsx's isLoading
 // gating.
 const STREAM_TIMEOUT_MS = 30_000;
+
+// Tours with no subject of their own. Keep in step with the topics api/chat.ts
+// leaves out of TOPIC_CONTEXT.
+const CONTEXTLESS_TOPICS: ReadonlySet<string> = new Set(['menu', 'contact', 'resume']);
 
 // Pause between a tour's beats, so a tour reads as a reply arriving rather than
 // a page appearing all at once. Zero under prefers-reduced-motion.
@@ -223,6 +227,9 @@ export interface UseChatSession {
   submitContactForm: (fields: ContactSubmission) => Promise<void>;
   /** Hide the ContactCard without submitting — the visitor declined. */
   dismissContactCard: () => void;
+  /** The contact form's half-typed fields, for ContactCard's loadDraft / onDraftChange. */
+  loadContactDraft: () => ContactDraft;
+  saveContactDraft: (draft: ContactDraft) => void;
   /**
    * Play a pre-built topic tour (src/chat/topics.ts): the prompt as the
    * visitor's message, then each beat as an assistant message with its
@@ -255,13 +262,29 @@ export function useChatSession({
   const [followUps, setFollowUps] = useState<FollowUp[]>([]);
   const [playedTopics, setPlayedTopics] = useState<ReadonlySet<string>>(() => new Set());
 
-  const dismissContactCard = useCallback(() => setContactCardAfter(null), []);
+  // A failed send left status 'error' behind, so a card surfaced again later opened
+  // blank but still showing the old error. Dismissing clears it, unless the message
+  // was sent, which must stay recorded so the card isn't offered again.
+  // A ref, not state: the card reads it once on mount and writes on every
+  // keystroke, and state here would re-render the whole chat per keystroke.
+  const contactDraftRef = useRef<ContactDraft>({ name: '', email: '', message: '' });
+  const loadContactDraft = useCallback(() => contactDraftRef.current, []);
+  const saveContactDraft = useCallback((draft: ContactDraft) => {
+    contactDraftRef.current = draft;
+  }, []);
+
+  const dismissContactCard = useCallback(() => {
+    setContactCardAfter(null);
+    setContactFormStatus((s) => (s === 'sent' ? s : 'idle'));
+    setContactErrorText(undefined);
+  }, []);
 
   const submitContactForm = useCallback(async (fields: ContactSubmission) => {
     setContactFormStatus('sending');
     setContactErrorText(undefined);
     const { ok, errorText } = await postContact(fields);
     if (ok) {
+      contactDraftRef.current = { name: '', email: '', message: '' };
       setContactFormStatus('sent');
     } else {
       setContactFormStatus('error');
@@ -310,7 +333,12 @@ export function useChatSession({
       // The model can't see a tour (it never ran through /api/chat), so tell it
       // which one was just shown — a follow-up like "why did he do that?" then
       // resolves to this topic. api/chat.ts maps the id to a sentence.
-      pageContextRef.current = topic.id;
+      //
+      // Menu-like tours have no subject (api/chat.ts leaves them out of
+      // TOPIC_CONTEXT), so they keep whatever context came before instead of
+      // replacing it with nothing: after the Sabre tour and "All topics", a
+      // follow-up should still mean Sabre (2026-10-30 audit).
+      if (!CONTEXTLESS_TOPICS.has(topic.id)) pageContextRef.current = topic.id;
       setActiveSuggestions([]);
       setFollowUps([]);
       setPlayedTopics((prev) => new Set(prev).add(topic.id));
@@ -488,6 +516,8 @@ export function useChatSession({
     contactErrorText,
     submitContactForm,
     dismissContactCard,
+    loadContactDraft,
+    saveContactDraft,
     playTopic,
     followUps,
     playedTopics,

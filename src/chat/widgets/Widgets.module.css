@@ -305,6 +305,16 @@
   cursor: default;
 }
 
+/* Buttons that start another tour, disabled while one is playing or a reply
+   streams (WidgetActions `busy`). Dimmed rather than recolored so each keeps
+   its own look. */
+.topicBtn:disabled,
+.highlight:disabled,
+.menuItem:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
 .stepCount {
   font-family: var(--font-mono-ui);
   font-size: var(--text-base);

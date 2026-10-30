@@ -16,7 +16,9 @@ const redis = Redis.fromEnv();
 const hourlyLimit = new Ratelimit({
   redis,
   limiter: Ratelimit.slidingWindow(3, '1 h'),
-  analytics: true,
+  // Off (2026-10-30): analytics kept per-IP events in Upstash for 90 days, a
+  // second store of visitor IPs that nothing reads.
+  analytics: false,
   prefix: 'bmax:contact:hourly',
 });
 
@@ -26,7 +28,7 @@ const hourlyLimit = new Ratelimit({
 const dailyLimit = new Ratelimit({
   redis,
   limiter: Ratelimit.slidingWindow(5, '1 d'),
-  analytics: true,
+  analytics: false,
   prefix: 'bmax:contact:daily',
 });
 
@@ -51,18 +53,20 @@ function globalBudgetKey(): string {
 // Resend's sending volume) can reasonably absorb in a day — a circuit
 // breaker independent of the per-IP limits above. Deliberately does not
 // catch — see checkContactRateLimit.
-export async function reserveGlobalContactMessage(): Promise<number> {
+// Returns the day's key so the release decrements the same day's counter, as
+// reserveGlobalMessage does in session.ts.
+export async function reserveGlobalContactMessage(): Promise<{ count: number; key: string }> {
   const key = globalBudgetKey();
   const count = await redis.incr(key);
   if (count === 1) {
     await redis.expire(key, GLOBAL_BUDGET_TTL_SECONDS);
   }
-  return count;
+  return { count, key };
 }
 
-export async function releaseGlobalContactMessage(): Promise<void> {
+export async function releaseGlobalContactMessage(key: string): Promise<void> {
   try {
-    await redis.decr(globalBudgetKey());
+    await redis.decr(key);
   } catch {
     // Best-effort rollback — if it fails, the reservation just stays
     // counted, so the breaker trips slightly earlier than strictly

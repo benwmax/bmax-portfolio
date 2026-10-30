@@ -60,9 +60,9 @@ export function StatRow({ children }: { children: ReactNode }) {
 
 /** Button that plays another topic tour inside the chat. */
 export function TopicButton({ topic, children }: { topic: TopicId; children: ReactNode }) {
-  const { playTopic } = useWidgetActions();
+  const { playTopic, busy } = useWidgetActions();
   return (
-    <button type="button" className={styles.topicBtn} onClick={() => playTopic(topic)}>
+    <button type="button" className={styles.topicBtn} onClick={() => playTopic(topic)} disabled={busy}>
       {children} <span aria-hidden="true">→</span>
     </button>
   );

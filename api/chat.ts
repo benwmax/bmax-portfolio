@@ -1,3 +1,4 @@
+import { readJsonCapped } from './lib/body';
 import { corsHeaders, isOriginAllowed } from './lib/cors';
 import { checkRateLimit } from './lib/rate-limit';
 import { SYSTEM_PROMPT } from './lib/system-prompt';
@@ -54,7 +55,7 @@ const TOPIC_CONTEXT: Record<string, string> = {
   'usaa-full': 'the full USAA case study',
   'upfluent-full': 'the full Upfluent case study',
   'sagent-full': 'the full Sagent case study',
-  ai: "the walkthrough on how AI fits Ben's design process (the Upfluent AI advisor and the Portfolio Rebuild)",
+  ai: "the walkthrough on how AI fits Ben's design process (mainly the Sagent Workflow builder he coded with AI, plus brief mentions of the Upfluent AI advisor and this site's rebuild with Claude)",
   'ai-limits': 'where Ben overruled the AI during the Portfolio Rebuild',
   experts: 'the walkthrough on how Ben designs for expert users (Sabre and Upfluent)',
   'best-work': "the summary of Ben's best design work across all four case studies",
@@ -159,13 +160,19 @@ export default async function handler(req: Request): Promise<Response> {
     );
   }
 
-  let body: { message?: unknown; pageContext?: unknown };
-  try {
-    body = await req.json();
-  } catch {
+  // Capped while reading, since a chunked request skips the Content-Length check above.
+  const parsed = await readJsonCapped(req, MAX_REQUEST_BYTES);
+  if (!parsed.ok) {
+    logEvent({ event: 'blocked', reason: parsed.reason, ip });
+    return parsed.reason === 'too-large'
+      ? jsonResponse(413, { error: 'Request too large.' }, cors)
+      : jsonResponse(400, { error: 'Invalid JSON.' }, cors);
+  }
+  if (typeof parsed.data !== 'object' || parsed.data === null) {
     logEvent({ event: 'blocked', reason: 'invalid-json', ip });
     return jsonResponse(400, { error: 'Invalid JSON.' }, cors);
   }
+  const body = parsed.data as { message?: unknown; pageContext?: unknown };
 
   const rawMessage = body.message;
   if (typeof rawMessage !== 'string' || rawMessage.trim() === '') {
@@ -220,8 +227,9 @@ export default async function handler(req: Request): Promise<Response> {
   }
 
   let globalCount: number;
+  let globalKey: string;
   try {
-    globalCount = await reserveGlobalMessage();
+    ({ count: globalCount, key: globalKey } = await reserveGlobalMessage());
   } catch {
     await releaseSessionMessage(sid);
     logEvent({ event: 'error', reason: 'redis-unavailable', stage: 'global-reserve' });
@@ -229,7 +237,7 @@ export default async function handler(req: Request): Promise<Response> {
   }
   if (globalCount > GLOBAL_DAILY_MESSAGE_CAP) {
     await releaseSessionMessage(sid);
-    await releaseGlobalMessage();
+    await releaseGlobalMessage(globalKey);
     logEvent({ event: 'blocked', reason: 'global-budget', globalUsage: globalCount });
     return jsonResponse(
       503,
@@ -245,6 +253,11 @@ export default async function handler(req: Request): Promise<Response> {
 
   // Trim history to keep context window costs predictable
   const trimmed = [...session.history, userMessage].slice(-MAX_HISTORY_MESSAGES);
+  // History is stored in user/assistant pairs, so once it's full, adding this message
+  // and trimming to an even count drops a user turn and leaves an assistant turn
+  // first. The Messages API expects the first message to be from the user, so drop
+  // any leading assistant turn (2026-10-30 audit).
+  while (trimmed[0]?.role === 'assistant') trimmed.shift();
 
   // Ephemeral, per-call addendum — never written to session history, so it
   // can't accumulate or drift from whatever page the visitor is on right now.
@@ -285,7 +298,7 @@ export default async function handler(req: Request): Promise<Response> {
     // reply — release both so a failed attempt doesn't count against
     // either cap.
     await releaseSessionMessage(sid);
-    await releaseGlobalMessage();
+    await releaseGlobalMessage(globalKey);
     logEvent({ event: 'error', reason: 'upstream', status: anthropicRes?.status ?? 'network' });
     return jsonResponse(502, { error: 'Upstream error.' }, cors);
   }
@@ -357,7 +370,7 @@ export default async function handler(req: Request): Promise<Response> {
       // its fallback error when the body is empty (useChatSession.ts).
       if (fullText.trim() === '') {
         await releaseSessionMessage(sidForClosure);
-        await releaseGlobalMessage();
+        await releaseGlobalMessage(globalKey);
         logEvent({ event: 'error', reason: 'empty-reply', streamError, stopReason });
         return;
       }

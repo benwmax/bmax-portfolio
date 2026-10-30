@@ -95,7 +95,6 @@ export function ChatHome({ topicSlug, onChatSubmit, initialMessages = [] }: Chat
     messages,
     chatStatus,
     handleSubmit,
-    setPageContext,
     playTopic,
     followUps,
     playedTopics,
@@ -105,6 +104,8 @@ export function ChatHome({ topicSlug, onChatSubmit, initialMessages = [] }: Chat
     contactErrorText,
     submitContactForm,
     dismissContactCard,
+    loadContactDraft,
+    saveContactDraft,
   } = useChat({ onSubmit: onChatSubmit, initialMessages });
 
   const reduced = usePrefersReducedMotion();
@@ -113,17 +114,20 @@ export function ChatHome({ topicSlug, onChatSubmit, initialMessages = [] }: Chat
   const moreId = useId();
   const moreGroups = useMemo(() => moreStarterGroups(), []);
   const moreCount = moreGroups.reduce((n, g) => n + g.topics.length, 0);
-  const deepLinkTopic = topicSlug ? DEEP_LINK_TOPICS[topicSlug] : undefined;
+  const deepLinkTopic =
+    topicSlug && Object.hasOwn(DEEP_LINK_TOPICS, topicSlug)
+      ? DEEP_LINK_TOPICS[topicSlug]
+      : undefined;
   const meta = (topicSlug && ROUTE_META[`/work/${topicSlug}`]) || HOME_META;
 
   const started = messages.length > 0;
   const busy = chatStatus === 'loading';
   useDockMove(dockRef, started, reduced);
 
-  // Clear case study context left from another surface — this page sets its own per tour.
-  useEffect(() => {
-    if (!deepLinkTopic) setPageContext(null);
-  }, [deepLinkTopic, setPageContext]);
+  // No setPageContext(null) on mount (removed 2026-10-30): it ran every time the
+  // visitor came back to "/", erasing the tour context playTopic had set, so after
+  // Sabre → Resume → home, "why did he do that?" reached the model with no subject.
+  // Nothing routed sets a case-study context anymore, so there's nothing to clear.
 
   // A shared /work/<slug> link plays that walkthrough once. playTopic ignores a
   // second call while one is running, which also absorbs Strict Mode's double effect.
@@ -171,8 +175,8 @@ export function ChatHome({ topicSlug, onChatSubmit, initialMessages = [] }: Chat
   };
 
   const actions = useMemo(
-    () => ({ playTopic: (id: Parameters<typeof playTopic>[0]) => void playTopic(id) }),
-    [playTopic],
+    () => ({ playTopic: (id: Parameters<typeof playTopic>[0]) => void playTopic(id), busy }),
+    [playTopic, busy],
   );
 
   const chipRow = chips.length > 0 && (
@@ -270,6 +274,8 @@ export function ChatHome({ topicSlug, onChatSubmit, initialMessages = [] }: Chat
                     errorText={contactErrorText}
                     onSubmit={submitContactForm}
                     onDismiss={dismissContactCard}
+                    loadDraft={loadContactDraft}
+                    onDraftChange={saveContactDraft}
                   />
                 )
               }

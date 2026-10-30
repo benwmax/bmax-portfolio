@@ -28,3 +28,8 @@ storybook-static
 
 .vercel
 .env*
+!.env.example
+
+# Local-only: Claude Code worktrees and exported files (e.g. the resume PDF).
+.claude/worktrees/
+exports/

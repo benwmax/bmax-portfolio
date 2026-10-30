@@ -20,22 +20,52 @@ export interface ContactSubmission {
   elapsedMs: number;
 }
 
+/** The visible fields, kept by the chat session so a half-typed message survives navigation. */
+export interface ContactDraft {
+  name: string;
+  email: string;
+  message: string;
+}
+
 export interface ContactCardProps {
   status: ContactFormStatus;
   /** Server-side error message (rate limit, upstream failure) — shown above the form. */
   errorText?: string;
   onSubmit: (fields: ContactSubmission) => void;
   onDismiss: () => void;
+  /**
+   * Read once on mount to restore a draft, and told about every edit. The card
+   * remounts whenever the visitor goes to About or Resume and back, and its
+   * fields used to start empty again (2026-10-30 audit). Optional: Storybook
+   * renders the card without them.
+   */
+  loadDraft?: () => ContactDraft;
+  onDraftChange?: (draft: ContactDraft) => void;
   className?: string;
 }
 
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// Matches api/contact.ts, so the form never accepts an address the server rejects.
+const EMAIL_PATTERN = /^[A-Za-z0-9._%+-]+@[^\s@<>",]+\.[^\s@<>",]+$/;
 const MIN_MESSAGE_LENGTH = 10;
 
-export function ContactCard({ status, errorText, onSubmit, onDismiss, className = '' }: ContactCardProps) {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
+export function ContactCard({
+  status,
+  errorText,
+  onSubmit,
+  onDismiss,
+  loadDraft,
+  onDraftChange,
+  className = '',
+}: ContactCardProps) {
+  const [draft, setDraft] = useState<ContactDraft>(
+    () => loadDraft?.() ?? { name: '', email: '', message: '' },
+  );
+  const { name, email, message } = draft;
+  const updateDraft = (field: keyof ContactDraft, value: string) => {
+    const next = { ...draft, [field]: value };
+    setDraft(next);
+    onDraftChange?.(next);
+  };
   const [website, setWebsite] = useState('');
   const [fieldErrors, setFieldErrors] = useState<{ email?: string; message?: string }>({});
   // Captured in an effect, not read directly during render — Date.now() is
@@ -69,7 +99,8 @@ export function ContactCard({ status, errorText, onSubmit, onDismiss, className 
     const trimmedMessage = message.trim();
     const errors: { email?: string; message?: string } = {};
     if (!EMAIL_PATTERN.test(trimmedEmail)) errors.email = 'Enter a valid email address.';
-    if (trimmedMessage.length < MIN_MESSAGE_LENGTH) errors.message = 'Say a little more — at least 10 characters.';
+    if (trimmedMessage.length < MIN_MESSAGE_LENGTH)
+      errors.message = 'Say a little more — at least 10 characters.';
     setFieldErrors(errors);
     if (Object.keys(errors).length > 0) return;
 
@@ -123,14 +154,20 @@ export function ContactCard({ status, errorText, onSubmit, onDismiss, className 
 
         {/* tabIndex=-1: focusable programmatically (see the sending useEffect
             above) but not part of the normal Tab order. */}
-        <p ref={sendingStatusRef} tabIndex={-1} role="status" aria-live="polite" className="sr-only">
+        <p
+          ref={sendingStatusRef}
+          tabIndex={-1}
+          role="status"
+          aria-live="polite"
+          className="sr-only"
+        >
           {sending ? 'Sending your message…' : ''}
         </p>
 
         <Input
           label="NAME (OPTIONAL)"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) => updateDraft('name', e.target.value)}
           disabled={sending}
           maxLength={100}
         />
@@ -139,7 +176,7 @@ export function ContactCard({ status, errorText, onSubmit, onDismiss, className 
           type="email"
           required
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => updateDraft('email', e.target.value)}
           error={fieldErrors.email}
           disabled={sending}
           maxLength={254}
@@ -149,7 +186,7 @@ export function ContactCard({ status, errorText, onSubmit, onDismiss, className 
           multiline
           required
           value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          onChange={(e) => updateDraft('message', e.target.value)}
           error={fieldErrors.message}
           disabled={sending}
           maxLength={2000}

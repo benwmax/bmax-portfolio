@@ -15,7 +15,9 @@ import { DEEP_LINK_TOPICS } from './chat/topics';
 // rolling back.
 function WorkTopic() {
   const { slug = '' } = useParams();
-  if (!(slug in DEEP_LINK_TOPICS)) return <NotFoundPage />;
+  // Object.hasOwn, not `in`: `in` also matches inherited keys, so /work/constructor
+  // rendered the chat home instead of a 404 (2026-10-30 audit).
+  if (!Object.hasOwn(DEEP_LINK_TOPICS, slug)) return <NotFoundPage />;
   // Keyed so moving between two /work/<slug> URLs plays the new walkthrough.
   return <ChatHome key={slug} topicSlug={slug} />;
 }

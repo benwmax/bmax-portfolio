@@ -18,7 +18,15 @@ import { Redis } from '@upstash/redis';
 
 const redis = Redis.fromEnv();
 
-const SESSION_COOKIE = 'bmax_chat_sid';
+// __Host- prefix: the browser only accepts this cookie if it's Secure, Path=/, and has
+// no Domain, so a page on another *.viewbens.work subdomain (Storybook) can't plant a
+// session id here. Renamed from `bmax_chat_sid` 2026-10-30; an old cookie is ignored
+// and the visitor simply starts a fresh session.
+const SESSION_COOKIE = '__Host-bmax_chat_sid';
+// Ids are crypto.randomUUID() (newSessionId below). Anything else is ignored rather
+// than used as a Redis key: a crafted id like `count:<sid>` read the counter key as
+// a session record and crashed the request (2026-10-30 audit).
+const SESSION_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 // The assistant tells visitors their conversation is deleted within two hours of their
 // last message (PRIVACY in api/lib/system-prompt.ts). Change both together.
 const SESSION_TTL_SECONDS = 60 * 60 * 2; // 2 hours — generous for a single visit
@@ -39,7 +47,7 @@ export function getSessionId(req: Request): string | null {
   const cookie = req.headers.get('cookie');
   if (!cookie) return null;
   const match = cookie.match(new RegExp(`(?:^|;\\s*)${SESSION_COOKIE}=([^;]+)`));
-  return match ? match[1] : null;
+  return match && SESSION_ID_PATTERN.test(match[1]) ? match[1] : null;
 }
 
 export function newSessionId(): string {
@@ -108,18 +116,22 @@ export async function releaseSessionMessage(sid: string): Promise<void> {
 // Same reserve/release pattern as reserveSessionMessage, for the site-wide
 // daily circuit breaker sized to the Anthropic Workspace spend cap. Also
 // deliberately does not catch — see reserveSessionMessage.
-export async function reserveGlobalMessage(): Promise<number> {
+//
+// Returns the day's key along with the count, and releaseGlobalMessage takes it
+// back: recomputing the key at release time would decrement the next day's counter
+// for a request that started just before midnight UTC.
+export async function reserveGlobalMessage(): Promise<{ count: number; key: string }> {
   const key = globalBudgetKey();
   const count = await redis.incr(key);
   if (count === 1) {
     await redis.expire(key, GLOBAL_BUDGET_TTL_SECONDS);
   }
-  return count;
+  return { count, key };
 }
 
-export async function releaseGlobalMessage(): Promise<void> {
+export async function releaseGlobalMessage(key: string): Promise<void> {
   try {
-    await redis.decr(globalBudgetKey());
+    await redis.decr(key);
   } catch {
     // Best-effort rollback — if it fails, the reservation just stays
     // counted, so the breaker trips slightly earlier than strictly

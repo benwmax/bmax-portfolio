@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { PageHead } from '../seo/PageHead';
 import { ABOUT_META } from '../seo/pageMeta';
 import { NavBar } from '../components/NavBar';
@@ -182,9 +183,9 @@ export function AboutPage() {
               </p>
               <p>
                 I'm based in Dallas, Texas and open to remote or hybrid. Portfolio is at{' '}
-                <a href="/" className={styles.inlineLink}>
+                <Link to="/" className={styles.inlineLink}>
                   viewbens.work
-                </a>
+                </Link>
                 . Reach me at{' '}
                 <a href="mailto:ben@viewbens.work" className={styles.inlineLink}>
                   ben@viewbens.work
