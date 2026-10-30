@@ -194,6 +194,12 @@ export function ChatTranscript({
       // thing gets announced once, not word-by-word.
       aria-live={streaming ? 'off' : 'polite'}
       aria-label="Chat messages"
+      // The log scrolls, and a reply made only of text and static widgets has
+      // nothing focusable in it — so without a tab stop, keyboard users can't
+      // scroll back up (axe scrollable-region-focusable, 2026-10-30). role="log"
+      // is the ARIA role for a chat transcript and gives the label a role to name.
+      role="log"
+      tabIndex={0}
       data-variant={variant}
     >
       {messages.length === 0 && greeting && (

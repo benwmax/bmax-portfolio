@@ -68,20 +68,43 @@
   background: var(--color-green-accent);
 }
 
-/* Label swap — full names on desktop, RET/FUT under 560px so the NavBar
-   fits at 390px alongside the three nav links */
-.labelAbbr {
+/* Compact switch — phones only (2026-10-30). One 32px button: ◐ in the
+   accent color when Futuristic is on, secondary text when Retro is. */
+.compact {
   display: none;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  line-height: 1;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.compact[aria-checked='true'] {
+  color: var(--color-green-accent);
+}
+
+.compact:focus-visible {
+  outline: 2px solid var(--color-green-accent);
+  outline-offset: 2px;
+}
+
+:global([data-theme='futuristic']) .compact {
+  border-radius: var(--radius-full);
+  background: var(--color-bg-raised);
 }
 
 @media (max-width: 560px) {
-  .labelFull {
+  .group {
     display: none;
   }
-  .labelAbbr {
-    display: inline;
-  }
-  .option {
-    padding: 7px 9px;
+  .compact {
+    display: inline-flex;
   }
 }
