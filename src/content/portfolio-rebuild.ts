@@ -98,7 +98,10 @@ export const portfolioRebuildData: CaseStudyContent = {
     {
       value: '94–100',
       label: 'Lighthouse · 8 pages',
-      body: "Performance 94–98 — the homepage's boot intro is the low end. Accessibility, best practices, SEO all 100.",
+      // Measured on the grid design (2026-10-08). The boot intro that set the low end was
+      // removed with the chat-first homepage (2026-10-30); re-run Lighthouse on the
+      // current site before changing these numbers.
+      body: 'Performance 94–98. Accessibility, best practices, SEO all 100.',
     },
     {
       value: '2',
