@@ -25,9 +25,9 @@ The control restyles per theme, not just recolors: sharp terminal chrome with a 
 
 <Canvas of={ThemeToggleStories.Futuristic} />
 
-### Narrow viewport — abbreviated labels
+### Phone — compact switch
 
-Below 560px, "Retro"/"Futuristic" swap to "RET"/"FUT" so the NavBar still fits its three nav links at a 390px viewport. Both labels always render — one is `display:none` — so the visually-hidden `<span className="sr-only">` keeps screen readers on the full theme name regardless of viewport.
+Below 560px the segmented control is replaced by a single ◐ switch (`role="switch"`, labelled "Futuristic theme"), so the NavBar fits four links on one row (Design system joined the nav on 2026-10-30). Only one of the two controls is displayed at a time; the other is `display:none`, which also removes it from the accessibility tree.
 
 <Canvas of={ThemeToggleStories.NarrowViewport} />
 
@@ -47,7 +47,7 @@ Below 560px, "Retro"/"Futuristic" swap to "RET"/"FUT" so the NavBar still fits i
 The Retro/Futuristic theme switch. Fixed home is the top-right of the NavBar — do not relocate it. It is a real radiogroup (`role="radiogroup"`, each option `role="radio"`), not a toggle switch, because there are exactly two named states and both should be visible at once.
 
 **Content rules**
-- Only two options ever: "Retro" and "Futuristic" (abbreviated RET/FUT under 560px). Do not add a third theme without checking with Ben.
+- Only two options ever: "Retro" and "Futuristic" (a single ◐ switch under 560px). Do not add a third theme without checking with Ben.
 - Labels are the full theme names, not icons — the names are the feature.
 
 **Avoid**

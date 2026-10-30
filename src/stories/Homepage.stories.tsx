@@ -4,15 +4,16 @@ import { HomeV4Blend } from '../pages/explorations/HomeV4Blend';
 import type { Message } from '../pages/explorations/HomeV4Blend';
 
 /*
- * Pages / Homepage
- * The selected homepage design: Blend (04). Synthesizes elements from all three
- * prior explorations — fast boot sequence, full-viewport scanline, scroll cue,
- * status badge without the blinking dot, and the CaseStudyCard library component
- * in a staggered reveal grid.
+ * Pages / Archive / Grid homepage
+ * RETIRED 2026-10-30 — replaced by the chat-first homepage (Pages / Homepage,
+ * src/pages/ChatHome.tsx). Kept as the record of what shipped from 2026-06-22
+ * until then; the full site is saved as branch archive/grid-site and tag
+ * v1-grid-site. Blend (04): boot sequence, scanline, scroll cue, status badge,
+ * and the CaseStudyCard grid.
  */
 
 const meta = {
-  title: 'Pages/Homepage',
+  title: 'Pages/Archive/Grid homepage (retired)',
   component: HomeV4Blend,
   parameters: {
     layout: 'fullscreen',
@@ -20,6 +21,8 @@ const meta = {
     docs: {
       description: {
         component:
+          'RETIRED 2026-10-30 — the production homepage until the chat-first redesign. ' +
+          'Kept for reference and rollback (branch archive/grid-site). ' +
           'The selected homepage design (Blend 04). Fast 3-line boot sequence (~1.5 s), ' +
           'full-viewport green scanline, Phosphor scroll cue, Signal status badge without ' +
           'the blinking dot, split hero with typewriter headline and chat panel, 4-column ' +
@@ -28,7 +31,7 @@ const meta = {
     },
     ai: {
       guidance:
-        'The production homepage — Blend 04. This is the selected design from the explorations phase. Never build a homepage layout from scratch; use this component.',
+        'RETIRED — not the production homepage. The live homepage is ChatHome (Pages / Homepage). Use this only as a reference for the grid site.',
       contentRules: [
         'Work grid order is finalized: 01 Portfolio Rebuild, 02 Upfluent, 03 USAA, 04 Sabre (Sagent is unlisted pending content).',
         'The status badge reads "Available for Design Leader roles" — no blinking dot.',

@@ -1,0 +1,102 @@
+import { Meta, Canvas } from '@storybook/addon-docs/blocks';
+import * as W from './ChatWidgets.stories';
+
+<Meta of={W} />
+
+# Chat widgets
+
+The visual answers the chat homepage shows under a reply. A visitor who picks a starter question gets a short, pre-built tour: two or three lines of text, each with at most one widget. A visitor who types a question gets an answer from the AI model, which can attach up to two of these same widgets.
+
+Widgets do the showing so the text can stay short. Every fact in them comes from the case study content in `src/content/`. A widget never adds a claim of its own.
+
+## How a widget reaches the screen
+
+- **From a tour.** `src/chat/topics.ts` lists widget ids on each beat. No model call is involved.
+- **From the model.** A reply ending in `[[show:sabre.outcomes]]` gets that widget. The client keeps only ids listed in `src/chat/widgetIds.ts`, at most two per reply, so an invented id renders nothing.
+- Either way, `ChatWidget` turns the id into UI. That is the only place it happens.
+
+## Case study widgets
+
+### Project cover
+
+Opens every project tour. The role line is there because it's the first thing a hiring manager looks for.
+
+<Canvas of={W.ProjectCover} />
+
+### Results
+
+Up to three outcomes whose value contains a number. Softer outcomes stay in the full case study.
+
+<Canvas of={W.Results} />
+
+### Role, key decision, what was hard
+
+Single sections of a case study, for when the question is about one part of it.
+
+<Canvas of={W.Role} />
+<Canvas of={W.KeyDecision} />
+<Canvas of={W.WhatWasHard} />
+
+### Full case study
+
+The whole case study in six steps: The problem, My role, Process, Key decision, What was hard, Results. It is opt-in and only appears behind a "Full … case study" chip. The step tabs wrap onto a second line rather than scrolling sideways.
+
+<Canvas of={W.FullCaseStudy} />
+
+## Key-decision sketches
+
+Each project's key decision, drawn as a simple picture that illustrates the sentence above it. These are drawings of the idea, not product screens. They use few words, all plain ones.
+
+<Canvas of={W.SketchSabre} />
+<Canvas of={W.SketchUsaa} />
+<Canvas of={W.SketchUpfluent} />
+
+## About Ben
+
+<Canvas of={W.SelectedWork} />
+<Canvas of={W.WhyBen} />
+<Canvas of={W.Career} />
+<Canvas of={W.LookingFor} />
+<Canvas of={W.Research} />
+
+## AI collaboration
+
+Supporting detail inside the "design + AI" tour, never its headline. The overruled-the-AI widget is the trust signal.
+
+<Canvas of={W.AiSplit} />
+<Canvas of={W.AiLimits} />
+
+## Link cards
+
+Shown in place of writing a URL into the reply.
+
+<Canvas of={W.DesignSystemLinks} />
+<Canvas of={W.ResumeLinks} />
+<Canvas of={W.ContactLinks} />
+
+## Hidden until there's content
+
+- **Gallery** (`<study>.gallery`) shows real screenshots from `src/content/work-images.ts` and renders nothing until an image has a `src`. Sagent never gets one, because its work is under NDA.
+- **Side projects** (`side-projects`) render nothing until `src/content/side-projects.ts` has an entry. Its starter question stays hidden until then too.
+
+## Do's
+
+- **Add new widgets to the registry.** That means a component, an id in `widgetIds.ts`, a case in `ChatWidget`, and, if the model should be able to use it, a line in the WIDGETS section of `api/lib/system-prompt.ts`.
+- **Change the content file, not the widget.** Copy lives in `src/content/`.
+- **Keep labels at 13px or larger.** This is the floor set by the readability review (`docs/case-study/chat-widget-review.md`).
+
+## Don'ts
+
+- **Don't show placeholder frames.** In a conversation, an empty frame reads as a mistake.
+- **Don't put jargon in sketches.** If a label needs explaining, the sketch isn't doing its job.
+- **Don't let the model narrate a widget.** "Linked below" and "see the card" are forbidden in the brief.
+
+## AI guidance
+
+Render chat widgets only through `ChatWidget`, with an id from `src/chat/widgetIds.ts`. Never build a one-off card in the transcript.
+
+**Content rules**
+
+- Widget copy comes from `src/content/`. Case study text inside widgets stays in Ben's first person, and the chat lines around them stay in third person.
+- Tours use two or three beats, each with one main widget. The full case study is opt-in.
+- The model may use at most two widgets per reply, and only ids the system prompt lists.

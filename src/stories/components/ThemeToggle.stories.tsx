@@ -14,14 +14,14 @@ const meta = {
           'invites the flip. State lives on <html data-theme> (see useTheme), not a React ' +
           'provider, so this component is fully self-contained and works standalone here ' +
           'exactly as it does in production — click an option below to actually switch ' +
-          'this story\'s theme.',
+          "this story's theme.",
       },
     },
     ai: {
       guidance:
         'The Retro/Futuristic theme switch. Fixed home is the top-right of the NavBar — do not relocate it. It is a real radiogroup (role="radiogroup", each option role="radio"), not a toggle switch, because there are exactly two named states and both should be visible at once.',
       contentRules: [
-        'Only two options ever: "Retro" and "Futuristic" (abbreviated RET/FUT under 560px). Do not add a third theme without checking with Ben.',
+        'Only two options ever: "Retro" and "Futuristic" (a single ◐ switch under 560px). Do not add a third theme without checking with Ben.',
         'Labels are the full theme names, not icons — the names are the feature.',
       ],
       avoid: [
@@ -48,7 +48,8 @@ export const Default: Story = {
       },
     },
     ai: {
-      guidance: 'The starting state for a first-time visitor, or anyone without a saved theme preference.',
+      guidance:
+        'The starting state for a first-time visitor, or anyone without a saved theme preference.',
     },
   },
 };
@@ -74,22 +75,24 @@ export const Futuristic: Story = {
 };
 
 export const NarrowViewport: Story = {
-  name: 'Narrow viewport (<560px) — abbreviated labels',
+  name: 'Phone (<560px) — compact switch',
   parameters: {
     viewport: { defaultViewport: 'mobile390' },
     docs: {
       description: {
         story:
-          'Below 560px the full "Retro"/"Futuristic" labels swap to "RET"/"FUT" so the ' +
-          'NavBar still fits its three nav links at a 390px viewport. The swap is CSS-only ' +
-          '(both labels render at all times; one is display:none) — screen readers still ' +
-          'get the full theme name via the visually-hidden span.',
+          'Below 560px the two-part control is replaced by a single ◐ switch (role="switch", ' +
+          'labelled "Futuristic theme") so the NavBar fits four links on one row — Design system ' +
+          'joined the nav on 2026-10-30. Only one control is ever displayed; the other is ' +
+          'display:none, which removes it from the accessibility tree too.',
       },
     },
     ai: {
       guidance:
-        'Reference for the 390px NavBar layout — confirms the toggle fits alongside the three nav links once labels abbreviate below 560px.',
-      contentRules: ['Abbreviations are fixed: RET / FUT. Do not invent shorter or different abbreviations.'],
+        'Reference for the phone NavBar layout. The compact switch is the phone control; the segmented control is desktop and tablet.',
+      contentRules: [
+        'The switch label is fixed: "Futuristic theme", checked when Futuristic is on.',
+      ],
     },
   },
 };

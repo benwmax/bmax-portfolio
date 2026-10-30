@@ -9,26 +9,28 @@ const meta = {
     docs: {
       description: {
         component:
-          'Site header — wordmark left, three nav links right. Transparent: sits ' +
+          'Site header — wordmark left; About, Resume, Contact, and Design system ↗ right. Transparent: sits ' +
           'directly on --color-bg-page with only a 1px border-subtle rule at the ' +
           'bottom. No shadow, no fill, no backdrop-blur. ' +
           'The trailing underscore in BM_ is a terminal cursor convention — weight 700, ' +
           'phosphor green #00e054. It is static — it stopped blinking 2026-10-29 because a ' +
           'blink on every page competes with the content. ' +
           'Active state is determined by passing activePath; in production wire this to ' +
-          'your router pathname. The active link gets green-accent color; no fill, no underline.',
+          'your router pathname. The active link gets green-accent color; no fill, no underline. ' +
+          'Design system opens the public Storybook in a new tab (added 2026-10-30); on phones its ' +
+          'label shortens to "System" and the theme toggle becomes a single switch so the row fits at 360px.',
       },
     },
     ai: {
       guidance:
-        'Site header — present on every page. Three fixed nav links: Work, About, Contact. Always wire activePath to the current router pathname.',
+        'Site header — present on every page. Fixed links: About, Resume, Contact, plus the external Design system link. The homepage is reached by the wordmark. Always wire activePath to the current router pathname.',
       contentRules: [
-        'Nav links are fixed: Work (/work), About (/about), Contact (/contact). Do not add custom links.',
+        'Nav links are fixed: About (/about), Resume (/resume), Contact (/contact), Design system (system.viewbens.work, new tab). Do not add custom links.',
         'The BM_ wordmark with its static underscore is the identity mark — do not modify it.',
         'Active link gets green-accent color + aria-current="page". No underline, no fill.',
       ],
       avoid: [
-        "Don't add a mobile hamburger — three links fit at 390px without collapsing.",
+        "Don't add a mobile hamburger — four links fit at 360px with the short label and compact theme switch.",
         "Don't leave activePath undefined in production — always wire it to the router pathname.",
         "Don't add extra nav links or dropdown menus.",
       ],
@@ -46,7 +48,7 @@ export const Default: Story = {
       description: {
         story:
           'No pathname match — used on a 404 or before the router has resolved. ' +
-          'All three links render at their default disabled-text color (#3d4035). ' +
+          'All links render at their default color. ' +
           'The wordmark still links home; only the nav links lose their active treatment.',
       },
     },
@@ -60,26 +62,44 @@ export const Default: Story = {
   },
 };
 
-export const WorkActive: Story = {
-  name: 'Work active',
+export const ResumeActive: Story = {
+  name: 'Resume active',
   parameters: {
     docs: {
       description: {
         story:
-          'Production state on the homepage. Work resolves to /work, which matches ' +
-          'the active link — it shifts to green-accent (#00e054) and receives ' +
+          'Resume page state. The matching link shifts to green-accent and receives ' +
           'aria-current="page". No underline, no fill, no background change — ' +
-          'color alone carries the active signal.',
+          'color alone carries the active signal. (The homepage has no nav link of ' +
+          'its own; the wordmark is the way home.)',
       },
     },
     ai: {
-      guidance:
-        "The homepage production state. Pass activePath='/work' to mark the Work link active.",
+      guidance: "Resume page state. Pass activePath='/resume'.",
     },
   },
   args: {
-    activePath: '/work',
+    activePath: '/resume',
   },
+};
+
+export const Phone: Story = {
+  name: 'Phone (390px)',
+  parameters: {
+    viewport: { defaultViewport: 'mobile390' },
+    docs: {
+      description: {
+        story:
+          'Below 640px "Design system" shortens to "System ↗"; below 560px the theme toggle ' +
+          'becomes a single ◐ switch. Together they keep the wordmark, four links, and the ' +
+          'switch on one row down to 360px (2026-10-30).',
+      },
+    },
+    ai: {
+      guidance: 'Reference for the phone layout. Keep everything on one row — no hamburger.',
+    },
+  },
+  args: { activePath: '/about' },
 };
 
 export const AboutActive: Story = {
@@ -124,5 +144,5 @@ export const Futuristic: Story = {
       ],
     },
   },
-  args: { activePath: '/work' },
+  args: { activePath: '/about' },
 };

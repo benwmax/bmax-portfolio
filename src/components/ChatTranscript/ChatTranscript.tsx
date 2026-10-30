@@ -228,6 +228,10 @@ export function ChatTranscript({
         role="log"
         aria-live="off"
         aria-label="Chat messages"
+        // The log scrolls, and a reply made only of text and static widgets has
+        // nothing focusable in it, so without a tab stop keyboard users can't
+        // scroll back up (axe scrollable-region-focusable, 2026-10-30).
+        tabIndex={0}
         data-variant={variant}
       >
         {messages.length === 0 && greeting && (

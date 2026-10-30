@@ -146,8 +146,11 @@ Storybook and rollback.
   projects, and that topic stays hidden until the list is non-empty. `src/content/experience.ts`
   is shared by the Resume page and the career widget.
 - **Decisions and review:** `docs/case-study/chat-first-decisions.md` and
-  `docs/case-study/chat-widget-review.md`. Not done yet: Storybook stories for the new
-  widgets and `ChatHome`.
+  `docs/case-study/chat-widget-review.md`. Storybook: `Chat/Widgets` (stories + MDX) and
+  `Pages/Homepage` (ChatHome); the grid homepage moved to `Pages/Archive` (2026-10-30).
+- **Nav (2026-10-30):** About, Resume, Contact, and Design system ↗ (the public Storybook, new
+  tab). On phones the label shortens to "System" and the ThemeToggle becomes a single ◐ switch
+  so the row fits at 360px.
 
 ---
 
