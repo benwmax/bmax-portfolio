@@ -354,8 +354,22 @@
     padding-bottom: var(--space-6);
   }
 
+  /* Phones (Ben, 2026-10-30): the even split put the input in the middle of a
+     tall screen, with the starters pushed toward the bottom edge. The headline
+     now sits at its natural height near the top, so the input lands in the
+     upper part of the screen and the starters get the room below. */
+  .idle .main {
+    flex: 0 0 auto;
+    padding-top: var(--space-12);
+  }
+
+  /* More air between the input and the first starter on phones. */
+  .prompts {
+    margin-top: var(--space-3);
+  }
+
   /* Phones: starters stack full-width — four wrapped pills of uneven length
-     read as clutter at 375px. */
+     read as clutter at 375px. Same pill corners as on larger screens. */
   .chipsStart {
     flex-direction: column;
     align-items: stretch;
@@ -365,7 +379,7 @@
   .moreChips .chip {
     white-space: normal;
     text-align: left;
-    border-radius: var(--radius-sm);
+    padding-inline: var(--space-5);
   }
 
   /* Same full-width stack as the starters, so the expanded list reads as more
