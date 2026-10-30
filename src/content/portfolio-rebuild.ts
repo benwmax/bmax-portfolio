@@ -71,7 +71,7 @@ export const portfolioRebuildData: CaseStudyContent = {
       phase: 'System',
       title: 'Tokens first, components second',
       body: 'Locked the palette and type scale into CSS custom properties before building a single component, then documented the library in a public Storybook. When I wanted a second full aesthetic, it cost a token override block instead of a refactor.',
-      artifact: 'Design tokens · Storybook · 16 MDX docs',
+      artifact: 'Design tokens · Storybook · 17 MDX docs',
     },
     {
       phase: 'Ship',
@@ -109,9 +109,12 @@ export const portfolioRebuildData: CaseStudyContent = {
       body: 'Retro and Futuristic, one token layer apart.',
     },
     {
-      value: '16',
+      // 17 since 2026-10-30: the chat widgets joined Storybook as one documented
+      // family (Chat/Widgets). Counted as MDX docs pages, the same way the
+      // original 16 were — keep this in step with api/lib/system-prompt.ts.
+      value: '17',
       label: 'Documented components',
-      body: 'Public Storybook, MDX docs, stories for every state.',
+      body: 'Public Storybook, MDX docs, stories for every state, including the chat widgets.',
     },
     {
       value: '8 wks',
