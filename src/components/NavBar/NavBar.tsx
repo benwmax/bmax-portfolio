@@ -3,8 +3,10 @@ import { ThemeToggle } from '../ThemeToggle';
 import styles from './NavBar.module.css';
 
 const NAV_LINKS = [
-  { label: 'Work', href: '/work' },
+  // Chat-first experiment (2026-10-29): Home is the work, reached by the
+  // wordmark, so the nav carries the pages the chat links out to.
   { label: 'About', href: '/about' },
+  { label: 'Resume', href: '/resume' },
   { label: 'Contact', href: '/contact' },
 ] as const;
 
