@@ -14,8 +14,8 @@ import type { WidgetId } from '../../chat/widgetIds';
  * play other tours through WidgetActionsContext. Storybook provides no
  * context, so they render but do nothing here — that's expected.
  *
- * Not shown: `<study>.gallery` and `side-projects`. Both render nothing until
- * Ben adds content (src/content/work-images.ts, side-projects.ts).
+ * Not shown: `<study>.gallery` and `sim-reel`. Both render nothing until Ben
+ * adds content (src/content/work-images.ts, sim-reel.ts).
  */
 
 const meta = {
@@ -192,6 +192,13 @@ export const AiLimits = widgetStory(
   'Where he overruled the AI',
   "The AI's mistakes beside what Ben did instead, with the rebuild's outcome numbers.",
   "This is the trust signal for the AI story (CLAUDE.md: never skip what Claude couldn't do).",
+);
+
+export const SideProjects = widgetStory(
+  'side-projects',
+  'Side projects',
+  'Three 2026 side projects from src/content/side-projects.ts, each with a link when one is public.',
+  'Show for "what does he build on his own?" The joint bills planner has no link on purpose: it runs on real household data.',
 );
 
 // ——— Link cards ———

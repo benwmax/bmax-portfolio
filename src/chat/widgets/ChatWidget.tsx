@@ -23,6 +23,7 @@ import {
   SideProjects,
   WhyBen,
 } from './GlobalWidgets';
+import { SimReel } from './SimReel';
 import { TopicMenu } from './TopicMenu';
 
 const GLOBAL: Record<string, () => ReactNode> = {
@@ -34,6 +35,7 @@ const GLOBAL: Record<string, () => ReactNode> = {
   'ai-split': () => <AiSplit />,
   'ai-limits': () => <AiLimits />,
   'side-projects': () => <SideProjects />,
+  'sim-reel': () => <SimReel />,
   'links-design-system': () => <DesignSystemLinks />,
   'links-resume': () => <ResumeLinks />,
   'links-contact': () => <ContactLinks />,

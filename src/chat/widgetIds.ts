@@ -30,6 +30,7 @@ export const GLOBAL_WIDGETS = [
   'ai-split',
   'ai-limits',
   'side-projects',
+  'sim-reel',
   'links-design-system',
   'links-resume',
   'links-contact',
