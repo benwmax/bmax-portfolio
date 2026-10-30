@@ -65,6 +65,7 @@ const TOPIC_CONTEXT: Record<string, string> = {
   'design-system': "the walkthrough on this site's design system",
   career: "Ben's career timeline",
   'looking-for': 'what Ben is looking for next',
+  'side-projects': "Ben's side projects (the joint bills planner, Sailing Sim, Sailing Study)",
 };
 
 // Structured, single-line JSON logs — Vercel captures stdout as Function

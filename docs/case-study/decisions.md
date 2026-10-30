@@ -1431,3 +1431,18 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
   so the site contradicted itself.
 - Note: the PDF resume (`exports/`, not committed) uses fuller Sabre, Sagent, Upfluent, and USAA
   bullets than the Resume page.
+
+## 2026-10-30 — Side projects: three featured, the finance tool unlinked (Ben)
+- Decision: (Ben) Feature three 2026 side projects in the chat's side-projects topic: the joint
+  bills planner (a household tool that says how much each partner moves to the joint account
+  per pay period), Sailing Sim (an Unreal Engine sailing simulator), and Sailing Study (ASA 101
+  study kits and simulators). Framing: fun projects that show how fast Ben builds with AI.
+  Sailing Study links to its live GitHub Pages site and Sailing Sim to its public repo. The
+  bills planner has no link: it is local-only and runs on the household's real data.
+- Reasoning: links first, images later. A live site beats a repo when one exists, because a
+  visitor can try it. The why behind each project is Ben's own account.
+- Note: the facts are mirrored in SIDE PROJECTS in `api/lib/system-prompt.ts`, and the
+  side-projects widget was added to the brief's WIDGETS list now that it renders. Commit counts
+  (about 1,500 on the sim in 19 days) were left out because they go stale.
+- Open question: screenshots. Candidates: the study site's own PNGs, a sim render Ben picks,
+  and a capture of the bills planner's demo household (made-up data).
