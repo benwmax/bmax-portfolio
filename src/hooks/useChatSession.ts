@@ -50,8 +50,14 @@ export function splitParagraphs(text: string): string[] {
 // doesn't use tool-use at all). A false positive just surfaces a dismissible
 // card, so a broad-but-plausible phrase list is an acceptable trade for not
 // needing a second model round-trip.
+//
+// COUPLED BY CONVENTION with the contact wording in api/lib/system-prompt.ts
+// (SCOPE): every phrase the brief tells the model to use must match here, or
+// the reply promises a form that never appears. "send him a quick message
+// right here" didn't match `send him a message` until 2026-10-30, caught in a
+// live test. Change one, check the other.
 const CONTACT_INTENT_PATTERN =
-  /\b(get in touch|reach out|reach (you|ben|him)|contact (you|ben|him)|email (you|ben|him)|hire (you|ben|him)|work with (you|ben|him)|talk to (you|ben|him)|speak (with|to) (you|ben|him)|send (you|ben|him) a message|message (you|ben|him))\b/i;
+  /\b(get in touch|reach out|reach (you|ben|him)|contact (you|ben|him)|email (you|ben|him)|hire (you|ben|him)|work with (you|ben|him)|talk to (you|ben|him)|speak (with|to) (you|ben|him)|send (you|ben|him) a ((quick|short) )?message|message (you|ben|him)|message form)\b/i;
 
 export function detectContactIntent(text: string): boolean {
   return CONTACT_INTENT_PATTERN.test(text);
