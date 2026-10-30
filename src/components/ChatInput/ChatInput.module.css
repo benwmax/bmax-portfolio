@@ -74,8 +74,18 @@
   flex-shrink: 0;
 }
 
+/* Multiline: the prompt and caret sit on the first text line rather than the
+   field's middle (so they stay put as the field grows). They're centred on
+   that line: the textarea's 12px top padding plus half of what's left of its
+   line box after their own 14px height. A flat 14px left both ~3px high of the
+   text (2026-10-30). Keep --first-line in step with textarea.input's
+   line-height below. */
+.multiline {
+  --first-line: calc(12px + (var(--input-font-size) * 1.55 - 14px) / 2);
+}
+
 .multiline .prompt {
-  padding-top: 14px;
+  padding-top: var(--first-line);
 }
 
 /* Block caret — 7×14px phosphor rectangle */
@@ -93,7 +103,7 @@
 
 /* In multiline mode the field grows tall — pin caret beside the › prompt at top */
 .caretMulti {
-  top: 14px;
+  top: var(--first-line);
   transform: none;
 }
 
