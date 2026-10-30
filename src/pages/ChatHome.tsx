@@ -278,8 +278,18 @@ export function ChatHome({ topicSlug, onChatSubmit, initialMessages = [] }: Chat
               showStatus={false}
               className={styles.input}
             />
-            {!started && chipRow}
-            {moreQuestions}
+            {/* Starters and the extra questions scroll together as one region
+                under the input; the input itself never moves (Ben, 2026-10-30). */}
+            {!started && (
+              <div
+                className={[styles.prompts, moreOpen ? styles.promptsOpen : '']
+                  .filter(Boolean)
+                  .join(' ')}
+              >
+                {chipRow}
+                {moreQuestions}
+              </div>
+            )}
             {started && (
               <p className={styles.fineprint}>
                 Walkthroughs are written by Ben. Typed questions are answered by an AI model and can

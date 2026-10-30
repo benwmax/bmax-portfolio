@@ -115,10 +115,10 @@
   overflow: hidden;
 }
 
-/* The expanded "more questions" list can outgrow the lower half of the screen.
-   Only that list scrolls (Ben, 2026-10-30): the input and the four starters
-   stay put. dockInner is capped at the dock's height, so the flex column
-   shrinks the one child allowed to (.more → .moreList) and it scrolls. */
+/* The expanded questions can outgrow the lower half of the screen. The input
+   stays put and everything under it — the four starters and the extras —
+   scrolls as one region (Ben, 2026-10-30). dockInner is capped at the dock's
+   height, so the flex column shrinks the one child allowed to (.prompts). */
 .idle .dockInner {
   max-height: 100%;
   min-height: 0;
@@ -128,8 +128,28 @@
   flex-shrink: 0;
 }
 
-.idle .dockInner > .more {
+.idle .dockInner > .prompts {
   flex-shrink: 1;
+}
+
+.prompts {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  /* Room for focus rings, which a scroll container would otherwise clip. */
+  padding: var(--space-1);
+  margin: calc(var(--space-1) * -1);
+}
+
+/* Soft fade at the scroll edges once expanded, so a chip half-scrolled out
+   reads as "more this way" instead of being cut off against the input. */
+.promptsOpen {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 24px, #000 calc(100% - 16px), transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 24px, #000 calc(100% - 16px), transparent 100%);
+  padding-bottom: var(--space-4);
 }
 
 /* ——— More questions (idle only) ——— */
@@ -138,13 +158,7 @@
   flex-direction: column;
   align-items: center;
   gap: var(--space-2);
-  min-height: 0;
   animation: chipsIn var(--duration-slow) var(--ease-default) 0.25s both;
-}
-
-/* The toggle never scrolls away with the list. */
-.more > .moreToggle {
-  flex-shrink: 0;
 }
 
 .moreList {
@@ -165,16 +179,10 @@
 
 .moreListOpen {
   max-height: 900px;
-  min-height: 0;
-  flex-shrink: 1;
-  overflow-y: auto;
-  overscroll-behavior: contain;
   opacity: 1;
-  /* Soft fade at both scroll edges, so a chip half-scrolled out reads as
-     "more this way" instead of overlapping the starters above it. */
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 16px, #000 calc(100% - 16px), transparent 100%);
-  mask-image: linear-gradient(to bottom, transparent 0, #000 16px, #000 calc(100% - 16px), transparent 100%);
-  padding-block: var(--space-1) var(--space-2);
+  -webkit-mask-image: none;
+  mask-image: none;
+  padding-bottom: var(--space-2);
 }
 
 .moreGroup {
