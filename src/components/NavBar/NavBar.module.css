@@ -181,3 +181,35 @@
     letter-spacing: 0.06em;
   }
 }
+
+/* Below 360px (small Androids, iPhones with Display Zoom) the row still ran
+   ~24px past the edge and clipped the theme switch (2026-10-30 audit). Tighter
+   header padding, gap, and link padding win back ~28px; links keep their 44px
+   tap height. */
+@media (max-width: 359px) {
+  .header {
+    padding: 0 12px;
+  }
+  .right {
+    gap: 4px;
+  }
+  .link {
+    padding: 10px 4px;
+    letter-spacing: 0;
+  }
+  /* Space Grotesk runs wider than the mono face, so Futuristic also drops a
+     point of size here (still 11px, above the type floor). */
+  :global([data-theme='futuristic']) .link {
+    letter-spacing: 0;
+    font-size: 11px;
+  }
+}
+
+/* Short screens (a phone in landscape): a 56px header leaves the chat more room.
+   ChatHome reserves the same 56px at this height; other pages keep their 72px
+   top padding, which only adds a little space under the header. */
+@media (max-height: 480px) {
+  .header {
+    height: 56px;
+  }
+}

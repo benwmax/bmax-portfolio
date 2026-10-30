@@ -20,7 +20,7 @@ const REPO = 'https://github.com/benwmax/bmax-portfolio';
 const HEADLINE_OUTCOME: Record<string, number> = { upfluent: 0, sagent: 0, usaa: 0, sabre: 0 };
 
 export function Highlights() {
-  const { playTopic } = useWidgetActions();
+  const { playTopic, busy } = useWidgetActions();
   return (
     <Frame wide label="Selected work" meta="2015 → now">
       <ul className={styles.highlightList} role="list">
@@ -30,7 +30,7 @@ export function Highlights() {
           const stat = content.outcomes[HEADLINE_OUTCOME[id]];
           return (
             <li key={id}>
-              <button type="button" className={styles.highlight} onClick={() => playTopic(topic)}>
+              <button type="button" className={styles.highlight} onClick={() => playTopic(topic)} disabled={busy}>
                 {/* The project's cover art, fading out behind its number — the same
                     line motion that opens its tour, so the row and the tour match. */}
                 {art && (
@@ -112,7 +112,7 @@ const CAREER_TOPICS: Record<string, TopicId> = {
 };
 
 export function CareerTimeline() {
-  const { playTopic } = useWidgetActions();
+  const { playTopic, busy } = useWidgetActions();
   return (
     <Frame wide label="Career" meta="2014 → now">
       <ol className={styles.timeline}>
@@ -129,7 +129,7 @@ export function CareerTimeline() {
                 </span>
                 <span className={styles.timelineOutcome}>{e.outcomes[0]}</span>
                 {topic && (
-                  <button type="button" className={styles.topicBtn} onClick={() => playTopic(topic)}>
+                  <button type="button" className={styles.topicBtn} onClick={() => playTopic(topic)} disabled={busy}>
                     Walk through it <span aria-hidden="true">→</span>
                   </button>
                 )}

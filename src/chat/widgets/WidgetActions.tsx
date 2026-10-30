@@ -6,9 +6,18 @@ import type { TopicId } from '../topics';
 // without it (Storybook) get a no-op, so their buttons are inert but visible.
 export interface WidgetActions {
   playTopic: (id: TopicId) => void;
+  /**
+   * True while a reply streams or a tour plays. playTopic ignores clicks then, so
+   * widget buttons that start a tour are disabled rather than silently doing
+   * nothing (2026-10-30 audit).
+   */
+  busy: boolean;
 }
 
-export const WidgetActionsContext = createContext<WidgetActions>({ playTopic: () => {} });
+export const WidgetActionsContext = createContext<WidgetActions>({
+  playTopic: () => {},
+  busy: false,
+});
 
 export function useWidgetActions(): WidgetActions {
   return useContext(WidgetActionsContext);

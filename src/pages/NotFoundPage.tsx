@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { PageHead } from '../seo/PageHead';
 import { NOT_FOUND_META } from '../seo/pageMeta';
 import { NavBar } from '../components/NavBar';
@@ -51,9 +52,10 @@ export function NotFoundPage() {
 
         <div className={styles.cta}>
           <p className={styles.ctaNote}>Page not found.</p>
-          <a href="/" className={styles.ctaLink}>
-            ← Back to work
-          </a>
+          {/* Router Link so the conversation survives; "work" was the old grid. */}
+          <Link to="/" className={styles.ctaLink}>
+            ← Back to the chat
+          </Link>
         </div>
       </main>
     </div>

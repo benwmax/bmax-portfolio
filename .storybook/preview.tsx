@@ -1,4 +1,5 @@
 import { useLayoutEffect } from 'react';
+import type { ReactNode } from 'react';
 import type { Preview, Decorator } from '@storybook/react-vite';
 import { MemoryRouter } from 'react-router-dom';
 import { MINIMAL_VIEWPORTS } from 'storybook/viewport';
@@ -32,9 +33,12 @@ const withRouter: Decorator = (Story) => (
  * made the CaseStudyCard body render dark under futuristic. Setting the
  * attribute on <html> matches production and re-resolves every indirection.
  */
-const withPageBackground: Decorator = (Story, context) => {
-  const futuristic = context.parameters.theme === 'futuristic';
-
+// A component, not inline in the decorator: hooks can only run inside a
+// component, and a decorator is a plain function (react-hooks/rules-of-hooks).
+// Fast refresh doesn't apply to Storybook's preview config, so the
+// components-only-file rule is off for this one.
+// eslint-disable-next-line react-refresh/only-export-components
+function PageBackground({ futuristic, children }: { futuristic: boolean; children: ReactNode }) {
   useLayoutEffect(() => {
     const root = document.documentElement;
     if (futuristic) {
@@ -60,10 +64,16 @@ const withPageBackground: Decorator = (Story, context) => {
         boxSizing: 'border-box',
       }}
     >
-      <Story />
+      {children}
     </div>
   );
-};
+}
+
+const withPageBackground: Decorator = (Story, context) => (
+  <PageBackground futuristic={context.parameters.theme === 'futuristic'}>
+    <Story />
+  </PageBackground>
+);
 
 const preview: Preview = {
   decorators: [withRouter, withPageBackground],

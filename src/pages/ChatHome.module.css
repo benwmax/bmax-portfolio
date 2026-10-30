@@ -156,8 +156,20 @@
 /* Soft fade at the scroll edges once expanded, so a chip half-scrolled out
    reads as "more this way" instead of being cut off against the input. */
 .promptsOpen {
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 24px, #000 calc(100% - 16px), transparent 100%);
-  mask-image: linear-gradient(to bottom, transparent 0, #000 24px, #000 calc(100% - 16px), transparent 100%);
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 24px,
+    #000 calc(100% - 16px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 24px,
+    #000 calc(100% - 16px),
+    transparent 100%
+  );
   padding-bottom: var(--space-4);
 }
 
@@ -262,6 +274,10 @@
   /* Bleed to the gutter so a scrolling row doesn't clip mid-chip at the edge. */
   margin-inline: calc(var(--gutter) * -1);
   padding-inline: var(--gutter);
+  /* Fade the trailing gutter so a row that scrolls shows a chip dissolving at
+     the edge rather than a hard cut, the cue that there's more (2026-10-30
+     audit). A row that fits ends before the gutter, so nothing visible fades. */
+  mask-image: linear-gradient(to right, black calc(100% - var(--gutter)), transparent);
 }
 
 /* Idle: the four starters wrap and center under the input instead of scrolling. */
@@ -271,6 +287,7 @@
   overflow: visible;
   margin-inline: 0;
   padding-inline: 0;
+  mask-image: none;
   margin-top: var(--space-2);
   animation: chipsIn var(--duration-slow) var(--ease-default) 0.15s both;
 }
@@ -397,6 +414,32 @@
 
   .moreChips {
     flex-direction: column;
+  }
+
+  .fineprint {
+    display: none;
+  }
+}
+
+/* Short screens: a phone in landscape (812×375) left the transcript ~150px
+   between the header and the dock (2026-10-30 audit). Shorter header (NavBar
+   matches at the same height), tighter log padding, and no fine print, which
+   phones in portrait already drop. */
+@media (max-height: 480px) {
+  .page {
+    padding-top: 56px;
+  }
+
+  .log {
+    padding-block: var(--space-4) var(--space-4);
+  }
+
+  .dock {
+    padding-block: var(--space-2) max(var(--space-2), env(safe-area-inset-bottom));
+  }
+
+  .dockInner {
+    gap: var(--space-2);
   }
 
   .fineprint {

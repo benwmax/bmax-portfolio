@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { PageHead } from '../seo/PageHead';
 import { RESUME_META } from '../seo/pageMeta';
 import { NavBar } from '../components/NavBar';
@@ -40,9 +41,9 @@ export function ResumePage() {
               >
                 linkedin.com/in/benjaminwmaxwell
               </a>
-              <a href="/" className={styles.contactItem}>
+              <Link to="/" className={styles.contactItem}>
                 viewbens.work
-              </a>
+              </Link>
             </div>
           </div>
           <p className={styles.tagline}>
