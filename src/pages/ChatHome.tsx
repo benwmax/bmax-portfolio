@@ -188,8 +188,10 @@ export function ChatHome({ topicSlug, onChatSubmit, initialMessages = [] }: Chat
         aria-hidden={!moreOpen ? true : undefined}
       >
         {moreGroups.map((g) => (
+          // No visible group titles (Ben, 2026-10-30) — the chips read as one
+          // list; spacing separates the groups, and aria-label keeps the
+          // grouping for screen readers.
           <div key={g.label} className={styles.moreGroup} role="group" aria-label={g.label}>
-            <span className={styles.moreLabel}>{g.label}</span>
             <div className={styles.moreChips}>
               {g.topics.map((t) => (
                 <button
