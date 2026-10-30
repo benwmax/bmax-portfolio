@@ -1431,3 +1431,26 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
   so the site contradicted itself.
 - Note: the PDF resume (`exports/`, not committed) uses fuller Sabre, Sagent, Upfluent, and USAA
   bullets than the Resume page.
+
+## 2026-10-30 — Site audit: top six fixes (Ben)
+- Decision: (Ben) After a bug, screen-size, and security audit of the live site, fix the six
+  highest-priority findings now and hold the rest:
+  1. Chat stream failures: an upstream error, a dropped connection, or a failed fetch no longer
+     saves an empty assistant turn, which made the Messages API reject every later question in
+     that session for the 2-hour TTL. Both reservations are released when nothing was
+     delivered, and the client shows its fallback error instead of a blank bubble.
+  2. Rate limits key IPv6 clients by /64 (`api/lib/ip.ts`), for chat and contact, so one host
+     can't rotate addresses to drain the shared daily budgets.
+  3. Screen readers: the transcript is `role="log"` with `aria-live="off"`, and a separate
+     status region announces each finished reply or tour. Before, nothing was announced.
+  4. Keyboard focus returns to the first new chip after a tour, instead of falling to `<body>`.
+  5. The client decodes the stream with `{ stream: true }`, so a split em dash no longer
+     renders as `��`.
+  6. Storybook 10.6.5 (critical advisory in 10.0–10.6.1) and react-router 7.18.5. Vitest moved
+     to 4.1.10 because Storybook 10.6.5 won't resolve against 4.1.9.
+- Reasoning: the first two affect every chat visitor now that the homepage is the chat; the
+  next two are accessibility failures on the main interaction; the last two are cheap.
+- Open question: nine IPs can still exhaust `GLOBAL_DAILY_MESSAGE_CAP`. Ben to add a Vercel
+  Firewall rate-limit rule on `/api/chat`. The rest of the audit (320px theme toggle overflow,
+  landscape-phone transcript height, session-id validation, contact anti-bot hardening, sitemap
+  `/contact`, `<a href="/">` reloads, stale `TOPIC_CONTEXT['ai']`) is not yet scheduled.

@@ -340,7 +340,7 @@ The chat message log shared by every chat surface: the homepage hero panel, the 
 | Prop | Type | Notes |
 |---|---|---|
 | `messages` | `Message[]` | From `useChat()` |
-| `streaming` | `boolean` | `chatStatus === 'loading'` — drives the cursor and `aria-live` |
+| `streaming` | `boolean` | `chatStatus === 'loading'` — drives the cursor; when it turns false, the finished turn is announced through a separate `role="status"` region (the log itself is `role="log"` with `aria-live="off"`) |
 | `contactCard` | `ReactNode` | The `ContactCard` element when it should show, otherwise null/false |
 | `contactCardAfter` | `number \| null` | From `useChatSession` — messages rendered before the card. Null pins it to the end |
 | `greeting` | `string` | Homepage only — shown while the log is empty |
