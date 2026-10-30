@@ -59,7 +59,7 @@ export const EXPERIENCE = [
     dates: '2015–18',
     sector: 'Travel technology',
     outcomes: [
-      'Redesigned the NDC booking channel; work contributed to winning the $1B Flightcentre contract and a +23% revenue lift for Flightcentre.',
+      'Owned Hotel booking in the Sabre Red Workspace redesign, which helped win the $1B Flightcentre contract and was followed by a +23% revenue lift for Flightcentre.',
       'Built complex tools for travel agents who need speed, accuracy, and zero-tolerance for UX errors.',
     ],
   },

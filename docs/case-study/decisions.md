@@ -1420,3 +1420,14 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
 - Open question: typed chat questions had never been tested against the live model before
   the merge (localhost has no `/api`, and the preview origin isn't allowlisted). Ben chose to
   merge and test immediately on viewbens.work, with rollback ready.
+
+## 2026-10-30 — Sabre copy corrected to match the case study
+- Decision: (Ben) The Resume and About pages no longer say "NDC channel redesign". They now say
+  Ben owned Hotel booking in the Sabre Red Workspace redesign, as stated in
+  `src/content/sabre.ts`. (The "$1B government contract" wording had already been corrected to
+  Flightcentre on main by the time this merged.)
+- Reasoning: Caught while checking a PDF export of the resume for job applications. Neither
+  "NDC" nor "government" appears in the Sabre case study, and Flightcentre is a travel agency,
+  so the site contradicted itself.
+- Note: the PDF resume (`exports/`, not committed) uses fuller Sabre, Sagent, Upfluent, and USAA
+  bullets than the Resume page.

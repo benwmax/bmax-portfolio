@@ -26,7 +26,7 @@ const CAREER = [
     company: 'Sabre',
     role: 'Senior UX Designer',
     sector: 'Travel technology',
-    outcomes: ['$1B Flightcentre contract win', '+23% revenue lift', 'NDC channel redesign'],
+    outcomes: ['$1B Flightcentre contract win', '+23% revenue lift', 'Hotel booking redesign'],
   },
   {
     company: 'USAA',
