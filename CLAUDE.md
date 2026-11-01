@@ -83,6 +83,15 @@ throughout — not just in the opener.
 **Do not suggest reordering these without flagging it explicitly and explaining
 the strategic reason.**
 
+### Portfolio Rebuild re-listed in the chat (2026-11-01)
+
+Ben asked for a more focused rewrite that includes the chat-first pivot, plus a starter
+prompt for it. `src/content/portfolio-rebuild.ts` is rewritten; it has its own tour
+(`portfolio`, the second of five starters), `portfolio-full`, `/work/portfolio`, a sitemap
+and `ROUTE_META` entry, and a block under CASE STUDIES (listed 5th) in
+`api/lib/system-prompt.ts`. Client numbering stays 01–04; Portfolio Rebuild has no index chip
+or cover art because it has no work-grid card. The section below is history.
+
 ### Portfolio Rebuild hidden, Sagent shown as a teaser (2026-10-08)
 
 The order above is the **strategic** order and has not changed. Ben's call on 2026-10-08:

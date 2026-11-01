@@ -50,7 +50,7 @@ export const STUDIES: Record<StudyId, StudyInfo> = {
   sagent: study(sagentData, 'Mortgage', 'sagent', 'Sagent'),
   usaa: study(usaaData, 'Insurance', 'usaa', 'USAA'),
   sabre: study(sabreData, 'Travel', 'sabre', 'Sabre'),
-  portfolio: study(portfolioRebuildData, 'AI Collaboration', 'ai', 'Portfolio rebuild'),
+  portfolio: study(portfolioRebuildData, 'AI Collaboration', 'portfolio', 'Portfolio rebuild'),
 };
 
 /** The client case studies in portfolio order (CLAUDE.md: 01 Upfluent, 02 Sagent, 03 USAA, 04 Sabre). */

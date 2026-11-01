@@ -32,10 +32,12 @@ export type TopicId =
   | 'usaa'
   | 'upfluent'
   | 'sagent'
+  | 'portfolio'
   | 'sabre-full'
   | 'usaa-full'
   | 'upfluent-full'
   | 'sagent-full'
+  | 'portfolio-full'
   | 'ai'
   | 'ai-limits'
   | 'leadership'
@@ -87,11 +89,15 @@ export interface Topic {
 }
 
 /**
- * The four chips under the centered input on first load, in order. Chosen for
- * the people reading: see the work, see the skill, see where AI fits, see if
- * he's available. Everything else is behind "All topics" once a chat starts.
+ * The chips under the centered input on first load, in order. Chosen for the
+ * people reading: see the work, see how this site was made, see the skill, see
+ * where AI fits, see if he's available. Everything else is behind "All topics"
+ * once a chat starts.
+ *
+ * Five since 2026-11-01 (Ben asked for "how was this built" among the first
+ * prompts). Was four per chat-first-decisions.md 2026-10-29.
  */
-export const STARTER_TOPICS: TopicId[] = ['best-work', 'experts', 'ai', 'looking-for'];
+export const STARTER_TOPICS: TopicId[] = ['best-work', 'portfolio', 'experts', 'ai', 'looking-for'];
 
 /**
  * Every other listed topic, grouped, for the "more questions" expander under
@@ -119,7 +125,10 @@ function galleryBeat(study: StudyId, text: string): Beat[] {
 }
 
 // The opt-in deep dive for a case study: just the stepped walkthrough.
-function fullCaseStudy(study: 'sabre' | 'usaa' | 'upfluent' | 'sagent', name: string): Topic {
+function fullCaseStudy(
+  study: 'sabre' | 'usaa' | 'upfluent' | 'sagent' | 'portfolio',
+  name: string,
+): Topic {
   return {
     id: `${study}-full`,
     prompt: `Walk me through the full ${name} case study`,
@@ -316,10 +325,36 @@ const TOPIC_LIST: Topic[] = [
       { label: 'How does he lead a team?', topic: 'leadership' },
     ],
   },
+  // This site, as a case study (re-listed 2026-11-01, Ben). Visitors are already
+  // inside the thing it describes, so the tour leads with the pivot to chat and
+  // points at the tour they're watching as the key decision.
+  {
+    id: 'portfolio',
+    prompt: 'How did he build this site?',
+    group: 'work',
+    kicker: 'AI Collaboration · 2026',
+    beats: [
+      { widgets: ['portfolio.cover'] },
+      {
+        text: 'Ben rebuilt his portfolio with Claude as a collaborator. Four days after launch, he replaced its grid of case studies with this chat, because a conversation is the most natural way to get to know someone and their work. Every judgment call stayed his.',
+        widgets: ['ai-split'],
+      },
+      {
+        text: "The tour you're watching is the key decision: starter prompts play scripted walkthroughs, and only typed questions reach the model.",
+        widgets: ['portfolio.outcomes'],
+      },
+    ],
+    followUps: [
+      { label: 'Full case study', topic: 'portfolio-full' },
+      { label: 'Where did he overrule the AI?', topic: 'ai-limits' },
+      { label: "See the site's design system", topic: 'design-system' },
+    ],
+  },
   fullCaseStudy('sabre', 'Sabre'),
   fullCaseStudy('usaa', 'USAA'),
   fullCaseStudy('upfluent', 'Upfluent'),
   fullCaseStudy('sagent', 'Sagent'),
+  fullCaseStudy('portfolio', 'Portfolio Rebuild'),
 
   // ——— How he works ———
   {
@@ -560,6 +595,7 @@ export const DEEP_LINK_TOPICS: Record<string, TopicId> = {
   sagent: 'sagent',
   usaa: 'usaa',
   sabre: 'sabre',
+  portfolio: 'portfolio',
 };
 
 /**

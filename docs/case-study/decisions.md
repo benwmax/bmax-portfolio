@@ -1494,3 +1494,38 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
 - Reasoning: on the pale `#f2f5f8` page, unbroken 1px lines at 5% competed with the chat
   transcript, which now sits directly on the grid since the chat-first homepage. Checked side
   by side in the browser behind a visitor prompt and an assistant paragraph.
+
+## 2026-11-01 — Portfolio Rebuild rewritten around the chat-first pivot and re-listed
+- Decision: (Ben) Write a new, more focused version of the meta case study that includes the
+  pivot to the chat-first site, add it to the case studies, and give it one of the first
+  starter prompts.
+- What changed:
+  - The story now runs: evidence without argument, then a grid that still made the reader
+    choose, then the pivot. The key decision is "script the tours, let the model answer
+    the rest".
+  - "What was hard" adds the first chat-first build (fifteen starter prompts, a lede, a
+    status badge) and Ben cutting it back. The "overruled the AI" panel gets the same line.
+  - New outcomes: 2 days from decision to live, 0 model calls per tour, 17 documented
+    components, 2 themes. The Lighthouse outcome is dropped: it was measured on the grid
+    site. Re-measured 2026-11-01 on the live chat site: Home and About score 97 on mobile
+    and 100 on desktop, with 100 for accessibility, best practices, and SEO. `/work/sabre`
+    scores 76 on mobile because of layout shift while a tour plays (CLS 0.41).
+  - Wired in: a `portfolio` tour (the second starter), `portfolio-full`, `/work/portfolio`,
+    the sitemap, `ROUTE_META`, `TOPIC_CONTEXT`, and a CASE STUDIES block in the brief.
+- Claude's calls, flagged for Ben:
+  - Five starter chips instead of four. This conflicts with chat-first-decisions.md
+    2026-10-29, which set four; the alternative was replacing "How does AI fit his design
+    process?".
+  - The client numbering stays 01–04, and Portfolio Rebuild has no index chip. Under the
+    strategic order it would be 01 and everything else would renumber.
+  - Ben's reason for chat-first, added at his request: a conversation is the most natural
+    way for hiring managers and designers to learn about him and his work. It's in the
+    Process step, the tour, and the brief.
+  - "What I'd do differently": removed by Ben the same day. The section is empty, so
+    it drops out of the walkthrough, as it does for Sagent.
+- Approved: Ben reviewed the draft in a review copy, removed "What I'd do differently",
+  added his reason for going chat-first, then approved it ("Looks good, ship it"). He didn't
+  raise the five-chip or numbering calls again, so both ship as described above.
+- Open: the OG image (`public/og/portfolio.png`) still has the old subtitle, and the title
+  card has no line-art cover.
+

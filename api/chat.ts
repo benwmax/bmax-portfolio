@@ -55,6 +55,9 @@ const TOPIC_CONTEXT: Record<string, string> = {
   'usaa-full': 'the full USAA case study',
   'upfluent-full': 'the full Upfluent case study',
   'sagent-full': 'the full Sagent case study',
+  portfolio:
+    'the Portfolio Rebuild walkthrough (how this site was built, including the pivot to a chat-first site)',
+  'portfolio-full': 'the full Portfolio Rebuild case study',
   ai: "the walkthrough on how AI fits Ben's design process (mainly the Sagent Workflow builder he coded with AI, plus brief mentions of the Upfluent AI advisor and this site's rebuild with Claude)",
   'ai-limits': 'where Ben overruled the AI during the Portfolio Rebuild',
   experts: 'the walkthrough on how Ben designs for expert users (Sabre and Upfluent)',

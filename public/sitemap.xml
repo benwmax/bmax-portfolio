@@ -26,6 +26,11 @@
     <changefreq>monthly</changefreq>
   </url>
   <url>
+    <loc>https://viewbens.work/work/portfolio</loc>
+    <priority>0.9</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
     <loc>https://viewbens.work/about</loc>
     <priority>0.7</priority>
     <changefreq>monthly</changefreq>
