@@ -17,6 +17,7 @@ import { upfluentData } from '../content/upfluent';
 import { sagentData } from '../content/sagent';
 import { usaaData } from '../content/usaa';
 import { sabreData } from '../content/sabre';
+import { portfolioRebuildData } from '../content/portfolio-rebuild';
 
 export const SITE_URL = 'https://viewbens.work';
 
@@ -129,6 +130,7 @@ export const ROUTE_META: Record<string, PageMeta> = {
   '/work/sagent': caseStudyMeta('sagent', sagentData),
   '/work/usaa': caseStudyMeta('usaa', usaaData),
   '/work/sabre': caseStudyMeta('sabre', sabreData),
+  '/work/portfolio': caseStudyMeta('portfolio', portfolioRebuildData),
   '/about': ABOUT_META,
   '/resume': RESUME_META,
   '/contact': CONTACT_META,

@@ -30,7 +30,12 @@ export function Highlights() {
           const stat = content.outcomes[HEADLINE_OUTCOME[id]];
           return (
             <li key={id}>
-              <button type="button" className={styles.highlight} onClick={() => playTopic(topic)} disabled={busy}>
+              <button
+                type="button"
+                className={styles.highlight}
+                onClick={() => playTopic(topic)}
+                disabled={busy}
+              >
                 {/* The project's cover art, fading out behind its number — the same
                     line motion that opens its tour, so the row and the tour match. */}
                 {art && (
@@ -119,17 +124,29 @@ export function CareerTimeline() {
         {EXPERIENCE.map((e) => {
           const topic = CAREER_TOPICS[e.company];
           return (
-            <li key={`${e.company}-${e.dates}`} className={[styles.timelineRow, topic ? styles.timelineRowLinked : ''].filter(Boolean).join(' ')}>
+            <li
+              key={`${e.company}-${e.dates}`}
+              className={[styles.timelineRow, topic ? styles.timelineRowLinked : '']
+                .filter(Boolean)
+                .join(' ')}
+            >
               <span className={styles.timelineDates}>{e.dates}</span>
               <span className={styles.timelineDot} aria-hidden="true" />
               <div className={styles.timelineMain}>
-                <span className={styles.timelineCompany}>{e.company.replace('Self-directed — ', '')}</span>
+                <span className={styles.timelineCompany}>
+                  {e.company.replace('Self-directed — ', '')}
+                </span>
                 <span className={styles.timelineRole}>
                   {e.role} · {e.sector}
                 </span>
                 <span className={styles.timelineOutcome}>{e.outcomes[0]}</span>
                 {topic && (
-                  <button type="button" className={styles.topicBtn} onClick={() => playTopic(topic)} disabled={busy}>
+                  <button
+                    type="button"
+                    className={styles.topicBtn}
+                    onClick={() => playTopic(topic)}
+                    disabled={busy}
+                  >
                     Walk through it <span aria-hidden="true">→</span>
                   </button>
                 )}
@@ -156,7 +173,9 @@ export function LookingFor() {
         </div>
         <div>
           <dt>Best fit</dt>
-          <dd>Fintech, regulated industries, design systems at scale, serious AI product investment</dd>
+          <dd>
+            Fintech, regulated industries, design systems at scale, serious AI product investment
+          </dd>
         </div>
         <div>
           <dt>Experience</dt>
@@ -260,6 +279,11 @@ const AI_LIMITS = [
     wrong: 'Wanted to leave a gap in the case study numbering.',
     did: 'Renumbered — a gap reads as something missing.',
   },
+  // The chat-first redirect (chat-first-decisions.md 2026-10-29).
+  {
+    wrong: 'Built the chat homepage with fifteen starter prompts, a lede, and a status badge.',
+    did: 'Cut the first screen to a headline, an input, and four prompts.',
+  },
 ];
 
 export function AiLimits() {
@@ -313,7 +337,11 @@ export function DesignSystemLinks() {
   return (
     <Frame label="Design system" meta="Public">
       <div className={styles.linkList}>
-        <LinkRow href={STORYBOOK_URL} label="Browse the component library" detail="system.viewbens.work" />
+        <LinkRow
+          href={STORYBOOK_URL}
+          label="Browse the component library"
+          detail="system.viewbens.work"
+        />
         <LinkRow href={REPO} label="Read the source" detail="github.com/benwmax/bmax-portfolio" />
       </div>
     </Frame>

@@ -1150,3 +1150,19 @@ re-encoded the previous file's temp output. One "advisor flow" tile showed a can
 chart. Claude caught it by looking at the rendered gallery, then ran a checksum and
 aspect-ratio pass over every output to make sure no others were affected.
 
+
+## 2026-11-01 (later — Portfolio Rebuild rewrite)
+**What I did:** Asked Claude for a new, more focused version of the meta case study that
+includes the pivot to the chat-first site, plus a starter prompt so visitors can learn how
+the site was built.
+**What I decided:** Cut "What I'd do differently" entirely. Added my actual reason for going
+chat-first: a conversation is the most natural way for hiring managers and designers to
+learn about me and my work.
+**Why:** The old version ended at a grid of case study pages that no longer exists.
+**What I'm uncertain about:** Whether five starter prompts is one too many.
+**What Claude contributed:** The draft (sourced from decisions, the chat-first log, key
+insights, and git dates), the tour, the re-listing, and a fresh Lighthouse run on the live
+site. Lighthouse found layout shift while a tour plays: `/work/sabre` scores 76 on mobile.
+**Where I overrode or redirected Claude:** Removed a section Claude wrote, including a line
+that was its own inference about my process rather than something I'd said. Supplied the
+"why" for the pivot that the draft had only implied.

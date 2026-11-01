@@ -1,52 +1,59 @@
 import type { CaseStudyContent } from '../pages/CaseStudyPage';
 
 /**
- * Case study 01 — the meta case study.
+ * The meta case study: how this site was built.
  *
- * Sourced from docs/case-study/: key-insights.md (the strategic diagnosis and
- * the "evidence without argument" quote), process-journal.md (the dated build
- * log), and decisions.md. Every claim here traces to one of those — the
- * Lighthouse range, the two themes, the component count, the eight weeks.
+ * Rewritten 2026-11-01 (Ben asked for a more focused version that includes the
+ * pivot to the chat-first site). The 2026-07-29 version ended at a grid of case
+ * study pages; this one runs through the pivot, which is the strongest evidence
+ * of how Ben directs the work rather than doing what the first plan said.
  *
- * Two framing rules from CLAUDE.md apply and are load-bearing, not stylistic:
- * this is never "Claude built this" — Ben directed the process — and the limits
- * of the AI collaboration are stated plainly rather than smoothed over. The
- * "what Claude couldn't do" content is the trust signal, so it stays in
- * whatWasHard even when trimming for length.
+ * Sources: docs/case-study/key-insights.md (the diagnosis), decisions.md and
+ * chat-first-decisions.md (the pivot and its reasoning), process-journal.md.
+ * Dates check out against git: launched 2026-10-26, chat-first decided
+ * 2026-10-29 and live 2026-10-30 (PR #62).
  *
- * Apostrophes are straight, not typographic, matching the other content files —
- * mixed styles would render inconsistently between case studies. Strings
- * containing one use double quotes (Prettier's own preference).
+ * Two framing rules from CLAUDE.md are load-bearing, not stylistic: this is
+ * never "Claude built this" — Ben directed the process — and the limits of the
+ * collaboration are stated plainly. whatWasHard carries that, so it stays even
+ * when trimming.
+ *
+ * Coupled to the chat: AiSplit reads the role rows by label ('Owned', 'Claude
+ * owned', 'The distinction'), AiLimits shows every outcome, and the tour shows
+ * the first three outcomes with a number in them. Keep labels and order.
+ *
+ * Apostrophes are straight, not typographic, matching the other content files.
  */
 export const portfolioRebuildData: CaseStudyContent = {
   number: '01',
   dateRange: '2026',
   company: 'Portfolio Rebuild',
-  heroTitle: 'Directing an AI to build a portfolio — and making the process the case study.',
+  heroTitle: 'I rebuilt my portfolio with AI, launched it, then turned it into a conversation.',
   heroSubtitle:
-    "I rebuilt this site with Claude as a collaborator, not an autopilot. Every strategic call stayed mine. The interesting part isn't that AI wrote code fast — it's where I had to overrule it.",
+    'I directed Claude through the whole build. Four days after launch, I replaced the grid of case studies with the chat you are reading now.',
   meta: [
     { label: 'My role', value: 'Director · Sole designer' },
     { label: 'Method', value: 'AI-directed build' },
-    { label: 'Lighthouse', value: '94–100', accent: true },
-    { label: 'Build time', value: '8 weeks', accent: true },
+    { label: 'Pivot', value: '2 days to live', accent: true },
+    { label: 'Tours', value: '0 model calls', accent: true },
   ],
   problem: {
-    heading: 'A portfolio full of evidence and no argument',
+    heading: 'Evidence with no argument, then an argument nobody had to read',
     paragraphs: [
-      "My old portfolio had strong outcomes on it — a $1B contract, a 23% revenue lift, conversion wins at USAA — and no reason to read them in order. The reader had to assemble the case themselves, and readers don't do that. The first AI audit missed it entirely and handed back surface fixes. It took a second adversarial pass, aimed at the first one's output, to name the real failure: evidence without argument is just a pile of stuff.",
+      'My old portfolio had a $1B contract and a 23% revenue lift on it, and no reason to read them in order. It took a second, adversarial AI review to name the problem: evidence without argument is just a pile of stuff.',
+      'The rebuild fixed the argument. Once it launched, the grid was the weak point: four cards still asked a hiring manager to choose before they knew why.',
     ],
   },
   role: [
     {
       label: 'Owned',
       content:
-        'Everything that required judgment: positioning, case study order, what to leave out, visual direction, and the decision to make this build the lead case study.',
+        'Every judgment call: positioning, what to lead with, what to cut, the visual direction, and the pivot to a chat-first site.',
     },
     {
       label: 'Claude owned',
       content:
-        'Code, first drafts, audits, and surfacing things I had stopped seeing in my own work. Fast, often right, and never the decision-maker.',
+        'Code, first drafts, audits, and building each tour and widget to my spec. Fast, often right, and never the decision-maker.',
     },
     {
       label: 'The distinction',
@@ -56,80 +63,73 @@ export const portfolioRebuildData: CaseStudyContent = {
   ],
   userContext: {
     paragraphs: [
-      "The reader is a design director with about ninety seconds and four other tabs open. They aren't auditing my process. They're deciding whether to keep reading.",
-      'That makes AI a liability as much as a selling point. The people curious about how I work with AI are the same people primed to spot slop, and one generic gradient ends the argument before it starts. The site has to look like someone with taste made it before anyone reads a word about method.',
+      'The reader is a hiring manager or recruiter with ninety seconds and four other tabs open. Most will click rather than type.',
+      'They are also the people most primed to spot AI slop. The site has to look like someone with taste made it before it says a word about method.',
     ],
   },
   process: [
     {
       phase: 'Audit',
-      title: 'Two AI passes, stacked against each other',
-      body: 'Ran a straight portfolio assessment, then pointed an adversarial review at its output. The second pass caught what the first missed: the unasked NDA question, a misread of which case study showed craft, and a generic site map dressed up as strategy.',
-      artifact: 'Adversarial review · Positioning synthesis',
+      title: 'Two AI reviews, one aimed at the other',
+      body: 'A straight assessment first, then an adversarial review of its output. The second pass found what the first missed, including the throughline that became my positioning.',
+      artifact: 'Adversarial review · Positioning',
     },
     {
       phase: 'System',
-      title: 'Tokens first, components second',
-      body: 'Locked the palette and type scale into CSS custom properties before building a single component, then documented the library in a public Storybook. When I wanted a second full aesthetic, it cost a token override block instead of a refactor.',
-      artifact: 'Design tokens · Storybook · 17 MDX docs',
+      title: 'Tokens first, then a public Storybook',
+      body: 'Color and type were locked into tokens before any component existed. A second full theme later cost one override block instead of a refactor.',
+      artifact: 'Design tokens · Storybook',
     },
     {
-      phase: 'Ship',
-      title: "Build the AI, don't just claim it",
-      body: 'Put a live assistant on the site so visitors can question the work instead of taking my word for it. Treating it as an attack surface paid off: the first version trusted the chat history the browser sent back, so a tampered client could fake a reply where the assistant had already broken character. History now lives on the server.',
-      artifact: 'Edge function · Server-side session · Spend cap',
+      phase: 'Pivot',
+      title: 'Rebuild the site as a guided conversation',
+      body: 'A conversation is the most natural way for a hiring manager or a designer to get to know someone and their work, so I made the site one. I built it alongside the live site and kept every old case study link working.',
+      artifact: 'Chat-first homepage · Rollback branch',
     },
   ],
   keyDecision: {
-    heading: 'Make the rebuild the lead case study',
+    heading: 'Script the tours. Let the model answer the rest.',
     paragraphs: [
-      'The original plan was simple: rebuild the site, add a Sagent case study, ship. Instead I moved this project to position one, ahead of every client engagement.',
-      'My newest client work is from 2024. This is from 2026. Leading with it means the first thing a director sees is how I work now — directing a process, not executing a brief.',
+      "A chat site could generate every answer. I didn't want the most-viewed content depending on a model getting it right every time.",
+      'So the starter prompts play pre-written tours: instant, free, and unable to misstate the work. Typed questions go to the model, which can show work but never write markup. It picks from a fixed list of widgets, and anything else renders nothing.',
     ],
   },
   whatWasHard: {
     paragraphs: [
-      'The AI was a confident bad editor before it was a good one. Its first audit never raised the NDA question, called my only visually strong case study the weakest, and offered Home → Work → About as strategy.',
-      'So I made it argue with itself, and overruled it where taste was the call. It wanted to merge two drafts of a case study; I kept the leaner one. It wanted to leave a gap in the case study numbering to save churn; I renumbered, because a gap reads as something missing — and noticing that is the whole argument.',
-      'And the whole thing is recursive. This page is hosted on the thing it describes, so every wrap point and focus ring is a claim about my judgment. No default got accepted just because it worked.',
+      'The AI was a confident bad editor before it was a good one. Its first audit never raised the NDA question, and it offered Home → Work → About as strategy.',
+      'The first chat-first version had the same habit. Claude built my plan with fifteen starter prompts, a lede, and a status badge, and it was hard to follow. I cut the first screen to a headline, an input, and four prompts, and put design back in front, with AI as how I extend it.',
+      'And it is recursive. This conversation is the case study, so every reply is a claim about my judgment.',
     ],
   },
   outcomes: [
     {
-      value: '94–100',
-      label: 'Lighthouse · 8 pages',
-      // Measured on the grid design (2026-10-08). The boot intro that set the low end was
-      // removed with the chat-first homepage (2026-10-30); re-run Lighthouse on the
-      // current site before changing these numbers.
-      body: 'Performance 94–98. Accessibility, best practices, SEO all 100.',
+      value: '2 days',
+      label: 'Pivot, decision to live',
+      body: 'Decided Oct 29, live Oct 30, with the grid site kept for rollback.',
+    },
+    {
+      value: '0',
+      label: 'Model calls per tour',
+      body: 'Scripted tours are instant, free, and stay accurate.',
+    },
+    {
+      // Counted as MDX docs pages; the chat widgets are one documented family
+      // (Chat/Widgets). Keep in step with api/lib/system-prompt.ts.
+      value: '17',
+      label: 'Documented components',
+      body: 'Public Storybook with stories for every state, including the chat widgets.',
     },
     {
       value: '2',
       label: 'Complete themes',
       body: 'Retro and Futuristic, one token layer apart.',
     },
-    {
-      // 17 since 2026-10-30: the chat widgets joined Storybook as one documented
-      // family (Chat/Widgets). Counted as MDX docs pages, the same way the
-      // original 16 were — keep this in step with api/lib/system-prompt.ts.
-      value: '17',
-      label: 'Documented components',
-      body: 'Public Storybook, MDX docs, stories for every state, including the chat widgets.',
-    },
-    {
-      value: '8 wks',
-      label: 'Audit to launch-ready',
-      body: 'Design system, case studies, and a live AI assistant.',
-    },
   ],
-  whatIdDoDifferently: {
-    paragraphs: [
-      'Write the documentation rules before the first prompt, not after the fourth session started cold. The project instructions and component guide exist because I kept re-explaining the same constraints — they should have been the first artifact, not a mid-project patch.',
-      "And get it on a real phone sooner. Emulated viewports and scripted browsers caught almost everything, but they're the AI's view of the site, not a visitor's. A real device is the one check I can't delegate.",
-    ],
-  },
-  // Placeholder slots — captions and positions are final, screenshots pending.
-  // Each renders ImageCaption's dot-grid frame until `src` + `alt` are added.
+  // Removed 2026-11-01 (Ben). Empty paragraphs drop the section from the
+  // walkthrough and CaseStudyPage, as Sagent does.
+  whatIdDoDifferently: { paragraphs: [] },
+  // Screenshot slots from the page era. The chat doesn't render `figures`; they
+  // only matter if CaseStudyPage is ever routed again.
   figures: [
     {
       section: 'process',
@@ -144,13 +144,13 @@ export const portfolioRebuildData: CaseStudyContent = {
     {
       section: 'hard',
       tabLabel: 'portfolio rebuild · redirecting claude',
-      caption: 'Where the direction changed — a recommendation taken apart rather than accepted.',
+      caption: 'Where the direction changed: a recommendation taken apart rather than accepted.',
     },
   ],
   chatSuggestions: [
     'What did Claude get wrong?',
+    'Why turn the site into a chat?',
     'How much of this did you actually decide?',
-    'Why lead with this instead of client work?',
   ],
   nextCase: { title: 'Upfluent', href: '/work/upfluent' },
 };

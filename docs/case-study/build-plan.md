@@ -48,7 +48,7 @@ See decisions.md 2026-07-29.
 | 4 | Site Assembly | Complete (2026-10-08) — OG images shipped as generated placeholders | — |
 | 5 | QA and Pre-Launch | In progress — Lighthouse/cross-browser/a11y/links/console/typography/dark-mode all complete; real-device testing skipped by Ben for launch (2026-10-09); image checks done 2026-11-01 | — |
 | 6 | Launch | Live 2026-10-26 — viewbens.work cut over and verified; sitemap submission (Ben) and launch journal entry remain | — |
-| 7 | Meta Case Study | In progress — case study written 2026-07-29; hidden from the site 2026-10-08 (Ben's call, content intact); screenshots and before/after remain (Lighthouse re-check done 2026-10-08) | — |
+| 7 | Meta Case Study | In progress — written 2026-07-29; hidden 2026-10-08; rewritten around the chat-first pivot and re-listed 2026-11-01; screenshots and before/after remain | — |
 
 ---
 
@@ -538,6 +538,8 @@ independently; only the widget's visual styling depends on those.*
 - [x] Publish and replace Phase 4 placeholder (2026-07-29)
 - [x] Re-run Lighthouse to confirm the `96–100` figure the page now claims — the recorded
       numbers predate the contact flow and mobile chat overlay
+- [x] Rewrite the case study around the chat-first pivot and re-list it in the chat with a
+      starter prompt (2026-11-01 — Ben reviewed and approved the copy; see decisions.md)
       *(2026-10-08 re-run, Lighthouse 12.2.1, production build via `vite preview`: mobile
       preset 88–91 performance, 100/100/100 elsewhere on all 8 routes; desktop preset Home
       99/100/100/100. The 2026-07-16 commit measured the same 89–91 in the same environment,
