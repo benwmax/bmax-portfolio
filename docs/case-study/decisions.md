@@ -1486,3 +1486,11 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
   outside Hotel, and their captions say so ("the team's") — keep or drop them; (4) the typed
   "design thinking" question hasn't been tested against the live model (no `/api` locally).
 
+
+## 2026-11-01 — Futuristic grid muted to 2.5%
+- Decision: (Ben) The futuristic theme's background line grid was too strong and made some
+  text hard to read. `--color-bg-dot` under `[data-theme='futuristic']` went from 5% to 2.5%
+  slate. The 32px cell size and the retro dot grid are unchanged.
+- Reasoning: on the pale `#f2f5f8` page, unbroken 1px lines at 5% competed with the chat
+  transcript, which now sits directly on the grid since the chat-first homepage. Checked side
+  by side in the browser behind a visitor prompt and an assistant paragraph.
