@@ -141,8 +141,12 @@ Storybook and rollback.
 - **URLs:** `/work/<slug>` still works for upfluent, sagent, usaa, and sabre. Each one opens
   the chat and plays that project's tour, and its per-route OG meta is unchanged. The nav is
   About, Resume, Contact.
-- **Content hooks:** `src/content/work-images.ts` holds screenshots, which stay hidden until a
-  `src` is set. Sagent never gets images (NDA). `src/content/side-projects.ts` holds side
+- **Content hooks:** `src/content/work-images.ts` holds the work samples (2026-11-01: 37
+  images and 2 videos for Upfluent, USAA, and Sabre in `public/case/<study>/`). Each entry has
+  theme tags; `work.<theme>` widgets regroup them across projects, and `featured` picks the
+  project tour's gallery. **Coupled by convention:** the theme lines in the system prompt's
+  WIDGETS section describe what each gallery contains, so update them when the media changes.
+  Sagent never gets images (NDA). `src/content/side-projects.ts` holds side
   projects, and that topic stays hidden until the list is non-empty. `src/content/experience.ts`
   is shared by the Resume page and the career widget.
 - **Decisions and review:** `docs/case-study/chat-first-decisions.md` and

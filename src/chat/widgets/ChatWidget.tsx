@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { StudyId, WidgetId } from '../widgetIds';
+import type { StudyId, WidgetId, WorkTheme } from '../widgetIds';
 import { CaseWalkthrough } from './CaseWalkthrough';
 import {
   StudyCover,
@@ -8,6 +8,7 @@ import {
   StudyHard,
   StudyOutcomes,
   StudyRole,
+  ThemeGallery,
 } from './StudyWidgets';
 import { SabreDiagram, UpfluentDiagram, UsaaDiagram } from './Diagrams';
 import {
@@ -48,6 +49,8 @@ const GLOBAL: Record<string, () => ReactNode> = {
  */
 export function ChatWidget({ id }: { id: WidgetId }) {
   if (id in GLOBAL) return <>{GLOBAL[id]()}</>;
+
+  if (id.startsWith('work.')) return <ThemeGallery theme={id.slice(5) as WorkTheme} />;
 
   const [study, part] = id.split('.') as [StudyId, string];
   switch (part) {

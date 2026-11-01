@@ -12,7 +12,8 @@ const meta = {
           'a tab label, and a 16:9 content area. ' +
           'When no src is provided, a dot-grid placeholder is shown with a terminal › prompt ' +
           'indicating where the screenshot will go. ' +
-          'When src is provided, the image fills the frame via object-fit: cover. ' +
+          'When src is provided, the image fills the frame via object-fit: cover (or letterboxes with fit="contain"). ' +
+          'With onExpand it opens larger; with poster, src is a video. ' +
           'The chrome aesthetic (border-radius: 3px, 3 dots, mono-ui tab label) ' +
           'is consistent with the terminal theme: everything in this UI is a workspace or a tool. ' +
           'Caption is mono-ui 10px tertiary — subordinate to the image, visible but not competing.',
@@ -100,6 +101,64 @@ export const WithImage: Story = {
     caption: 'Fig. 01 — The component library, documented as a public artifact.',
     src: SAMPLE_SCREENSHOT,
     alt: 'A Storybook documentation page: a green heading, two lines of prose, two component preview panels side by side, and an amber tag below them.',
+  },
+};
+
+export const Expandable: Story = {
+  name: 'Click to enlarge',
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'With `onExpand`, the image becomes a button that opens a larger view. ImageCaption ' +
+          'only signals that it can open (zoom cursor, a ⤢ hint on hover or focus); the caller owns ' +
+          "the enlarged view. In the chat, that is MediaGallery's lightbox — thumbnails are " +
+          'about 280px wide, which is enough to recognize a screen but not to read an IA map or a ' +
+          'service blueprint. `fit="contain"` letterboxes instead of cropping, for maps and tall ' +
+          'phone screens.',
+      },
+    },
+    ai: {
+      guidance:
+        'Use onExpand whenever the image has detail worth reading (diagrams, maps, dense UI). Use fit="contain" when the image is far from 16:9.',
+      avoid: ["Don't build a second lightbox — reuse MediaGallery in src/chat/widgets/."],
+    },
+  },
+  args: {
+    tabLabel: 'sabre · workshops',
+    caption:
+      'Workshops into structure: problems paired with solutions, then the site map they produced.',
+    src: '/case/sabre/workshops-and-sitemap.webp',
+    alt: 'Collage of workshop photos, a problem-and-solutions sticky-note board, and a site map of the booking flows.',
+    onExpand: () => {},
+  },
+};
+
+export const Video: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Passing `poster` makes `src` a video. It never autoplays and uses `preload="none"`, so ' +
+          'nothing downloads until play is pressed. A video figure is "tall": it drops the 16:9 ' +
+          'ratio and fills the height its container gives it, because the recordings are portrait ' +
+          'phone prototypes that shrink to a sliver when letterboxed. The chat gallery spans it ' +
+          'across two rows.',
+      },
+    },
+    ai: {
+      guidance:
+        'For prototype recordings. Encode H.264 MP4 at around 576px wide, no audio, with a poster frame that shows the point of the video rather than its first frame.',
+      avoid: ['Never autoplay.', "Don't omit the poster — the frame would sit black until play."],
+    },
+  },
+  args: {
+    tabLabel: 'upfluent · advisor, charting',
+    caption:
+      'Ask in plain words, get a real chart back — then adjust it directly instead of asking again.',
+    src: '/case/upfluent/ai-advisor-chart.mp4',
+    poster: '/case/upfluent/ai-advisor-chart-poster.webp',
+    alt: 'Prototype walkthrough: a trader asks the AI advisor to chart AMD with moving averages, and the chart appears inline in the conversation.',
   },
 };
 

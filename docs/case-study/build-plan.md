@@ -46,7 +46,7 @@ See decisions.md 2026-07-29.
 | 2 | Visual Identity | Complete (2026-06-17) | — |
 | 3 | Storybook Foundation | Complete (2026-07-16) | — |
 | 4 | Site Assembly | Complete (2026-10-08) — OG images shipped as generated placeholders | — |
-| 5 | QA and Pre-Launch | In progress — Lighthouse/cross-browser/a11y/links/console/typography/dark-mode all complete; real-device testing skipped by Ben for launch (2026-10-09); image checks blocked on Phase 1E | — |
+| 5 | QA and Pre-Launch | In progress — Lighthouse/cross-browser/a11y/links/console/typography/dark-mode all complete; real-device testing skipped by Ben for launch (2026-10-09); image checks done 2026-11-01 | — |
 | 6 | Launch | Live 2026-10-26 — viewbens.work cut over and verified; sitemap submission (Ben) and launch journal entry remain | — |
 | 7 | Meta Case Study | In progress — case study written 2026-07-29; hidden from the site 2026-10-08 (Ben's call, content intact); screenshots and before/after remain (Lighthouse re-check done 2026-10-08) | — |
 
@@ -133,6 +133,10 @@ Per case study, document:
 - What exists and is usable as-is
 - What needs annotation or recreation
 - What is missing entirely and needs to be made
+
+(2026-11-01 — Ben supplied 37 images and 2 prototype videos for Upfluent, USAA, and Sabre.
+All are in `public/case/<study>/` and catalogued in `src/content/work-images.ts`. Sagent stays
+text-only (NDA). Portfolio Rebuild's three figure slots are still empty.)
 
 ---
 
@@ -447,9 +451,11 @@ independently; only the widget's visual styling depends on those.*
       process-journal.md once done.
       **Skipped by Ben, 2026-10-09** — launching without the real-device pass. Left
       unchecked because it wasn't done. See decisions.md 2026-10-09.
-- [ ] Image optimization: WebP format, lazy loading, proper srcset — blocked: no real case study
-      images exist in content yet (all five `src/content/*.ts` files have zero image refs) —
-      this is really gated on Phase 1E (image audit), not a QA task
+- [x] Image optimization: WebP format, lazy loading, proper srcset (2026-11-01 — WebP capped
+      at 2000px, 3.0MB for 37 files; videos H.264 at 576px, 1.3MB and 2.1MB, `preload="none"`.
+      No srcset and no `loading="lazy"`: galleries only mount when a tour beat or walkthrough
+      step shows them, six at a time, and lazy images failed to load in the embedded test
+      browser. See decisions.md 2026-11-01.)
 - [x] Accessibility audit: keyboard navigation, screen reader, color contrast (2026-06-22 — 7 fixes across 6 files; see decisions.md 2026-06-22)
 - [x] Full accessibility re-audit covering every component, including everything built after the
       2026-06-22 pass (2026-07-20 — 14 fixes across 16 files: landmark nesting, missing headings,
@@ -461,7 +467,10 @@ independently; only the widget's visual styling depends on those.*
 - [x] All internal links resolve correctly (2026-07-16) — found `/contact` was linked from
       every page's NavBar but never wired into App.tsx's routes (404 on click); added the
       missing route using the existing Contact component
-- [ ] All case study images load at correct sizes — blocked, same reason as image optimization above
+- [x] All case study images load at correct sizes (2026-11-01 — checked in the browser at
+      desktop and 375px: project galleries, theme galleries, the lightbox, and the video tile.
+      A checksum and aspect-ratio pass caught two images that had been encoded from the wrong
+      source; both re-encoded.)
 - [x] No console errors (2026-07-16) — found and fixed a React warning on every page: `inert`
       was being set to `''` instead of `true`/`undefined`, which (per the warning) React was
       silently coercing to `false` — meaning boot-overlay/docked-chat/mobile-overlay content

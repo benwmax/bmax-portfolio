@@ -15,8 +15,26 @@ export const STUDY_IDS = ['upfluent', 'sagent', 'usaa', 'sabre', 'portfolio'] as
 export type StudyId = (typeof STUDY_IDS)[number];
 
 /** Per-study widgets, as `<study>.<part>`. */
-export const STUDY_PARTS = ['cover', 'walkthrough', 'outcomes', 'role', 'decision', 'hard', 'gallery'] as const;
+export const STUDY_PARTS = [
+  'cover',
+  'walkthrough',
+  'outcomes',
+  'role',
+  'decision',
+  'hard',
+  'gallery',
+] as const;
 export type StudyPart = (typeof STUDY_PARTS)[number];
+
+/**
+ * Cross-project galleries, as `work.<theme>`: the same screenshots and photos
+ * as the per-study galleries, regrouped by what they show. These answer "how
+ * does he run workshops?" or "show me IA work" with evidence from every
+ * project at once, rather than making the visitor open each case study.
+ * Membership is a tag on each entry in src/content/work-images.ts.
+ */
+export const WORK_THEMES = ['research', 'ia', 'ui', 'design-systems', 'brand', 'ai'] as const;
+export type WorkTheme = (typeof WORK_THEMES)[number];
 
 /** Studies with a bespoke diagram of their key decision. */
 export const DIAGRAM_STUDIES = ['upfluent', 'usaa', 'sabre'] as const;
@@ -39,11 +57,13 @@ export const GLOBAL_WIDGETS = [
 export type WidgetId =
   | `${StudyId}.${StudyPart}`
   | `${(typeof DIAGRAM_STUDIES)[number]}.diagram`
+  | `work.${WorkTheme}`
   | (typeof GLOBAL_WIDGETS)[number];
 
 const ALL_IDS: ReadonlySet<string> = new Set<string>([
   ...STUDY_IDS.flatMap((s) => STUDY_PARTS.map((p) => `${s}.${p}`)),
   ...DIAGRAM_STUDIES.map((s) => `${s}.diagram`),
+  ...WORK_THEMES.map((t) => `work.${t}`),
   ...GLOBAL_WIDGETS,
 ]);
 

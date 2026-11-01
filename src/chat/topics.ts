@@ -40,6 +40,7 @@ export type TopicId =
   | 'ai-limits'
   | 'leadership'
   | 'research'
+  | 'process'
   | 'design-system'
   | 'side-projects'
   | 'career'
@@ -111,8 +112,8 @@ export function moreStarterGroups(): { label: string; topics: Topic[] }[] {
   ].filter((g) => g.topics.length > 0);
 }
 
-// A study's screenshots, once Ben adds them to src/content/work-images.ts.
-// Returns no beat at all until there's something to show.
+// A study's featured work samples (src/content/work-images.ts). Returns no
+// beat at all for a study with none, so Sagent's tour never shows an empty frame.
 function galleryBeat(study: StudyId, text: string): Beat[] {
   return imagesFor(study).length > 0 ? [{ text, widgets: [`${study}.gallery`] }] : [];
 }
@@ -138,7 +139,12 @@ const TOPIC_LIST: Topic[] = [
     group: 'start',
     kicker: '',
     unlisted: true,
-    beats: [{ text: 'Everything there is a walkthrough for — or type your own question.', widgets: ['topics'] }],
+    beats: [
+      {
+        text: 'Everything there is a walkthrough for — or type your own question.',
+        widgets: ['topics'],
+      },
+    ],
     followUps: [],
   },
 
@@ -204,7 +210,9 @@ const TOPIC_LIST: Topic[] = [
     prompt: 'Why hire Ben as a design leader?',
     group: 'start',
     kicker: 'For hiring managers',
-    beats: [{ text: 'Three reasons, each one backed by a project you can open:', widgets: ['why-ben'] }],
+    beats: [
+      { text: 'Three reasons, each one backed by a project you can open:', widgets: ['why-ben'] },
+    ],
     followUps: [
       { label: 'How does he lead a team?', topic: 'leadership' },
       { label: 'Get in touch', topic: 'contact' },
@@ -224,7 +232,7 @@ const TOPIC_LIST: Topic[] = [
         text: 'Sabre Red Workspace ran on a command line that took agents weeks to learn. Ben owned Hotel booking, and the team built a hybrid: command line for veterans, graphical mode for new hires, switch freely.',
         widgets: ['sabre.diagram'],
       },
-      ...galleryBeat('sabre', 'The Hotel work:'),
+      ...galleryBeat('sabre', 'From the research to the screens:'),
       {
         text: 'Sabre won the $1B Flightcentre contract, and rollout finished six months early with zero productivity loss.',
         widgets: ['sabre.outcomes'],
@@ -272,7 +280,7 @@ const TOPIC_LIST: Topic[] = [
         text: 'Upfluent was a mobile-first options trading platform for retail traders. Ben led design of its AI advisor: talk to it freely, then act through real controls it puts inline.',
         widgets: ['upfluent.diagram'],
       },
-      ...galleryBeat('upfluent', 'Some of the screens:'),
+      ...galleryBeat('upfluent', 'The advisor in motion, and some of the screens around it:'),
       {
         text: "He also owned signup, which came in 30%+ shorter than competitors'. The whole platform was designed in 12 months.",
         widgets: ['upfluent.outcomes'],
@@ -382,8 +390,34 @@ const TOPIC_LIST: Topic[] = [
       },
     ],
     followUps: [
+      { label: 'See the workshops and maps', topic: 'process' },
       { label: 'The Sabre story', topic: 'sabre' },
       { label: 'What is a service blueprint?' },
+    ],
+  },
+  // The evidence behind "how does he think?" (Ben, 2026-11-01: a question about
+  // design thinking should surface workshops and IA diagrams). Two galleries
+  // break the one-widget-per-tour rule on purpose: the point of this tour is
+  // the artifacts, and each gallery is a single glance, not a read.
+  {
+    id: 'process',
+    prompt: 'Show me his process work',
+    group: 'how',
+    kicker: 'Workshops · IA',
+    beats: [
+      {
+        text: 'Before screens: workshops, research walls, and the analytics that decided what got built.',
+        widgets: ['work.research'],
+      },
+      {
+        text: 'Then structure — maps and flows the whole team could work from.',
+        widgets: ['work.ia'],
+      },
+    ],
+    followUps: [
+      { label: 'Show me the finished UI' },
+      { label: 'How does he do research?', topic: 'research' },
+      { label: 'How does he design for experts?', topic: 'experts' },
     ],
   },
   {
@@ -409,7 +443,10 @@ const TOPIC_LIST: Topic[] = [
     kicker: 'Side projects',
     available: () => SIDE_PROJECTS.length > 0,
     beats: [
-      { text: 'Projects he has built on his own time, outside client work:', widgets: ['side-projects'] },
+      {
+        text: 'Projects he has built on his own time, outside client work:',
+        widgets: ['side-projects'],
+      },
     ],
     followUps: [
       { label: 'How does AI fit his process?', topic: 'ai' },
@@ -457,7 +494,10 @@ const TOPIC_LIST: Topic[] = [
     group: 'next',
     kicker: 'Resume · About',
     beats: [
-      { text: 'Here you go — the full resume, plus the About page for the longer story.', widgets: ['links-resume'] },
+      {
+        text: 'Here you go — the full resume, plus the About page for the longer story.',
+        widgets: ['links-resume'],
+      },
     ],
     followUps: [
       { label: 'Walk me through his career', topic: 'career' },
@@ -493,9 +533,7 @@ export function isAvailable(topic: Topic): boolean {
 
 /** Topics to show in menus, in display order. */
 export function visibleTopics(group?: TopicGroup): Topic[] {
-  return TOPIC_LIST.filter(
-    (t) => isAvailable(t) && !t.unlisted && (!group || t.group === group),
-  );
+  return TOPIC_LIST.filter((t) => isAvailable(t) && !t.unlisted && (!group || t.group === group));
 }
 
 export function getTopic(id: string | undefined): Topic | undefined {
@@ -506,7 +544,12 @@ export function getTopic(id: string | undefined): Topic | undefined {
 
 /** A typed message that exactly matches a starter prompt plays its tour instead of calling the model. */
 export function topicForPrompt(text: string): Topic | undefined {
-  const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9$ ]/g, '').replace(/\s+/g, ' ').trim();
+  const norm = (s: string) =>
+    s
+      .toLowerCase()
+      .replace(/[^a-z0-9$ ]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
   const target = norm(text);
   return TOPIC_LIST.find((t) => t.id !== 'menu' && isAvailable(t) && norm(t.prompt) === target);
 }

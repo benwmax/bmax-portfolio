@@ -1128,3 +1128,25 @@ Claude recommended pay-as-you-go. I chose the keep-alive instead.
 
 The fail-closed design from 2026-07-18 did its job: the site said "temporarily
 unavailable" instead of running with no rate limits.
+
+## 2026-11-01
+**What I did:** Handed Claude a folder of 37 work images and 2 prototype screen recordings
+(Upfluent, USAA, Sabre) and asked for them to surface based on what visitors ask, not only
+per project.
+**What I decided:** That a process question ("how does he approach design thinking?") should
+answer with workshop photos and IA diagrams.
+**Why:** The chat could describe how I work but couldn't show it.
+**What I'm uncertain about:** Whether Claude's captions say what I'd say about each piece, and
+whether Haiku reliably picks the right gallery for loosely worded questions.
+**What Claude contributed:** Looked at every image and wrote alt text and captions. Proposed
+theme tags (research, IA, UI, design systems, brand, AI) and built cross-project galleries the
+model can attach, plus a click-to-enlarge lightbox and a scripted "process work" tour. Cut the
+videos from 110MB to 3.4MB.
+**Where I overrode or redirected Claude:** Not yet. The captions, featured picks, and the
+non-Hotel Sabre screens are waiting on my review.
+
+Worth noting for the case study: the conversion script failed silently on two images and
+re-encoded the previous file's temp output. One "advisor flow" tile showed a candlestick
+chart. Claude caught it by looking at the rendered gallery, then ran a checksum and
+aspect-ratio pass over every output to make sure no others were affected.
+

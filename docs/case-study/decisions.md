@@ -1454,3 +1454,35 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
   Firewall rate-limit rule on `/api/chat`. The rest of the audit (320px theme toggle overflow,
   landscape-phone transcript height, session-id validation, contact anti-bot hardening, sitemap
   `/contact`, `<a href="/">` reloads, stale `TOPIC_CONTEXT['ai']`) is not yet scheduled.
+
+## 2026-11-01 — Work samples in the chat, surfaced by question as well as by project
+- Decision: (Ben) Add the 37 images and 2 prototype videos he supplied for Upfluent, USAA, and
+  Sabre to the site, so they show up for whatever a visitor asks. His example: "how does Ben
+  approach design thinking?" should bring up workshop photos and IA diagrams.
+- How (Claude's design, built as proposed and not yet reviewed by Ben):
+  - Each entry in `src/content/work-images.ts` has a study and theme tags: research, ia, ui,
+    design-systems, brand, ai. Six new widgets, `work.<theme>`, gather a theme across
+    projects, one per project in turn so the first screen shows range. The model picks them
+    from descriptions in the WIDGETS section of `api/lib/system-prompt.ts`.
+  - Project tours show only `featured` entries (about six per project) to keep tours short
+    (Ben, 2026-10-29). The walkthrough's "The work" step shows all of them.
+  - A new "Show me his process work" tour (`process`, in How he works) plays `work.research`
+    then `work.ia` without a model call. That's two widgets, which breaks the one-widget rule
+    on purpose: the artifacts are the point.
+  - Click-to-enlarge lightbox (`MediaGallery`, native `<dialog>`). Without it the IA maps and
+    the service blueprint are unreadable at thumbnail size.
+  - Videos re-encoded from 110MB of .mov to 3.4MB of MP4. They never autoplay, nothing loads
+    until play is pressed, and the tile spans two grid rows because the recordings are
+    portrait.
+- Reasoning: grouping by project alone answers "show me Sabre" but not "how does he work?",
+  and for a hiring manager the second question carries more weight. Tagging once and
+  regrouping means a gallery doesn't need to be curated by hand for each question.
+- Alternatives considered: the model choosing individual images by id (more precise, but it
+  would need a description of every image in the brief, and more ways to get it wrong);
+  separate hand-built galleries per question (would drift from the data).
+- Open questions for Ben: (1) the captions and alt text are Claude's drafts, written from the
+  images and limited to facts already in the case studies, and need his review; (2) the
+  featured picks per project; (3) the seat map and air pricing screens are Sabre team work
+  outside Hotel, and their captions say so ("the team's") — keep or drop them; (4) the typed
+  "design thinking" question hasn't been tested against the live model (no `/api` locally).
+

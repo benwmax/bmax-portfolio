@@ -68,12 +68,88 @@
   color: var(--color-green-accent);
 }
 
-/* Real image — fills the chrome body, no letterboxing */
+/* Real image — fills the chrome body, no letterboxing. Anchored to the top so
+   a cropped screenshot keeps its header, which is where the context is. */
 .image {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: top center;
   display: block;
+}
+
+/* Whole image, letterboxed on the raised surface — wide maps, tall phone
+   screens, and video. The dot grid stays hidden behind it. */
+.contain {
+  object-fit: contain;
+  object-position: center;
+  background: var(--color-bg-raised);
+}
+
+/* Click-to-enlarge wrapper. The whole frame is the target, so it's easy to hit
+   on a phone; the ⤢ hint only appears on hover/focus so it never covers work. */
+.expand {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+}
+
+.expand:focus-visible {
+  outline: 2px solid var(--color-green-accent);
+  outline-offset: -2px;
+}
+
+.expandHint {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  padding: 2px 7px;
+  border-radius: 3px;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-default);
+  font-family: var(--font-mono-ui);
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  opacity: 0;
+  transition: opacity var(--duration-fast, 120ms) ease;
+}
+
+.expand:hover .expandHint,
+.expand:focus-visible .expandHint {
+  opacity: 1;
+}
+
+/* Video is a portrait phone recording; letterboxed into 16:9 it shrinks to a
+   sliver. A tall figure drops the fixed ratio and grows to fill whatever height
+   its container gives it (the chat gallery spans it over two rows), with a
+   floor so it stays watchable in a single column. */
+.tall {
+  display: flex;
+  flex-direction: column;
+}
+
+.tall .chrome {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.tall .body {
+  flex: 1;
+  aspect-ratio: auto;
+  min-height: 420px;
+}
+
+/* Out of flow, so the recording's own 1:2 size can't push the grid row taller —
+   the row height decides the frame, and the video fits inside it. */
+.tall .image {
+  position: absolute;
+  inset: 0;
 }
 
 /* Fig caption — mono-ui, tertiary, below the chrome */
