@@ -2,12 +2,12 @@ import { useId, useState } from 'react';
 import type { ReactNode } from 'react';
 import { RoleCallout, RoleCallouts } from '../../components/RoleCallout';
 import { ProcessStep, ProcessSteps } from '../../components/ProcessStep';
-import { ImageCaption } from '../../components/ImageCaption';
 import { imagesFor } from '../../content/work-images';
 import { CaseStudyArt } from '../../components/CaseStudyCard/CaseStudyArt';
 import { STUDIES } from '../studies';
 import type { StudyId } from '../widgetIds';
 import { Frame, Prose, Stat, StatRow } from './Frame';
+import { MediaGallery } from './MediaGallery';
 import styles from './Widgets.module.css';
 
 interface Step {
@@ -52,7 +52,11 @@ export function CaseWalkthrough({ study }: { study: StudyId }) {
 
   const steps: Step[] = content.teaser
     ? [
-        { key: 'problem', label: 'Problem', body: <Prose paragraphs={content.problem.paragraphs} /> },
+        {
+          key: 'problem',
+          label: 'Problem',
+          body: <Prose paragraphs={content.problem.paragraphs} />,
+        },
         { key: 'role', label: 'My role', body: role },
         {
           key: 'outcomes',
@@ -74,7 +78,9 @@ export function CaseWalkthrough({ study }: { study: StudyId }) {
           body: (
             <>
               <h4 className={styles.subhead}>{content.problem.heading}</h4>
-              <Prose paragraphs={[...content.problem.paragraphs, ...content.userContext.paragraphs]} />
+              <Prose
+                paragraphs={[...content.problem.paragraphs, ...content.userContext.paragraphs]}
+              />
             </>
           ),
         },
@@ -100,19 +106,17 @@ export function CaseWalkthrough({ study }: { study: StudyId }) {
             </>
           ),
         },
-        { key: 'hard', label: 'What was hard', body: <Prose paragraphs={content.whatWasHard.paragraphs} /> },
+        {
+          key: 'hard',
+          label: 'What was hard',
+          body: <Prose paragraphs={content.whatWasHard.paragraphs} />,
+        },
         ...(images.length > 0
           ? [
               {
                 key: 'work',
                 label: 'The work',
-                body: (
-                  <div className={styles.gallery}>
-                    {images.map((img) => (
-                      <ImageCaption key={img.src} {...img} />
-                    ))}
-                  </div>
-                ),
+                body: <MediaGallery items={images} />,
               },
             ]
           : []),
@@ -159,7 +163,9 @@ export function CaseWalkthrough({ study }: { study: StudyId }) {
           <button
             key={s.key}
             type="button"
-            className={[styles.stepBtn, i === index ? styles.stepBtnActive : ''].filter(Boolean).join(' ')}
+            className={[styles.stepBtn, i === index ? styles.stepBtnActive : '']
+              .filter(Boolean)
+              .join(' ')}
             aria-current={i === index ? 'step' : undefined}
             aria-controls={panelId}
             onClick={() => setIndex(i)}
@@ -191,7 +197,8 @@ export function CaseWalkthrough({ study }: { study: StudyId }) {
           onClick={() => setIndex((i) => Math.min(steps.length - 1, i + 1))}
           disabled={index === steps.length - 1}
         >
-          {index < steps.length - 1 ? steps[index + 1].label : 'Next'} <span aria-hidden="true">→</span>
+          {index < steps.length - 1 ? steps[index + 1].label : 'Next'}{' '}
+          <span aria-hidden="true">→</span>
         </button>
       </div>
     </Frame>

@@ -61,6 +61,8 @@ const TOPIC_CONTEXT: Record<string, string> = {
   'best-work': "the summary of Ben's best design work across all four case studies",
   leadership: 'the walkthrough on how Ben leads design teams (Sagent and USAA)',
   research: "the walkthrough on Ben's research methods (Sabre, USAA, Upfluent)",
+  process:
+    "the gallery of Ben's process work: workshop and research photos (work.research) and IA maps and flows (work.ia)",
   overview: 'the 60-second overview of Ben',
   'why-ben': 'the summary of why Ben fits a design leadership role',
   'design-system': "the walkthrough on this site's design system",

@@ -12,6 +12,9 @@ const config: StorybookConfig = {
     "@storybook/addon-docs",
     "@storybook/addon-mcp"
   ],
-  "framework": "@storybook/react-vite"
+  "framework": "@storybook/react-vite",
+  // Serves public/ so stories can show the real work samples in /case/ —
+  // added 2026-11-01 with the ImageCaption video and click-to-enlarge stories.
+  "staticDirs": ["../public"]
 };
 export default config;

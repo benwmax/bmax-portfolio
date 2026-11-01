@@ -1,10 +1,10 @@
 import { RoleCallout, RoleCallouts } from '../../components/RoleCallout';
-import { ImageCaption } from '../../components/ImageCaption';
-import { imagesFor } from '../../content/work-images';
+import { featuredFor, imagesFor, imagesForTheme, THEME_LABELS } from '../../content/work-images';
 import { STUDIES } from '../studies';
-import type { StudyId } from '../widgetIds';
+import type { StudyId, WorkTheme } from '../widgetIds';
 import { CaseStudyArt } from '../../components/CaseStudyCard/CaseStudyArt';
 import { Frame, Prose, Stat, StatRow, TopicButton } from './Frame';
+import { MediaGallery } from './MediaGallery';
 import styles from './Widgets.module.css';
 
 // Single-section slices of a case study, for when the conversation needs one
@@ -115,18 +115,42 @@ export function StudyHard({ study }: { study: StudyId }) {
   );
 }
 
-/** Real screenshots only — renders nothing until Ben adds images for this study. */
+/**
+ * The project tour's gallery: its featured work only, so a tour stays short.
+ * Everything else for the study is one click away in the walkthrough's "The
+ * work" step. Renders nothing for a study with no media (Sagent, under NDA).
+ */
 export function StudyGallery({ study }: { study: StudyId }) {
-  const images = imagesFor(study);
-  if (images.length === 0) return null;
+  const items = featuredFor(study);
+  if (items.length === 0) return null;
   const { name } = STUDIES[study];
+  const total = imagesFor(study).length;
   return (
-    <Frame wide label={`${name} · The work`} meta={`${images.length} screens`}>
-      <div className={styles.gallery}>
-        {images.map((img) => (
-          <ImageCaption key={img.src} {...img} />
-        ))}
-      </div>
+    <Frame
+      wide
+      label={`${name} · The work`}
+      meta={total > items.length ? `${items.length} of ${total}` : `${items.length}`}
+    >
+      <MediaGallery items={items} />
     </Frame>
   );
 }
+
+/**
+ * Work from every project that shows one kind of thing — workshops, IA, brand.
+ * This is what lets a question like "how does he approach design thinking?"
+ * answer with evidence instead of adjectives. The bar names the projects so
+ * the range is visible before anyone scrolls.
+ */
+export function ThemeGallery({ theme }: { theme: WorkTheme }) {
+  const items = imagesForTheme(theme);
+  if (items.length === 0) return null;
+  const projects = [...new Set(items.map((m) => m.tabLabel.split(' · ')[0]))];
+  return (
+    <Frame wide label={`The work · ${THEME_LABELS[theme]}`} meta={projects.map(cap).join(' · ')}>
+      <MediaGallery items={items} />
+    </Frame>
+  );
+}
+
+const cap = (s: string) => (s === 'usaa' ? 'USAA' : s.charAt(0).toUpperCase() + s.slice(1));
