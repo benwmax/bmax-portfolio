@@ -369,7 +369,9 @@
   --color-bg-page: #f2f5f8;
   --color-bg-surface: #fbfdfe;
   --color-bg-raised: #e9eef3;
-  --color-bg-dot: rgba(23, 34, 44, 0.05); /* fine line-grid — 5% slate, barely-there (see --dot-grid) */
+  /* fine line-grid — 2.5% slate (see --dot-grid). Halved from 5% on 2026-11-01 (Ben):
+     on the pale page, full 1px lines at 5% competed with transcript text. */
+  --color-bg-dot: rgba(23, 34, 44, 0.025);
   --color-bg-overlay: #f2f5f8cc;
   --color-bg-input-active: #eef6fc; /* azure-tinted focus background */
 
@@ -417,7 +419,7 @@
   --font-mono-display: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
 
   /* Surface texture — fine line grid instead of the terminal dot grid.
-     V2: airier 32px cells, grid color dropped to 5% (see --color-bg-dot). */
+     V2: airier 32px cells; grid color now 2.5% (see --color-bg-dot). */
   --dot-grid: linear-gradient(var(--color-bg-dot) 1px, transparent 1px),
     linear-gradient(90deg, var(--color-bg-dot) 1px, transparent 1px);
   --dot-grid-size: 32px 32px;
