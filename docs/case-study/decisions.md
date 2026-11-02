@@ -1529,3 +1529,16 @@ against WCAG AA, tech debt criteria, and mobile readiness. Four decisions made:
 - Open: the OG image (`public/og/portfolio.png`) still has the old subtitle, and the title
   card has no line-art cover.
 
+
+## 2026-11-01 — Futuristic theme body and UI text in IBM Plex Sans (Ben)
+- Decision: (Ben) Futuristic swaps its body text to a modern sans: IBM Plex Sans for prose
+  (`--font-sans`) and for the UI text Retro sets in IBM Plex Mono (`--font-mono-ui`: chips, the chat
+  input, labels, metadata). Headings, nav, and buttons stay in Space Grotesk. Retro is unchanged.
+- Reasoning: Futuristic still read as a terminal because everything below the headings was
+  monospace. Plex Sans is the sans sibling of Retro's Plex Mono, so the two themes stay one family.
+- Alternatives considered: Inter (more neutral, but the most common choice on portfolios) and Sora
+  (more sci-fi, but less comfortable for paragraphs). Prose-only scope was also considered, but it
+  would have left the chips and input monospace.
+- How: token overrides in the `[data-theme='futuristic']` block of `src/tokens/tokens.css`, plus
+  Plex Sans added to the Google Fonts link in `index.html` and `.storybook/preview-head.html`. No
+  component changes; `--font-mono-ui` keeps its name and resolves to a sans in this theme.

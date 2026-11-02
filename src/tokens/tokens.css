@@ -415,8 +415,16 @@
 
   --color-status-error: #b3352f;
 
-  /* Typography — geometric sans for display/chrome, mono stays for data */
+  /* Typography — geometric sans for display/chrome. Body and UI text are
+     IBM Plex Sans (Ben, 2026-11-01): prose and the UI text that Retro sets in
+     Plex Mono (chips, the chat input, labels, metadata) were what kept
+     Futuristic feeling like a terminal. Plex Sans is the sans sibling of the
+     Plex Mono Retro uses, so the two themes still read as one family.
+     --font-mono-ui keeps its name so no component changes; in this theme it
+     simply isn't mono. Retro is unchanged. */
   --font-mono-display: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
+  --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono-ui: 'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
 
   /* Surface texture — fine line grid instead of the terminal dot grid.
      V2: airier 32px cells; grid color now 2.5% (see --color-bg-dot). */
