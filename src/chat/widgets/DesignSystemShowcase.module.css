@@ -1,0 +1,255 @@
+/* Design system showcase (DesignSystemShowcase.tsx). Token-only: every color
+   and font here is a token, which is the point of the card. */
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-mono-display);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-snug);
+  color: var(--color-text-primary);
+}
+
+.lede {
+  margin: 0;
+  max-width: 64ch;
+  font-family: var(--font-sans);
+  font-size: var(--text-lg);
+  line-height: var(--leading-prose);
+  color: var(--color-text-secondary);
+}
+
+/* A fixed 2×2: auto-fit left the fourth panel alone on its own row at
+   mid widths. One column on phones. */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-page);
+}
+
+.panelTitle {
+  margin: 0;
+  font-family: var(--font-mono-ui);
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-amber-accent);
+}
+
+.panelNote {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  line-height: var(--leading-normal);
+  color: var(--color-text-secondary);
+}
+
+/* ——— Color ——— */
+.swatches,
+.specimens {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.swatch {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.chip {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-default);
+}
+
+.swatchName {
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  color: var(--color-text-primary);
+}
+
+.swatchValue {
+  font-family: var(--font-mono-ui);
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+}
+
+/* ——— Type ——— */
+.specimen {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.aa {
+  font-size: 28px; /* specimen size — big enough to see each family's shape */
+  line-height: 1;
+  color: var(--color-text-primary);
+}
+
+.specimenText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.specimenRole {
+  font-family: var(--font-mono-ui);
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+}
+
+.specimenFont {
+  color: var(--color-green-accent);
+}
+
+.specimenUse {
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  color: var(--color-text-secondary);
+}
+
+/* ——— Components ——— */
+.componentRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* ——— Themes ——— */
+.themePanel {
+  border-color: var(--color-green-border);
+}
+
+.themeSwitch {
+  display: inline-flex;
+  align-self: flex-start;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.themeOption {
+  min-height: 44px;
+  padding: var(--space-2) var(--space-5);
+  font-family: var(--font-mono-display);
+  font-size: var(--text-base);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  transition:
+    color var(--duration-base) var(--ease-default),
+    background-color var(--duration-base) var(--ease-default);
+}
+
+.themeOption + .themeOption {
+  border-left: 1px solid var(--color-border-default);
+}
+
+.themeOption:hover {
+  color: var(--color-text-primary);
+}
+
+.themeOptionOn {
+  color: var(--color-green-accent);
+  background: var(--color-green-deepest);
+}
+
+.themeOption:focus-visible {
+  outline: 2px solid var(--color-green-accent);
+  outline-offset: -2px;
+}
+
+:global([data-theme='futuristic']) .themeSwitch {
+  border-radius: var(--radius-full);
+}
+
+:global([data-theme='futuristic']) .themeOptionOn {
+  color: var(--btn-primary-text);
+  background: var(--btn-primary-bg);
+}
+
+/* ——— Links ——— */
+.cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.deepLinks {
+  font-family: var(--font-mono-ui);
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+}
+
+.deepLink {
+  color: var(--color-green-accent);
+  text-underline-offset: 3px;
+}
+
+.deepLink:focus-visible {
+  outline: 2px solid var(--color-green-accent);
+  outline-offset: 2px;
+}
+
+:global([data-theme='futuristic']) .panel {
+  border-radius: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .themeOption {
+    transition: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .title {
+    font-size: var(--text-xl);
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Three stats in the shared two-column phone grid leave an empty cell —
+     stack them instead. */
+  .stats > * {
+    grid-template-columns: 1fr;
+  }
+
+  .cta {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

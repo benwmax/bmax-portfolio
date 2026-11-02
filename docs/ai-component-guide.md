@@ -696,7 +696,7 @@ Outcome stat cell — phosphor green headline value, ALL CAPS label, optional on
 The visual answers the chat homepage shows under a reply: project cover, results, role, key
 decision, what was hard, the full stepped case study, key-decision sketches (Sabre, USAA,
 Upfluent), selected work, why Ben, career timeline, looking for, research methods, the AI split
-and overruled-the-AI cards, link cards, and the all-topics menu. Gallery and side projects render
+and overruled-the-AI cards, the design-system showcase (live tokens, type, components, and a theme switch), link cards, and the all-topics menu. Gallery and side projects render
 nothing until content exists.
 
 #### Rules
