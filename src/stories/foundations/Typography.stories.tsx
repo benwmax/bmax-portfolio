@@ -127,16 +127,25 @@ const LEADING = [
 const PROSE_SAMPLE =
   "I've worked across travel, insurance, fintech, and mortgage — building tools that experts actually adopt. The work is in the details: the decision that made onboarding 6 months faster.";
 
-// Futuristic swaps only --font-mono-display (Space Mono → Space Grotesk); IBM Plex Mono,
-// system sans, the type scale, tracking, and leading are all unchanged between themes.
+// Futuristic swaps three font tokens: --font-mono-display → Space Grotesk, and both
+// --font-mono-ui and --font-sans → IBM Plex Sans (Ben, 2026-11-01). The type scale,
+// tracking, and leading are unchanged between themes.
 const FUTURISTIC_FONTS = [
   {
     ...FONTS[0],
     name: 'Space Grotesk',
-    sample: 'Space Grotesk — wordmark, nav, buttons, tags, ALL CAPS labels',
+    sample: 'Space Grotesk — wordmark, nav, buttons, tags, headings',
   },
-  FONTS[1],
-  FONTS[2],
+  {
+    ...FONTS[1],
+    name: 'IBM Plex Sans',
+    sample: 'IBM Plex Sans — chips, chat input, labels, metadata',
+  },
+  {
+    ...FONTS[2],
+    name: 'IBM Plex Sans',
+    sample: 'IBM Plex Sans — chat replies, case study copy, long-form prose',
+  },
 ];
 
 // ─── Story ────────────────────────────────────────────────────────────────────
@@ -353,18 +362,19 @@ export const FuturisticReference: Story = {
     docs: {
       description: {
         story:
-          'Only --font-mono-display changes under the Futuristic theme: Space Mono is replaced ' +
-          'by Space Grotesk for the wordmark, nav, buttons, tags, and ALL CAPS labels. IBM Plex ' +
-          'Mono, system sans, the type scale, letter spacing, and line height are all identical ' +
-          'to Retro — this story reuses the same data, just rendered under [data-theme=\'futuristic\'].',
+          'Under the Futuristic theme, Space Grotesk replaces Space Mono for the wordmark, nav, ' +
+          'buttons, and tags, and IBM Plex Sans replaces both IBM Plex Mono (UI text) and the system ' +
+          'sans (prose), so nothing reads as a terminal (2026-11-01). The type scale, letter spacing, ' +
+          'and line height are identical to Retro.',
       },
     },
     ai: {
       guidance:
-        'The Futuristic theme swaps the display font only — Space Grotesk in place of Space Mono. Every other type token (IBM Plex Mono, system sans, scale, tracking, leading) is unchanged between themes.',
+        'The Futuristic theme swaps fonts by token only: Space Grotesk for --font-mono-display, IBM Plex Sans for --font-mono-ui and --font-sans. Scale, tracking, and leading are unchanged between themes.',
       contentRules: [
         'Space Grotesk fills the same role Space Mono has in Retro: wordmark, nav, buttons, tags, ALL CAPS labels.',
-        'Never introduce a third display font — the swap is theme-scoped to --font-mono-display, nothing else.',
+        '--font-mono-ui keeps its name in Futuristic even though it resolves to a sans — components never change per theme, only tokens.',
+        'Never introduce another font family — Futuristic is exactly Space Grotesk + IBM Plex Sans.',
       ],
     },
   },
@@ -402,8 +412,9 @@ export const FuturisticReference: Story = {
             marginTop: 6,
           }}
         >
-          Space Grotesk replaces Space Mono for display/chrome under this theme. IBM Plex Mono
-          stays for data and metadata, so both themes share a technical thread.
+          Space Grotesk replaces Space Mono for display and chrome, and IBM Plex Sans replaces the
+          monospace UI text and system sans. Plex Sans is the sans sibling of Retro's Plex Mono, so
+          the two themes still share a family.
         </div>
       </div>
 
