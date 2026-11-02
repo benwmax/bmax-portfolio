@@ -46,6 +46,12 @@
 /* The scroller. Padding centres a --container column without a wrapper,
    so ChatTranscript's pin-to-top math (which reads this element) stays exact. */
 .log {
+  /* Containing block for absolutely positioned descendants — the sr-only
+     "opens in new tab" labels in widget links. Without it they anchor to .page,
+     escape this scroller's clip, and stretch the document (2938px for the
+     design system tour), so a wheel over the dock scrolled the whole page up
+     (2026-11-02). */
+  position: relative;
   flex: 1;
   min-width: 0;
   overflow-y: auto;
