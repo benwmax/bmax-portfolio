@@ -196,12 +196,27 @@ export const AiLimits = widgetStory(
 
 // ——— Link cards ———
 
-export const DesignSystemLinks = widgetStory(
+// The design system, shown rather than linked (2026-11-01). Everything is live:
+// swatches and type specimens read the current tokens, the tags/status/buttons
+// are library components, and its theme switch re-skins the whole page.
+export const DesignSystemShowcase = widgetStory(
   'links-design-system',
-  'Links — design system',
-  'The public Storybook and the source repo.',
-  'Show instead of writing a URL in prose.',
+  'Design system showcase',
+  'Stats, live color tokens and type specimens, real library components, a Retro/Futuristic switch that re-skins the page in place, and links to this Storybook, its Foundations and Chat pages, and the source.',
+  'Answer to any design-system question. Values are read live from tokens — never hardcode a hex or font name in it.',
 );
+
+export const DesignSystemShowcaseFuturistic: Story = {
+  ...DesignSystemShowcase,
+  name: 'Futuristic — Design system showcase',
+  parameters: {
+    ...DesignSystemShowcase.parameters,
+    theme: 'futuristic',
+    ai: {
+      guidance: 'Same showcase under Futuristic — the swatches and font names update on their own.',
+    },
+  },
+};
 
 export const ResumeLinks = widgetStory(
   'links-resume',

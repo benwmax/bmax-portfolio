@@ -16,7 +16,6 @@ import {
   AiSplit,
   CareerTimeline,
   ContactLinks,
-  DesignSystemLinks,
   Highlights,
   LookingFor,
   ResearchMethods,
@@ -25,6 +24,7 @@ import {
   WhyBen,
 } from './GlobalWidgets';
 import { TopicMenu } from './TopicMenu';
+import { DesignSystemShowcase } from './DesignSystemShowcase';
 
 const GLOBAL: Record<string, () => ReactNode> = {
   highlights: () => <Highlights />,
@@ -35,7 +35,7 @@ const GLOBAL: Record<string, () => ReactNode> = {
   'ai-split': () => <AiSplit />,
   'ai-limits': () => <AiLimits />,
   'side-projects': () => <SideProjects />,
-  'links-design-system': () => <DesignSystemLinks />,
+  'links-design-system': () => <DesignSystemShowcase />,
   'links-resume': () => <ResumeLinks />,
   'links-contact': () => <ContactLinks />,
   topics: () => <TopicMenu headingLevel={3} />,

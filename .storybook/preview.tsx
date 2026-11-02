@@ -69,11 +69,24 @@ function PageBackground({ futuristic, children }: { futuristic: boolean; childre
   );
 }
 
-const withPageBackground: Decorator = (Story, context) => (
-  <PageBackground futuristic={context.parameters.theme === 'futuristic'}>
-    <Story />
-  </PageBackground>
-);
+const withPageBackground: Decorator = (Story, context) => {
+  const futuristic = context.parameters.theme === 'futuristic';
+  // Also set the attribute *before* the story renders, not only in the layout
+  // effect above. Effects run child-first, so anything that reads the theme
+  // during its first render (useTheme's initial state, the design-system
+  // showcase's live token readout) saw Retro under a Futuristic story and never
+  // heard the change — production avoids this with the inline script in
+  // index.html that sets the theme before React mounts (2026-11-01).
+  if (typeof document !== 'undefined') {
+    if (futuristic) document.documentElement.dataset.theme = 'futuristic';
+    else delete document.documentElement.dataset.theme;
+  }
+  return (
+    <PageBackground futuristic={futuristic}>
+      <Story />
+    </PageBackground>
+  );
+};
 
 const preview: Preview = {
   decorators: [withRouter, withPageBackground],

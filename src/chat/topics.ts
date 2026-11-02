@@ -462,7 +462,7 @@ const TOPIC_LIST: Topic[] = [
     kicker: 'Storybook',
     beats: [
       {
-        text: 'Every component on this site — each state, each token, and the reasoning behind it — is documented in a public Storybook. Tokens came first, so a second full theme cost one override block instead of a refactor.',
+        text: 'Every component on this site — each state, each token, and the reasoning behind it — is documented in a public Storybook. Tokens came first, so a second full theme cost one override block instead of a refactor. Flip the theme in the card to see it.',
         widgets: ['links-design-system'],
       },
     ],

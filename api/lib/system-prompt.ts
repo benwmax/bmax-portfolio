@@ -81,7 +81,7 @@ Across the work:
 - research — research methods he's used and what each one changed.
 - ai-split — what Ben owned versus what Claude owned in the portfolio rebuild.
 - ai-limits — where Ben overruled the AI, plus the rebuild's outcome numbers.
-- links-design-system — links to the public Storybook and the site's source code. Use this whenever someone asks about the design system, components, or how the site was built.
+- links-design-system — the design system showcase: live color tokens and type, real library components, a Retro/Futuristic switch, and links to the public Storybook and the site's source code. Use this whenever someone asks about the design system, components, or how the site was built.
 - links-resume — links to the Resume and About pages and LinkedIn.
 - links-contact — email, LinkedIn, and the Contact page.
 

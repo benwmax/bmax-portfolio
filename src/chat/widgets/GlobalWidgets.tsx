@@ -1,6 +1,6 @@
 import { EXPERIENCE } from '../../content/experience';
 import { SIDE_PROJECTS } from '../../content/side-projects';
-import { CASE_STUDIES, STORYBOOK_URL } from '../../pages/explorations/data';
+import { CASE_STUDIES } from '../../pages/explorations/data';
 import { CaseStudyArt } from '../../components/CaseStudyCard/CaseStudyArt';
 import { STUDIES, CLIENT_STUDY_ORDER } from '../studies';
 import type { TopicId } from '../topics';
@@ -10,7 +10,6 @@ import styles from './Widgets.module.css';
 
 const EMAIL = 'ben@viewbens.work';
 const LINKEDIN = 'https://www.linkedin.com/in/benjaminwmaxwell/';
-const REPO = 'https://github.com/benwmax/bmax-portfolio';
 
 /**
  * One line per client case study, with the number a hiring manager will
@@ -329,21 +328,6 @@ export function SideProjects() {
           </li>
         ))}
       </ul>
-    </Frame>
-  );
-}
-
-export function DesignSystemLinks() {
-  return (
-    <Frame label="Design system" meta="Public">
-      <div className={styles.linkList}>
-        <LinkRow
-          href={STORYBOOK_URL}
-          label="Browse the component library"
-          detail="system.viewbens.work"
-        />
-        <LinkRow href={REPO} label="Read the source" detail="github.com/benwmax/bmax-portfolio" />
-      </div>
     </Frame>
   );
 }
