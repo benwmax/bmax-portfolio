@@ -95,11 +95,13 @@
 }
 
 /* Name and role above the headline — mono caps, so it reads as an eyebrow to
-   the claim below it rather than a second headline. */
+   the claim below it rather than a second headline. 18px, up from 14px (Ben,
+   2026-11-01): it's the only place the first screen says who this is, so it
+   should read at a glance, not as fine print. */
 .identity {
   margin: 0 0 var(--space-4);
   font-family: var(--font-mono-ui);
-  font-size: var(--text-md);
+  font-size: var(--text-xl);
   letter-spacing: var(--tracking-wider);
   text-transform: uppercase;
   color: var(--color-text-secondary);
@@ -376,6 +378,13 @@
 
   .hero {
     padding-bottom: var(--space-6);
+  }
+
+  /* 16px with tighter tracking on phones, so "Ben Maxwell · UX Design Leader"
+     stays on one line down to 360px. */
+  .identity {
+    font-size: var(--text-lg);
+    letter-spacing: var(--tracking-wide);
   }
 
   /* Phones (Ben, 2026-10-30): the even split put the input in the middle of a
