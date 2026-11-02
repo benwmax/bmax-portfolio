@@ -887,9 +887,10 @@ both created 2026-07-16, and this session ran multiple verification scripts agai
 a new item below for removing the temporary `.vercel.app` origin allowlist entry at
 cutover, added 2026-07-19. build-plan.md's checkboxes are the source of truth if this
 drifts again.)
-- **Phase 1C:** done 2026-10-29 — the Sagent case study is live, text-only (NDA). Open: re-run
-  `scripts/generate-og-images.mjs` (Sagent, Upfluent and USAA OG images show old years/copy;
-  the script's Playwright browser failed to launch locally).
+- **Phase 1C:** done 2026-10-29 — the Sagent case study is live, text-only (NDA). OG images
+  re-run 2026-11-01. If Playwright's own browser won't launch, run the script with
+  `CHROMIUM_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"`. Portfolio
+  Rebuild's image reads `heroTitle` from `src/content/portfolio-rebuild.ts` (no grid card).
 - **Portfolio Rebuild screenshots (Ben):** the page is hidden for now (2026-10-08), but its three
   captioned figure slots are still waiting in
   `src/content/portfolio-rebuild.ts` — anchored to Process, Key decision, and What was hard.

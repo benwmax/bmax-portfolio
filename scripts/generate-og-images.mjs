@@ -20,6 +20,7 @@ import { mkdirSync } from 'node:fs';
 import path from 'node:path';
 import { chromium } from 'playwright';
 import { CASE_STUDIES } from '../src/pages/explorations/data.ts';
+import { portfolioRebuildData } from '../src/content/portfolio-rebuild.ts';
 
 const OUT_DIR = path.join(process.cwd(), 'public', 'og');
 
@@ -38,7 +39,7 @@ const T = {
 
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-function page({ kicker, title, desc, tag }) {
+function page({ kicker, title, desc, tag, long }) {
   return `<!doctype html><html><head><meta charset="utf-8">
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=IBM+Plex+Mono:wght@400;500&display=block" rel="stylesheet">
 <style>
@@ -67,6 +68,8 @@ function page({ kicker, title, desc, tag }) {
   }
   /* Amber, matching the live homepage hero (.heroAmber in HomeV4Blend.module.css). */
   h1 em { font-style: normal; color: ${T.amber}; }
+  /* For headlines too long to fit three lines at the default size. */
+  h1.long { font-size: 56px; }
   .desc {
     font: 400 28px/1.4 'IBM Plex Mono', monospace; color: ${T.textSecondary};
     max-width: 980px;
@@ -85,7 +88,7 @@ function page({ kicker, title, desc, tag }) {
   <div class="top"><span class="mark">BM<b>_</b></span><span class="url">viewbens.work</span></div>
   <main>
     <div class="kicker">› ${esc(kicker)}</div>
-    <h1>${title}</h1>
+    <h1${long ? ' class="long"' : ''}>${title}</h1>
     <p class="desc">${esc(desc)}</p>
   </main>
   <div class="bottom">
@@ -112,6 +115,18 @@ const images = [
     desc: c.desc,
     tag: c.tag,
   })),
+  // Portfolio Rebuild has no work-grid card (the chat-first site has no grid),
+  // so it reads from its content file instead of CASE_STUDIES. Unnumbered and
+  // undated in the kicker to match how the chat presents it (decisions.md
+  // 2026-11-01).
+  {
+    file: 'portfolio.png',
+    kicker: 'Case study · How this site was built',
+    title: esc(portfolioRebuildData.heroTitle),
+    desc: 'Directed with Claude, from audit to launch to a chat-first rebuild.',
+    tag: 'AI Collaboration',
+    long: true,
+  },
 ];
 
 mkdirSync(OUT_DIR, { recursive: true });
